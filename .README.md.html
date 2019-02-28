@@ -1,0 +1,767 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Strict//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>/OSS/JSONata4Java/JSONata4Java/.README.md.html</title>
+
+
+<style type="text/css">
+body {
+	color: #333;
+	font: 13px/1.4 "Helvetica Neue", Helvetica, "Segoe UI", Arial, freesans, sans-serif;
+	padding: 0;
+	margin: 0;
+}
+
+a {
+	background: transparent;
+	color: #4183c4;
+	text-decoration: none;
+}
+
+a:active,
+a:hover {
+	outline: 0 none;
+	text-decoration: underline;
+}
+
+abbr[title] {
+	border-bottom: 1px dotted;
+}
+
+b,
+strong {
+	font-weight: bold;
+}
+
+dfn {
+	font-style: italic;
+}
+h1 {
+	font-size: 2em;
+	margin: 0.67em 0;
+}
+mark {
+	background: #ff0;
+	color: #000;
+}
+small {
+	font-size: 80%;
+}
+sub, sup {
+	font-size: 75%;
+	line-height: 0;
+	position: relative;
+	vertical-align: baseline;
+}
+sup {
+	top: -0.5em;
+}
+sub {
+	bottom: -0.25em;
+}
+img {
+	border: 0 none;
+}
+svg:not(:root) {
+	overflow: hidden;
+}
+figure {
+	margin: 1em 40px;
+}
+hr {
+	box-sizing: content-box;
+	height: 0;
+}
+
+code,
+kbd,
+pre,
+samp {
+	font-family: monospace,monospace;
+	font-size: 1em;
+}
+
+pre {
+	overflow: auto;
+	font: 12px Consolas,"Liberation Mono",Menlo,Courier,monospace;
+	margin-bottom: 0;
+	margin-top: 0;
+}
+
+.markdown-body {
+	padding: 30px;
+	font-size: 16px;
+	line-height: 1.6;
+	word-wrap: break-word;
+}
+
+.markdown-body>*:first-child {
+	margin-top: 0 !important;
+}
+
+.markdown-body>*:last-child {
+	margin-bottom: 0 !important;
+}
+
+.markdown-body .absent {
+	color: #c00;
+}
+
+.markdown-body .anchor {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	display: block;
+	padding-right: 6px;
+	padding-left: 30px;
+	margin-left: -30px;
+}
+
+.markdown-body .anchor:focus {
+	outline: none;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+	position: relative;
+	margin-top: 1em;
+	margin-bottom: 16px;
+	font-weight: bold;
+	line-height: 1.4;
+}
+
+.markdown-body h1 .octicon-link,
+.markdown-body h2 .octicon-link,
+.markdown-body h3 .octicon-link,
+.markdown-body h4 .octicon-link,
+.markdown-body h5 .octicon-link,
+.markdown-body h6 .octicon-link {
+	display: none;
+	color: #000;
+	vertical-align: middle;
+}
+
+.markdown-body h1:hover .anchor,
+.markdown-body h2:hover .anchor,
+.markdown-body h3:hover .anchor,
+.markdown-body h4:hover .anchor,
+.markdown-body h5:hover .anchor,
+.markdown-body h6:hover .anchor {
+	padding-left: 8px;
+	margin-left: -30px;
+	line-height: 1;
+	text-decoration: none;
+}
+
+.markdown-body h1:hover .anchor .octicon-link,
+.markdown-body h2:hover .anchor .octicon-link,
+.markdown-body h3:hover .anchor .octicon-link,
+.markdown-body h4:hover .anchor .octicon-link,
+.markdown-body h5:hover .anchor .octicon-link,
+.markdown-body h6:hover .anchor .octicon-link {
+	display: inline-block;
+}
+
+.markdown-body h1 tt,
+.markdown-body h1 code,
+.markdown-body h2 tt,
+.markdown-body h2 code,
+.markdown-body h3 tt,
+.markdown-body h3 code,
+.markdown-body h4 tt,
+.markdown-body h4 code,
+.markdown-body h5 tt,
+.markdown-body h5 code,
+.markdown-body h6 tt,
+.markdown-body h6 code {
+	font-size: inherit;
+}
+
+.markdown-body h1 {
+	padding-bottom: 0.3em;
+	font-size: 2.25em;
+	line-height: 1.2;
+	border-bottom: 1px solid #eee;
+}
+
+.markdown-body h2 {
+	padding-bottom: 0.3em;
+	font-size: 1.75em;
+	line-height: 1.225;
+	border-bottom: 1px solid #eee;
+}
+
+.markdown-body h3 {
+	font-size: 1.5em;
+	line-height: 1.43;
+}
+
+.markdown-body h4 {
+	font-size: 1.25em;
+}
+
+.markdown-body h5 {
+	font-size: 1em;
+}
+
+.markdown-body h6 {
+	font-size: 1em;
+	color: #777;
+}
+
+.markdown-body p,.markdown-body blockquote,
+.markdown-body ul,.markdown-body ol,
+.markdown-body dl,.markdown-body table,
+.markdown-body pre {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+.markdown-body hr {
+	height: 4px;
+	padding: 0;
+	margin: 16px 0;
+	background-color: #e7e7e7;
+	border: 0 none;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+	padding-left: 2em;
+}
+
+.markdown-body ul.no-list,
+.markdown-body ol.no-list {
+	padding: 0;
+	list-style-type: none;
+}
+
+.markdown-body ul ul,
+.markdown-body ul ol,
+.markdown-body ol ol,
+.markdown-body ol ul {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.markdown-body li>p {
+	margin-top: 16px;
+}
+
+.markdown-body dl {
+	padding: 0;
+}
+
+.markdown-body dl dt {
+	padding: 0;
+	margin-top: 16px;
+	font-size: 1em;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.markdown-body dl dd {
+	padding: 0 16px;
+	margin-bottom: 16px;
+}
+
+.markdown-body blockquote {
+	padding: 0 15px;
+	color: #777;
+	border-left: 4px solid #ddd;
+}
+
+.markdown-body blockquote>:first-child {
+	margin-top: 0;
+}
+
+.markdown-body blockquote>:last-child {
+	margin-bottom: 0;
+}
+
+.markdown-body table {
+	display: block;
+	width: 100%;
+	overflow: auto;
+	word-break: normal;
+	word-break: keep-all;
+}
+
+.markdown-body table th {
+	font-weight: bold;
+}
+
+.markdown-body table th,
+.markdown-body table td {
+	padding: 6px 13px;
+	border: 1px solid #ddd;
+}
+
+.markdown-body table tr {
+	background-color: #fff;
+	border-top: 1px solid #ccc;
+}
+
+.markdown-body table tr:nth-child(2n) {
+	background-color: #f8f8f8;
+}
+
+.markdown-body img {
+	max-width: 100%;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.markdown-body span.frame {
+	display: block;
+	overflow: hidden;
+}
+
+.markdown-body span.frame>span {
+	display: block;
+	float: left;
+	width: auto;
+	padding: 7px;
+	margin: 13px 0 0;
+	overflow: hidden;
+	border: 1px solid #ddd;
+}
+
+.markdown-body span.frame span img {
+	display: block;
+	float: left;
+}
+
+.markdown-body span.frame span span {
+	display: block;
+	padding: 5px 0 0;
+	clear: both;
+	color: #333;
+}
+
+.markdown-body span.align-center {
+	display: block;
+	overflow: hidden;
+	clear: both;
+}
+
+.markdown-body span.align-center>span {
+	display: block;
+	margin: 13px auto 0;
+	overflow: hidden;
+	text-align: center;
+}
+
+.markdown-body span.align-center span img {
+	margin: 0 auto;
+	text-align: center;
+}
+
+.markdown-body span.align-right {
+	display: block;
+	overflow: hidden;
+	clear: both;
+}
+
+.markdown-body span.align-right>span {
+	display: block;
+	margin: 13px 0 0;
+	overflow: hidden;
+	text-align: right;
+}
+
+.markdown-body span.align-right span img {
+	margin: 0;
+	text-align: right;
+}
+
+.markdown-body span.float-left {
+	display: block;
+	float: left;
+	margin-right: 13px;
+	overflow: hidden;
+}
+
+.markdown-body span.float-left span {
+	margin: 13px 0 0;
+}
+
+.markdown-body span.float-right {
+	display: block;
+	float: right;
+	margin-left: 13px;
+	overflow: hidden;
+}
+
+.markdown-body span.float-right>span {
+	display: block;
+	margin: 13px auto 0;
+	overflow: hidden;
+	text-align: right;
+}
+
+.markdown-body code,.markdown-body tt {
+	padding: 0;
+	padding-top: 0.2em;
+	padding-bottom: 0.2em;
+	margin: 0;
+	font-size: 85%;
+	background-color: rgba(0,0,0,0.04);
+	border-radius: 3px;
+}
+
+.markdown-body code:before,
+.markdown-body code:after,
+.markdown-body tt:before,
+.markdown-body tt:after {
+	letter-spacing: -0.2em;
+	content: "\00a0";
+}
+
+.markdown-body code br,
+.markdown-body tt br {
+	display: none;
+}
+
+.markdown-body del code {
+	text-decoration: inherit;
+}
+
+.markdown-body pre>code {
+	padding: 0;
+	margin: 0;
+	font-size: 100%;
+	word-break: normal;
+	white-space: pre;
+	background: transparent;
+	border: 0;
+}
+
+.markdown-body .highlight {
+	margin-bottom: 16px;
+}
+
+.markdown-body .highlight pre,
+.markdown-body pre {
+	padding: 16px;
+	overflow: auto;
+	font-size: 85%;
+	line-height: 1.45;
+	background-color: #f7f7f7;
+	border-radius: 3px;
+}
+
+.markdown-body .highlight pre {
+	margin-bottom: 0;
+	word-break: normal;
+}
+
+.markdown-body pre {
+	word-wrap: normal;
+}
+
+.markdown-body pre code,
+.markdown-body pre tt {
+	display: inline;
+	max-width: initial;
+	padding: 0;
+	margin: 0;
+	overflow: initial;
+	line-height: inherit;
+	word-wrap: normal;
+	background-color: transparent;
+	border: 0;
+}
+
+.markdown-body pre code:before,
+.markdown-body pre code:after,
+.markdown-body pre tt:before,
+.markdown-body pre tt:after {
+	content: normal;
+}
+
+.highlight .pl-coc,
+.highlight .pl-entl,
+.highlight .pl-entm,
+.highlight .pl-eoa,
+.highlight .pl-mai .pl-sf,
+.highlight .pl-mm,
+.highlight .pl-pdv,
+.highlight .pl-sc,
+.highlight .pl-som,
+.highlight .pl-sr,
+.highlight .pl-v,
+.highlight .pl-vpf {
+	color: #0086b3;
+}
+.highlight .pl-eoac,
+.highlight .pl-mdht,
+.highlight .pl-mi1,
+.highlight .pl-mri,
+.highlight .pl-va,
+.highlight .pl-vpu {
+	color: #008080;
+}
+.highlight .pl-c,
+.highlight .pl-pdc {
+	color: #b4b7b4;
+	font-style: italic;
+}
+.highlight .pl-k,
+.highlight .pl-ko,
+.highlight .pl-kolp,
+.highlight .pl-mc,
+.highlight .pl-mr,
+.highlight .pl-ms,
+.highlight .pl-s,
+.highlight .pl-sok,
+.highlight .pl-st {
+	color: #6e5494;
+}
+.highlight .pl-ef,
+.highlight .pl-enf,
+.highlight .pl-enm,
+.highlight .pl-entc,
+.highlight .pl-eoi,
+.highlight .pl-sf,
+.highlight .pl-smc {
+	color: #d12089;
+}
+.highlight .pl-ens,
+.highlight .pl-eoai,
+.highlight .pl-kos,
+.highlight .pl-mh .pl-pdh,
+.highlight .pl-mp,
+.highlight .pl-pde,
+.highlight .pl-stp {
+	color: #458;
+}
+.highlight .pl-enti {
+	color: #d12089;
+	font-weight: bold;
+}
+.highlight .pl-cce,
+.highlight .pl-enc,
+.highlight .pl-kou,
+.highlight .pl-mq {
+	color: #f93;
+}
+.highlight .pl-mp1 .pl-sf {
+	color: #458;
+	font-weight: bold;
+}
+.highlight .pl-cos,
+.highlight .pl-ent,
+.highlight .pl-md,
+.highlight .pl-mdhf,
+.highlight .pl-ml,
+.highlight .pl-pdc1,
+.highlight .pl-pds,
+.highlight .pl-s1,
+.highlight .pl-scp,
+.highlight .pl-sol {
+	color: #df5000;
+}
+.highlight .pl-c1,
+.highlight .pl-cn,
+.highlight .pl-pse,
+.highlight .pl-pse .pl-s2,
+.highlight .pl-vi {
+	color: #a31515;
+}
+.highlight .pl-mb,
+.highlight .pl-pdb {
+	color: #df5000;
+	font-weight: bold;
+}
+.highlight .pl-mi,
+.highlight .pl-pdi {
+	color: #6e5494;
+	font-style: italic;
+}
+.highlight .pl-ms1 {
+	background-color: #f5f5f5;
+}
+.highlight .pl-mdh,
+.highlight .pl-mdi {
+	font-weight: bold;
+}
+.highlight .pl-mdr {
+	color: #0086b3;
+	font-weight: bold;
+}
+.highlight .pl-s2 {
+	color: #333;
+}
+.highlight .pl-ii {
+	background-color: #df5000;
+	color: #fff;
+}
+.highlight .pl-ib {
+	background-color: #f93;
+}
+.highlight .pl-id {
+	background-color: #a31515;
+	color: #fff;
+}
+.highlight .pl-iu {
+	background-color: #b4b7b4;
+}
+.highlight .pl-mo {
+	color: #969896;
+}
+
+</style>
+
+
+<script type="text/javascript">
+
+function getDocumentScrollTop() 
+{
+   var res = document.body.scrollTop || document.documentElement.scrollTop || window.pageYOffset || 0;
+   // alert(res);
+   return res;
+}
+
+function setDocumentScrollTop(ypos) 
+{
+	window.scrollTo(0, ypos);
+}
+
+</script>
+
+
+</head>
+<body class="markdown-body">
+<h1> <a id="jsonata4java" class="anchor" href="#jsonata4java" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>JSONata4Java</h1> 
+<p>This project provides an Open Source Java version of the JSONata project from <a href="https://jsonata.org" rel="nofollow">https://jsonata.org</a></p> 
+<p>JSONata was created by Andrew Coleman to provide many of the features that XPath and XQuery provide for XML, except these capabilities apply to JSON-structured data. The JavaScript implementation is described at the following websites:</p> 
+<ul> 
+ <li><a href="http://jsonata.org/" rel="nofollow">JSONata main site</a></li> 
+ <li><a href="http://try.jsonata.org/" rel="nofollow">Try JSONata -- experiment with commands</a></li> 
+ <li><a href="http://docs.jsonata.org/overview.html" rel="nofollow">JSONata Documentation</a></li> 
+ <li><a href="https://github.com/jsonata-js/jsonata">JavaScript JSONata github repository</a></li> 
+</ul> 
+<p>JSONata4Java is an attempt to port the jsonata.js capabilities to Java v1.8. Once we have set up the jar files in MavenCentral we will post the dependencies here to make it easy to use the JSONata4Java jar files in your project. You can clone this repository using the command line:</p> 
+<pre><code>git clone https://github.com/IBM/JSONata4Java.git
+</code></pre> 
+<p>The code was created using Java 1.8. You can import the project into Eclipse 12-18 or newer.</p> 
+<h3> <a id="building-the-jar-files" class="anchor" href="#building-the-jar-files" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Building the jar files</h3> 
+<p>To build the code, you'll want to right click on the project and select Maven / Update Project to ensure the dependencies are available, then you can right click on the pom.xml file and select <strong>Run as... / Maven build...</strong> then fill in clean install as the goals: <strong>clean install</strong> as shown below:</p> 
+<p><a href="images/Launcher.png" target="_blank" rel="noopener noreferrer"><img src="images/Launcher.png" alt="Launcher Image" style="max-width:100%;" /></a></p> 
+<p>Once you have run the launcher, you can find the jar files in the /target directory. There are two:</p> 
+<ul> 
+ <li> <strong>JSONata4Java-1.0.0-jar-with-dependencies.jar</strong> (thinks includes dependent jar files)</li> 
+ <li> <strong>JSONata4Java-1.0.0.jar</strong> (only the JSONata4Java code)</li> 
+</ul> 
+<p>The com.api.jsonata4java.Tester program enables you to enter an expression and run it against the same JSON as is used at the <a href="https://try.jsonata.org" rel="nofollow">https://try.jsonata.org</a> site. You can also provide a fully qualified filename of a json file on the command line to test expressions against your own data. There is a tester.sh you can run in the project to enable you to test expressions against the same JSON as is used at the <a href="https://try.jsonata.org" rel="nofollow">https://try.jsonata.org</a> site.</p> 
+<p>JSONata is very powerful, allowing many built in functions as described at the <a href="http://docs.jsonata.org/overview.html" rel="nofollow">http://docs.jsonata.org/overview.html</a> site.</p> 
+<p>The API's to embed JSONata execution in your code are simple. The code below is copied from the Tester utility, and uses the jackson core ObjectMapper to parse a JSON formatted String into a JsonNode object. The dependency for the jackson core is below:</p> 
+<pre><code>&lt;dependency&gt;
+   &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
+   &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
+   &lt;version&gt;2.9.8&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre> 
+<p>Here is example code to parse and execute an expression against a jsonObj created from a json String.</p> 
+<pre><code>package com.api.jsonata4java;
+
+import java.io.IOException;
+
+import com.api.jsonata4java.expressions.EvaluateException;
+import com.api.jsonata4java.expressions.EvaluateRuntimeException;
+import com.api.jsonata4java.expressions.Expressions;
+import com.api.jsonata4java.expressions.ParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+public class Test {
+
+   public static void main(String[] args) {
+      Expressions expr = null;
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonObj = null;
+      String json = &quot;{ \&quot;a\&quot;:1, \&quot;b\&quot;:2, \&quot;c\&quot;:[1,2,3,4,5] }&quot;;
+      String expression = &quot;$sum(c)&quot;;
+      try {
+         jsonObj = mapper.readTree(json);
+      } catch (IOException e1) {
+         e1.printStackTrace();
+      }
+
+      try {
+         System.out.println(&quot;Using json:\n&quot; + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj));
+         System.out.println(&quot;expression=&quot; + expression);
+         expr = Expressions.parse(expression);
+      } catch (ParseException e) {
+         System.err.println(e.getLocalizedMessage());
+      } catch (EvaluateRuntimeException ere) {
+         System.out.println(ere.getLocalizedMessage());
+      } catch (JsonProcessingException e) {
+         e.printStackTrace();
+      }
+      try {
+         System.out.println(&quot;evaluate returns:&quot;);
+         JsonNode result = expr.evaluate(jsonObj);
+         if (result == null) {
+            System.out.println(&quot;** no match **&quot;);
+         } else {
+            System.out.println(&quot;&quot; + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
+         }
+      } catch (EvaluateException | JsonProcessingException e) {
+         System.err.println(e.getLocalizedMessage());
+      }
+   }
+}
+
+</code></pre> 
+<p>The expression is text describing access to, and manipulation of JSON-structured data. We begin by parsing the expression to ensure there are no syntax errors. If the content parses correctly, you can then execute the parsed expression (expr below) against a JSON object.</p> 
+<p>When you run the Test program above, you will see:</p> 
+<pre><code>Using json:
+{
+  &quot;a&quot; : 1,
+  &quot;b&quot; : 2,
+  &quot;c&quot; : [ 1, 2, 3, 4, 5 ]
+}
+expression=$sum(c)
+evaluate returns:
+15
+</code></pre> 
+<p>Running this in the <a href="https://try.jsonata.org" rel="nofollow">https://try.jsonata.org</a> we get:</p> 
+<p><a href="images/TryJsonata.png" target="_blank" rel="noopener noreferrer"><img src="images/TryJsonata.png" alt="TryImage" style="max-width:100%;" /></a></p> 
+<p>The various functions and syntax for the expression are documented at <a href="https://docs.jsonata.org/overview.html" rel="nofollow">https://docs.jsonata.org/overview.html</a></p> 
+<ul> 
+ <li>Short, 5 minute youtube video here: <a href="https://www.youtube.com/watch?v=ZBaK40rtIBM" rel="nofollow">https://www.youtube.com/watch?v=ZBaK40rtIBM</a> </li> 
+ <li>Medium, 27 minute youtube video here: <a href="https://www.youtube.com/watch?v=TDWf6R8aqDo" rel="nofollow">https://www.youtube.com/watch?v=TDWf6R8aqDo</a> </li> 
+ <li>Long, 1 hour presentation here: <a href="https://www.youtube.com/watch?v=ZRtlkIj0uDY" rel="nofollow">https://www.youtube.com/watch?v=ZRtlkIj0uDY</a> </li> 
+</ul> 
+<p>This initial release of JSONata4Java has attempted to cover the large majority of features described in the JSONata documentation.</p> 
+<h3> <a id="current-limitations" class="anchor" href="#current-limitations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Current Limitations:</h3> 
+<p>There are a few functions that have not been implemented:</p> 
+<p>From: <a href="https://docs.jsonata.org/control-operators" rel="nofollow">https://docs.jsonata.org/control-operators</a> we did not implement:</p> 
+<ul> 
+ <li>[...] (Filter)</li> 
+ <li>^(...) (Order-by)</li> 
+ <li>... ~&gt; | ... | ...| (Transform)</li> 
+</ul> 
+<p>From: <a href="https://docs.jsonata.org/string-functions" rel="nofollow">https://docs.jsonata.org/string-functions</a></p> 
+<ul> 
+ <li>we only recognize patterns as strings &quot;xxx&quot; but not delimited with slashes /xxx/</li> 
+</ul> 
+<p>We have not provided the $eval() function.</p> 
+<p>From: <a href="https://docs.jsonata.org/numeric-functions" rel="nofollow">https://docs.jsonata.org/numeric-functions</a> we did not implement:</p> 
+<ul> 
+ <li>$formatInteger()</li> 
+ <li>$parseInteger()</li> 
+</ul> 
+<p>We did not implement any of <a href="https://docs.jsonata.org/embedding-extending" rel="nofollow">https://docs.jsonata.org/embedding-extending</a></p> 
+<p>From: <a href="https://docs.jsonata.org/date-time" rel="nofollow">https://docs.jsonata.org/date-time</a> $fromMillis() only accepts a number, not the format picture, nor timezone $now() does not accept the picture string (e.g., $now(&quot;[Y0000]&quot;) reports an arg1 error</p>
+</body>
+</html>
