@@ -660,9 +660,9 @@ function setDocumentScrollTop(ypos)
  <li> <strong>JSONata4Java-1.0.0-jar-with-dependencies.jar</strong> (thinks includes dependent jar files)</li> 
  <li> <strong>JSONata4Java-1.0.0.jar</strong> (only the JSONata4Java code)</li> 
 </ul> 
-<p>The com.api.jsonata4java.Tester program enables you to enter an expression and run it against the same JSON as is used at the <a href="https://try.jsonata.org" rel="nofollow">https://try.jsonata.org</a> site. You can also provide a fully qualified filename of a json file on the command line to test expressions against your own data. There is a tester.sh you can run in the project to enable you to test expressions against the same JSON as is used at the <a href="https://try.jsonata.org" rel="nofollow">https://try.jsonata.org</a> site.</p> 
-<p>JSONata is very powerful, allowing many built in functions as described at the <a href="http://docs.jsonata.org/overview.html" rel="nofollow">http://docs.jsonata.org/overview.html</a> site.</p> 
-<p>The API's to embed JSONata execution in your code are simple. The code below is copied from the Tester utility, and uses the jackson core ObjectMapper to parse a JSON formatted String into a JsonNode object. The dependency for the jackson core is below:</p> 
+<p>The com.api.jsonata4java.Tester program enables you to enter an expression and run it against the same JSON as is used at the <a href="https://try.jsonata.org" rel="nofollow">https://try.jsonata.org</a> site. You can also provide a fully qualified filename of a json file on the command line to test expressions against your own data.</p> 
+<p>There is a tester.sh you can run in the project to enable you to test expressions against the same JSON as is used at the <a href="https://try.jsonata.org" rel="nofollow">https://try.jsonata.org</a> site.</p> 
+<p>The API's to embed JSONata execution in your code are simple. The code below is copied from the Test utility, and uses the jackson core ObjectMapper to parse a JSON formatted String into a JsonNode object. The dependency for the jackson core is below:</p> 
 <pre><code>&lt;dependency&gt;
    &lt;groupId&gt;com.fasterxml.jackson.core&lt;/groupId&gt;
    &lt;artifactId&gt;jackson-databind&lt;/artifactId&gt;
@@ -722,7 +722,8 @@ public class Test {
 }
 
 </code></pre> 
-<p>The expression is text describing access to, and manipulation of JSON-structured data. We begin by parsing the expression to ensure there are no syntax errors. If the content parses correctly, you can then execute the parsed expression (expr below) against a JSON object.</p> 
+<p>The expression is text describing access to, and manipulation of JSON-structured data. In this case we are getting the value of the &quot;c&quot; variable and summing up its array values. JSONata is very powerful, allowing many built in functions as described at the <a href="http://docs.jsonata.org/overview.html" rel="nofollow">http://docs.jsonata.org/overview.html</a> site.</p> 
+<p>We begin by parsing the expression to ensure there are no syntax errors. If the content parses correctly, you can then execute the parsed expression (expr) against the jsonObj object.</p> 
 <p>When you run the Test program above, you will see:</p> 
 <pre><code>Using json:
 {

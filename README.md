@@ -28,12 +28,15 @@ Once you have run the launcher, you can find the jar files in the /target direct
 * **JSONata4Java-1.0.0-jar-with-dependencies.jar** (thinks includes dependent jar files)
 * **JSONata4Java-1.0.0.jar** (only the JSONata4Java code)
 
-The com.api.jsonata4java.Tester program enables you to enter an expression and run it against the same JSON as is used at the https://try.jsonata.org site. You can also provide a fully qualified filename of a json file on the command line to test expressions against your own data.
-There is a tester.sh you can run in the project to enable you to test expressions against the same JSON as is used at the https://try.jsonata.org site.
+The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
+against the same JSON as is used at the https://try.jsonata.org site. You can also 
+provide a fully qualified filename of a json file on the command line to test expressions 
+against your own data.
 
-JSONata is very powerful, allowing many built in functions as described at the http://docs.jsonata.org/overview.html site.
+There is a tester.sh you can run in the project to enable you to test expressions 
+against the same JSON as is used at the https://try.jsonata.org site.
 
-The API's to embed JSONata execution in your code are simple. The code below is copied from the Tester utility, and uses the 
+The API's to embed JSONata execution in your code are simple. The code below is copied from the Test utility, and uses the 
 jackson core ObjectMapper to parse a JSON formatted String into a JsonNode object. The dependency for the 
 jackson core is below:
 ``` 
@@ -43,7 +46,8 @@ jackson core is below:
    <version>2.9.8</version>
 </dependency>
 ```
-Here is example code to parse and execute an expression against a jsonObj created from a json String.
+Here is example code to parse and execute an expression against a jsonObj created from 
+a json String.
 ```
 package com.api.jsonata4java;
 
@@ -98,9 +102,13 @@ public class Test {
 
 ```
 
-The expression is text describing access to, and manipulation of JSON-structured data. We begin by parsing the expression 
-to ensure there are no syntax errors. If the content parses correctly, you can then execute the parsed expression (expr below) 
-against a JSON object. 
+The expression is text describing access to, and manipulation of JSON-structured data. 
+In this case we are getting the value of the "c" variable and summing up its array values.
+JSONata is very powerful, allowing many built in functions as described at the http://docs.jsonata.org/overview.html site.
+ 
+We begin by parsing the expression to ensure there are no syntax errors. 
+If the content parses correctly, you can then execute the parsed expression (expr) 
+against the jsonObj object. 
 
 When you run the Test program above, you will see:
 ```
