@@ -1,0 +1,12 @@
+com.api.jsonata4java
+com.api.jsonata4java.expressions
+com.api.jsonata4java.expressions.functions
+com.api.jsonata4java.expressions.generated
+com.api.jsonata4java.expressions.path
+com.api.jsonata4java.expressions.path.generated
+com.api.jsonata4java.expressions.suites
+com.api.jsonata4java.expressions.utils
+com.api.jsonata4java.test.expressions
+com.api.jsonata4java.test.expressions.agnostic
+com.api.jsonata4java.test.expressions.path
+com.api.jsonata4java.text.expressions.utils

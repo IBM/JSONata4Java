@@ -1,0 +1,149 @@
+/**
+ * (c) Copyright 2018, 2019 IBM Corporation
+ * 1 New Orchard Road, 
+ * Armonk, New York, 10504-1722
+ * United States
+ * +1 914 499 1900
+ * support: Nathaniel Mills wnm3@us.ibm.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+package com.api.jsonata4java.expressions.functions;
+
+import com.api.jsonata4java.expressions.EvaluateRuntimeException;
+import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.utils.Constants;
+import com.api.jsonata4java.expressions.utils.FunctionUtils;
+import com.api.jsonata4java.expressions.utils.NumberUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+
+/**
+ * http://docs.jsonata.org/numeric-functions.html
+ * 
+ * Casts the arg parameter to a number using the following casting rules:
+ * 
+ * - Numbers are unchanged - Strings that contain a sequence of characters that
+ * represent a legal JSON number are converted to that number - All other values
+ * cause an error to be thrown.
+ * 
+ * If arg is not specified (i.e. this function is invoked with no arguments),
+ * then the context value is used as the value of arg.
+ * 
+ * Examples
+ * 
+ * $number("5")==5 ["1", "2", "3", "4", "5"].$number()==[1, 2, 3, 4, 5]
+ * 
+ */
+public class NumberFunction extends FunctionBase implements Function {
+
+	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_NUMBER);
+	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_NUMBER);
+	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_NUMBER);
+
+	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+		// Create the variable to return
+		JsonNode result = null;
+
+		// Retrieve the number of arguments
+		JsonNode argString = JsonNodeFactory.instance.nullNode();
+		boolean useContext = FunctionUtils.useContextVariable(ctx, getSignature());
+		int argCount = getArgumentCount(ctx);
+		if (useContext) {
+			argString = FunctionUtils.getContextVariable(expressionVisitor);
+			argCount++;
+		}
+
+		// Make sure that we have the right number of arguments
+		if (argCount == 1) {
+			if (!useContext) {
+				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+			}
+			if (argString != null) {
+				// Check the type of the argument
+				if (argString.isObject()) {
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				} else if (argString.isTextual()) {
+					/*
+					 * For consistency with the JavaScript implementation of JSONata, we limit the
+					 * size of the numbers that we handle to be within the range Double.MAX_VALUE
+					 * and -Double.MAX_VALUE. If we did not do this we would need to implement a lot
+					 * of extra code to handle BigInteger and BigDecimal. The
+					 * NumberUtils::convertNumberToValueNode will check whether the number is within
+					 * the valid range and throw a suitable exception if it is not.
+					 */
+					result = NumberUtils.convertNumberToValueNode(argString.asText());
+				} else if (argString.isNumber()) {
+					/*
+					 * The argument is already a number... and we have already checked whether it is
+					 * within the valid range when it was parsed by the
+					 * ExpressionVisitor::visitNumber method. Simply return the argument unchanged.
+					 */
+					result = argString;
+				} else if (argString.isArray()) {
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+//               ArrayNode resultArray = JsonNodeFactory.instance.arrayNode();
+//               for (JsonNode a : argString) {
+//                  if (a.isTextual()) {
+//                     /*
+//                      * For consistency with the JavaScript implementation of
+//                      * JSONata, we limit the size of the numbers that we handle
+//                      * to be within the range Double.MAX_VALUE and
+//                      * -Double.MAX_VALUE. If we did not do this we would need
+//                      * to implement a lot of extra code to handle BigInteger
+//                      * and BigDecimal. The
+//                      * NumberUtils::convertNumberToValueNode will check whether
+//                      * the number is within the valid range and throw a
+//                      * suitable exception if it is not.
+//                      */
+//                     resultArray
+//                        .add(NumberUtils.convertNumberToValueNode(a.asText()));
+//
+//                  } else if (a.isNumber()) {
+//                     /*
+//                      * The argument is already a number... and we have already
+//                      * checked whether it is within the valid range when it was
+//                      * parsed by the ExpressionVisitor::visitNumber method.
+//                      * Simply return the argument unchanged.
+//                      */
+//                     resultArray.add(a);
+//
+//                  } else {
+//                     // The argument is a neither a number or a string. Throw a
+//                     // suitable exception.
+//                     throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+//                  }
+//               }
+//               result = resultArray;
+				} else {
+					// The argument is a neither a number or a string. Throw a
+					// suitable exception.
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				}
+			}
+		} else {
+			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+		}
+
+		return result;
+	}
+
+	@Override
+	public String getSignature() {
+		// accepts a number or string or boolean (or context variable), returns a number
+		return "<(nsb)-:n>";
+	}
+}
