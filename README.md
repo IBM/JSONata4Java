@@ -8,8 +8,17 @@ JSONata was created by Andrew Coleman to provide many of the features that XPath
 * [JSONata Documentation](http://docs.jsonata.org/overview.html)
 * [JavaScript JSONata github repository](https://github.com/jsonata-js/jsonata)
 
-JSONata4Java is an attempt to port the jsonata.js capabilities to Java v1.8. Once we have set up the jar files in MavenCentral we will post the dependencies here to make it easy to use the JSONata4Java jar files in your project. 
-You can clone this repository using the command line:
+JSONata4Java is an attempt to port the jsonata.js capabilities to Java v1.8. 
+The easiest way to use this library is to include it as a dependency in your Maven pom.xml using these line:
+```
+<dependency>
+  <groupId>com.ibm.jsonata4java</groupId>
+  <artifactId>JSONata4Java</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+
+You can also opt to clone this repository using the command line below and build the jars yourself:
 ```
 git clone https://github.com/IBM/JSONata4Java.git
 ```

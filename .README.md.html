@@ -648,7 +648,14 @@ function setDocumentScrollTop(ypos)
  <li><a href="http://docs.jsonata.org/overview.html" rel="nofollow">JSONata Documentation</a></li> 
  <li><a href="https://github.com/jsonata-js/jsonata">JavaScript JSONata github repository</a></li> 
 </ul> 
-<p>JSONata4Java is an attempt to port the jsonata.js capabilities to Java v1.8. Once we have set up the jar files in MavenCentral we will post the dependencies here to make it easy to use the JSONata4Java jar files in your project. You can clone this repository using the command line:</p> 
+<p>JSONata4Java is an attempt to port the jsonata.js capabilities to Java v1.8. The easiest way to use this library is to include it as a dependency in your Maven pom.xml using these line:</p> 
+<pre><code>&lt;dependency&gt;
+  &lt;groupId&gt;com.ibm.jsonata4java&lt;/groupId&gt;
+  &lt;artifactId&gt;JSONata4Java&lt;/artifactId&gt;
+  &lt;version&gt;1.0.0&lt;/version&gt;
+&lt;/dependency&gt;
+</code></pre> 
+<p>You can also opt to clone this repository using the command line below and build the jars yourself:</p> 
 <pre><code>git clone https://github.com/IBM/JSONata4Java.git
 </code></pre> 
 <p>The code was created using Java 1.8. You can import the project into Eclipse 12-18 or newer.</p> 
