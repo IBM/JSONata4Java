@@ -28,6 +28,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -70,25 +71,42 @@ public class LookupFunction extends FunctionBase implements Function {
 				argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
 			if (argObject != null) {
-				// Check the type of the argument
-				if (argObject.isObject()) {
-					if (argCount == 2) {
-						JsonNode keyObj = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-								useContext ? 0 : 1);
-						if (keyObj == null || !keyObj.isTextual()) {
-							throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-						}
-						final String key = keyObj.asText();
-						ObjectNode obj = (ObjectNode) argObject;
-						result = obj.get(key);
-					} else {
+				if (argCount == 2) {
+					JsonNode keyObj = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+							useContext ? 0 : 1);
+					if (keyObj == null || !keyObj.isTextual()) {
 						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 					}
+					final String key = keyObj.asText();
+					ArrayNode array = JsonNodeFactory.instance.arrayNode();
+					// Check the type of the argument
+					if (argObject.isObject()) {
+						ObjectNode obj = (ObjectNode) argObject;
+						captureKeyValues(obj, key, array);
+						if (array.size() != 1) {
+							result = array;
+						} else {
+							// make singleton
+							result = array.get(0);
+						}
+					} else {
+						if (argObject.isArray()) {
+							findObjects((ArrayNode)argObject, key, array);
+							if (array.size() != 1) {
+								result = array;
+							} else {
+								// make singleton
+								result = array.get(0);
+							}
+						} else {
+							/*
+							 * The input argument is not an array. Throw a suitable exception
+							 */
+							throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+						}
+					}
 				} else {
-					/*
-					 * The input argument is not an object. Throw a suitable exception
-					 */
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
 			}
 		} else {
@@ -97,6 +115,30 @@ public class LookupFunction extends FunctionBase implements Function {
 
 		return result;
 	}
+	
+	static void findObjects(ArrayNode array, String key, ArrayNode result) {
+		for (int i=0;i<array.size(); i++) {
+			JsonNode arrayNode = array.get(i);
+			if (arrayNode != null) {
+				if (arrayNode.isArray()) {
+					ArrayNode subResult = JsonNodeFactory.instance.arrayNode();
+					findObjects((ArrayNode)arrayNode, key, subResult);
+					// if (subResult.size() != 0) {
+						result.add(subResult);
+					// }
+				} else if (arrayNode.isObject()) {
+					captureKeyValues((ObjectNode)arrayNode, key, result);
+				}
+			}
+		}
+	}
+	static void captureKeyValues(ObjectNode obj, String key, ArrayNode result) {
+		JsonNode value = obj.get(key);
+		if (value != null) {
+			result.add(value);
+		}
+	}
+
 
 	@Override
 	public String getSignature() {

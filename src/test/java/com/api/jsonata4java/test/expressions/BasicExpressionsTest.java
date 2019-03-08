@@ -953,8 +953,10 @@ public class BasicExpressionsTest {
    @Test
    public void testObjectFunctions() throws Exception {
       simpleTest("$keys(a.b)",null);
+      simpleTest("[{\"key1\":\"value1\"},{\"key2\":\"value2\"},[{\"key3\":\"value3\"}],4,\"value5\"]~>$keys()","[ \"key1\", \"key2\" ]");
       simpleTest("$keys({\"a\":1,\"value\":2})", "[\"a\", \"value\"]");
-		simpleTest("$lookup({\"a\":1,\"value\":2}, \"a\")", "1");
+      simpleTest("$lookup({\"a\":1,\"value\":2}, \"a\")", "1");
+      simpleTest("[{\"key1\":\"value1\"},{\"key2\":\"value2\"},[{\"key1\":\"value3\"}],4,\"value5\"]~>$lookup(\"key1\")","[\"value1\",[\"value3\"]]");
       {
          Expressions expression = Expressions.parse("$lookup({\"a\":1},1)");
          try {

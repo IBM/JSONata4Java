@@ -81,16 +81,55 @@ public class KeysFunction extends FunctionBase implements Function {
 					result.add(it.next());
 				}
 			} else {
-				/*
-				 * The input argument is not an array. Throw a suitable exception
-				 */
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				if (argObject.isArray()) {
+					findObjects((ArrayNode)argObject,result);
+				} else {
+					/*
+					 * The input argument is not an array. Throw a suitable exception
+					 */
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				}
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
 
 		return result;
+	}
+	
+	static void findObjects(ArrayNode array,ArrayNode result) {
+		for (int i=0;i<array.size(); i++) {
+			JsonNode arrayNode = array.get(i);
+			if (arrayNode != null) {
+				if (arrayNode.isArray()) {
+					// Not implemented in jsonata.js
+					// findObjects((ArrayNode)arrayNode,result);
+				} else if (arrayNode.isObject()) {
+					captureKeys((ObjectNode)arrayNode,result);
+				}
+			}
+		}
+	}
+	static void captureKeys(ObjectNode argObject, ArrayNode result) {
+		JsonNode value = null;
+		String key = null;
+		ObjectNode obj = (ObjectNode) argObject;
+		for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
+			key = it.next();
+			result.add(key);
+			value = obj.get(key);
+			if (value != null) {
+//				if (value.isArray()) {
+//					ArrayNode subArray = JsonNodeFactory.instance.arrayNode();
+//					findObjects((ArrayNode)value,subArray);
+//					if (subArray.size() > 0) {
+//						result.add(subArray);
+//					}
+//				} else if (value.isObject()) {
+//					// not implemented in jsonata.js
+//				}
+			}
+		}
 	}
 
 	@Override
