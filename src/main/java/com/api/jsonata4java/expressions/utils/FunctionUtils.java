@@ -184,9 +184,10 @@ public class FunctionUtils {
 						? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, element.asText())
 						: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, element.asText()));
 				TerminalNodeImpl tn = new TerminalNodeImpl(token);
-				BooleanContext nc = new MappingExpressionParser.BooleanContext(ctx);
-				nc.addAnyChild(tn);
-				elc.addAnyChild(nc);
+				BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
+				bc.op = token;
+				bc.addAnyChild(tn);
+				elc.addAnyChild(bc);
 				break;
 			}
 			case MISSING:
@@ -259,9 +260,10 @@ public class FunctionUtils {
 			token = (value.asBoolean() ? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, value.asText())
 					: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, value.asText()));
 			tn = new TerminalNodeImpl(token);
-			BooleanContext nc = new MappingExpressionParser.BooleanContext(ctx);
-			nc.addAnyChild(tn);
-			elc.addAnyChild(nc);
+			BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
+			bc.op = token;
+			bc.addAnyChild(tn);
+			elc.addAnyChild(bc);
 			break;
 		}
 		case MISSING:
@@ -354,6 +356,7 @@ public class FunctionUtils {
 						: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, element.asText()));
 				TerminalNodeImpl tn = new TerminalNodeImpl(token);
 				BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
+				bc.op = token;
 				bc.addAnyChild(tn);
 				eosCtx.addAnyChild(bc);
 				break;
@@ -475,6 +478,7 @@ public class FunctionUtils {
 						: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, fieldObj.asText()));
 				tn = new TerminalNodeImpl(token);
 				BooleanContext bc = new BooleanContext(ctx);
+				bc.op = token;
 				bc.addAnyChild(tn);
 				flc.addAnyChild(bc);
 				break;
@@ -615,9 +619,10 @@ public class FunctionUtils {
 						? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, element.asText())
 						: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, element.asText()));
 				TerminalNodeImpl tn = new TerminalNodeImpl(token);
-				BooleanContext nc = new MappingExpressionParser.BooleanContext(ctx);
-				nc.addAnyChild(tn);
-				elc.addAnyChild(nc);
+				BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
+				bc.op = token;
+				bc.addAnyChild(tn);
+				elc.addAnyChild(bc);
 				break;
 			}
 			case MISSING:
@@ -700,9 +705,10 @@ public class FunctionUtils {
 					? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, element.asText())
 					: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, element.asText()));
 			TerminalNodeImpl tn = new TerminalNodeImpl(token);
-			BooleanContext nc = new MappingExpressionParser.BooleanContext(ctx);
-			nc.addAnyChild(tn);
-			elc.addAnyChild(nc);
+			BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
+			bc.op = token;
+			bc.addAnyChild(tn);
+			elc.addAnyChild(bc);
 			break;
 		}
 		case MISSING:

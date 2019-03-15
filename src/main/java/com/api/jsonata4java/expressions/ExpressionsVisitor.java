@@ -756,7 +756,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	@Override
 	public JsonNode visitBoolean(MappingExpressionParser.BooleanContext ctx) {
 		BooleanNode result = null;
-
 		if (ctx.op.getType() == MappingExpressionParser.TRUE) {
 			result = BooleanNode.TRUE;
 		} else if (ctx.op.getType() == MappingExpressionParser.FALSE) {
