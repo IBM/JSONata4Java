@@ -27,7 +27,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.jsonata4java</groupId>
 	<artifactId>JSONata4Java</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<name>JSONata4Java</name>
 	<description>Port of jsonata.js to Java to enable rules for JSON content</description>
 	<url>https://github.com/IBM/JSONata4Java</url>
@@ -170,34 +170,6 @@
 					</additionalOptions>
 				</configuration>
 			</plugin>
-        <!-- 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.9.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-					<additionalClasspathElements>
-					</additionalClasspathElements>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<additionalparam>-Xdoclint:none</additionalparam>
-				</configuration>
-			</plugin>
- -->
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
