@@ -1547,7 +1547,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		// flattenOutput = true;
 
 		final JsonNode lhs = visit(lhsCtx);
-		if (lhs == null) {
+		if (lhs == null || lhs.isNull()) {
 			return null; // throw new
 							// EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY,"null"));
 		}
@@ -1566,7 +1566,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode rhs = resolvePath(lhs, rhsCtx);
 
 		JsonNode result;
-		if (rhs == null) {
+		if (rhs == null) { // okay to return NullNode here so don't test "|| rhs.isNull()"
 			result = null;
 		} else if ((rhs instanceof SelectorArrayNode) && rhs.size() == 0) {
 			// if no results are present (i.e. results is empty) we need to return
