@@ -1037,7 +1037,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					// note: callCtx.children should be empty unless carrying an
 					// exception
 					JsonNode element = mapArray.get(i);
-					if (FunctionUtils.processFctCallVariables(this, function, varid, callCtx, element).asBoolean()) {
+					JsonNode fctResult = FunctionUtils.processFctCallVariables(this, function, varid, callCtx, element);
+					if (fctResult != null && fctResult.asBoolean()) {
 						resultArray.add(element);
 					}
 				}
@@ -1072,7 +1073,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						break;
 					}
 					}
-					if (fct.invoke(this, evc).asBoolean()) {
+					JsonNode fctResult = fct.invoke(this, evc);
+					if (fctResult != null && fctResult.asBoolean()) {
 						resultArray.add(element);
 					}
 				}
@@ -1104,7 +1106,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					break;
 				}
 				}
-				if (fct.invoke(this, evc).asBoolean()) {
+				JsonNode fctResult = fct.invoke(this, evc);
+				if (fctResult!=null && fctResult.asBoolean()) {
 					resultArray.add(element);
 				}
 			}
@@ -1769,6 +1772,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		if (varid != null) {
 			// is this a known function reference?
 			Function function = Constants.FUNCTIONS.get(varid.getText());
+			JsonNode fctResult = null;
 			if (function != null) {
 				for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
 					String key = it.next();
@@ -1776,8 +1780,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					Function_callContext callCtx = new Function_callContext(ctx);
 					// note: callCtx.children should be empty unless carrying an
 					// exception
-					if (FunctionUtils.processFctCallVariables(this, function, varid, callCtx, field, key, object)
-							.asBoolean()) {
+					fctResult = FunctionUtils.processFctCallVariables(this, function, varid, callCtx, field, key, object);
+					if (fctResult != null && fctResult.asBoolean()) {
 						resultObject.set(key, field);
 					}
 				}
@@ -1813,7 +1817,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						break;
 					}
 					}
-					if (fct.invoke(this, evc).asBoolean()) {
+					fctResult = fct.invoke(this, evc);
+					if (fctResult != null && fctResult.asBoolean()) {
 						resultObject.set(key, field);
 					}
 				}
@@ -1846,7 +1851,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					break;
 				}
 				}
-				if (fct.invoke(this, evc).asBoolean()) {
+				JsonNode fctResult = fct.invoke(this, evc);
+				if (fctResult != null && fctResult.asBoolean()) {
 					resultObject.set(key, field);
 				}
 			}

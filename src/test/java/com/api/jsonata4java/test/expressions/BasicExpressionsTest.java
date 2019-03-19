@@ -227,6 +227,7 @@ public class BasicExpressionsTest {
       simpleTest("Account.`Account Name`","Firefly",jsonObj);
       test("Other.Misc",NullNode.instance,null,jsonObj2);
       test("Other.Nothing",null,null,jsonObj2);
+      test("Nothing.Other",null,null,jsonObj2);
       test("Other.`Over 18 ?`",BooleanNode.TRUE,null,jsonObj2);
       expectObject = (ObjectNode)mapper.readTree("{ \"type\": \"home\", \"number\": \"0203 544 1234\" }");
       simpleTest("Phone[0]",expectObject,jsonObj2);
@@ -279,6 +280,16 @@ public class BasicExpressionsTest {
       expectArray.add(mapper.readTree("{\"ProductID\":345664,\"Product Name\":\"Cloak\",\"Price\":107.99}"));
       // TODO: below fails for some reason
       // simpleTest("Account.Order.Product.$sift(function($v, $k) {$substring($k,0,1)=\"P\"})","[{\"Product Name\":\"Bowler Hat\",\"ProductID\":858383,\"Price\":34.45},{\"Product Name\":\"Trilby hat\",\"ProductID\":858236,\"Price\":21.67},{\"Product Name\":\"Bowler Hat\",\"ProductID\":858383,\"Price\":34.45},{\"ProductID\":345664,\"Product Name\":\"Cloak\",\"Price\":107.99}]",jsonObj);
+      
+      expectArray.removeAll();
+      expectArray.add(mapper.readTree("{\"entity\":{\"filter\":true}}"));
+      simpleTest("$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n" + 
+      		"   function($v){$v.entity.filter=true})",expectArray,jsonObj);
+      expectArray.removeAll();
+      // TODO: jsonata returns null in the case below but arguing it should return []
+      simpleTest("$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n" + 
+        		"   function($v){$v.filter=true})",expectArray,jsonObj);
+
    }
 
    @Test

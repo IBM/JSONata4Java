@@ -179,7 +179,7 @@ public class SortFunction extends FunctionBase implements Function {
 				ExprValuesContext evc = new ExprValuesContext(ctx.getParent(), ctx.invokingState);
 				evc = FunctionUtils.fillExprVarContext(ctx, left.get(i), right.get(j));
 				JsonNode comp = fct.invoke(exprVisitor, evc);
-				if (comp.asBoolean()) {
+				if (comp != null && comp.asBoolean()) {
 					array.set(k++, right.get(j++));
 				} else {
 					array.set(k++, left.get(i++));
