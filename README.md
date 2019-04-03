@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
 </dependency>
 ```
 
@@ -154,6 +154,9 @@ From: https://docs.jsonata.org/control-operators we did not implement:
 
 From: https://docs.jsonata.org/string-functions
 * we only recognize patterns as strings "xxx" but not delimited with slashes /xxx/
+
+From: https://docs.jsonata.org/construction
+* we have not supported use of the square brackets in the path to force result to an array (e.g., Email.[address])
 
 We have not provided the $eval() function.
 

@@ -289,7 +289,10 @@ public class BasicExpressionsTest {
       // TODO: jsonata returns null in the case below but arguing it should return []
       simpleTest("$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n" + 
         		"   function($v){$v.filter=true})",expectArray,jsonObj);
-
+      simpleTest("$length(Surname)",5,jsonObj2);
+      test("$length(SurnameX)",null,null,jsonObj2);
+      test("$length(Surname)=5",BooleanNode.TRUE,null,jsonObj2);
+      test("$length(SurnameX)=5",BooleanNode.FALSE,null,jsonObj2);
    }
 
    @Test

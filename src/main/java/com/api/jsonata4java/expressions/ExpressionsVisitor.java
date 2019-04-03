@@ -686,26 +686,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	}
 
 	@Override
-	// public JsonNode visitArray_constructor(Array_constructorContext ctx) {
-	// final String METHOD = "visitArray_constructor";
-	// if (LOG.isLoggable(Level.FINEST))
-	// LOG.entering(CLASS, METHOD, new Object[] {
-	// ctx.getText(), ctx.depth()
-	// });
-	//
-	// JsonNode result = factory.arrayNode();
-	//
-	// if (ctx.exprOrSeqList() == null) {
-	// // empty array: []
-	// } else {
-	// ExprOrSeqListContext exprOrSeqList = ctx.exprOrSeqList();
-	// result = visit(exprOrSeqList);
-	// }
-	//
-	// if (LOG.isLoggable(Level.FINEST))
-	// LOG.exiting(CLASS, METHOD, result.toString());
-	// return result;
-	// }
 	public JsonNode visitArray_constructor(Array_constructorContext ctx) {
 		final String METHOD = "visitArray_constructor";
 		if (LOG.isLoggable(Level.FINEST))
@@ -776,21 +756,33 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			return BooleanNode.FALSE;
 		}
 
+		// below out for issue #11
 		// in all cases, if either are *no match*, JSONata returns *no match*
-		if (left == null || right == null) {
-			return null;
-		}
+		// if (left == null || right == null) {
+		//	return null;
+		//}
 
 		if (ctx.op.getType() == MappingExpressionParser.EQ) {
-
+			if (left == null && right != null) {
+				return BooleanNode.FALSE;
+			}
+			if (left != null && right == null) {
+				return BooleanNode.FALSE;
+			}
+			// else both not null
 			result = areJsonNodesEqual(left, right) ? BooleanNode.TRUE : BooleanNode.FALSE;
-
 		} else if (ctx.op.getType() == MappingExpressionParser.NOT_EQ) {
-
+			if (left == null && right != null) {
+				return BooleanNode.TRUE;
+			}
+			if (left != null && right == null) {
+				return BooleanNode.TRUE;
+			}
+			// else both not null
 			result = areJsonNodesEqual(left, right) ? BooleanNode.FALSE : BooleanNode.TRUE;
 
 		} else if (ctx.op.getType() == MappingExpressionParser.LT) {
-			if (left.isNull() || right.isNull()) {
+			if (left == null || left.isNull() || right == null || right.isNull()) {
 				throw new EvaluateRuntimeException(
 						"The expressions either side of operator \"<\" must evaluate to numeric or string values");
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
@@ -801,7 +793,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = (left.asText().compareTo(right.asText()) == -1) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			}
 		} else if (ctx.op.getType() == MappingExpressionParser.GT) {
-			if (left.isNull() || right.isNull()) {
+			if (left == null || left.isNull() || right == null || right.isNull()) {
 				throw new EvaluateRuntimeException(
 						"The expressions either side of operator \">\" must evaluate to numeric or string values");
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
@@ -812,7 +804,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = (left.asText().compareTo(right.asText()) == 1) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			}
 		} else if (ctx.op.getType() == MappingExpressionParser.LE) {
-			if (left.isNull() || right.isNull()) {
+			if (left == null || left.isNull() || right == null || right.isNull()) {
 				throw new EvaluateRuntimeException(
 						"The expressions either side of operator \"<=\" must evaluate to numeric or string values");
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
@@ -823,7 +815,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = (left.asText().compareTo(right.asText()) != 1) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			}
 		} else if (ctx.op.getType() == MappingExpressionParser.GE) {
-			if (left.isNull() || right.isNull()) {
+			if (left == null || left.isNull() || right == null || right.isNull()) {
 				throw new EvaluateRuntimeException(
 						"The expressions either side of operator \">=\" must evaluate to numeric or string values");
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
@@ -1238,7 +1230,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		return result;
 	}
-
+	
 	// private boolean flattenOutput = true;
 
 	@Override

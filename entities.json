@@ -1,0 +1,28 @@
+{
+	"msg": {
+		"input": {
+			"text": "please reset the intranet password for wnm3@us.ibm.com"
+		},
+		"entities": {
+			"entity": "email",
+			"location": [
+				39,
+				54
+			],
+			"groups": [
+				{
+					"group": "group_0",
+					"location": [
+						39,
+						54
+					]
+				}
+			],
+			"value": "email",
+			"confidence": 1
+		},
+		"context": {
+			
+		}
+	}
+}

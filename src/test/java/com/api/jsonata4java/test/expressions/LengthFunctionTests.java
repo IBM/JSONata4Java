@@ -90,7 +90,6 @@ public class LengthFunctionTests {
 				{ "$length(\"Hello World\")", "11", null }, //
 				{ "$length(\"abc\",2)", null, ERR_MSG_ARG2_BAD_TYPE }, //
 				{ "a.b.c~>$length()", null, null }
-
 		});
 	}
 
