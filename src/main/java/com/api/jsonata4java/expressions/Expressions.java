@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
@@ -36,11 +37,13 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionLexer;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @SuppressWarnings("deprecation")
 public class Expressions {
 	ParseTree tree = null;
 	String expression = null;
+	ExpressionsVisitor _eval = new ExpressionsVisitor(JsonNodeFactory.instance.objectNode());
 
 	/**
 	 * Returns a list of $something references in the given expression, using the
@@ -131,9 +134,10 @@ public class Expressions {
 		JsonNode result = null;
 
 		ExpressionsVisitor eval = new ExpressionsVisitor(rootContext);
+		_eval = eval;
 
 		try {
-			result = eval.visit(tree);
+			result = _eval.visit(tree); // was eval.visit();
 		} catch (EvaluateRuntimeException e) {
 			throw new EvaluateException(e.getMessage(), e);
 		}
@@ -147,6 +151,22 @@ public class Expressions {
 		return result;
 	}
 
+	public ExpressionsVisitor getExpr() {
+	   return _eval;
+	}
+	
+	public void setExpr(ExpressionsVisitor expr) {
+	   _eval = expr;
+	}
+	
+	public ParseTree getTree() {
+	   return tree;
+	}
+	
+	public void setTree(ParseTree parsetree) {
+	   tree = parsetree;
+	}
+	
 	public String toString() {
 		return expression;
 	}

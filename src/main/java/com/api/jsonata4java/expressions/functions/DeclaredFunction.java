@@ -24,6 +24,8 @@ package com.api.jsonata4java.expressions.functions;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
@@ -51,6 +53,10 @@ public class DeclaredFunction {
 		_exprList = exprList;
 	}
 
+	public ExprListContext getExpressionList() {
+	   return _exprList;
+	}
+	
 	public List<TerminalNode> getVariables() {
 		List<TerminalNode> variables = _varList.getTokens(MappingExpressionParser.VAR_ID);
 		if (variables == null) {
@@ -63,23 +69,27 @@ public class DeclaredFunction {
 		return getVariables().size();
 	}
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, ExprValuesContext exprValues) {
+	public JsonNode invoke(ExpressionsVisitor expressionVisitor, ParserRuleContext ruleValues) {
 		JsonNode result = null;
-		List<TerminalNode> varListCtx = _varList.VAR_ID();
-		List<ExprContext> exprValuesCtx = exprValues.exprList().expr();
-		int varListCount = varListCtx.size();
-		int exprListCount = exprValuesCtx.size();
-		// ensure a direct mapping is possible
-		if (varListCount != exprListCount) {
-			throw new EvaluateRuntimeException(
-					"Expected equal counts for varibles (" + varListCount + ") and values (" + exprListCount + ")");
-		}
-		for (int i = 0; i < varListCount; i++) {
-			String varID = varListCtx.get(i).getText();
-			JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
-			expressionVisitor.getVariableMap().put(varID, value);
-		}
-		result = expressionVisitor.visit(_exprList);
+		ExprValuesContext exprValues = null;
+		if (ruleValues instanceof ExprValuesContext) {
+		   exprValues = (ExprValuesContext)ruleValues;
+   		List<TerminalNode> varListCtx = _varList.VAR_ID();
+   		List<ExprContext> exprValuesCtx = exprValues.exprList().expr();
+   		int varListCount = varListCtx.size();
+   		int exprListCount = exprValuesCtx.size();
+   		// ensure a direct mapping is possible
+   		if (varListCount != exprListCount) {
+   			throw new EvaluateRuntimeException(
+   					"Expected equal counts for varibles (" + varListCount + ") and values (" + exprListCount + ")");
+   		}
+   		for (int i = 0; i < varListCount; i++) {
+   			String varID = varListCtx.get(i).getText();
+   			JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
+   			expressionVisitor.getVariableMap().put(varID, value);
+   		}
+		} // else EmptyValuesContext
+      result = expressionVisitor.visit(_exprList);
 		return result;
 	}
 }

@@ -308,7 +308,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 	private Map<String, JsonNode> variableMap = new HashMap<String, JsonNode>();
 
-	protected ExpressionsVisitor(JsonNode rootContext) {
+	public ExpressionsVisitor(JsonNode rootContext) {
 		if (rootContext != null) {
 			this.stack.push(rootContext);
 			// add a variable for the rootContext
@@ -1116,7 +1116,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		if (function != null) {
 			result = function.invoke(this, ctx);
 		} else {
-			throw new EvaluateRuntimeException("Unknown function: " + functionName);
+		   DeclaredFunction declFct = functionMap.get(functionName);
+		   if (declFct == null) {
+		      throw new EvaluateRuntimeException("Unknown function: " + functionName);
+		   }
+		   result = declFct.invoke(this, ctx);
 		}
 		return result;
 	}
