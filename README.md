@@ -164,8 +164,6 @@ From: https://docs.jsonata.org/numeric-functions we did not implement:
 * $formatInteger()
 * $parseInteger()
 
-We did not implement any of https://docs.jsonata.org/embedding-extending
-
 From: https://docs.jsonata.org/date-time
     $fromMillis() only accepts a number, not the format picture, nor timezone
     $now() does not accept the picture string (e.g., $now("[Y0000]") reports an arg1 error
