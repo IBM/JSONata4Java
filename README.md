@@ -34,8 +34,8 @@ you can right click on the pom.xml file and select **Run as... / Maven build...*
 ![Launcher Image](images/Launcher.png)
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two:
-* **JSONata4Java-1.0.0-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-1.0.0.jar** (only the JSONata4Java code)
+* **JSONata4Java-1.0.6-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-1.0.6.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
