@@ -1,6 +1,6 @@
-Change the pom.xml version number
-Change the README.md for the version number
-update tester.sh for version
+Change the pom.xml version number (1 place)
+Change the README.md for the version number (3 places)
+update tester.sh for version (1 place)
 launch maven builder: JSONata4Java (deploy)
 
 Note the Closing staging repository with ID value ([OSSRH-46644] JSONata4Java)

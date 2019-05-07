@@ -176,6 +176,18 @@ public interface MappingExpressionListener extends ParseTreeListener {
 	 */
 	void exitPath(MappingExpressionParser.PathContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code to_array}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterTo_array(MappingExpressionParser.To_arrayContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code to_array}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitTo_array(MappingExpressionParser.To_arrayContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code array}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
 	 * @param ctx the parse tree

@@ -109,6 +109,13 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPath(MappingExpressionParser.PathContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code to_array}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTo_array(MappingExpressionParser.To_arrayContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code array}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
 	 * @param ctx the parse tree

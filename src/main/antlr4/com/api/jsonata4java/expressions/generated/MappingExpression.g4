@@ -1,6 +1,6 @@
 /**
  * (c) Copyright 2018, 2019 IBM Corporation
- * 1 New Orchard Road, 
+ * 1 New Orchard Road,
  * Armonk, New York, 10504-1722
  * United States
  * +1 914 499 1900
@@ -37,6 +37,7 @@ expr:
  | DOLLAR (('.' expr) | (ARR_OPEN expr ARR_CLOSE))        # context_ref
  | ROOT '.' expr                                          # root_path
  | expr '.' expr                                          # path
+ | expr ARR_OPEN ARR_CLOSE                                # to_array
  | expr ARR_OPEN expr ARR_CLOSE                           # array
  | ARR_OPEN exprOrSeqList? ARR_CLOSE                      # array_constructor
  | OBJ_OPEN fieldList? OBJ_CLOSE					      # object_constructor
@@ -85,11 +86,11 @@ TRUE : 'true';
 FALSE : 'false';
 
 
-STRING 
+STRING
 	: '\'' (ESC | ~['\\])* '\''
 	| '"'  (ESC | ~["\\])* '"'
 	;
-	
+
 
 AND : 'and' ;
 OR : 'or' ;
@@ -110,7 +111,7 @@ NUMBER
     |   INT EXP             // 1e10 3e4
     |   INT                 // 3, 45
     ;
-    
+
 FUNCTIONID : 'function' ;
 
 WS: [ \t\n]+ -> skip ;                // ignore whitespace
@@ -140,8 +141,8 @@ MAP : '$map' ;
 
 VAR_ID : '$' ID ;
 
-ID 
-	: [a-zA-Z] [a-zA-Z0-9_]* 
+ID
+	: [a-zA-Z] [a-zA-Z0-9_]*
 	| BACK_QUOTE ~[`]* BACK_QUOTE;
 
 
