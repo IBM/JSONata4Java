@@ -890,6 +890,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
                   for (int i = 0; i < ctx.children.size(); i++) {
                      expr.children.add(ctx.children.get(i));
                   }
+                  result = visit(expr);
                   break;
                }
                case BOOLEAN: {
@@ -900,6 +901,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
                   BooleanContext nc = new MappingExpressionParser.BooleanContext(ctx);
                   nc.addAnyChild(tn);
                   child0 = nc;
+                  ctx.children.set(0, child0);
+                  result = visit(ctx);
                   break;
                }
                case MISSING:
@@ -907,16 +910,26 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
                   token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NULL, null);
                   TerminalNodeImpl tn = new TerminalNodeImpl(token);
                   child0 = tn;
+                  ctx.children.set(0, child0);
+                  result = visit(ctx);
                   break;
                }
                case NUMBER: {
                   token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER, context.asText());
                   TerminalNodeImpl tn = new TerminalNodeImpl(token);
                   child0 = tn;
+                  ctx.children.set(0, child0);
+                  result = visit(ctx);
                   break;
                }
                case OBJECT: {
                   child0 = FunctionUtils.getObjectConstructorContext(ctx, (ObjectNode) context);
+                  ctx.children.set(0, child0);
+                  expr = new MappingExpressionParser.PathContext(ctx);
+                  for (int i = 0; i < ctx.children.size(); i++) {
+                     expr.children.add(ctx.children.get(i));
+                  }
+                  result = visit(expr);
                   break;
                }
                case STRING:
@@ -924,10 +937,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
                   token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, context.asText());
                   TerminalNodeImpl tn = new TerminalNodeImpl(token);
                   child0 = tn;
+                  ctx.children.set(0, child0);
+                  result = visit(ctx);                  
                   break;
                }
                } // end switch
-               result = visit(expr);
+               // result = visit(expr);
             }
          } else {
             result = visit(ctx);
