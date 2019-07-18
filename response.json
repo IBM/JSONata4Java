@@ -1,0 +1,18 @@
+{
+  "response": {
+    "addressLine1": "1111 AVENUE O",
+    "city": "GALVESTON",
+    "state": "TX",
+    "zip": "77550",
+    "zip4": "8345",
+    "validationMessages": [
+      {
+        "code": "HR",
+        "message": "THE ADDRESS IS A HIGH RISE.",
+        "severity": "I"
+      }
+    ]
+  },
+  "conversationId": "794c81c9-aad9-44d9-8add-6152b3174606",
+  "transactionId": "f115f062-ca77-45e0-a9e1-3a1ecefc38ca"
+}

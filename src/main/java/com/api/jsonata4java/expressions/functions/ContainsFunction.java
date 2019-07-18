@@ -28,6 +28,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -60,7 +61,7 @@ public class ContainsFunction extends FunctionBase implements Function {
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_CONTAINS);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_CONTAINS);
 	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_CONTAINS);
-
+	public static ObjectMapper s_objectMapper = new ObjectMapper();
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 		// Create the variable to return
 		JsonNode result = null;
@@ -76,9 +77,15 @@ public class ContainsFunction extends FunctionBase implements Function {
 			}
 			// check to see if there is a valid context value
 			if (!argString.isTextual()) {
-				throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+            // handle Object
+            if (argString.isObject()) {
+               argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            } else {
+               throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+            }
+			} else {
+			   argCount++;
 			}
-			argCount++;
 		}
 
 		// Make sure that we have the right number of arguments
@@ -92,8 +99,7 @@ public class ContainsFunction extends FunctionBase implements Function {
 			if (!argString.isTextual()) {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
-			final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-					useContext ? 0 : 1);
+			final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
 
 			if (argString != null) {
 				if (!argString.isTextual()) {
