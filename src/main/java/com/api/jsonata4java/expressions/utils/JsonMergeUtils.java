@@ -56,8 +56,8 @@ public class JsonMergeUtils {
 	 * 
 	 * See src/test/resources/JsonMergeUtilsTest.json for examples.
 	 * 
-	 * @param from Json object
-	 * @param to Json object
+	 * @param x Json object
+	 * @param y Json object
 	 * @return merged Json object
 	 */
 	public static JsonNode merge(JsonNode x, JsonNode y) {

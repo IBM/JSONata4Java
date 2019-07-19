@@ -127,12 +127,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
    }
 
    private static final String CLASS = ExpressionsVisitor.class.getName();
-   public static String ERR_NEGATE_NON_NUMERIC = "Cannot negate a non-numeric value";
-   public static String ERR_SEQ_LHS_INTEGER = "The left side of the range operator (..) must evaluate to an integer";
-
-   public static String ERR_SEQ_RHS_INTEGER = "The right side of the range operator (..) must evaluate to an integer";
    public static String ERR_MSG_INVALID_PATH_ENTRY = String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY,
          (Object[]) null);
+   public static String ERR_NEGATE_NON_NUMERIC = "Cannot negate a non-numeric value";
+
+   public static String ERR_SEQ_LHS_INTEGER = "The left side of the range operator (..) must evaluate to an integer";
+   public static String ERR_SEQ_RHS_INTEGER = "The right side of the range operator (..) must evaluate to an integer";
 
    private static final Logger LOG = Logger.getLogger(CLASS);
 
@@ -333,6 +333,31 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
    public Map<String, JsonNode> getVariableMap() {
       return variableMap;
+   }
+
+   protected void processArrayContent(ExprOrSeqContext expr, ArrayNode output) {
+      // have a comma separated list so iterate through the expressions, skipping
+      // commas
+      String testStr = "";
+      for (Iterator<ParseTree> it = expr.children.iterator(); it.hasNext();) {
+         ParseTree tree = it.next();
+         if (tree == null) {
+            System.out.println("Got null in array values.");
+            continue;
+         }
+         if (tree instanceof ExprOrSeqContext) {
+            processArrayContent((ExprOrSeqContext) tree, output);
+         }
+         if (tree instanceof TerminalNodeImpl) {
+            testStr = tree.toString();
+            if (",[]".indexOf(testStr) >= 0) {
+               continue;
+            }
+         }
+         JsonNode result = visit(tree);
+         // result = unwrapArrayIfProducesArray(result);
+         output.add(result);
+      }
    }
 
    /**
@@ -707,9 +732,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       } else {
          for (ExprOrSeqContext expr : ctx.exprOrSeqList().exprOrSeq()) {
             if (expr.seq() == null) {
-               JsonNode result = visit(expr);
-               // result = unwrapArrayIfProducesArray(result);
-               output.add(result);
+               processArrayContent(expr, output);
             } else {
                // this is a seq, e.g. [1..2]
                ArrayNode seq = (ArrayNode) visit(expr);
@@ -938,11 +961,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
                   TerminalNodeImpl tn = new TerminalNodeImpl(token);
                   child0 = tn;
                   ctx.children.set(0, child0);
-                  result = visit(ctx);                  
+                  result = visit(ctx);
                   break;
                }
                } // end switch
-               // result = visit(expr);
+                 // result = visit(expr);
             }
          } else {
             result = visit(ctx);

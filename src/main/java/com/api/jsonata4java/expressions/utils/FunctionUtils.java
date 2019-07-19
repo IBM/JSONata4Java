@@ -525,7 +525,7 @@ public class FunctionUtils {
 
 	/**
 	 * Gets the expression at the supplied index from the context's
-	 * {@link ExprValuesContext} {@link ExprListContext], preserving the null value
+	 * {@link ExprValuesContext} {@link ExprListContext}, preserving the null value
 	 * (or returning null if the index is invalid)
 	 * 
 	 * @param exprVisitor used to visit the context's values
