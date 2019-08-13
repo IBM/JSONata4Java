@@ -293,6 +293,9 @@ public class BasicExpressionsTest {
       test("$length(SurnameX)",null,null,jsonObj2);
       test("$length(Surname)=5",BooleanNode.TRUE,null,jsonObj2);
       test("$length(SurnameX)=5",BooleanNode.FALSE,null,jsonObj2);
+      // issue #21
+      simpleTest("( $abc := function($x) {( $y := 2 * $x; $x + $y )}; $abc(5))",15,jsonObj2);
+      simpleTest("( $abc := function($x) {( $y := 2 * $x; $x + $y )}; $abc(Age))",84,jsonObj2);
    }
 
    @Test

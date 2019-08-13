@@ -96,6 +96,8 @@ public class Utils {
 			throws ParseException, EvaluateException, JsonProcessingException {
 		Expressions expr = Expressions.parse(expression);
 		JsonNode result = expr.evaluate(jsonObj);
+      System.err.print("* " + expression);
+      System.err.println(" returned " + result);
 		Assert.assertEquals(mapper.writeValueAsString(expected), (mapper.writeValueAsString(result)));
 	}
 
@@ -103,6 +105,8 @@ public class Utils {
 			throws ParseException, EvaluateException, JsonProcessingException {
 		Expressions expr = Expressions.parse(expression);
 		JsonNode result = expr.evaluate(jsonObj);
+      System.err.print("* " + expression);
+		System.err.println(" returned " + result);
 		assertTrue(mapper.writeValueAsString(result).equals(mapper.writeValueAsString(expected)));
 	}
 
@@ -141,7 +145,7 @@ public class Utils {
 		if (rootContext != null)
 			rootContext = ensureAllIntegralsAreLongs(rootContext);
 
-		System.err.println("* " + expression);
+		System.err.print("* " + expression);
 		Expressions e = null;
 		try {
 			e = Expressions.parse(expression);
@@ -153,7 +157,7 @@ public class Utils {
 					pe.printStackTrace();
 					throw pe;
 				}
-				// System.out.println("Got exception class: "+pe.getClass().getName());
+				System.err.println(" threw exception: "+pe.getClass().getName());
 				return;
 			}
 		}
@@ -164,12 +168,14 @@ public class Utils {
 				Assert.fail("EvaluateException \"" + expectedEvaluateExceptionMsg
 						+ "\" was not thrown but we expected it to be. Got actual=\"" + actual + "\"");
 			}
+			System.err.println(" returned "+actual);
 			Assert.assertEquals(expected, actual);
 		} catch (EvaluateException ex) {
 			if (expectedEvaluateExceptionMsg == null) {
-				System.out.println("expected:\"" + expected + "\" but got \"" + actual + "\"");
+				System.err.println(" expected:\"" + expected + "\" but got \"" + actual + "\"");
 				throw ex;
 			} else {
+			   System.err.println(" got exception with message "+ex.getLocalizedMessage());
 				Assert.assertEquals("EvaluateException was thrown as expected, but its message was not as expected",
 						expectedEvaluateExceptionMsg, ex.getMessage());
 			}

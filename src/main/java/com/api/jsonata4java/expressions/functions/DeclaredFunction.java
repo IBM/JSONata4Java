@@ -34,6 +34,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.VarListContext;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -72,6 +73,7 @@ public class DeclaredFunction {
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, ParserRuleContext ruleValues) {
 		JsonNode result = null;
 		ExprValuesContext exprValues = null;
+		Function_callContext fctCallValues = null;
 		if (ruleValues instanceof ExprValuesContext) {
 		   exprValues = (ExprValuesContext)ruleValues;
    		List<TerminalNode> varListCtx = _varList.VAR_ID();
@@ -88,6 +90,23 @@ public class DeclaredFunction {
    			JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
    			expressionVisitor.getVariableMap().put(varID, value);
    		}
+		} else if (ruleValues instanceof Function_callContext) {
+		   fctCallValues = (Function_callContext)ruleValues;
+         List<TerminalNode> varListCtx = _varList.VAR_ID();
+         exprValues = (ExprValuesContext)fctCallValues.exprValues();
+         List<ExprContext> exprValuesCtx = exprValues.exprList().expr();
+         int varListCount = varListCtx.size();
+         int exprListCount = exprValuesCtx.size();
+         // ensure a direct mapping is possible
+         if (varListCount != exprListCount) {
+            throw new EvaluateRuntimeException(
+                  "Expected equal counts for varibles (" + varListCount + ") and values (" + exprListCount + ")");
+         }
+         for (int i = 0; i < varListCount; i++) {
+            String varID = varListCtx.get(i).getText();
+            JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
+            expressionVisitor.getVariableMap().put(varID, value);
+         }
 		} // else EmptyValuesContext
       result = expressionVisitor.visit(_exprList);
 		return result;
