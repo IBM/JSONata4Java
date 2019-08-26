@@ -296,6 +296,24 @@ public class BasicExpressionsTest {
       // issue #21
       simpleTest("( $abc := function($x) {( $y := 2 * $x; $x + $y )}; $abc(5))",15,jsonObj2);
       simpleTest("( $abc := function($x) {( $y := 2 * $x; $x + $y )}; $abc(Age))",84,jsonObj2);
+      
+      // issue #19
+      expectArray.removeAll();
+      expectArray.add(858383);
+      expectArray.add(858236);
+      expectArray.add(858383);
+      expectArray.add(345664);
+      simpleTest("Account.Order.*.ProductID",expectArray,jsonObj);
+      simpleTest("Account.Order.Product.ProductID.**",expectArray,jsonObj);
+      expectArray.removeAll();
+      expectArray.add("order103");
+      expectArray.add("order104");
+      simpleTest("Account.Order.*[0]",expectArray,jsonObj);
+      simpleTest("Account.**.OrderID",expectArray,jsonObj);
+      test("Account.**.junk",null,null,jsonObj);
+      test("**.junk",null,null,jsonObj);
+      
+      
    }
 
    @Test

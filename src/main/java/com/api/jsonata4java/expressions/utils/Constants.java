@@ -274,7 +274,7 @@ public class Constants {
     *       pattern-separator %char; ";"&GT;
     * </pre>
     * 
-    * @see http://www.w3.org/TR/xslt#format-number to explain format-number in XSLT
+    * http://www.w3.org/TR/xslt#format-number} to explain format-number in XSLT
     *      Specification xsl.usage advanced
     */
    public static final String SYMBOL_DECIMAL_SEPARATOR = "decimal-separator";

@@ -116,6 +116,18 @@ public interface MappingExpressionListener extends ParseTreeListener {
 	 */
 	void exitVar_assign(MappingExpressionParser.Var_assignContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code descendant}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterDescendant(MappingExpressionParser.DescendantContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code descendant}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitDescendant(MappingExpressionParser.DescendantContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code membership}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -403,6 +415,18 @@ public interface MappingExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitMap_function(MappingExpressionParser.Map_functionContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code field_values}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterField_values(MappingExpressionParser.Field_valuesContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code field_values}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitField_values(MappingExpressionParser.Field_valuesContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MappingExpressionParser#fieldList}.
 	 * @param ctx the parse tree

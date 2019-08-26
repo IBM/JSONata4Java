@@ -34,6 +34,8 @@ grammar MappingExpression;
 
 expr:
    ID                                                     # id
+ | '*' ('.' expr)?                                        # field_values
+ | DESCEND ('.' expr)?                                    # descendant
  | DOLLAR (('.' expr) | (ARR_OPEN expr ARR_CLOSE))        # context_ref
  | ROOT '.' expr                                          # root_path
  | expr '.' expr                                          # path
@@ -105,6 +107,7 @@ OBJ_CLOSE : '}';
 
 DOLLAR : '$';
 ROOT : '$$' ;
+DESCEND : '**';
 
 NUMBER
     :   INT '.' [0-9]+ EXP? // 1.35, 1.35E-9, 0.3

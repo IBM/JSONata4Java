@@ -319,6 +319,65 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       }
    }
 
+   JsonNode append(JsonNode arg1, JsonNode arg2) {
+      // disregard undefined args
+      if (arg1 == null) {
+         return arg2;
+      }
+      if (arg2 == null) {
+         return arg1;
+      }
+      // if either argument is not an array, make it so
+      if (!arg1.isArray()) {
+         ArrayNode tempArray = new ArrayNode(JsonNodeFactory.instance);
+         tempArray.add(arg1);
+         arg1 = tempArray;
+      }
+      if (!arg2.isArray()) {
+         ArrayNode tempArray = new ArrayNode(JsonNodeFactory.instance);
+         tempArray.add(arg2);
+         arg2 = tempArray;
+      }
+      return ((ArrayNode) arg1).add(((ArrayNode) arg2));
+   }
+
+   ArrayNode flatten(JsonNode arg, ArrayNode flattened) {
+      if (flattened == null) {
+         flattened = new ArrayNode(JsonNodeFactory.instance);
+      }
+      if (arg.isArray()) {
+         for (Iterator<JsonNode> it = ((ArrayNode) arg).iterator(); it.hasNext();) {
+            flatten(it.next(), flattened);
+         }
+      } else {
+         flattened.add(arg);
+      }
+      return flattened;
+   }
+
+   /**
+    * Grab the current data from the stack and recursively copy its content into an
+    * array
+    * 
+    * @return array of the descendant content of the current data on the stack
+    */
+   JsonNode getDescendants() {
+      JsonNode result = null;
+      ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
+      if (stack.empty() == false) {
+         JsonNode startingElt = stack.peek();
+         if (startingElt != null) {
+            traverseDescendants(startingElt, resultArray);
+            if (resultArray.size() == 1) {
+               result = resultArray.get(0);
+            } else {
+               result = resultArray;
+            }
+         }
+      }
+      return result;
+   }
+
    public Map<String, DeclaredFunction> getFunctionMap() {
       return functionMap;
    }
@@ -455,6 +514,38 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
    public void setValue(ParseTree node, int value) {
       values.put(node, value);
+   }
+
+   /**
+    * Recursively traverse the descendants of the input and them in the results
+    * array
+    * 
+    * @param input
+    *                the object, array, or node whose descendants are sought
+    * @param results
+    *                the array containing the descendants of the input and all of
+    *                their descendants
+    */
+   void traverseDescendants(JsonNode input, ArrayNode results) {
+      if (input != null) {
+         if (input.isArray() == false) {
+            // put this element into the results
+            results.add(input);
+         }
+         // now process the "descendants" (array elements, or nodes from keys of an
+         // object)
+         if (input.isArray()) {
+            for (Iterator<JsonNode> it = ((ArrayNode) input).iterator(); it.hasNext();) {
+               JsonNode member = it.next();
+               traverseDescendants(member, results);
+            }
+         } else if (input.isObject()) {
+            for (Iterator<String> it = ((ObjectNode) input).fieldNames(); it.hasNext();) {
+               String key = it.next();
+               traverseDescendants(((ObjectNode) input).get(key), results);
+            }
+         }
+      } // else don't process null
    }
 
    @Override
@@ -975,6 +1066,41 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
    }
 
    @Override
+   public JsonNode visitDescendant(MappingExpressionParser.DescendantContext ctx) {
+      ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
+      JsonNode descendants = getDescendants();
+      ExprContext exprCtx = ctx.expr();
+      if (descendants == null) {
+         resultArray = null;
+      } else {
+         if (!descendants.isArray()) {
+            if (exprCtx == null) {
+               resultArray.add(descendants);
+            } else {
+               resultArray.add(visit(exprCtx));
+            }
+         } else {
+            for (Iterator<JsonNode> it = ((ArrayNode) descendants).iterator(); it.hasNext();) {
+               if (exprCtx == null) {
+                  resultArray.add(it.next());
+               } else {
+                  stack.push(it.next());
+                  JsonNode result = visit(exprCtx);
+                  stack.pop();
+                  if (result != null) {
+                     resultArray.add(result);
+                  }
+               }
+            }
+         }
+      }
+      if (resultArray.size() == 0) {
+         return null;
+      }
+      return resultArray;
+   }
+
+   @Override
    public JsonNode visitEach_function(MappingExpressionParser.Each_functionContext ctx) {
       // $each(obj,function($value, $key){...} returns an ArrayNode
       ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
@@ -1030,6 +1156,52 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       } else
          throw new EvaluateRuntimeException("Expected a function but got " + ctx.expr(1).getText());
       return result;
+   }
+
+   @Override
+   public JsonNode visitField_values(MappingExpressionParser.Field_valuesContext ctx) {
+      ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
+      ArrayNode valArray = new ArrayNode(JsonNodeFactory.instance);
+      ExprContext exprCtx = ctx.expr(); // may be null
+      if (stack.empty()) {
+         // signal no match
+         return null;
+      }
+      JsonNode elt = stack.peek();
+      if (elt == null || elt.isObject() == false) {
+         // signal no match
+         return null;
+      }
+      for (Iterator<String> it = ((ObjectNode) elt).fieldNames(); it.hasNext();) {
+         JsonNode value = ((ObjectNode) elt).get(it.next());
+         if (value.isArray()) {
+            value = flatten(value, null);
+            // remove outer array
+            for (Iterator<JsonNode> it2 = ((ArrayNode) value).iterator(); it2.hasNext();) {
+               valArray.add(it2.next());
+            }
+            // valArray = (ArrayNode)append(valArray, value);
+         } else {
+            valArray.add(value);
+         }
+      }
+      for (Iterator<JsonNode> it = valArray.iterator(); it.hasNext();) {
+         JsonNode value = it.next();
+         if (exprCtx == null) {
+            resultArray.add(value);
+         } else {
+            stack.push(value);
+            JsonNode result = visit(exprCtx);
+            if (result != null) {
+               resultArray.add(result);
+            }
+            stack.pop();
+         }
+      }
+      if (resultArray.size() == 0) {
+         return null;
+      }
+      return resultArray;
    }
 
    @Override

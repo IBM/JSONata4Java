@@ -124,6 +124,18 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterDescendant(MappingExpressionParser.DescendantContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDescendant(MappingExpressionParser.DescendantContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterMembership(MappingExpressionParser.MembershipContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -407,6 +419,18 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitMap_function(MappingExpressionParser.Map_functionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterField_values(MappingExpressionParser.Field_valuesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitField_values(MappingExpressionParser.Field_valuesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

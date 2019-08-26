@@ -74,6 +74,13 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVar_assign(MappingExpressionParser.Var_assignContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code descendant}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDescendant(MappingExpressionParser.DescendantContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code membership}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -241,6 +248,13 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitMap_function(MappingExpressionParser.Map_functionContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code field_values}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitField_values(MappingExpressionParser.Field_valuesContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MappingExpressionParser#fieldList}.
 	 * @param ctx the parse tree
