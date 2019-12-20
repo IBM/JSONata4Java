@@ -1756,14 +1756,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
       // flattenOutput = true;
 
-      final JsonNode lhs = visit(lhsCtx);
+      /* final */ JsonNode lhs = visit(lhsCtx);
       if (lhs == null || lhs.isNull()) {
          return null; // throw new
                       // EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY,"null"));
       }
       // reject path entries that are numbers or values
       switch (lhs.getNodeType()) {
-      case NUMBER:
+      case NUMBER: {
+         lhs = factory.textNode(lhs.asText());
+         break;
+      }
       case BOOLEAN:
       case NULL: {
          throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY, lhs.toString()));

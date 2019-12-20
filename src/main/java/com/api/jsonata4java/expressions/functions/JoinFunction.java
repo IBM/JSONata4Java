@@ -32,6 +32,7 @@ import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
@@ -83,7 +84,12 @@ public class JoinFunction extends FunctionBase implements Function {
 				return null;
 			}
 			if (!argArray.isArray()) {
-				throw new EvaluateRuntimeException(ERR_MSG_ARG1_ARR_STR);
+			   if (!argArray.isTextual()) {
+			      throw new EvaluateRuntimeException(ERR_MSG_ARG1_ARR_STR);
+			   }
+			   ArrayNode newArray = JsonNodeFactory.instance.arrayNode();
+			   newArray.add(argArray);
+			   argArray = newArray;
 			}
 
 			// Read the separator argument, if present
@@ -107,6 +113,10 @@ public class JoinFunction extends FunctionBase implements Function {
 				JsonNode element = elements.next();
 				if (element.isTextual()) {
 					stringJoiner.add(element.textValue());
+				} else if (element.isArray()){
+				   for (Iterator<JsonNode>it = ((ArrayNode)element).iterator();it.hasNext();) {
+				      stringJoiner.add(it.next().textValue());
+				   }
 				} else {
 					throw new EvaluateRuntimeException(ERR_MSG_ARG1_ARR_STR);
 				}
