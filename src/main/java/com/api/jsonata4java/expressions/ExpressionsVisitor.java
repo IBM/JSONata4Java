@@ -24,6 +24,7 @@ package com.api.jsonata4java.expressions;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -79,6 +80,54 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
+   
+   int currentDepth = 0;
+   long startTime = new Date().getTime();
+   boolean checkRuntime = false;
+   int maxDepth = -1;
+   long maxTime = 0L;
+
+   private void checkRunaway() {
+      if (checkRuntime) {
+         if (maxDepth != -1 && currentDepth > maxDepth) {
+            throw new EvaluateRuntimeException("Stack overflow error: Check for non-terminating recursive function. Consider rewriting as tail-recursive.");
+         }
+      }
+      if (maxTime != 0 && (new Date().getTime() - startTime > maxTime)) {
+         throw new EvaluateRuntimeException("Expression evaluation timeout: Check for infinite loop");
+      }
+   }
+
+   private void evaluateEntry() {
+      currentDepth++;
+      checkRunaway();
+   }
+   
+   private void evaluateExit() {
+      currentDepth--;
+      checkRunaway();
+   }
+   
+   public void timeboxExpression(long timeoutMS, int maxDepth) {
+      if (timeoutMS > 0L && maxDepth > 0) {
+         this.maxDepth = maxDepth;
+         this.maxTime = timeoutMS;
+         checkRuntime = true;
+      }
+   }
+   
+   @Override
+   public JsonNode visit(ParseTree tree) {
+      JsonNode result = null;
+      if (checkRuntime) {
+         evaluateEntry();
+      }
+      result = super.visit(tree);
+      if (checkRuntime) {
+         evaluateExit();
+      }
+      return result;
+   }
 
    /**
     * This is how we indicate to upstream operators that we are currently inside a

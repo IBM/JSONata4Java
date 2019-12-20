@@ -118,6 +118,50 @@ public class Expressions {
 
 		return new Expressions(tree, mappingExpression);
 	}
+	
+   /**
+    * Evaluate the stored expression against the supplied event and application
+    * interface data.
+    * 
+    * @param rootContext bound to root context ($$ and paths that don't start with
+    *                    $event, $state or $instance) when evaluating expressions.
+    *                    May be null.
+    * @param timeoutMS milliseconds allowed for the evaluation to occur. If it takes longer 
+    *                    an exception is thrown. Must be positive number or exception is thrown.
+    * @param maxDepth the maximum call stack depth allowed before an exception is thrown. Must 
+    *                    be a positive number or an exception is thrown.
+    * @return the JsonNode resulting from the expression evaluation against the rootContext
+    * @throws EvaluateException If the given device event is invalid.
+    */
+	public JsonNode evaluate(JsonNode rootContext, long timeoutMS, int maxDepth) throws EvaluateException {
+
+      JsonNode result = null;
+
+      ExpressionsVisitor eval = new ExpressionsVisitor(rootContext);
+      _eval = eval;
+      if (timeoutMS <= 0L) {
+         throw new EvaluateException("The timeoutMS must be a positive number. Received "+timeoutMS);
+      }
+      if (maxDepth <= 0) {
+         throw new EvaluateException("The maxDepth must be a positive number. Received " + maxDepth);
+      }
+      _eval.timeboxExpression(timeoutMS, maxDepth);
+      
+      try {
+         result = _eval.visit(tree); // was eval.visit();
+      } catch (EvaluateRuntimeException e) {
+         throw new EvaluateException(e.getMessage(), e);
+      }
+
+      // prevent a NPE when expression evaluates to null (which is a legitimate return
+      // value for an expression)
+      if (result == null) {
+         return null;
+      }
+
+      return result;
+	   
+	}
 
 	/**
 	 * Evaluate the stored expression against the supplied event and application
@@ -167,6 +211,10 @@ public class Expressions {
 	   tree = parsetree;
 	}
 	
+   public void timeboxExpression(long timeoutMS, int maxDepth) {
+      _eval.timeboxExpression(timeoutMS, maxDepth);
+   }
+   
 	public String toString() {
 		return expression;
 	}
