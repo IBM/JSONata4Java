@@ -1026,8 +1026,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
       /* the conditional ternary operator ?: */
       JsonNode cond = visit(ctx.expr(0)); // get value of left subexpression
-
-      return BooleanUtils.convertJsonNodeToBoolean(cond) ? visit(ctx.expr(1)) : visit(ctx.expr(2));
+      if (cond instanceof BooleanNode) {
+         return BooleanUtils.convertJsonNodeToBoolean(cond) ? visit(ctx.expr(1)) : visit(ctx.expr(2));
+      }
+      return cond;
    }
 
    @Override

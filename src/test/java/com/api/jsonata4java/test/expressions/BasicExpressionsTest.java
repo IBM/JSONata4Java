@@ -313,6 +313,9 @@ public class BasicExpressionsTest {
       test("Account.**.junk",null,null,jsonObj);
       test("**.junk",null,null,jsonObj);
       
+      // issue #26
+      simpleTest("( (true and false) ? \"one\" : (true and true) ? \"two\" : (false and true) ? \"three\" : (false and false) ? \"four\" : \"five\" )","two",jsonObj);
+      
       
    }
 

@@ -1,0 +1,60 @@
+{
+	"totalSize": 1,
+	"done": true,
+	"records": [
+		{
+			"attributes": {
+				"type": "Apttus_Proposal__Proposal__c",
+				"url": "/services/data/v47.0/sobjects/Apttus_Proposal__Proposal__c/a1D6D0000006IFsUAM"
+			},
+			"Id": "a1D6D0000006IFsUAM",
+			"RecordType": {
+				"attributes": {
+					"type": "RecordType",
+					"url": "/services/data/v47.0/sobjects/RecordType/0127F000000QZFmQAO"
+				},
+				"Name": "Customer Master"
+			},
+			"APTS_Account_Name__r": {
+				"attributes": {
+					"type": "Ledger__c",
+					"url": "/services/data/v47.0/sobjects/Ledger__c/a5j7F000000cGzOQAU"
+				},
+				"Name": "ROBUST CONTRACTING"
+			},
+			"CMD_Customer_Segment__c": "CO",
+			"CMD_Minimum_Load_Charge_Code__c": "N/A",
+			"APTS_Minimum_Load_Fee__c": 45.0,
+			"CMD_Pricing_Plant_Code__c": "WMC",
+			"APTS_Customer_Number__c": "746272",
+			"Price_Category__c": "W13",
+			"Name": "Q-00030709",
+			"Sales_Rep_Id__c": "999",
+			"APTS_Admin_Discount2__c": 6.9767,
+			"APTS_Extra_Cartage__c": 2.5,
+			"CMD_Surcharge_Code__c": null,
+			"CMD_Default_Action__c": null,
+			"CMD_Extra_Cartage__c": null,
+			"CMD_Sundry_Charge_Code_OOH_Saturday__c": null,
+			"CMD_Sundry_Charge_Code_OOH_Sunday__c": null,
+			"CMD_Sundry_Charge_Code_OOH_Weekday__c": null,
+			"CMD_Sundry_Fee_Effective_Date__c": null,
+			"CMD_Sundry_Fee_OOH_Saturday__c": null,
+			"CMD_Sundry_Fee_OOH_Sunday__c": null,
+			"CMD_Sundry_Fee_OOH_Weekday__c": null,
+			"CMD_Sundry_Price_Extension__c": null,
+			"APTS_OOHWeekday__c": 30.0,
+			"APTS_OOH_Saturday__c": 60.0,
+			"APTS_OOH_Sunday__c": 90.0,
+			"CMD_Zone_Code__c": null,
+			"Owner": {
+				"attributes": {
+					"type": "Name",
+					"url": "/services/data/v47.0/sobjects/User/0057F000004fnHDQAY"
+				},
+				"Email": "pearl.lee@boral.com.au"
+			},
+			"APTS_Area__c": "CON - WA CTY"
+		}
+	]
+}
