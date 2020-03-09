@@ -1454,7 +1454,26 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       if (context == null) {
          result = null;
       } else {
-         result = context.get(id);
+         if (context instanceof ArrayNode) {
+            JsonNode test = null;
+            ArrayNode resultArray = JsonNodeFactory.instance.arrayNode();
+            for (Object obj:context) {
+               if (obj instanceof ObjectNode) {
+                  test = ((ObjectNode)obj).get(id);
+                  if (test != null) {
+                     resultArray.add(test);
+                  }
+               }
+            }
+            if (resultArray.size() == 0) {
+               result = null;
+            } else {
+               result = resultArray;
+            }
+            
+         } else {
+            result = context.get(id);
+         }
       }
 
       result = unwrapArray(result);
