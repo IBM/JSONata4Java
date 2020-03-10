@@ -1,18 +1,47 @@
 [
     {
-        "name": "one",
-        "age": 1
+        "name": "one"
     },
     {
-        "name": "two",
-        "age": 2
+        "namex": "two"
     },
     {
-        "name": "three",
-        "age": 3
+        "name": "three"
     },
     {
-    	"namex": "four",
-    	"age": 4
+    	"namex": {
+    		"name":"four"
+    	}
+    },
+    {
+    	"namey":"singleton"
+    },
+    {
+    	"namez":["a","b"]
+    },
+    {
+    	"namea":"single"
+    },
+    {
+    	"namea":["d","e"]
+    },
+    {
+    	"nameb":["single value"]
+    },
+    {
+    	"namec": [
+    		{
+    			"names": ["one"]
+    		},
+    		{
+    			"names": ["two"]
+    		},
+    		{
+    			"names": ["three", "four"]
+    		}
+    	]
+    },
+    {
+    	"named":["val1","val2"]
     }
 ]

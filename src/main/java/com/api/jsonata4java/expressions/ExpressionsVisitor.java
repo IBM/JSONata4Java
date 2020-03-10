@@ -390,7 +390,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       return ((ArrayNode) arg1).add(((ArrayNode) arg2));
    }
 
-   ArrayNode flatten(JsonNode arg, ArrayNode flattened) {
+   public ArrayNode flatten(JsonNode arg, ArrayNode flattened) {
       if (flattened == null) {
          flattened = new ArrayNode(JsonNodeFactory.instance);
       }
@@ -844,11 +844,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
          // JSONata appears to apply two levels of flattening to singleton
          // arrays pulled out of arrays, e.g.:
          // [1][0]==1
-         // [[1]][0]==1
-         // [[[1]]][0]==[1]
+         // [[1]][0]==[1] // was 1 but 1.8 has [1]
+         // [[[1]]][0]==[[1]] // was [1] but 1.8 has [[1]]
          JsonNode result = output;
          result = unwrapArray(result);
-         result = unwrapArray(result);
+         // result = unwrapArray(result); // 1.8
          return result;
       }
    }
@@ -1450,38 +1450,41 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       // flatten output if this ID and all IDs after it in this path DO NOT have
       // [] after them
 
-      JsonNode result;
+      JsonNode result = null;
       if (context == null) {
          result = null;
       } else {
-         if (context instanceof ArrayNode) {
-            JsonNode test = null;
-            ArrayNode resultArray = JsonNodeFactory.instance.arrayNode();
-            for (Object obj:context) {
-               if (obj instanceof ObjectNode) {
-                  test = ((ObjectNode)obj).get(id);
-                  if (test != null) {
-                     resultArray.add(test);
-                  }
-               }
-            }
-            if (resultArray.size() == 0) {
-               result = null;
-            } else {
-               result = resultArray;
-            }
-            
-         } else {
-            result = context.get(id);
-         }
+         result = lookup(context,id);
+         result = ensureArray(result);
+         result = unwrapArray(result);
       }
 
-      result = unwrapArray(result);
 
       if (LOG.isLoggable(Level.FINEST))
          LOG.exiting(CLASS, METHOD, result);
       return result;
    }
+   
+   JsonNode lookup(JsonNode input, String key) {
+      JsonNode result = null;
+      if (input.isArray()) {
+          result = factory.arrayNode();
+          for(int ii = 0; ii < input.size(); ii++) {
+              JsonNode res =  lookup(input.get(ii), key);
+              if (res != null) {
+                  if (res.isArray()) {
+                      ((ArrayNode)result).addAll((ArrayNode)res);
+                  } else {
+                     ((ArrayNode)result).add(res);
+                  }
+              }
+          }
+      } else if (input != null && input instanceof ObjectNode) {
+          result = ((ObjectNode)input).get(key);
+      }
+      return result;
+  }
+
 
    @Override
    public JsonNode visitLogand(MappingExpressionParser.LogandContext ctx) {
@@ -1680,8 +1683,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       if (ctx.op.getType() == MappingExpressionParser.MUL) {
          result = left * right;
       } else if (ctx.op.getType() == MappingExpressionParser.DIV) {
+         if (right == 0.0d) {
+            return null;
+         }
          result = left / right;
       } else if (ctx.op.getType() == MappingExpressionParser.REM) {
+         if (right == 0.0d) {
+            return null;
+         }
          result = left % right;
       } else {
          // should never happen (this expression should not have parsed in the
@@ -1861,10 +1870,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
       // JSONata appears to apply two levels of flattening to singleton arrays
       // pulled out by paths, e.g.:
-      // {"a": [1]}.a==1
-      // {"a": [[1]]}.a==1
-      // {"a": [[[1]]]}.a==[1]
+      // {"a": [1]}.a==[1] // was 1 but 1.8 is [1]
+      // {"a": [[1]]}.a==[[1]] // was 1 but 1.8 is [[1]]
+      // {"a": [[[1]]]}.a==[[[1]]] // was [1] but 1.8 is [[[1]]]
       // (the other level of flattening is performed on the return of visitId())
+      result = ensureArray(result);
       result = unwrapArray(result);
 
       if (LOG.isLoggable(Level.FINEST))
@@ -1977,11 +1987,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
       // JSONata appears to apply two levels of flattening to singleton arrays
       // pulled out by paths, e.g.:
-      // {"a": [1]}.a==1
-      // {"a": [[1]]}.a==1
-      // {"a": [[[1]]]}.a==[1]
+      // {"a": [1]}.a==[1] // was 1 but 1.8 is [1]
+      // {"a": [[1]]}.a==[[1]] // was 1 but 1.8 is [[1]]
+      // {"a": [[[1]]]}.a==[[[1]]] // was [1] but 1.8 is [[[1]]]
       // (the other level of flattening is performed on the return of visitId())
-      result = unwrapArray(result);
+      // result = unwrapArray(result);
 
       if (LOG.isLoggable(Level.FINEST))
          LOG.exiting(CLASS, METHOD, result);

@@ -1,0 +1,43 @@
+{
+  "observedProperties": [
+    [
+      {
+        "name": "VIS12sec",
+        "value": 22000
+      },
+      {
+        "name": "VIS60sec",
+        "value": 21000
+      },
+      {
+        "name": "VIS-MAX600sec",
+        "value": 20600
+      },
+      {
+        "name": "VIS-MIN600sec",
+        "value": 20080
+      },
+      {
+        "name": "VIS-AVG600sec",
+        "value": 20020
+      },
+      {
+        "name": "VIS-STD600sec",
+        "value": 1
+      },
+      {
+        "name": "VIS-MISSED600sec",
+        "value": 2
+      }
+    ]
+  ],
+  "phenomenonTime": "2018-10-01T06:10:53.539Z",
+  "label": "visibility",
+  "sensorId": "H-S-MNS-DOMA-ZCHT",
+  "gatewayId": "FGL2106213P",
+  "rawMessage": "\u0002\r\nXEAZM0EPW37ZM0352005200520052005200000000PW0300500050006000500050////00\r\nXEAZM0EPW37ZM0352005200520052005200000000PW0300500050006000500050////00\r\nXEAZM0EPW37ZM0352005200520052005200000000PW0300500050006000500050////00\r\n\u0003",
+  "__kinetic__": {
+    "dcm_received_at": "1538374253554",
+    "dcm_sent_at": "1538374257960"
+  }
+}

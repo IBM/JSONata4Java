@@ -1,0 +1,13 @@
+{
+    "Example": [
+        {
+            "names": "first"
+        },
+        {
+            "names": "second"
+        },
+        {
+            "names": ["third", "fourth"]
+        }
+    ]
+}
