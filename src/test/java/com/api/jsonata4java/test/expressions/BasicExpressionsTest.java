@@ -192,15 +192,65 @@ public class BasicExpressionsTest {
             "  }\n" + //
             "}\n"; //
 
+   static String json3 = "[\n" + 
+         "    {\n" + 
+         "        \"name\": \"one\"\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "        \"namex\": \"two\"\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "        \"name\": \"three\"\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "      \"namex\": {\n" + 
+         "         \"name\":\"four\"\n" + 
+         "      }\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "      \"namey\":\"singleton\"\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "      \"namez\":[\"a\",\"b\"]\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "      \"namea\":\"single\"\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "      \"namea\":[\"d\",\"e\"]\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "      \"nameb\":[\"single value\"]\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "      \"namec\": [\n" + 
+         "         {\n" + 
+         "            \"names\": [\"one\"]\n" + 
+         "         },\n" + 
+         "         {\n" + 
+         "            \"names\": [\"two\"]\n" + 
+         "         },\n" + 
+         "         {\n" + 
+         "            \"names\": [\"three\", \"four\"]\n" + 
+         "         }\n" + 
+         "      ]\n" + 
+         "    },\n" + 
+         "    {\n" + 
+         "      \"named\":[\"val1\",\"val2\"]\n" + 
+         "    }\n" + 
+         "]\n" + 
+         "";
 
    static JsonNodeFactory factory = JsonNodeFactory.instance;
    static ObjectMapper mapper = new ObjectMapper();
    static JsonNode jsonObj=null;
    static JsonNode jsonObj2=null;
+   static JsonNode jsonObj3=null;
    static {
       try {
          jsonObj = mapper.readTree(json);
          jsonObj2 = mapper.readTree(json2);
+         jsonObj3 = mapper.readTree(json3);
       } catch (IOException e) {
          e.printStackTrace();
       }
@@ -316,6 +366,33 @@ public class BasicExpressionsTest {
       // issue #26
       simpleTest("( (true and false) ? \"one\" : (true and true) ? \"two\" : (false and true) ? \"three\" : (false and false) ? \"four\" : \"five\" )","two",jsonObj);
       
+      // issue #27
+      expectArray.removeAll();
+      expectArray.add("one");
+      simpleTest("{ \"books\": [\"one\"] }.books",expectArray,jsonObj3);
+      // issue #29 and #30
+      expectArray.removeAll();
+      expectArray.add("one");
+      expectArray.add("three");
+      simpleTest("name",expectArray,jsonObj3);
+      expectArray.removeAll();
+      expectArray.add("one");
+      expectArray.add("two");
+      expectArray.add("three");
+      expectArray.add("four");
+      simpleTest("namec.names",expectArray,jsonObj3);
+      expectArray.removeAll();
+      ArrayNode tmpArray = JsonNodeFactory.instance.arrayNode();
+      tmpArray.add("one");
+      expectArray.add(tmpArray.deepCopy());
+      tmpArray.removeAll();
+      tmpArray.add("two");
+      expectArray.add(tmpArray.deepCopy());
+      tmpArray.removeAll();
+      tmpArray.add("three");
+      tmpArray.add("four");
+      expectArray.add(tmpArray);
+      simpleTest("namec.[names]",expectArray,jsonObj3);
       
    }
 
@@ -329,7 +406,7 @@ public class BasicExpressionsTest {
    @Test
    public void testCustomerScenario() throws Exception {
       String event = "{\"observedProperties\":[[{\"name\":\"VIS12sec\",\"value\":22000},{\"name\":\"VIS60sec\",\"value\":21000},{\"name\":\"VIS-MAX600sec\",\"value\":20600},{\"name\":\"VIS-MIN600sec\",\"value\":20080},{\"name\":\"VIS-AVG600sec\",\"value\":20020},{\"name\":\"VIS-STD600sec\",\"value\":1},{\"name\":\"VIS-MISSED600sec\",\"value\":2}]],\"phenomenonTime\":\"2018-10-01T06:10:53.539Z\",\"label\":\"visibility\",\"sensorId\":\"H-S-MNS-DOMA-ZCHT\",\"gatewayId\":\"FGL2106213P\",\"rawMessage\":\"\\u0002\\r\\nXEAZM0EPW37ZM0352005200520052005200000000PW0300500050006000500050////00\\r\\nXEAZM0EPW37ZM0352005200520052005200000000PW0300500050006000500050////00\\r\\nXEAZM0EPW37ZM0352005200520052005200000000PW0300500050006000500050////00\\r\\n\\u0003\",\"__kinetic__\":{\"dcm_received_at\":\"1538374253554\",\"dcm_sent_at\":\"1538374257960\"}}";
-      test("observedProperties[name='VIS-MISSED600sec'].value", "2", null,
+      test("observedProperties[0][name='VIS-MISSED600sec'].value", "2", null,
          event);
 
    }
