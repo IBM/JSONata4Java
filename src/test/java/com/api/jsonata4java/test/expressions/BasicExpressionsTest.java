@@ -334,11 +334,11 @@ public class BasicExpressionsTest {
       expectArray.removeAll();
       expectArray.add(mapper.readTree("{\"entity\":{\"filter\":true}}"));
       simpleTest("$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n" + 
-      		"   function($v){$v.entity.filter=true})",expectArray,jsonObj);
+      "   function($v){$v.entity.filter=true})",expectArray,jsonObj);
       expectArray.removeAll();
       // TODO: jsonata returns null in the case below but arguing it should return []
       simpleTest("$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n" + 
-        		"   function($v){$v.filter=true})",expectArray,jsonObj);
+        "   function($v){$v.filter=true})",expectArray,jsonObj);
       simpleTest("$length(Surname)",5,jsonObj2);
       test("$length(SurnameX)",null,null,jsonObj2);
       test("$length(Surname)=5",BooleanNode.TRUE,null,jsonObj2);
@@ -929,7 +929,7 @@ public class BasicExpressionsTest {
       {
          Assert.assertEquals(
             ensureAllIntegralsAreLongs(mapper.readTree("[4,5]")),
-            Expressions.parse(" [1,2,3,4,5 ][[3 ,4 ]	]").evaluate(null));
+            Expressions.parse(" [1,2,3,4,5 ][[3 ,4 ]]").evaluate(null));
       }
 
       // duplicates in index array should cause duplicated in resulting array
@@ -943,14 +943,14 @@ public class BasicExpressionsTest {
       {
          Assert.assertEquals(
             ensureAllIntegralsAreLongs(mapper.readTree("[4,5,5]")),
-            Expressions.parse(" [1,2,3,4,5 ][[-1,4,3]	]").evaluate(null));
+            Expressions.parse(" [1,2,3,4,5 ][[-1,4,3]]").evaluate(null));
       }
 
       // array indexes should still be rounded down
       {
          Assert.assertEquals(
             ensureAllIntegralsAreLongs(mapper.readTree("[4,5]")),
-            Expressions.parse("[1,2,3,4,5][ [3.1,	4.9]]").evaluate(null));
+            Expressions.parse("[1,2,3,4,5][ [3.1,4.9]]").evaluate(null));
       }
 
       // should still be able to use negative array indexes
@@ -976,12 +976,12 @@ public class BasicExpressionsTest {
       {
          Assert.assertEquals(
             ensureAllIntegralsAreLongs(mapper.readTree("[3,4]")),
-            Expressions.parse("[1,2,3,4,5 ]	[[-1.1 ,-2.9] ]").evaluate(null));
+            Expressions.parse("[1,2,3,4,5 ][[-1.1 ,-2.9] ]").evaluate(null));
       }
 
       // should get an exception if non-numeric array index used
       try {
-         Expressions.parse("[1,2,3,4,5 ]	[[-1.1 ,\"hello\"] ]").evaluate(null);
+         Expressions.parse("[1,2,3,4,5 ][[-1.1 ,\"hello\"] ]").evaluate(null);
          Assert.fail("Expected exception was not thrown");
       } catch (EvaluateException ex) {
          Assert.assertEquals("non-numeric value used as array index",
@@ -1005,7 +1005,7 @@ public class BasicExpressionsTest {
          ensureAllIntegralsAreLongs(mapper.readTree("[1,2,3]")),
          Expressions.parse("[0,1,2,3][[1..10]]").evaluate(null));
       Assert.assertEquals(ensureAllIntegralsAreLongs(mapper.readTree("[1,2]")),
-         Expressions.parse("[1,2,3,4,5 ]	[[6, 1, -5,5] ]").evaluate(null));
+         Expressions.parse("[1,2,3,4,5 ][[6, 1, -5,5] ]").evaluate(null));
 
       simpleTest("$reverse([1,2,3,4,5])", "[5, 4, 3, 2, 1]");
       simpleTest("$reverse([1..5])", "[5, 4, 3, 2, 1]");
@@ -1555,7 +1555,7 @@ public class BasicExpressionsTest {
       // constructing an array using string primitives
       {
          Assert.assertEquals(mapper.readTree("[\"hello\", \"world\"]"),
-            Expressions.parse("[\"hello\",  \"world\"	]").evaluate(null));
+            Expressions.parse("[\"hello\",  \"world\"]").evaluate(null));
       }
 
       // constructing an array using boolean primitives
@@ -1603,26 +1603,26 @@ public class BasicExpressionsTest {
       {
          Assert.assertEquals(
             ensureAllIntegralsAreLongs(mapper.readTree("[1,2]")),
-            Expressions.parse(" [ 1 ..	2 ]	").evaluate(null));
+            Expressions.parse(" [ 1 ..2 ]").evaluate(null));
       }
 
       // if start > end, an empty array should be produced
       {
          Assert.assertEquals(ensureAllIntegralsAreLongs(mapper.readTree("[]")),
-            Expressions.parse(" [20..1]	").evaluate(null));
+            Expressions.parse(" [20..1]").evaluate(null));
       }
 
       // should be able to use expressions to generate start/end indexes
       {
          Assert.assertEquals(
             ensureAllIntegralsAreLongs(mapper.readTree("[2,3,4,5,6,7,8]")),
-            Expressions.parse(" [1 +1	.. (2+ 2)*2]	").evaluate(null));
+            Expressions.parse(" [1 +1.. (2+ 2)*2]").evaluate(null));
       }
 
       // attempt to use non-integral index should parse, but throw an evaluation
       // exception
       {
-         Expressions e = Expressions.parse(" [0.1..2]	");
+         Expressions e = Expressions.parse(" [0.1..2]");
          try {
             e.evaluate(null);
             Assert.fail("Expected exception was not thrown");
@@ -1636,7 +1636,7 @@ public class BasicExpressionsTest {
       // attempt to use non-integral index should parse, but throw an evaluation
       // exception
       {
-         Expressions e = Expressions.parse(" [1..\"hello\"]	");
+         Expressions e = Expressions.parse(" [1..\"hello\"]");
          try {
             e.evaluate(null);
             Assert.fail("Expected exception was not thrown");
@@ -1888,7 +1888,7 @@ public class BasicExpressionsTest {
             Expressions e = Expressions.parse("$sum(" + param + ")");
             try {
                e.evaluate(null);
-               Assert.fail("Expected exception was not thrown");
+               Assert.fail("Expected exception was not thrown for param: "+param);
             } catch (EvaluateException ex) {
                Assert.assertEquals(SumFunction.ERR_ARG1ARRTYPE, ex.getMessage());
             }
@@ -1960,7 +1960,7 @@ public class BasicExpressionsTest {
             Expressions e = Expressions.parse("$average(" + param + ")");
             try {
                e.evaluate(null);
-               Assert.fail("Expected exception was not thrown");
+               Assert.fail("Expected exception was not thrown for param: "+param);
             } catch (EvaluateException ex) {
                Assert.assertEquals(AverageFunction.ERR_ARG_TYPE,
                   ex.getMessage());
@@ -2008,9 +2008,9 @@ public class BasicExpressionsTest {
       // array of objects
       {
          // [{"a":1}, {"a":2}, {"a":3}, {"a":4}, {"a":5}, {"a":[6,7]}]
-         final String input = "[" + "		{\"a\":1}," + "		{\"a\":2},"
-            + "		{\"a\":3}," + "		{\"a\":4}," + "		{\"a\":5},"
-            + "		{\"a\":[6,7]}" + "]";
+         final String input = "[" + "{\"a\":1}," + "{\"a\":2},"
+            + "{\"a\":3}," + "{\"a\":4}," + "{\"a\":5},"
+            + "{\"a\":[6,7]}" + "]";
 
          simpleTest(input + ".a", "[ 1, 2, 3, 4, 5, 6, 7]");
          simpleTest(input + ".a.b", null);
@@ -2093,8 +2093,8 @@ public class BasicExpressionsTest {
       // array of array of objects
       {
          // [[{"a":1}, {"a":2}, {"a":3}], [{"a":4}, {"a":5}], [{"a":6}]]
-         final String input = "[" + "		[{\"a\":1}, {\"a\":2}, {\"a\":3}], "
-            + "		[{\"a\":4}, {\"a\":5}]," + "		[{\"a\":6}]," + "		[]"
+         final String input = "[" + "[{\"a\":1}, {\"a\":2}, {\"a\":3}], "
+            + "[{\"a\":4}, {\"a\":5}]," + "[{\"a\":6}]," + "[]"
             + "]";
 
          simpleTest(input + "[0]", "[{\"a\":1}, {\"a\":2}, {\"a\":3}]");
@@ -2125,17 +2125,17 @@ public class BasicExpressionsTest {
       {
          // [{"a": [{"b":1}, {"b":2}]}, {"a": [{"b":3}]}, {"a":[{"b":4},
          // {"b":5}]}, {"a":[]}, {"b":[{"b":6}]}, {"c":[{"b":7}]}, 8, {"b":9}]
-         final String input = "[" + "	{\"a\": [" + "		{\"b\":1}, "
-            + "		{\"b\":2}" + "	]}, " + "	{\"a\": [" + "		{\"b\":3}"
-            + "	]}, " + "	{\"a\":[" + "		{\"b\":4}, " + "		{\"b\":5}"
-            + "	]},"
+         final String input = "[" + "{\"a\": [" + "{\"b\":1}, "
+            + "{\"b\":2}" + "]}, " + "{\"a\": [" + "{\"b\":3}"
+            + "]}, " + "{\"a\":[" + "{\"b\":4}, " + "{\"b\":5}"
+            + "]},"
 
             // and throw in some different types of values to check they do not
             // interfere with selection
             // (belt&braces - we do not actually allow definition of
             // heterogeneous arrays like this in IM schemas)
-            + " {\"a\":[]}," + " {\"b\":[" + "		{\"b\":6}" + " ]},"
-            + " {\"c\":[" + "		{\"b\":7}" + " ]}," + " 8," + " {\"b\":9},"
+            + " {\"a\":[]}," + " {\"b\":[" + "{\"b\":6}" + " ]},"
+            + " {\"c\":[" + "{\"b\":7}" + " ]}," + " 8," + " {\"b\":9},"
             + " {\"a\":[{\"x\":22}]}" + "]";
 
          simpleTest(input + "[6]", "8");

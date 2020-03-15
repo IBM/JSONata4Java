@@ -325,7 +325,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
     * @param input
     * @return
     */
-   private static JsonNode unwrapArray(JsonNode input) {
+   public static JsonNode unwrapArray(JsonNode input) {
       if (input == null) {
          return null;
       } else if (input.isArray()) {
