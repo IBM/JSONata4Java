@@ -37,7 +37,6 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionLexer;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @SuppressWarnings("deprecation")
@@ -182,7 +181,7 @@ public class Expressions {
 		_eval = eval;
 
 		try {
-			result = _eval.visit(tree); // was eval.visit();
+			result = _eval.visitTree(tree); // was eval.visit();
 		} catch (EvaluateRuntimeException e) {
 			throw new EvaluateException(e.getMessage(), e);
 		}
@@ -192,10 +191,7 @@ public class Expressions {
 		if (result == null) {
 			return null;
 		}
-      if (result.isArray() && result.size() > 0 && result.get(0).isArray()) {
-         result = (ArrayNode) ExpressionsVisitor.unwrapArray(result);
-      }
-
+		// else return JsonNode as null
 		return result;
 	}
 

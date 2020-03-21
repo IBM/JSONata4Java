@@ -1574,11 +1574,11 @@ public class MappingExpressionParser extends Parser {
 						_localctx = new PathContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(200);
-						if (!(precpred(_ctx, 30))) throw new FailedPredicateException(this, "precpred(_ctx, 30)");
+						if (!(precpred(_ctx, 29))) throw new FailedPredicateException(this, "precpred(_ctx, 29)");
 						setState(201);
 						match(T__0);
 						setState(202);
-						expr(31);
+						expr(30);
 						}
 						break;
 					case 2:
@@ -1725,7 +1725,7 @@ public class MappingExpressionParser extends Parser {
 						_localctx = new To_arrayContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(233);
-						if (!(precpred(_ctx, 29))) throw new FailedPredicateException(this, "precpred(_ctx, 29)");
+						if (!(precpred(_ctx, 28))) throw new FailedPredicateException(this, "precpred(_ctx, 28)");
 						setState(234);
 						match(ARR_OPEN);
 						setState(235);
@@ -1737,7 +1737,7 @@ public class MappingExpressionParser extends Parser {
 						_localctx = new ArrayContext(new ExprContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expr);
 						setState(236);
-						if (!(precpred(_ctx, 28))) throw new FailedPredicateException(this, "precpred(_ctx, 28)");
+						if (!(precpred(_ctx, 27))) throw new FailedPredicateException(this, "precpred(_ctx, 27)");
 						setState(237);
 						match(ARR_OPEN);
 						setState(238);
@@ -2262,7 +2262,7 @@ public class MappingExpressionParser extends Parser {
 	private boolean expr_sempred(ExprContext _localctx, int predIndex) {
 		switch (predIndex) {
 		case 0:
-			return precpred(_ctx, 30);
+			return precpred(_ctx, 29);
 		case 1:
 			return precpred(_ctx, 14);
 		case 2:
@@ -2282,9 +2282,9 @@ public class MappingExpressionParser extends Parser {
 		case 9:
 			return precpred(_ctx, 6);
 		case 10:
-			return precpred(_ctx, 29);
-		case 11:
 			return precpred(_ctx, 28);
+		case 11:
+			return precpred(_ctx, 27);
 		}
 		return true;
 	}
@@ -2363,17 +2363,17 @@ public class MappingExpressionParser extends Parser {
 		"\u00c8\u0083\3\2\2\2\u00c8\u009b\3\2\2\2\u00c8\u00ac\3\2\2\2\u00c8\u00b6"+
 		"\3\2\2\2\u00c8\u00b7\3\2\2\2\u00c8\u00b9\3\2\2\2\u00c8\u00c4\3\2\2\2\u00c8"+
 		"\u00c5\3\2\2\2\u00c8\u00c6\3\2\2\2\u00c8\u00c7\3\2\2\2\u00c9\u00f5\3\2"+
-		"\2\2\u00ca\u00cb\f \2\2\u00cb\u00cc\7\3\2\2\u00cc\u00f4\5\2\2!\u00cd\u00ce"+
-		"\f\20\2\2\u00ce\u00cf\t\3\2\2\u00cf\u00f4\5\2\2\21\u00d0\u00d1\f\17\2"+
-		"\2\u00d1\u00d2\t\4\2\2\u00d2\u00f4\5\2\2\20\u00d3\u00d4\f\16\2\2\u00d4"+
-		"\u00d5\7*\2\2\u00d5\u00f4\5\2\2\17\u00d6\u00d7\f\r\2\2\u00d7\u00d8\t\5"+
-		"\2\2\u00d8\u00f4\5\2\2\16\u00d9\u00da\f\f\2\2\u00da\u00db\7\20\2\2\u00db"+
-		"\u00f4\5\2\2\r\u00dc\u00dd\f\13\2\2\u00dd\u00de\7\16\2\2\u00de\u00f4\5"+
-		"\2\2\f\u00df\u00e0\f\n\2\2\u00e0\u00e1\7\17\2\2\u00e1\u00f4\5\2\2\13\u00e2"+
-		"\u00e3\f\t\2\2\u00e3\u00e4\7\7\2\2\u00e4\u00e5\5\2\2\2\u00e5\u00e6\7\b"+
-		"\2\2\u00e6\u00e7\5\2\2\n\u00e7\u00f4\3\2\2\2\u00e8\u00e9\f\b\2\2\u00e9"+
-		"\u00ea\7\35\2\2\u00ea\u00f4\5\2\2\t\u00eb\u00ec\f\37\2\2\u00ec\u00ed\7"+
-		"\22\2\2\u00ed\u00f4\7\23\2\2\u00ee\u00ef\f\36\2\2\u00ef\u00f0\7\22\2\2"+
+		"\2\2\u00ca\u00cb\f\37\2\2\u00cb\u00cc\7\3\2\2\u00cc\u00f4\5\2\2 \u00cd"+
+		"\u00ce\f\20\2\2\u00ce\u00cf\t\3\2\2\u00cf\u00f4\5\2\2\21\u00d0\u00d1\f"+
+		"\17\2\2\u00d1\u00d2\t\4\2\2\u00d2\u00f4\5\2\2\20\u00d3\u00d4\f\16\2\2"+
+		"\u00d4\u00d5\7*\2\2\u00d5\u00f4\5\2\2\17\u00d6\u00d7\f\r\2\2\u00d7\u00d8"+
+		"\t\5\2\2\u00d8\u00f4\5\2\2\16\u00d9\u00da\f\f\2\2\u00da\u00db\7\20\2\2"+
+		"\u00db\u00f4\5\2\2\r\u00dc\u00dd\f\13\2\2\u00dd\u00de\7\16\2\2\u00de\u00f4"+
+		"\5\2\2\f\u00df\u00e0\f\n\2\2\u00e0\u00e1\7\17\2\2\u00e1\u00f4\5\2\2\13"+
+		"\u00e2\u00e3\f\t\2\2\u00e3\u00e4\7\7\2\2\u00e4\u00e5\5\2\2\2\u00e5\u00e6"+
+		"\7\b\2\2\u00e6\u00e7\5\2\2\n\u00e7\u00f4\3\2\2\2\u00e8\u00e9\f\b\2\2\u00e9"+
+		"\u00ea\7\35\2\2\u00ea\u00f4\5\2\2\t\u00eb\u00ec\f\36\2\2\u00ec\u00ed\7"+
+		"\22\2\2\u00ed\u00f4\7\23\2\2\u00ee\u00ef\f\35\2\2\u00ef\u00f0\7\22\2\2"+
 		"\u00f0\u00f1\5\2\2\2\u00f1\u00f2\7\23\2\2\u00f2\u00f4\3\2\2\2\u00f3\u00ca"+
 		"\3\2\2\2\u00f3\u00cd\3\2\2\2\u00f3\u00d0\3\2\2\2\u00f3\u00d3\3\2\2\2\u00f3"+
 		"\u00d6\3\2\2\2\u00f3\u00d9\3\2\2\2\u00f3\u00dc\3\2\2\2\u00f3\u00df\3\2"+

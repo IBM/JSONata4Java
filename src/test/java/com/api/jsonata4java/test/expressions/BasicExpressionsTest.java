@@ -375,6 +375,7 @@ public class BasicExpressionsTest {
       expectArray.add("one");
       expectArray.add("three");
       simpleTest("name",expectArray,jsonObj3);
+      simpleTest("[name]",expectArray,jsonObj3);
       expectArray.removeAll();
       expectArray.add("one");
       expectArray.add("two");
@@ -394,6 +395,13 @@ public class BasicExpressionsTest {
       expectArray.add(tmpArray);
       simpleTest("namec.[names]",expectArray,jsonObj3);
       
+      // issue #31
+      expectArray.removeAll();
+      expectArray.add(1);
+      simpleTest("[{\"a\":[1]}].a",expectArray,jsonObj3);
+      simpleTest("{\"a\":[1]}.a",expectArray,jsonObj3);
+      simpleTest("[{\"a\":[1]}].a[0]",1,jsonObj3);
+      simpleTest("{\"a\":[1]}.a[0]",1,jsonObj3);
    }
 
    @Test

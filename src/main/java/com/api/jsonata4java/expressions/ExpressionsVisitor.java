@@ -85,6 +85,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
    long startTime = new Date().getTime();
    boolean checkRuntime = false;
    int maxDepth = -1;
+   boolean keepSingleton = false;
    long maxTime = 0L;
 
    private void checkRunaway() {
@@ -116,6 +117,15 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       }
    }
    
+   public JsonNode visitTree(ParseTree tree) {
+      JsonNode result = visit(tree);
+      // simulates lastStep processing
+      if (result != null && result.isArray() && result.size() == 1 && ((ArrayNode)result).get(0).isArray() /* && ((ArrayNode)result).get(0) instanceof SelectorArrayNode == false */ ) {
+         result = ((ArrayNode)result).get(0);
+      }
+      return result;
+   }
+   
    @Override
    public JsonNode visit(ParseTree tree) {
       JsonNode result = null;
@@ -123,6 +133,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
          evaluateEntry();
       }
       result = super.visit(tree);
+      if (!keepSingleton) {
+         if (result != null && result instanceof SelectorArrayNode && result.size() == 1 ) {
+            result = ((SelectorArrayNode)result).getSelectionGroups().get(0);
+         }
+      }
       if (checkRuntime) {
          evaluateExit();
       }
@@ -323,7 +338,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
     * the input as is.
     * 
     * @param input
-    * @return
+    * @return single element if input is a singleton array or the input as presented
     */
    public static JsonNode unwrapArray(JsonNode input) {
       if (input == null) {
@@ -546,7 +561,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
             }
          }
          // added for Issue#30
-         output = unwrapArray(output);
+//         output = unwrapArray(output);
 
       } else {
          // the LHS is just an object
@@ -1455,14 +1470,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
    JsonNode lookup(JsonNode input, String key) {
       JsonNode result = null;
       if (input.isArray()) {
-          result = factory.arrayNode();
+          result = new SelectorArrayNode(factory); // factory.arrayNode();
           for(int ii = 0; ii < input.size(); ii++) {
               JsonNode res =  lookup(input.get(ii), key);
               if (res != null) {
                   if (res.isArray()) {
-                      ((ArrayNode)result).addAll((ArrayNode)res);
+                      ((SelectorArrayNode)result).addAll((ArrayNode)res);
                   } else {
-                     ((ArrayNode)result).add(res);
+                     ((SelectorArrayNode)result).add(res);
                   }
               }
           }
