@@ -267,7 +267,7 @@ public class BasicExpressionsTest {
       expectArray.add((ObjectNode) mapper.readTree("{ \"ref\": [ 1,2 ] }"));
       expectArray.add((ObjectNode) mapper.readTree("{ \"ref\": [ 3,4 ] }"));
       expectObject = (ObjectNode) mapper.readTree("{ \"ref\": [ 1,2 ] }");
-// TODO: fix this      simpleTest("$[0]",expectObject,expectArray);
+      simpleTest("$[0]",expectObject,expectArray);
 
       simpleTest("Account.Order[0].OrderID", "order103", jsonObj);
       expectArray.removeAll();
