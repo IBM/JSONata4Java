@@ -1378,6 +1378,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
             }
          }
       }
+      if (resultArray.size() == 0) {
+         resultArray = null;
+      }
       return resultArray;
    }
 

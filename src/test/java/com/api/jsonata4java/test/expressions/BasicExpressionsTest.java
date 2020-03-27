@@ -27,7 +27,9 @@ import static com.api.jsonata4java.text.expressions.utils.Utils.simpleTest;
 import static com.api.jsonata4java.text.expressions.utils.Utils.simpleTestExpectException;
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 import static org.junit.Assert.assertTrue;
+
 import java.io.IOException;
+
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -47,7 +49,6 @@ import com.api.jsonata4java.expressions.functions.LookupFunction;
 import com.api.jsonata4java.expressions.functions.MergeFunction;
 import com.api.jsonata4java.expressions.functions.ShuffleFunction;
 import com.api.jsonata4java.expressions.functions.SortFunction;
-import com.api.jsonata4java.expressions.functions.SpreadFunction;
 import com.api.jsonata4java.expressions.functions.SubstringFunction;
 import com.api.jsonata4java.expressions.functions.SumFunction;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -302,11 +303,10 @@ public class BasicExpressionsTest {
                   + "   function($v){$v.entity.filter=true})",
             expectArray, jsonObj);
       expectArray.removeAll();
-      // TODO: jsonata returns null in the case below but arguing it should return []
-      simpleTest(
+      test(
             "$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n"
                   + "   function($v){$v.filter=true})",
-            expectArray, jsonObj);
+            null, null, jsonObj);
       simpleTest("$length(Surname)", 5, jsonObj2);
       test("$length(SurnameX)", null, null, jsonObj2);
       test("$length(Surname)=5", BooleanNode.TRUE, null, jsonObj2);
@@ -1002,33 +1002,39 @@ public class BasicExpressionsTest {
       simpleTest("$spread({})", null);
       simpleTest("$spread([{}])", "[]");
       simpleTest("$spread([])", null);
-      // TODO: simpleTest("$spread(\"a\")","\"a\"");
-      {
-         try {
-            Expressions.parse("$spread(\"a\")").evaluate(null);
-            Assert.fail("Did not throw an expected exception");
-         } catch (EvaluateException ex) {
-            Assert.assertEquals(SpreadFunction.ERR_ARG1BADTYPE, ex.getMessage());
-         }
-      }
-      // TODO: simpleTest("$spread(1)","1");
-      {
-         try {
-            Expressions.parse("$spread(1)").evaluate(null);
-            Assert.fail("Did not throw an expected exception");
-         } catch (EvaluateException ex) {
-            Assert.assertEquals(SpreadFunction.ERR_ARG1BADTYPE, ex.getMessage());
-         }
-      }
-      // TODO: simpleTest("$spread([1])","[1]");
-      {
-         try {
-            Expressions.parse("$spread([1])").evaluate(null);
-            Assert.fail("Did not throw an expected exception");
-         } catch (EvaluateException ex) {
-            Assert.assertEquals(SpreadFunction.ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS, ex.getMessage());
-         }
-      }
+      simpleTest("$spread(\"a\")","\"a\"");
+      // jsonata.js 1.8 docs only talk about objects and arrays of objects
+      // but changed code to behave like jsonata.js
+      //      {
+      //         try {
+      //            Expressions.parse("$spread(\"a\")").evaluate(null);
+      //            Assert.fail("Did not throw an expected exception");
+      //         } catch (EvaluateException ex) {
+      //            Assert.assertEquals(SpreadFunction.ERR_ARG1BADTYPE, ex.getMessage());
+      //         }
+      //      }
+      simpleTest("$spread(1)","1");
+      // jsonata.js 1.8 docs only talk about objects and arrays of objects
+      // but changed code to behave like jsonata.js
+      //      {
+      //         try {
+      //            Expressions.parse("$spread(1)").evaluate(null);
+      //            Assert.fail("Did not throw an expected exception");
+      //         } catch (EvaluateException ex) {
+      //            Assert.assertEquals(SpreadFunction.ERR_ARG1BADTYPE, ex.getMessage());
+      //         }
+      //      }
+      simpleTest("$spread([1])","[1]");
+      // jsonata.js 1.8 docs only talk about objects and arrays of objects
+      // but changed code to behave like jsonata.js
+      //      {
+      //         try {
+      //            Expressions.parse("$spread([1])").evaluate(null);
+      //            Assert.fail("Did not throw an expected exception");
+      //         } catch (EvaluateException ex) {
+      //            Assert.assertEquals(SpreadFunction.ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS, ex.getMessage());
+      //         }
+      //      }
 
       simpleTest("$merge([{\"a\":1,\"value\":2},{\"b\":{\"value\":{\"d\":5},\"c\":5}},{\"a\":2}])",
             "{\"a\":2, \"value\":2, \"b\":{\"value\":{\"d\":5},\"c\":5}}");

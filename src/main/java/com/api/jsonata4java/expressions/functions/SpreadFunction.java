@@ -65,14 +65,14 @@ public class SpreadFunction extends FunctionBase implements Function {
 			argObject = FunctionUtils.getContextVariable(expressionVisitor);
 			argCount++;
 		}
-
+		boolean argIsArray = false;
 		// Make sure that we have the right number of arguments
 		if (argCount == 1) {
 			if (!useContext) {
 				argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
 
-			if (argObject != null) {
+			// if (argObject != null) {
 				if (argObject.isObject()) {
 					ObjectNode obj = (ObjectNode) argObject;
 					if (obj.size() > 0) {
@@ -81,6 +81,7 @@ public class SpreadFunction extends FunctionBase implements Function {
 						return null;
 					}
 				} else if (argObject.isArray()) {
+				   argIsArray = true;
 					ArrayNode objArray = (ArrayNode) argObject;
 					if (objArray.size() == 0) {
 						return null;
@@ -92,7 +93,9 @@ public class SpreadFunction extends FunctionBase implements Function {
 							ObjectNode obj = (ObjectNode) node;
 							addObject(result, obj);
 						} else {
-							throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS);
+						   // jsonata.js 1.8 just keeps non-objects
+							// throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS);
+						   result.add(node);
 						}
 
 					}
@@ -101,13 +104,23 @@ public class SpreadFunction extends FunctionBase implements Function {
 					 * The input argument is not an object nor array of objects. Throw a suitable
 					 * exception
 					 */
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+					// throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				   // jsonata.js 1.8 just adds the argument
+				   result.add(argObject);
 				}
-			}
+			// }
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
 
+		if (argIsArray == false) {
+   		JsonNode test = ExpressionsVisitor.unwrapArray(result);
+   		if (test.isArray()) {
+   		   result = (ArrayNode)test;
+   		} else {
+   		   return test;
+   		}
+		}
 		return result;
 	}
 
