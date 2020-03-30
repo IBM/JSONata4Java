@@ -111,8 +111,8 @@ public class JoinFunction extends FunctionBase implements Function {
 			Iterator<JsonNode> elements = ((ArrayNode) argArray).elements();
 			while (elements.hasNext()) {
 				JsonNode element = elements.next();
-				if (element.isTextual()) {
-					stringJoiner.add(element.textValue());
+				if (element.isValueNode()) {
+					stringJoiner.add(element.asText());
 				} else if (element.isArray()){
 				   for (Iterator<JsonNode>it = ((ArrayNode)element).iterator();it.hasNext();) {
 				      stringJoiner.add(it.next().textValue());

@@ -371,6 +371,12 @@ public class BasicExpressionsTest {
       simpleTest("{\"a\":[1]}.a", expectArray, jsonObj3);
       simpleTest("[{\"a\":[1]}].a[0]", 1, jsonObj3);
       simpleTest("{\"a\":[1]}.a[0]", 1, jsonObj3);
+      
+      // issue #29
+      expectArray.removeAll();
+      expectArray.add(mapper.readTree("{\"id\":\"858383, 858236\"}"));
+      expectArray.add(mapper.readTree("{\"id\":\"858383, 345664\"}"));
+      simpleTest("[Account.Order].{\"id\" : $join(Product.ProductID, ', ')}",expectArray,jsonObj);
    }
 
    @Test
