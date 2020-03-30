@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.7
+// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.8
 package com.api.jsonata4java.expressions.generated;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -7,18 +7,6 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  * {@link MappingExpressionParser}.
  */
 public interface MappingExpressionListener extends ParseTreeListener {
-	/**
-	 * Enter a parse tree produced by the {@code sift_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterSift_function(MappingExpressionParser.Sift_functionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code sift_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitSift_function(MappingExpressionParser.Sift_functionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code parens}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
@@ -248,18 +236,6 @@ public interface MappingExpressionListener extends ParseTreeListener {
 	 */
 	void exitContext_ref(MappingExpressionParser.Context_refContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code reduce_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterReduce_function(MappingExpressionParser.Reduce_functionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code reduce_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitReduce_function(MappingExpressionParser.Reduce_functionContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code array_constructor}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -271,18 +247,6 @@ public interface MappingExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArray_constructor(MappingExpressionParser.Array_constructorContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code each_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterEach_function(MappingExpressionParser.Each_functionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code each_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitEach_function(MappingExpressionParser.Each_functionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code unary_op}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
@@ -331,18 +295,6 @@ public interface MappingExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitRoot_path(MappingExpressionParser.Root_pathContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code filter_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterFilter_function(MappingExpressionParser.Filter_functionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code filter_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitFilter_function(MappingExpressionParser.Filter_functionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code fct_chain}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
@@ -403,18 +355,6 @@ public interface MappingExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFunction_exec(MappingExpressionParser.Function_execContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code map_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterMap_function(MappingExpressionParser.Map_functionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code map_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitMap_function(MappingExpressionParser.Map_functionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code field_values}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.

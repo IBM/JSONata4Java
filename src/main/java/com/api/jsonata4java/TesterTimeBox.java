@@ -186,9 +186,11 @@ public class TesterTimeBox {
 				System.err.println(e.getLocalizedMessage());
 				continue;
 			} catch (EvaluateRuntimeException ere) {
-				System.out.println(ere.getLocalizedMessage());
+				System.err.println(ere.getLocalizedMessage());
 				continue;
-			}
+			} catch (IOException ioe) {
+			   System.err.println(ioe.getLocalizedMessage());
+         }
 			try {
 				JsonNode result = null;
 	           if (checkRuntime) {

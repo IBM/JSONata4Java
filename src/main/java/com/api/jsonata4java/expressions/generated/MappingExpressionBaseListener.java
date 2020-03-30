@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.7
+// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.8
 package com.api.jsonata4java.expressions.generated;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -11,18 +11,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * of the available methods.
  */
 public class MappingExpressionBaseListener implements MappingExpressionListener {
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterSift_function(MappingExpressionParser.Sift_functionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSift_function(MappingExpressionParser.Sift_functionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -256,18 +244,6 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterReduce_function(MappingExpressionParser.Reduce_functionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitReduce_function(MappingExpressionParser.Reduce_functionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterArray_constructor(MappingExpressionParser.Array_constructorContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -275,18 +251,6 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArray_constructor(MappingExpressionParser.Array_constructorContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterEach_function(MappingExpressionParser.Each_functionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitEach_function(MappingExpressionParser.Each_functionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -335,18 +299,6 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitRoot_path(MappingExpressionParser.Root_pathContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFilter_function(MappingExpressionParser.Filter_functionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFilter_function(MappingExpressionParser.Filter_functionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -407,18 +359,6 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFunction_exec(MappingExpressionParser.Function_execContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterMap_function(MappingExpressionParser.Map_functionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitMap_function(MappingExpressionParser.Map_functionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

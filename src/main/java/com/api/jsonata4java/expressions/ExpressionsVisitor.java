@@ -53,16 +53,13 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Boolea
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprOrSeqContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.IdContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Object_constructorContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.PathContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Root_pathContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.SeqContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.VarListContext;
 import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -355,7 +352,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
    }
 
    JsonNodeFactory factory = JsonNodeFactory.instance;
-   private Map<String, DeclaredFunction> functionMap = new HashMap<String, DeclaredFunction>();
+   public Map<String, DeclaredFunction> functionMap = new HashMap<String, DeclaredFunction>();
 
    /**
     * This stack is used for storing the current "context" under which to evaluate
@@ -1163,51 +1160,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
    }
 
    @Override
-   public JsonNode visitEach_function(MappingExpressionParser.Each_functionContext ctx) {
-      // $each(obj,function($value, $key){...} returns an ArrayNode
-      ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
-      List<ExprListContext> exprListContext = ctx.exprList();
-      ExprListContext exprList = exprListContext.get(0);
-      ExprContext objCtx = exprList.expr(0);
-      JsonNode element = visit(objCtx);
-      ExprListContext fctBody = null;
-      if (exprListContext.size() > 1) {
-         fctBody = exprListContext.get(1);
-      }
-      VarListContext varList = ctx.varList();
-      TerminalNode functionid = ctx.FUNCTIONID();
-      TerminalNode varid = ctx.VAR_ID();
-      if (varid != null) {
-         // is this a known function reference?
-         Function function = Constants.FUNCTIONS.get(varid.getText());
-         if (function != null) {
-            Function_callContext callCtx = new Function_callContext(ctx);
-            // note: callCtx.children should be empty unless carrying an
-            // exception
-            resultArray.add(FunctionUtils.processFctCallVariables(this, function, varid, callCtx, element));
-         } else {
-            // get the function to be executed from the functionMap and execute
-            DeclaredFunction fct = functionMap.get(functionid.getText());
-            if (fct == null) {
-               throw new EvaluateRuntimeException(
-                     "Expected function variable reference " + varid.getText() + " to resolve to a declared function.");
-            }
-         }
-      } else {
-         // we have a declared function for each
-         DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
-         // the each function expects the value and key from each element in the
-         // object
-         for (Iterator<String> it = element.fieldNames(); it.hasNext();) {
-            String key = it.next();
-            JsonNode value = element.get(key);
-            resultArray.add(fct.invoke(this, FunctionUtils.fillExprVarContext(ctx, key, value)));
-         }
-      }
-      return resultArray;
-   }
-
-   @Override
    public JsonNode visitFct_chain(Fct_chainContext ctx) {
       JsonNode result = null;
       Object exprObj = ctx.expr(1);
@@ -1262,124 +1214,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       }
       if (resultArray.size() == 0) {
          return null;
-      }
-      return resultArray;
-   }
-
-   @Override
-   public JsonNode visitFilter_function(MappingExpressionParser.Filter_functionContext ctx) {
-      ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
-      // expect something that evaluates to an array and either a variable
-      // pointing to a function, or a function declaration
-      VarListContext varList = ctx.varList();
-      List<ExprListContext> exprListContext = ctx.exprList();
-      ExprListContext exprList = exprListContext.get(0);
-      boolean useContext = ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
-            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
-      JsonNode arrayObj = null;
-      if (useContext) {
-         arrayObj = FunctionUtils.getContextVariable(this);
-      } else {
-         arrayObj = visit(exprList.expr(0));
-      }
-      if (arrayObj == null || !arrayObj.isArray()) {
-         throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FILTER));
-      }
-      ArrayNode mapArray = (ArrayNode) arrayObj;
-
-      ExprListContext fctBody = null;
-      if (exprListContext.size() > (useContext ? 0 : 1)) {
-         fctBody = exprListContext.get(useContext ? 0 : 1);
-      }
-
-      // below are mutually exclusive
-      TerminalNode varid = ctx.VAR_ID();
-      if (varid != null) {
-         // is this a known function reference?
-         Function function = Constants.FUNCTIONS.get(varid.getText());
-         if (function != null) {
-            for (int i = 0; i < mapArray.size(); i++) {
-               Function_callContext callCtx = new Function_callContext(ctx);
-               // note: callCtx.children should be empty unless carrying an
-               // exception
-               JsonNode element = mapArray.get(i);
-               JsonNode fctResult = FunctionUtils.processFctCallVariables(this, function, varid, callCtx, element);
-               if (fctResult != null && fctResult.asBoolean()) {
-                  resultArray.add(element);
-               }
-            }
-         } else {
-            // get the function to be executed from the functionMap and execute
-            DeclaredFunction fct = functionMap.get(varid.getText());
-            if (fct == null) {
-               throw new EvaluateRuntimeException(
-                     "Expected function variable reference " + varid.getText() + " to resolve to a declared function.");
-            }
-            int varCount = fct.getVariableCount();
-            for (int i = 0; i < mapArray.size(); i++) {
-               JsonNode element = mapArray.get(i);
-               ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-               switch (varCount) {
-               case 1: {
-                  // just pass the mapArray variable
-                  evc = FunctionUtils.fillExprVarContext(ctx, element);
-                  break;
-               }
-               case 2: {
-                  // pass the mapArray variable and index
-                  evc = FunctionUtils.fillExprVarContext(ctx, element);
-                  evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-                  break;
-               }
-               case 3: {
-                  // pass the mapArray variable, index, and array
-                  evc = FunctionUtils.fillExprVarContext(ctx, element);
-                  evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-                  evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
-                  break;
-               }
-               }
-               JsonNode fctResult = fct.invoke(this, evc);
-               if (fctResult != null && fctResult.asBoolean()) {
-                  resultArray.add(element);
-               }
-            }
-         }
-      } else {
-         // we have a declared function for filtering
-         DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
-         int varCount = fct.getVariableCount();
-         for (int i = 0; i < mapArray.size(); i++) {
-            JsonNode element = mapArray.get(i);
-            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-            switch (varCount) {
-            case 1: {
-               // just pass the mapArray variable
-               evc = FunctionUtils.fillExprVarContext(ctx, element);
-               break;
-            }
-            case 2: {
-               // pass the mapArray variable and index
-               evc = FunctionUtils.fillExprVarContext(ctx, element);
-               evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-               break;
-            }
-            case 3: {
-               // pass the mapArray variable, index, and array
-               evc = FunctionUtils.fillExprVarContext(ctx, element);
-               evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-               evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
-               break;
-            }
-            }
-            JsonNode fctResult = fct.invoke(this, evc);
-            if (fctResult != null && fctResult.asBoolean()) {
-               resultArray.add(element);
-            }
-         }
-      }
-      if (resultArray.size() == 0) {
-         resultArray = null;
       }
       return resultArray;
    }
@@ -1527,111 +1361,111 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
    // private boolean flattenOutput = true;
 
-   @Override
-   public JsonNode visitMap_function(MappingExpressionParser.Map_functionContext ctx) {
-      ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
-      // expect something that evaluates to an array and either a variable
-      // pointing to a function, or a function declaration
-      VarListContext varList = ctx.varList();
-      List<ExprListContext> exprListContext = ctx.exprList();
-      ExprListContext exprList = exprListContext.get(0);
-      boolean useContext = ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
-            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
-      JsonNode arrayObj = null;
-      if (useContext) {
-         arrayObj = FunctionUtils.getContextVariable(this);
-      } else {
-         arrayObj = visit(exprList.expr(0));
-      }
-      if (arrayObj == null || !arrayObj.isArray()) {
-         throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FILTER));
-      }
-      ArrayNode mapArray = (ArrayNode) arrayObj;
-
-      ExprListContext fctBody = null;
-      if (exprListContext.size() > (useContext ? 0 : 1)) {
-         fctBody = exprListContext.get(useContext ? 0 : 1);
-      }
-
-      // below are mutually exclusive
-      TerminalNode varid = ctx.VAR_ID();
-      if (varid != null) {
-         // is this a known function reference?
-         Function function = Constants.FUNCTIONS.get(varid.getText());
-         if (function != null) {
-            for (int i = 0; i < mapArray.size(); i++) {
-               Function_callContext callCtx = new Function_callContext(ctx);
-               // note: callCtx.children should be empty unless carrying an
-               // exception
-               JsonNode element = mapArray.get(i);
-               resultArray.add(FunctionUtils.processFctCallVariables(this, function, varid, callCtx, element));
-            }
-         } else {
-            // get the function to be executed from the functionMap and execute
-            DeclaredFunction fct = functionMap.get(varid.getText());
-            if (fct == null) {
-               throw new EvaluateRuntimeException(
-                     "Expected function variable reference " + varid.getText() + " to resolve to a declared function.");
-            }
-            int varCount = fct.getVariableCount();
-            for (int i = 0; i < mapArray.size(); i++) {
-               JsonNode element = mapArray.get(i);
-               ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-               switch (varCount) {
-               case 1: {
-                  // just pass the mapArray variable
-                  evc = FunctionUtils.fillExprVarContext(ctx, element);
-                  break;
-               }
-               case 2: {
-                  // pass the mapArray variable and index
-                  evc = FunctionUtils.fillExprVarContext(ctx, element);
-                  evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-                  break;
-               }
-               case 3: {
-                  // pass the mapArray variable, index, and array
-                  evc = FunctionUtils.fillExprVarContext(ctx, element);
-                  evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-                  evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
-                  break;
-               }
-               }
-               resultArray.add(fct.invoke(this, evc));
-            }
-         }
-      } else {
-         // we have a declared function for mapping
-         DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
-         int varCount = fct.getVariableCount();
-         for (int i = 0; i < mapArray.size(); i++) {
-            JsonNode element = mapArray.get(i);
-            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-            switch (varCount) {
-            case 1: {
-               // just pass the mapArray variable
-               evc = FunctionUtils.fillExprVarContext(ctx, element);
-               break;
-            }
-            case 2: {
-               // pass the mapArray variable and index
-               evc = FunctionUtils.fillExprVarContext(ctx, element);
-               evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-               break;
-            }
-            case 3: {
-               // pass the mapArray variable, index, and array
-               evc = FunctionUtils.fillExprVarContext(ctx, element);
-               evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-               evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
-               break;
-            }
-            }
-            resultArray.add(fct.invoke(this, evc));
-         }
-      }
-      return resultArray;
-   }
+//   @Override
+//   public JsonNode visitMap_function(MappingExpressionParser.Map_functionContext ctx) {
+//      ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
+//      // expect something that evaluates to an array and either a variable
+//      // pointing to a function, or a function declaration
+//      VarListContext varList = ctx.varList();
+//      List<ExprListContext> exprListContext = ctx.exprList();
+//      ExprListContext exprList = exprListContext.get(0);
+//      boolean useContext = ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
+//            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
+//      JsonNode arrayObj = null;
+//      if (useContext) {
+//         arrayObj = FunctionUtils.getContextVariable(this);
+//      } else {
+//         arrayObj = visit(exprList.expr(0));
+//      }
+//      if (arrayObj == null || !arrayObj.isArray()) {
+//         throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FILTER));
+//      }
+//      ArrayNode mapArray = (ArrayNode) arrayObj;
+//
+//      ExprListContext fctBody = null;
+//      if (exprListContext.size() > (useContext ? 0 : 1)) {
+//         fctBody = exprListContext.get(useContext ? 0 : 1);
+//      }
+//
+//      // below are mutually exclusive
+//      TerminalNode varid = ctx.VAR_ID();
+//      if (varid != null) {
+//         // is this a known function reference?
+//         Function function = Constants.FUNCTIONS.get(varid.getText());
+//         if (function != null) {
+//            for (int i = 0; i < mapArray.size(); i++) {
+//               Function_callContext callCtx = new Function_callContext(ctx);
+//               // note: callCtx.children should be empty unless carrying an
+//               // exception
+//               JsonNode element = mapArray.get(i);
+//               resultArray.add(FunctionUtils.processFctCallVariables(this, function, varid, callCtx, element));
+//            }
+//         } else {
+//            // get the function to be executed from the functionMap and execute
+//            DeclaredFunction fct = functionMap.get(varid.getText());
+//            if (fct == null) {
+//               throw new EvaluateRuntimeException(
+//                     "Expected function variable reference " + varid.getText() + " to resolve to a declared function.");
+//            }
+//            int varCount = fct.getVariableCount();
+//            for (int i = 0; i < mapArray.size(); i++) {
+//               JsonNode element = mapArray.get(i);
+//               ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
+//               switch (varCount) {
+//               case 1: {
+//                  // just pass the mapArray variable
+//                  evc = FunctionUtils.fillExprVarContext(ctx, element);
+//                  break;
+//               }
+//               case 2: {
+//                  // pass the mapArray variable and index
+//                  evc = FunctionUtils.fillExprVarContext(ctx, element);
+//                  evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+//                  break;
+//               }
+//               case 3: {
+//                  // pass the mapArray variable, index, and array
+//                  evc = FunctionUtils.fillExprVarContext(ctx, element);
+//                  evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+//                  evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
+//                  break;
+//               }
+//               }
+//               resultArray.add(fct.invoke(this, evc));
+//            }
+//         }
+//      } else {
+//         // we have a declared function for mapping
+//         DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
+//         int varCount = fct.getVariableCount();
+//         for (int i = 0; i < mapArray.size(); i++) {
+//            JsonNode element = mapArray.get(i);
+//            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
+//            switch (varCount) {
+//            case 1: {
+//               // just pass the mapArray variable
+//               evc = FunctionUtils.fillExprVarContext(ctx, element);
+//               break;
+//            }
+//            case 2: {
+//               // pass the mapArray variable and index
+//               evc = FunctionUtils.fillExprVarContext(ctx, element);
+//               evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+//               break;
+//            }
+//            case 3: {
+//               // pass the mapArray variable, index, and array
+//               evc = FunctionUtils.fillExprVarContext(ctx, element);
+//               evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+//               evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
+//               break;
+//            }
+//            }
+//            resultArray.add(fct.invoke(this, evc));
+//         }
+//      }
+//      return resultArray;
+//   }
 
    @Override
    public JsonNode visitMembership(MappingExpressionParser.MembershipContext ctx) {
@@ -1729,48 +1563,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
        */
       return NumberUtils.convertNumberToValueNode(ctx.NUMBER().getText());
    }
-
-   // @Override
-   // public JsonNode
-   // visitExprOrSeqList(MappingExpressionParser.ExprOrSeqListContext ctx) {
-   // JsonNode result = visitChildren(ctx);
-   //// ArrayNode array = JsonNodeFactory.instance.arrayNode(); //
-   // visitChildren(ctx);
-   //// for (int i = 0; i < ctx.getChildCount(); i++) {
-   //// ParseTree child = ctx.getChild(i);
-   //// if (child instanceof ExprOrSeqContext) {
-   //// ExprOrSeqContext expr = (ExprOrSeqContext)child;
-   //// result = visit(expr);
-   //// array.add(result);
-   //// }
-   //// } // end for each child in the list
-   // return result;
-   // }
-   //
-   // @Override
-   // public JsonNode visitExprOrSeq(
-   // MappingExpressionParser.ExprOrSeqContext ctx) {
-   //
-   // JsonNode result = visitChildren(ctx);
-   //// if (ctx.seq() == null) {
-   //// // this is an expression
-   //// int childCount = ctx.getChildCount();
-   //// if (childCount == 1) {
-   //// result = visit(ctx.expr());
-   //// } else {
-   //// ArrayNode array = JsonNodeFactory.instance.arrayNode();
-   //// for (int i=0;i<childCount;i++) {
-   //// result = visit(ctx.getChild(i));
-   //// array.add(result);
-   //// }
-   //// result = array;
-   //// }
-   //// } else {
-   //// // this is a sequence
-   //// result = visit(ctx.seq());
-   //// }
-   // return result;
-   // }
 
    @Override
    public JsonNode visitObject_constructor(Object_constructorContext ctx) {
@@ -1878,90 +1670,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       return result;
    }
 
-   /*
-    * ==================== = UTILITY FUNCTIONS ====================
-    */
-
-   @Override
-   public JsonNode visitReduce_function(MappingExpressionParser.Reduce_functionContext ctx) {
-
-      JsonNode result = null;
-      // expect something that evaluates to an array and either a variable
-      // pointing to a function, or a function declaration
-      VarListContext varList = ctx.varList();
-      List<ExprListContext> exprListContext = ctx.exprList();
-      ExprListContext exprList = exprListContext.get(0);
-      boolean useContext = ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
-            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
-      JsonNode arrayObj = null;
-      if (useContext) {
-         arrayObj = FunctionUtils.getContextVariable(this);
-      } else {
-         arrayObj = visit(exprList.expr(0));
-      }
-      if (arrayObj == null || !arrayObj.isArray()) {
-         throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FILTER));
-      }
-      ArrayNode mapArray = (ArrayNode) arrayObj;
-
-      ExprListContext fctBody = null;
-      if (exprListContext.size() > (useContext ? 0 : 1)) {
-         fctBody = exprListContext.get(useContext ? 0 : 1);
-      }
-
-      int startIndex = 1;
-      ExprOrSeqContext init = null;
-      JsonNode prevResult = mapArray.get(0);
-      List<ExprOrSeqContext> exprSeqList = ctx.exprOrSeq();
-      if (exprSeqList.size() > 0) {
-         init = exprSeqList.get(0);
-         prevResult = visit(init);
-         startIndex = 0;
-      }
-
-      // below are mutually exclusive
-      TerminalNode varid = ctx.VAR_ID();
-      if (varid != null) {
-         // is this a known function reference?
-         Function function = Constants.FUNCTIONS.get(varid.getText());
-         if (function != null) {
-            for (int i = startIndex; i < mapArray.size(); i++) {
-               Function_callContext callCtx = new Function_callContext(ctx);
-               // note: callCtx.children should be empty unless carrying an
-               // exception
-               JsonNode element = mapArray.get(i);
-               prevResult = (FunctionUtils.processFctCallVariables(this, function, varid, callCtx, prevResult,
-                     element));
-            }
-         } else {
-            // get the function to be executed from the functionMap and execute
-            DeclaredFunction fct = functionMap.get(varid.getText());
-            if (fct == null) {
-               throw new EvaluateRuntimeException(
-                     "Expected function variable reference " + varid.getText() + " to resolve to a declared function.");
-            }
-            for (int i = startIndex; i < mapArray.size(); i++) {
-               JsonNode element = mapArray.get(i);
-               ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-               evc = FunctionUtils.fillExprVarContext(ctx, prevResult, element);
-               prevResult = fct.invoke(this, evc);
-            }
-         }
-      } else {
-         // we have a declared function for mapping
-         DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
-         for (int i = startIndex; i < mapArray.size(); i++) {
-            JsonNode element = mapArray.get(i);
-            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-            evc = FunctionUtils.fillExprVarContext(ctx, prevResult, element);
-            prevResult = fct.invoke(this, evc);
-         }
-      }
-      result = prevResult;
-      return result;
-
-   }
-
    @Override
    public JsonNode visitRoot_path(Root_pathContext ctx) {
       final String METHOD = "visitRoot_path";
@@ -2015,125 +1723,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       }
 
       return result;
-   }
-
-   @Override
-   public JsonNode visitSift_function(MappingExpressionParser.Sift_functionContext ctx) {
-      ObjectNode resultObject = new ObjectNode(JsonNodeFactory.instance);
-      // expect something that evaluates to an object and either a variable
-      // pointing to a function, or a function declaration
-      VarListContext varList = ctx.varList();
-      List<ExprListContext> exprListContext = ctx.exprList();
-      ExprListContext exprList = exprListContext.get(0);
-      boolean useContext = ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
-            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
-      JsonNode objNode = null;
-      if (useContext) {
-         objNode = FunctionUtils.getContextVariable(this);
-      } else {
-         objNode = visit(exprList.expr(0));
-      }
-      if (objNode == null || !objNode.isObject()) {
-         throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FILTER));
-      }
-      ObjectNode object = (ObjectNode) objNode;
-
-      ExprListContext fctBody = null;
-      if (exprListContext.size() > (useContext ? 0 : 1)) {
-         fctBody = exprListContext.get(useContext ? 0 : 1);
-      }
-
-      // below are mutually exclusive
-      TerminalNode varid = ctx.VAR_ID();
-      if (varid != null) {
-         // is this a known function reference?
-         Function function = Constants.FUNCTIONS.get(varid.getText());
-         JsonNode fctResult = null;
-         if (function != null) {
-            for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
-               String key = it.next();
-               JsonNode field = object.get(key);
-               Function_callContext callCtx = new Function_callContext(ctx);
-               // note: callCtx.children should be empty unless carrying an
-               // exception
-               fctResult = FunctionUtils.processFctCallVariables(this, function, varid, callCtx, field, key, object);
-               if (fctResult != null && fctResult.asBoolean()) {
-                  resultObject.set(key, field);
-               }
-            }
-         } else {
-            // get the function to be executed from the functionMap and execute
-            DeclaredFunction fct = functionMap.get(varid.getText());
-            if (fct == null) {
-               throw new EvaluateRuntimeException(
-                     "Expected function variable reference " + varid.getText() + " to resolve to a declared function.");
-            }
-            int varCount = fct.getVariableCount();
-            for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
-               String key = it.next();
-               JsonNode field = object.get(key);
-               ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-               switch (varCount) {
-               case 1: {
-                  // just pass the field value
-                  evc = FunctionUtils.fillExprVarContext(ctx, field);
-                  break;
-               }
-               case 2: {
-                  // pass the field value and index
-                  evc = FunctionUtils.fillExprVarContext(ctx, field);
-                  evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
-                  break;
-               }
-               case 3: {
-                  // pass the mapArray variable, index, and array
-                  evc = FunctionUtils.fillExprVarContext(ctx, field);
-                  evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
-                  evc = FunctionUtils.addObjectExprVarContext(ctx, evc, object);
-                  break;
-               }
-               }
-               fctResult = fct.invoke(this, evc);
-               if (fctResult != null && fctResult.asBoolean()) {
-                  resultObject.set(key, field);
-               }
-            }
-         }
-      } else {
-         // we have a declared function for sifting
-         DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
-         int varCount = fct.getVariableCount();
-         for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
-            String key = it.next();
-            JsonNode field = object.get(key);
-            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-            switch (varCount) {
-            case 1: {
-               // just pass the field value
-               evc = FunctionUtils.fillExprVarContext(ctx, field);
-               break;
-            }
-            case 2: {
-               // pass the field value and key
-               evc = FunctionUtils.fillExprVarContext(ctx, field);
-               evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
-               break;
-            }
-            case 3: {
-               // pass the field value, key, and object
-               evc = FunctionUtils.fillExprVarContext(ctx, field);
-               evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
-               evc = FunctionUtils.addObjectExprVarContext(ctx, evc, object);
-               break;
-            }
-            }
-            JsonNode fctResult = fct.invoke(this, evc);
-            if (fctResult != null && fctResult.asBoolean()) {
-               resultObject.set(key, field);
-            }
-         }
-      }
-      return resultObject;
    }
 
    @Override

@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.ListIterator;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
-import com.api.jsonata4java.expressions.path.generated.PathExpressionParserBaseVisitor;
 import com.api.jsonata4java.expressions.path.generated.PathExpressionParser.Array_indexContext;
 import com.api.jsonata4java.expressions.path.generated.PathExpressionParser.PathContext;
+import com.api.jsonata4java.expressions.path.generated.PathExpressionParserBaseVisitor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;

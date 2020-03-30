@@ -46,11 +46,6 @@ expr:
  | VAR_ID (emptyValues | exprValues)                      # function_call
  | FUNCTIONID varList '{' exprList? '}'                   # function_decl
  | VAR_ID ASSIGN (expr | (FUNCTIONID varList '{' exprList? '}'))                   # var_assign
- | EACH '(' exprList ',' (VAR_ID | (FUNCTIONID varList '{' exprList? '}')) ')'     # each_function
- | FILTER '(' exprList ',' (VAR_ID | (FUNCTIONID varList '{' exprList? '}')) ')'   # filter_function
- | MAP '(' exprList ',' (VAR_ID | (FUNCTIONID varList '{' exprList? '}')) ')'      # map_function
- | REDUCE '(' exprList ',' (VAR_ID | (FUNCTIONID varList '{' exprList? '}')) (',' exprOrSeq)* ')'   # reduce_function
- | SIFT '(' exprList ',' (VAR_ID | (FUNCTIONID varList '{' exprList? '}')) ')'     # sift_function
  | (FUNCTIONID varList '{' exprList? '}') exprValues                               # function_exec
  | op=(TRUE|FALSE)                                        # boolean
  | op='-' expr                                            # unary_op
@@ -73,7 +68,7 @@ expr:
 fieldList : STRING ':' expr (',' STRING ':' expr)*;
 exprList : expr (',' expr)* ;
 varList : '('  (VAR_ID (',' VAR_ID)*)* ')' ;
-exprValues : '(' exprList ')' ;
+exprValues : '(' exprList ')' ((',' exprOrSeq)* ')')?;
 emptyValues : '(' ')' ;
 seq : expr '..' expr ;
 
@@ -135,12 +130,6 @@ LE  : '<=' ;
 GT  : '>' ;
 GE  : '>=' ;
 CONCAT : '&';
-
-EACH : '$each' ;
-SIFT : '$sift' ;
-REDUCE : '$reduce' ;
-FILTER : '$filter' ;
-MAP : '$map' ;
 
 VAR_ID : '$' ID ;
 

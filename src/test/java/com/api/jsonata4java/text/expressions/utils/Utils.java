@@ -81,19 +81,19 @@ public class Utils {
 	}
 
 	public static void simpleTest(String expression, int expected, JsonNode jsonObj)
-			throws ParseException, EvaluateException, JsonProcessingException {
+			throws ParseException, EvaluateException, IOException {
 		JsonNode expectObj = JsonNodeFactory.instance.numberNode(expected);
 		simpleTest(expression, expectObj, jsonObj);
 	}
 
 	public static void simpleTest(String expression, String expected, JsonNode jsonObj)
-			throws ParseException, EvaluateException, JsonProcessingException {
+			throws ParseException, EvaluateException, IOException {
 		JsonNode expectObj = JsonNodeFactory.instance.textNode(expected);
 		simpleTest(expression, expectObj, jsonObj);
 	}
 
 	public static void simpleTest(String expression, ObjectNode expected, JsonNode jsonObj)
-			throws ParseException, EvaluateException, JsonProcessingException {
+			throws ParseException, EvaluateException, IOException {
 		Expressions expr = Expressions.parse(expression);
 		JsonNode result = expr.evaluate(jsonObj);
       System.err.print("* " + expression);
@@ -102,7 +102,7 @@ public class Utils {
 	}
 
 	public static void simpleTest(String expression, JsonNode expected, JsonNode jsonObj)
-			throws ParseException, EvaluateException, JsonProcessingException {
+			throws ParseException, EvaluateException, IOException {
 		Expressions expr = Expressions.parse(expression);
 		JsonNode result = expr.evaluate(jsonObj);
       System.err.print("* " + expression);

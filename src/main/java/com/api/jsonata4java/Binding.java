@@ -3,6 +3,7 @@
  */
 package com.api.jsonata4java;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -31,8 +32,9 @@ public class Binding {
     * @param expression
     *                   the variable assignment expression
     * @throws ParseException
+    * @throws IOException 
     */
-   public Binding(String expression) throws ParseException {
+   public Binding(String expression) throws ParseException, IOException {
       Expressions exprCTX = Expressions.parse(expression);
       ParseTree tree = exprCTX.getTree();
       try {
@@ -57,8 +59,9 @@ public class Binding {
     * @param expression
     *                   a variable or function declaration expression
     * @throws ParseException
+    * @throws IOException 
     */
-   public Binding(String varName, String expression) throws ParseException {
+   public Binding(String varName, String expression) throws ParseException, IOException {
       if (varName.startsWith("$") == false) {
          varName = "$" + varName;
       }
@@ -168,7 +171,7 @@ public class Binding {
          System.out.println(test);
          test = new Binding("addx", "function($a,$b){$a+$b}");
          System.out.println(test);
-      } catch (ParseException e) {
+      } catch (ParseException | IOException e) {
          e.printStackTrace();
       }
    }

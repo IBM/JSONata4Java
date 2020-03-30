@@ -35,8 +35,9 @@ public class Expression {
     *                   methods
     * @return new Expression object
     * @throws ParseException
+    * @throws IOException 
     */
-   public static Expression jsonata(String expression) throws ParseException {
+   public static Expression jsonata(String expression) throws ParseException, IOException {
       return new Expression(expression);
    }
 
@@ -103,8 +104,9 @@ public class Expression {
     *                   the logic to be parsed for later execution via evaluate
     *                   methods
     * @throws ParseException
+    * @throws IOException 
     */
-   public Expression(String expression) throws ParseException {
+   public Expression(String expression) throws ParseException, IOException {
       _expr = Expressions.parse(expression);
       _eval = _expr.getExpr();
    }
@@ -132,8 +134,9 @@ public class Expression {
     * @param expression
     *                   logic to be assigned to the variable name
     * @throws ParseException
+    * @throws IOException 
     */
-   public void assign(String varname, String expression) throws ParseException {
+   public void assign(String varname, String expression) throws ParseException, IOException {
       Binding binding = new Binding(varname, expression);
       assign(binding);
    }
@@ -209,8 +212,9 @@ public class Expression {
     *         bindings object
     * @throws EvaluateException
     * @throws ParseException
+    * @throws IOException 
     */
-   public JsonNode evaluate(JsonNode rootContext, JsonNode bindingObj) throws EvaluateException, ParseException {
+   public JsonNode evaluate(JsonNode rootContext, JsonNode bindingObj) throws EvaluateException, ParseException, IOException {
       List<Binding> bindings = new ArrayList<Binding>();
       for (Iterator<String> it = bindingObj.fieldNames(); it.hasNext();) {
          String key = it.next();
@@ -235,8 +239,9 @@ public class Expression {
     * @param implementation
     *                       the function declaration
     * @throws ParseException
+    * @throws IOException 
     */
-   public void registerFunction(String fctName, String implementation) throws ParseException {
+   public void registerFunction(String fctName, String implementation) throws ParseException, IOException {
       Binding fctBinding = new Binding(fctName, implementation);
       _functionMap.put(fctBinding.getVarName(), fctBinding.getFunction());
    }

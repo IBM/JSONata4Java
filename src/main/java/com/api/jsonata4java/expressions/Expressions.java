@@ -22,12 +22,16 @@
 
 package com.api.jsonata4java.expressions;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.antlr.v4.runtime.ANTLRInputStream;
+import org.antlr.v4.runtime.CharStream;
+import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ErrorNodeImpl;
@@ -39,7 +43,6 @@ import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-@SuppressWarnings("deprecation")
 public class Expressions {
 	ParseTree tree = null;
 	String expression = null;
@@ -74,13 +77,13 @@ public class Expressions {
 
 	// Convert a mapping expression string into a pre-processed expression ready
 	// for evaluation
-	public static Expressions parse(String mappingExpression) throws ParseException {
+	public static Expressions parse(String mappingExpression) throws ParseException, IOException {
 
 		// Expressions can include references to properties within an
 		// application interface ("state"),
 		// properties within an event, and various operators and functions.
-
-		ANTLRInputStream input = new ANTLRInputStream(mappingExpression);
+	   InputStream targetStream = new ByteArrayInputStream(mappingExpression.getBytes());
+		CharStream input = CharStreams.fromStream(targetStream);
 
 		MappingExpressionLexer lexer = new MappingExpressionLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);

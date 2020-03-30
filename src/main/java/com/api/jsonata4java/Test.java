@@ -31,10 +31,12 @@ public class Test {
 		} catch (ParseException e) {
 			System.err.println(e.getLocalizedMessage());
 		} catch (EvaluateRuntimeException ere) {
-			System.out.println(ere.getLocalizedMessage());
+			System.err.println(ere.getLocalizedMessage());
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-		}
+		} catch (IOException ioe) {
+		   System.err.println(ioe.getLocalizedMessage());
+      }
 		try {
 			System.out.println("evaluate returns:");
 			JsonNode result = expr.evaluate(jsonObj);

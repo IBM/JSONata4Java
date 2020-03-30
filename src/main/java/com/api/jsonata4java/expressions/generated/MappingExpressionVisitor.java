@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.7
+// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.8
 package com.api.jsonata4java.expressions.generated;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -10,13 +10,6 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  * operations with no return type.
  */
 public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
-	/**
-	 * Visit a parse tree produced by the {@code sift_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSift_function(MappingExpressionParser.Sift_functionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code parens}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
@@ -151,26 +144,12 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitContext_ref(MappingExpressionParser.Context_refContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code reduce_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitReduce_function(MappingExpressionParser.Reduce_functionContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code array_constructor}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitArray_constructor(MappingExpressionParser.Array_constructorContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code each_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEach_function(MappingExpressionParser.Each_functionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code unary_op}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
@@ -199,13 +178,6 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitRoot_path(MappingExpressionParser.Root_pathContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code filter_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFilter_function(MappingExpressionParser.Filter_functionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code fct_chain}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
@@ -241,13 +213,6 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFunction_exec(MappingExpressionParser.Function_execContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code map_function}
-	 * labeled alternative in {@link MappingExpressionParser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMap_function(MappingExpressionParser.Map_functionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code field_values}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.

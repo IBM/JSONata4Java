@@ -293,8 +293,7 @@ public class BasicExpressionsTest {
       expectArray.add(mapper.readTree("{\"Product Name\":\"Trilby hat\",\"ProductID\":858236,\"Price\":21.67}"));
       expectArray.add(mapper.readTree("{\"Product Name\":\"Bowler Hat\",\"ProductID\":858383,\"Price\":34.45}"));
       expectArray.add(mapper.readTree("{\"ProductID\":345664,\"Product Name\":\"Cloak\",\"Price\":107.99}"));
-      // TODO: below fails because function ids aren't defined for path expressions
-      // simpleTest("Account.Order.Product.$sift(function($v, $k){$substring($k,0,1)=\"P\"})",expectArray,jsonObj);
+      simpleTest("Account.Order.Product.$sift(function($v, $k){$substring($k,0,1)=\"P\"})",expectArray,jsonObj);
 
       expectArray.removeAll();
       expectArray.add(mapper.readTree("{\"entity\":{\"filter\":true}}"));
@@ -1313,9 +1312,10 @@ public class BasicExpressionsTest {
     *                           if the expression can not parse correctly
     * @throws EvaluateException
     *                           if the expression fail its evaluation
+    * @throws IOException 
     */
    @Test
-   public void testConditionalLazyEval() throws ParseException, EvaluateException {
+   public void testConditionalLazyEval() throws ParseException, EvaluateException, IOException {
       Expressions expression = Expressions.parse(
             "(t < 0) ? \"Tempertature is less than 0\" : \"This will cause a runtime exception and should not appear \" + ($substring(temperatureStatus, temperatureStatus, 0, 1))");
 

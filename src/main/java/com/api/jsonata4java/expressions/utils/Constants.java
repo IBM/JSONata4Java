@@ -36,7 +36,9 @@ import com.api.jsonata4java.expressions.functions.BooleanFunction;
 import com.api.jsonata4java.expressions.functions.CeilFunction;
 import com.api.jsonata4java.expressions.functions.ContainsFunction;
 import com.api.jsonata4java.expressions.functions.CountFunction;
+import com.api.jsonata4java.expressions.functions.EachFunction;
 import com.api.jsonata4java.expressions.functions.ExistsFunction;
+import com.api.jsonata4java.expressions.functions.FilterFunction;
 import com.api.jsonata4java.expressions.functions.FloorFunction;
 import com.api.jsonata4java.expressions.functions.FormatBaseFunction;
 import com.api.jsonata4java.expressions.functions.FormatNumberFunction;
@@ -47,6 +49,7 @@ import com.api.jsonata4java.expressions.functions.KeysFunction;
 import com.api.jsonata4java.expressions.functions.LengthFunction;
 import com.api.jsonata4java.expressions.functions.LookupFunction;
 import com.api.jsonata4java.expressions.functions.LowercaseFunction;
+import com.api.jsonata4java.expressions.functions.MapFunction;
 import com.api.jsonata4java.expressions.functions.MatchFunction;
 import com.api.jsonata4java.expressions.functions.MaxFunction;
 import com.api.jsonata4java.expressions.functions.MergeFunction;
@@ -58,10 +61,12 @@ import com.api.jsonata4java.expressions.functions.NumberFunction;
 import com.api.jsonata4java.expressions.functions.PadFunction;
 import com.api.jsonata4java.expressions.functions.PowerFunction;
 import com.api.jsonata4java.expressions.functions.RandomFunction;
+import com.api.jsonata4java.expressions.functions.ReduceFunction;
 import com.api.jsonata4java.expressions.functions.ReplaceFunction;
 import com.api.jsonata4java.expressions.functions.ReverseFunction;
 import com.api.jsonata4java.expressions.functions.RoundFunction;
 import com.api.jsonata4java.expressions.functions.ShuffleFunction;
+import com.api.jsonata4java.expressions.functions.SiftFunction;
 import com.api.jsonata4java.expressions.functions.SortFunction;
 import com.api.jsonata4java.expressions.functions.SplitFunction;
 import com.api.jsonata4java.expressions.functions.SpreadFunction;
@@ -137,11 +142,12 @@ public class Constants {
    public static final String FUNCTION_LOOKUP = "$lookup";
    public static final String FUNCTION_SPREAD = "$spread";
    public static final String FUNCTION_MERGE = "$merge";
+   public static final String FUNCTION_EACH = "$each";
 
-   // High Order functions (in ExpressionsVisitor so no mapping in FUNCTIONS)
+   // High Order functions
    public static final String FUNCTION_FILTER = "$filter";
    public static final String FUNCTION_MAP = "$map";
-   public static final String FUNCTION_REDUCT = "$reduce";
+   public static final String FUNCTION_REDUCE = "$reduce";
    public static final String FUNCTION_SIFT = "$sift";
 
    // Collection of functions
@@ -203,18 +209,11 @@ public class Constants {
       FUNCTIONS.put(FUNCTION_MATCH, new MatchFunction());
       // below not implemented in jsonata.js [yet ;^)]
       // FUNCTIONS.put(FUNCTION_INDEX_OF, new IndexOfFunction());
-
-      /**
-       * Note: because special functions identify another function to perform, they
-       * don't align with the typical functions that may be invoked with a set of
-       * expression variables. These functions are declared in the ExpressionsVisitor
-       * as visitMap_function, etc.
-       */
-      // FUNCTIONS.put(FUNCTION_EACH, new EachFunction());
-      // FUNCTIONS.put(FUNCTION_FILTER, new FilterFunction());
-      // FUNCTIONS.put(FUNCTION_MAP, new MapFunction());
-      // FUNCTIONS.put(FUNCTION_REDUCE, new ReduceFunction());
-      // FUNCTIONS.put(FUNCTION_SIFT, new SiftFunction());
+      FUNCTIONS.put(FUNCTION_EACH, new EachFunction());
+      FUNCTIONS.put(FUNCTION_FILTER, new FilterFunction());
+      FUNCTIONS.put(FUNCTION_MAP, new MapFunction());
+      FUNCTIONS.put(FUNCTION_REDUCE, new ReduceFunction());
+      FUNCTIONS.put(FUNCTION_SIFT, new SiftFunction());
 
       // Initialize the default decimal format symbols
       DEFAULT_DECIMAL_FORMAT_SYMBOLS.setExponentSeparator("e");
