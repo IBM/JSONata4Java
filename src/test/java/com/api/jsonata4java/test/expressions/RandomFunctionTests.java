@@ -53,7 +53,7 @@ import com.api.jsonata4java.expressions.utils.Constants;
 public class RandomFunctionTests {
 
    private static String ERR_ARG1BADTYPE = String
-            .format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_POWER);
+            .format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_RANDOM);
 
 	@Parameter(0)
 	public String expression;
