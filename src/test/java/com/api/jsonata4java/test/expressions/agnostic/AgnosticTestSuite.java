@@ -1,30 +1,10 @@
-/**
- * (c) Copyright 2018, 2019 IBM Corporation
- * 1 New Orchard Road, 
- * Armonk, New York, 10504-1722
- * United States
- * +1 914 499 1900
- * support: Nathaniel Mills wnm3@us.ibm.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 package com.api.jsonata4java.test.expressions.agnostic;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,60 +23,60 @@ import org.junit.runners.model.InitializationError;
 import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
-import com.api.jsonata4java.test.expressions.agnostic.AgnosticTestSuite.TestGroup;
-import com.api.jsonata4java.text.expressions.utils.Utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-
+import com.api.jsonata4java.test.expressions.agnostic.AgnosticTestSuite.TestGroup;
 
 @RunWith(AgnosticTestSuite.class)
 public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 	
 	private static final List<String> SKIP_GROUPS = Arrays.asList(new String[] {
-			"wildcards",
-			"function-signatures",
-			"higher-order-functions",
-			"hof-filter",
-			"hof-map",
-			"hof-reduce",
-			"hof-zip-map",
-			"lambdas",
-			"function-zip",
+//			"wildcards",
+//			"function-signatures",
+//			"higher-order-functions",
+//			"hof-filter",
+//			"hof-map",
+//			"hof-reduce",
+//			"hof-zip-map",
+//			"lambdas",
+//			"function-zip",
 			"regex",
-			"function-shuffle",
-			"function-lookup",
-			"function-keys",
-			"function-spread",
-			"function-sort",
-			"function-clone",
-			"function-each",
-			"function-merge",
-			"context",
-			"closures",
+            "function-assert",
+//            "function-shuffle",
+//			"function-lookup",
+//			"function-keys",
+//			"function-spread",
+//			"function-sort",
+//			"function-clone",
+//			"function-each",
+//			"function-merge",
+//			"context",
+//			"closures",
 			"sorting", 				// we don't support the order-by operator (^) yet
-			"tail-recursion", 		// tail-recursion requires function definition support, which we don't have yet
-			"function-applications",
-			"partial-application",
-			"transforms",
-			"blocks",
-			"descendent-operator",	// we don't support the ** operator yet
-			"variables" 			// we don't support arbitrary variable bindings yet (we have hard-coded $event, $state, and $instance only)
+//			"tail-recursion", 		// tail-recursion requires function definition support, which we don't have yet
+//			"function-applications",
+//			"partial-application",
+//			"transforms",
+//			"blocks",
+//			"descendent-operator",	// we don't support the ** operator yet
+//			"variables" 			// we don't support arbitrary variable bindings yet (we have hard-coded $event, $state, and $instance only)
 	});
 	
 	private static final Map<String, List<String>> SKIP_CASES = new HashMap<>();
 	static{
 		
 		// because we don't support $$
-		SKIP_CASES("conditionals", "case000", "case001", "case002", "case003", "case004", "case005");
+//		SKIP_CASES("conditionals", "case000", "case001", "case002", "case003", "case004", "case005");
 		
 		// because we don't support conditionals with no "else" clause (e.g. a?b)
-		SKIP_CASES("conditionals", "case006");
+//		SKIP_CASES("conditionals", "case006");
 		
 		// cases 3-6 are mis-categories, actually testing $toMillis (not $sift) which is why we don't ignore the whole group (despite not supporting $sift)
-		SKIP_CASES("function-sift", "case000", "case001", "case002");
+//		SKIP_CASES("function-sift", "case000", "case001", "case002");
 		
 	}
 	private static void SKIP_CASES(String group, String... casesArray){
@@ -109,7 +89,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 	}
 
 	
-	private static final String SUITE_DIR = "./target/jsonata/jsonata-1.5/test/test-suite";
+	private static final String SUITE_DIR = "./target/jsonata/jsonata-1.8.2/test/test-suite";
 	private static final String DATASETS_DIR = SUITE_DIR+"/datasets";
 	private static final String GROUPS_DIR = SUITE_DIR+"/groups";
 	
@@ -163,12 +143,22 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 				System.out.println("	"+caseName);
 				
 				final JsonNode caseJson = om.readTree(caseFile);
-				TestCase testCase = new TestCase(group, caseName, caseJson);
+                TestCase testCase = null;
+	            if(caseJson.isObject()){
+	                testCase = new TestCase(group, caseName, caseJson);
+	            } else if (caseJson.isArray()) {
+	                ArrayNode testCases = (ArrayNode)caseJson;
+	                for (JsonNode testCaseJson : testCases) {
+	                    testCase = new TestCase(group, caseName, testCaseJson);
+	                }
+	            } else {
+                    throw new RuntimeException("["+group.getGroupName()+"."+caseName+"] Not a JSON object or array");
+	            }	            
+
 				group.addTestCase(testCase);
 			}
 		}
 		printFooter();
-		
 	}
 
 
@@ -206,10 +196,6 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 					Expressions e = Expressions.parse(testCase.getExpr());
 					
 					JsonNode actualResult = e.evaluate(testCase.getDataset());
-					
-					if(actualResult != null){
-						actualResult = Utils.ensureAllIntegralsAreLongs(actualResult);
-					}
 					
 					try{
 						Assert.assertEquals(testCase.expectedResult, actualResult);
@@ -343,7 +329,24 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 			
 			// expr: 
 			// The jsonata expression to be evaluated.
-			this.expr = o.get("expr").asText();
+			JsonNode expressionNode = o.get("expr");
+			if (expressionNode != null) {
+			    this.expr = expressionNode.asText();
+			    
+			} else {
+	            JsonNode expressionFileNode = o.get("expr-file");
+	            if (expressionFileNode != null) {
+	                String expressionFileName = expressionFileNode.asText();
+	                try {
+		                File expressionFile = new File(GROUPS_DIR + "/" + group.getGroupName() + "/" + expressionFileName);
+	                    this.expr = new String(Files.readAllBytes(expressionFile.getCanonicalFile().toPath()));
+	                } catch (IOException e) {
+	                    throw new RuntimeException("["+group.getGroupName()+"."+caseName+"] Unable to read .jsonata file", e);
+	                }
+	            } else {
+                    throw new RuntimeException("["+group.getGroupName()+"."+caseName+"] No JSONata expression specified for test");
+	            }
+			}
 			
 			// data or dataset:
 			// If data is defined, use the value of the data field as the input data for the test case. 
@@ -376,9 +379,6 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 				// result: 
 				// The expected result of evaluation (if defined)
 				this.expectedResult = o.get("result");
-				if(this.expectedResult != null){
-					this.expectedResult = Utils.ensureAllIntegralsAreLongs(this.expectedResult);
-				}
 			}else{
 				this.expectedResult = null;
 			}
