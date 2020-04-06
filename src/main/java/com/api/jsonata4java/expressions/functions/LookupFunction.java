@@ -92,7 +92,9 @@ public class LookupFunction extends FunctionBase implements Function {
 					} else {
 						if (argObject.isArray()) {
 							findObjects((ArrayNode)argObject, key, array);
-							if (array.size() != 1) {
+							if (array.size() == 0) {
+							   result = null;
+							} else if (array.size() != 1) {
 								result = array;
 							} else {
 								// make singleton

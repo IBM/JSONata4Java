@@ -1124,32 +1124,34 @@ public class BasicExpressionsTest {
          assertTrue("Should not get here - exception should be thrown", false);
       } catch (EvaluateException e) {
          String msg = e.getMessage();
-         assertTrue("was " + msg, msg.equals("+ expects two numeric arguments"));
+         assertTrue("was "+msg,msg.equals("+ expects two numeric arguments"));
       }
 
       try {
          /**
-          * Note: original test threw a parse exception, but variables are legal now so
-          * requires a runtime exception instead for referencing an unassigned variable 
+          * Note: original test threw a parse exception, but variables are legal now.
+          * However, jsonata 1.8.2 returns null rather than throwing a runtime 
+          * exception instead for referencing an unassigned variable 
           */
          expression = Expressions.parse("$stat");
-         expression.evaluate(null);
-         assertTrue("Should not get here - exception should be thrown", false);
+         JsonNode result = expression.evaluate(null);
+         assertTrue("Should not get here - exception should be thrown", result==null);
       } catch (EvaluateException e) {
          String msg = e.getMessage();
-         assertTrue("was " + msg, msg.equals("$stat is unknown (e.g., unassigned variable)"));
+         assertTrue(msg, false);
       }
 
       // variable references that do not start with $state or $event are an
       // error
       try {
          /**
-          * Note: original test threw a parse exception, but variables are legal now so
-          * requires a runtime exception instead for referencing an unassigned variable 
+          * Note: original test threw a parse exception, but variables are legal now.
+          * However, jsonata 1.8.2 returns null rather than throwing a runtime 
+          * exception instead for referencing an unassigned variable 
           */
          expression = Expressions.parse("$dddd");
-         expression.evaluate(null);
-         assertTrue("Should not get here - exception should be thrown", false);
+         JsonNode result = expression.evaluate(null);
+         assertTrue("Should not get here - exception should be thrown", result==null);
       } catch (EvaluateException e) {
          String msg = e.getMessage();
          assertTrue("was " + msg, msg.equals("$dddd is unknown (e.g., unassigned variable)"));

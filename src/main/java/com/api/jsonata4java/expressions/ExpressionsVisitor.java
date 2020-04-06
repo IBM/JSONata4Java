@@ -26,10 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EmptyStackException;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,6 +35,7 @@ import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.CommonTokenFactory;
+import org.antlr.v4.runtime.RuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -131,7 +130,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       }
       result = super.visit(tree);
       if (!keepSingleton) {
-         if (result != null && result instanceof SelectorArrayNode && result.size() == 1 ) {
+         if (result != null && result instanceof SelectorArrayNode && ((SelectorArrayNode)result).getSelectionGroups().size() == 1 ) {
             result = ((SelectorArrayNode)result).getSelectionGroups().get(0);
          }
       }
@@ -352,8 +351,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
    }
 
    JsonNodeFactory factory = JsonNodeFactory.instance;
-   public Map<String, DeclaredFunction> functionMap = new HashMap<String, DeclaredFunction>();
-
+   private FrameEnvironment _environment = new FrameEnvironment(null);
+   
    /**
     * This stack is used for storing the current "context" under which to evaluate
     * predicate-type array indexes, e.g. [{"a":1}, {"a":2}][a=2] -> {"a":2}
@@ -370,13 +369,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
    ParseTreeProperty<Integer> values = new ParseTreeProperty<Integer>();
 
-   private Map<String, JsonNode> variableMap = new HashMap<String, JsonNode>();
-
-   public ExpressionsVisitor(JsonNode rootContext) {
+   public ExpressionsVisitor(JsonNode rootContext) throws EvaluateRuntimeException {
       if (rootContext != null) {
          this.stack.push(rootContext);
          // add a variable for the rootContext
-         this.variableMap.put("$", rootContext);
+         this._environment.setVariable("$", rootContext);
       }
    }
 
@@ -439,8 +436,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       return result;
    }
 
-   public Map<String, DeclaredFunction> getFunctionMap() {
-      return functionMap;
+   public DeclaredFunction getFunction(String fctName) {
+      return _environment.getFunction(fctName);
    }
 
    public Stack<JsonNode> getStack() {
@@ -451,8 +448,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       return values.get(node);
    }
 
-   public Map<String, JsonNode> getVariableMap() {
-      return variableMap;
+   public JsonNode getVariable(String varName) {
+      return _environment.getVariable(varName);
    }
 
    protected void processArrayContent(ExprOrSeqContext expr, ArrayNode output) {
@@ -804,6 +801,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
             // resolve negative indexes (they should start from the end of this
             // selection group)
+            group = ensureArray(group);
             List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, group.size());
 
             for (int index : resolvedIndexes) {
@@ -1048,7 +1046,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
          if (child0 instanceof TerminalNodeImpl) {
             if (((TerminalNodeImpl) child0).symbol.getText().equals("$")) {
                // replace first child with value of the rootContext
-               JsonNode context = variableMap.get("$");
+               JsonNode context = getVariable("$");
                CommonToken token = null;
                ExprContext expr = null;
                switch (context.getNodeType()) {
@@ -1136,7 +1134,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
             if (exprCtx == null) {
                resultArray.add(descendants);
             } else {
-               resultArray.add(visit(exprCtx));
+               JsonNode result = visit(exprCtx);
+               if (result != null) {
+                  resultArray.add(result);
+               }
             }
          } else {
             for (Iterator<JsonNode> it = ((ArrayNode) descendants).iterator(); it.hasNext();) {
@@ -1144,7 +1145,16 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
                   resultArray.add(it.next());
                } else {
                   stack.push(it.next());
-                  JsonNode result = visit(exprCtx);
+                  JsonNode result = null;
+                  if (exprCtx instanceof MappingExpressionParser.StringContext) {
+                     CommonToken token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.ID, visit(exprCtx).asText());
+                     TerminalNode node = new TerminalNodeImpl(token);
+                     IdContext idCtx = new MappingExpressionParser.IdContext(exprCtx);
+                     idCtx.addChild(node);
+                     result = visit(idCtx);
+                  } else {
+                     result = visit(exprCtx);
+                  }
                   stack.pop();
                   if (result != null) {
                      resultArray.add(result);
@@ -1153,10 +1163,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
             }
          }
       }
-      if (resultArray.size() == 0) {
+      if (resultArray == null || resultArray.size() == 0) {
          return null;
       }
-      return resultArray;
+      JsonNode result = unwrapArray(resultArray);
+      return result;
    }
 
    @Override
@@ -1215,7 +1226,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       if (resultArray.size() == 0) {
          return null;
       }
-      return resultArray;
+      JsonNode result = unwrapArray(resultArray);
+      return result;
    }
 
    @Override
@@ -1227,7 +1239,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       if (function != null) {
          result = function.invoke(this, ctx);
       } else {
-         DeclaredFunction declFct = functionMap.get(functionName);
+         DeclaredFunction declFct = getFunction(functionName);
          if (declFct == null) {
             throw new EvaluateRuntimeException("Unknown function: " + functionName);
          }
@@ -1244,9 +1256,22 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
        * executed later by creating a Function_execContext and visiting the
        * visitFunciton_exec method.
        */
+      final String fctName = ctx.FUNCTIONID().getText();
+      RuleContext expr = ctx.getRuleContext();
+
       JsonNode result = null;
-      result = visit(ctx);
+      // build the declared function to assign to this variable in the
+      // functionMap
+      MappingExpressionParser.Function_declContext fctDeclCtx = (MappingExpressionParser.Function_declContext) expr;
+      MappingExpressionParser.VarListContext varList = fctDeclCtx.varList();
+      MappingExpressionParser.ExprListContext exprList = fctDeclCtx.exprList();
+      DeclaredFunction fct = new DeclaredFunction(varList, exprList);
+      setFunction(fctName, fct);
       return result;
+   }
+   
+   public void setVariable(String varName, JsonNode varValue) throws EvaluateRuntimeException {
+      _environment.setVariable(varName, varValue);
    }
 
    @Override
@@ -1269,7 +1294,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       for (int i = 0; i < varListCount; i++) {
          String varID = varListCtx.get(i).getText();
          JsonNode value = visit(exprValuesCtx.get(i));
-         variableMap.put(varID, value);
+         setVariable(varID, value);
       }
       ExprListContext exprListCtx = ctx.exprList();
       result = visit(exprListCtx);
@@ -1599,6 +1624,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
    @Override
    public JsonNode visitParens(MappingExpressionParser.ParensContext ctx) {
       JsonNode result = null;
+      // generate a new frameEnvironment for life of this block
+      FrameEnvironment oldEnvironment = _environment;
+      _environment = new FrameEnvironment(_environment);
       List<ExprContext> expressions = ctx.expr();
       for (int i = 0; i < expressions.size(); i++) {
          result = visit(ctx.expr(i));
@@ -1616,6 +1644,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
          result = newResult;
       }
 
+      _environment = oldEnvironment;
       return result;
    }
 
@@ -1630,9 +1659,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       // {"a":{"b":2}}]
       final ExprContext rhsCtx = ctx.expr(1); // e.g. `a`
 
-      // flattenOutput = true;
-
-      /* final */ JsonNode lhs = visit(lhsCtx);
+      // treat a StringContext as an ID context
+      JsonNode lhs = null;
+      if (lhsCtx instanceof MappingExpressionParser.StringContext) {
+         CommonToken token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.ID, visit(lhsCtx).asText());
+         TerminalNode node = new TerminalNodeImpl(token);
+         IdContext idCtx = new MappingExpressionParser.IdContext(lhsCtx);
+         idCtx.addChild(node);
+         lhs = visit(idCtx);
+      } else {
+         lhs = visit(lhsCtx);
+      }
       if (lhs == null || lhs.isNull()) {
          return null; // throw new
                       // EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY,"null"));
@@ -1651,20 +1688,32 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
          break;
       }
       }
-
-      JsonNode rhs = resolvePath(lhs, rhsCtx);
-
       JsonNode result;
-      if (rhs == null) { // okay to return NullNode here so don't test "|| rhs.isNull()"
-         result = null;
-      } else if ((rhs instanceof SelectorArrayNode) && rhs.size() == 0) {
-         // if no results are present (i.e. results is empty) we need to return
-         // null (i.e. *no match*)
-         result = null;
+      if (rhsCtx == null) {
+         result = lhs;
       } else {
-         result = rhs;
-      }
+         JsonNode rhs = null;
+         // treat a StringContext as an ID Context
+         if (rhsCtx instanceof MappingExpressionParser.StringContext) {
+            CommonToken token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.ID, visit(rhsCtx).asText());
+            TerminalNode node = new TerminalNodeImpl(token);
+            IdContext idCtx = new MappingExpressionParser.IdContext(rhsCtx);
+            idCtx.addChild(node);
+            rhs = resolvePath(lhs, idCtx);
+         } else {
+            rhs = resolvePath(lhs, rhsCtx);
+         }
 
+         if (rhs == null) { // okay to return NullNode here so don't test "|| rhs.isNull()"
+            result = null;
+         } else if ((rhs instanceof SelectorArrayNode) && rhs.size() == 0) {
+            // if no results are present (i.e. results is empty) we need to return
+            // null (i.e. *no match*)
+            result = null;
+         } else {
+            result = rhs;
+         }
+      }
       if (LOG.isLoggable(Level.FINEST))
          LOG.exiting(CLASS, METHOD, result);
       return result;
@@ -1684,7 +1733,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       for (; stackSize > 1; stackSize--) {
          tmpStack.push(stack.pop());
       }
-      JsonNode result = visit(lhsCtx);
+      JsonNode result = null;
+      if (lhsCtx == null) {
+         result = stack.peek();
+      } else {
+         result = visit(lhsCtx);
+      }
       while (!tmpStack.isEmpty()) {
          stack.push(tmpStack.pop());
       }
@@ -1779,6 +1833,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       return result;
    }
 
+   public void setFunction(String fctName, DeclaredFunction fctValue) {
+      _environment.setFunction(fctName, fctValue);
+   }
+   
    @Override
    public JsonNode visitVar_assign(MappingExpressionParser.Var_assignContext ctx) {
       final String varName = ctx.VAR_ID().getText();
@@ -1791,10 +1849,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
          MappingExpressionParser.VarListContext varList = fctDeclCtx.varList();
          MappingExpressionParser.ExprListContext exprList = fctDeclCtx.exprList();
          DeclaredFunction fct = new DeclaredFunction(varList, exprList);
-         this.functionMap.put(varName, fct);
+         setFunction(varName, fct);
+      } else if (expr instanceof MappingExpressionParser.Function_callContext) {
+         result = visit(expr);
       } else {
          result = visit(expr);
-         this.variableMap.put(varName, result);
+         setVariable(varName, result);
       }
       return result;
    }
@@ -1802,10 +1862,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
    @Override
    public JsonNode visitVar_recall(MappingExpressionParser.Var_recallContext ctx) {
       final String varName = ctx.getText();
-      JsonNode result = this.variableMap.get(varName);
-      if (result == null) {
-         throw new EvaluateRuntimeException(varName + " is unknown (e.g., unassigned variable)");
-      }
+      JsonNode result = getVariable(varName);
+//      if (result == null) {
+//         throw new EvaluateRuntimeException(varName + " is unknown (e.g., unassigned variable)");
+//      }
       return result;
    }
 

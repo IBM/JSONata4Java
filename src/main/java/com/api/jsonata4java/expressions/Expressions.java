@@ -25,6 +25,7 @@ package com.api.jsonata4java.expressions;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -83,7 +84,7 @@ public class Expressions {
 		// application interface ("state"),
 		// properties within an event, and various operators and functions.
 	   InputStream targetStream = new ByteArrayInputStream(mappingExpression.getBytes());
-		CharStream input = CharStreams.fromStream(targetStream);
+		CharStream input = CharStreams.fromStream(targetStream,Charset.forName("UTF-8"));
 
 		MappingExpressionLexer lexer = new MappingExpressionLexer(input);
 		CommonTokenStream tokens = new CommonTokenStream(lexer);

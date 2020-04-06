@@ -1,26 +1,13 @@
-<!-- 
-/**
- * (c) Copyright 2018, 2019 IBM Corporation
- * 1 New Orchard Road, 
- * Armonk, New York, 10504-1722
- * United States
- * +1 914 499 1900
- * support: Nathaniel Mills wnm3@us.ibm.com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
--->
+<!-- /** * (c) Copyright 2018, 2019 IBM Corporation * 1 New Orchard Road, 
+	* Armonk, New York, 10504-1722 * United States * +1 914 499 1900 * support: 
+	Nathaniel Mills wnm3@us.ibm.com * * Licensed under the Apache License, Version 
+	2.0 (the "License"); * you may not use this file except in compliance with 
+	the License. * You may obtain a copy of the License at * * http://www.apache.org/licenses/LICENSE-2.0 
+	* * Unless required by applicable law or agreed to in writing, software * 
+	distributed under the License is distributed on an "AS IS" BASIS, * WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. * See the 
+	License for the specific language governing permissions and * limitations 
+	under the License. * */ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -64,9 +51,9 @@
 		<connection>https://github.com/IBM/JSONata4Java.git</connection>
 		<developerConnection>https://github.com/IBM/JSONata4Java.git</developerConnection>
 		<url>https://github.com/IBM/JSONata4Java</url>
-	</scm>	
+	</scm>
 	<properties>
-        <runSuite>**/AgnosticTestSuite.class</runSuite>
+		<runSuite>**/AgnosticTestSuite.class</runSuite>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<distributionManagement>
@@ -153,7 +140,6 @@
 					</execution>
 				</executions>
 			</plugin>
-		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -206,12 +192,12 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>2.20</version>
 				<configuration>
-                    <includes>
-                        <include>${runSuite}</include>
-                    </includes>
+					<includes>
+						<include>${runSuite}</include>
+					</includes>
 				</configuration>
 			</plugin>
-		
+
 			<!-- Plugin to compile the g4 files ahead of the java files See https://github.com/antlr/antlr4/blob/master/antlr4-maven-plugin/src/site/apt/examples/simple.apt.vm 
 				Except that the grammar does not need to contain the package declaration 
 				as stated in the documentation (I do not know why) To use this plugin, type: 
@@ -234,10 +220,9 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- 
-			plugin to create a self-contained portable package This allows us to execute our application like this: 
-				java -cp target/JSONata4Java-1.0.0-jar-with-dependencies.jar com.api.jsonata4java.Tester
-			 -->
+			<!-- plugin to create a self-contained portable package This allows us 
+				to execute our application like this: java -cp target/JSONata4Java-1.0.0-jar-with-dependencies.jar 
+				com.api.jsonata4java.Tester -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
@@ -256,5 +241,41 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											com.googlecode.maven-download-plugin
+										</groupId>
+										<artifactId>
+											download-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.4.0,)
+										</versionRange>
+										<goals>
+											<goal>wget</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute></execute>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 </project>

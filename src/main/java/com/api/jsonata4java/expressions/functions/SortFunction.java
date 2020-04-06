@@ -100,7 +100,7 @@ public class SortFunction extends FunctionBase implements Function {
 							+ fctCtx.getText() + " that is an " + fctCtx.getClass().getName());
 				}
 				String varID = ((MappingExpressionParser.Var_recallContext) fctCtx).VAR_ID().getText();
-				fct = expressionVisitor.getFunctionMap().get(varID);
+				fct = expressionVisitor.getFunction(varID);
 				if (fct == null) {
 					throw new EvaluateRuntimeException(
 							String.format(Constants.ERR_MSG_VARIABLE_FCT_NOT_FOUND, varID, Constants.FUNCTION_SORT));

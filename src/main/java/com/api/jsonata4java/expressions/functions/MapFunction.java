@@ -118,7 +118,7 @@ public class MapFunction extends FunctionBase implements Function {
             }
          } else {
             // get the function to be executed from the functionMap and execute
-            DeclaredFunction fct = expressionVisitor.functionMap.get(varID);
+            DeclaredFunction fct = expressionVisitor.getFunction(varID);
             if (fct == null) {
                throw new EvaluateRuntimeException(
                      "Expected function variable reference " + varID + " to resolve to a declared function.");

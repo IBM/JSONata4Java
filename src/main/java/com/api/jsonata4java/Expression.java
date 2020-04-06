@@ -155,18 +155,16 @@ public class Expression {
     */
    public JsonNode evaluate(JsonNode rootContext) throws EvaluateException, ParseException {
       ExpressionsVisitor eval = new ExpressionsVisitor(rootContext);
-      Map<String, JsonNode> varMap = eval.getVariableMap();
-      Map<String, DeclaredFunction> fctMap = eval.getFunctionMap();
       // process any stored bindings
       for (Iterator<String> it = _variableMap.keySet().iterator(); it.hasNext();) {
          String key = it.next();
          ExprContext ctx = _variableMap.get(key);
-         varMap.put(key, eval.visit(ctx));
+         eval.setVariable(key, eval.visit(ctx));
       }
       for (Iterator<String> it = _functionMap.keySet().iterator(); it.hasNext();) {
          String key = it.next();
          DeclaredFunction fct = _functionMap.get(key);
-         fctMap.put(key, fct);
+         eval.setFunction(key, fct);
       }
       return eval.visit(_expr.getTree());
    }

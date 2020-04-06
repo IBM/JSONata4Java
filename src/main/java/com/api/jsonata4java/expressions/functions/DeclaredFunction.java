@@ -88,7 +88,7 @@ public class DeclaredFunction {
    		for (int i = 0; i < varListCount; i++) {
    			String varID = varListCtx.get(i).getText();
    			JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
-   			expressionVisitor.getVariableMap().put(varID, value);
+   			expressionVisitor.setVariable(varID, value);
    		}
 		} else if (ruleValues instanceof Function_callContext) {
 		   fctCallValues = (Function_callContext)ruleValues;
@@ -105,7 +105,7 @@ public class DeclaredFunction {
          for (int i = 0; i < varListCount; i++) {
             String varID = varListCtx.get(i).getText();
             JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
-            expressionVisitor.getVariableMap().put(varID, value);
+            expressionVisitor.setVariable(varID, value);
          }
 		} // else EmptyValuesContext
       result = expressionVisitor.visit(_exprList);

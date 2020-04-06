@@ -30,6 +30,7 @@ import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.LongNode;
 
 /**
  * http://docs.jsonata.org/numeric-functions.html
@@ -83,8 +84,12 @@ public class SqrtFunction extends FunctionBase implements Function {
 															// ExpressionsVisitor::visitNumber
 					) {
 						// Calculate the result and create the node to return
-						double sqrt = Math.sqrt(argNumber.doubleValue());
-						result = new DoubleNode(sqrt);
+						Double sqrt = Math.sqrt(argNumber.doubleValue());
+						if (sqrt - sqrt.longValue() ==  0.0) {
+						   result = new LongNode(sqrt.longValue());
+						} else {
+						   result = new DoubleNode(sqrt);
+						}
 					} else {
 						/*
 						 * The sqrt function cannot be applied to the argument. Throw a suitable

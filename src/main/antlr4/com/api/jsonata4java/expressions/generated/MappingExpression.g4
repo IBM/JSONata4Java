@@ -36,8 +36,8 @@ expr:
    ID                                                     # id
  | '*' ('.' expr)?                                        # field_values
  | DESCEND ('.' expr)?                                    # descendant
- | DOLLAR (('.' expr) | (ARR_OPEN expr ARR_CLOSE))        # context_ref
- | ROOT '.' expr                                          # root_path
+ | DOLLAR (('.' expr) | (ARR_OPEN expr ARR_CLOSE))?       # context_ref
+ | ROOT ('.' expr)?                                       # root_path
  | ARR_OPEN exprOrSeqList? ARR_CLOSE                      # array_constructor
  | expr '.' expr                                          # path
  | expr ARR_OPEN ARR_CLOSE                                # to_array
@@ -58,7 +58,7 @@ expr:
  | expr 'or' expr                                         # logor
  | expr '?' expr ':' expr                                 # conditional
  | expr CHAIN expr                                        # fct_chain
- | '(' expr (';' expr)* ')'                               # parens
+ | '(' (expr (';' (expr)?)*)? ')'                         # parens
  | VAR_ID                                                 # var_recall
  | NUMBER                                                 # number
  | STRING                                                 # string
@@ -88,10 +88,6 @@ STRING
 	| '"'  (ESC | ~["\\])* '"'
 	;
 
-
-AND : 'and' ;
-OR : 'or' ;
-IN : 'in' ;
 NULL : 'null';
 
 ARR_OPEN  : '[';

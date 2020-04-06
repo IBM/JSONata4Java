@@ -23,13 +23,12 @@ import org.junit.runners.model.InitializationError;
 import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
+import com.api.jsonata4java.test.expressions.agnostic.AgnosticTestSuite.TestGroup;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import com.api.jsonata4java.test.expressions.agnostic.AgnosticTestSuite.TestGroup;
 
 @RunWith(AgnosticTestSuite.class)
 public class AgnosticTestSuite extends ParentRunner<TestGroup>{
@@ -42,7 +41,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 //			"hof-map",
 //			"hof-reduce",
 //			"hof-zip-map",
-//			"lambdas",
+			"lambdas",
 //			"function-zip",
 			"regex",
             "function-assert",
@@ -66,6 +65,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 //			"variables" 			// we don't support arbitrary variable bindings yet (we have hard-coded $event, $state, and $instance only)
 	});
 	
+	private static final ObjectMapper _objectMapper = new ObjectMapper();
 	private static final Map<String, List<String>> SKIP_CASES = new HashMap<>();
 	static{
 		
@@ -77,9 +77,15 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 		
 		// cases 3-6 are mis-categories, actually testing $toMillis (not $sift) which is why we don't ignore the whole group (despite not supporting $sift)
 //		SKIP_CASES("function-sift", "case000", "case001", "case002");
+	   
+	   SKIP_CASES("predicates","case003");
+	   SKIP_CASES("inclusion-operator","case004","case005");
+	   SKIP_CASES("comments","case003");
+	   SKIP_CASES("function-length","case004","case005","case016");
+	   SKIP_CASES("higher-order-functions","case000","case001","case002");
 		
 	}
-	private static void SKIP_CASES(String group, String... casesArray){
+   private static void SKIP_CASES(String group, String... casesArray){
 		List<String> cases = SKIP_CASES.get(group);
 		if(cases == null){
 			cases = new ArrayList<>();
@@ -88,7 +94,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 		cases.addAll(Arrays.asList(casesArray));
 	}
 
-	
+	private static final boolean SHOW_IMPORT_DETAILS = false; // true to see datasets, groups, etc.
 	private static final String SUITE_DIR = "./target/jsonata/jsonata-1.8.2/test/test-suite";
 	private static final String DATASETS_DIR = SUITE_DIR+"/datasets";
 	private static final String GROUPS_DIR = SUITE_DIR+"/groups";
@@ -118,29 +124,35 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 		printHeader("Loading datasets");
 		final File datasetsDir = new File(DATASETS_DIR);
 		final File[] datasetFiles = datasetsDir.listFiles(JsonFileFilter.INSTANCE);
+		int filesRead = 0;
 		for(File datasetFile : datasetFiles){
 			final String datasetName = datasetFile.getName().substring(0, datasetFile.getName().length()-5); // - ".json"
-			System.out.println(datasetName);
+			if (SHOW_IMPORT_DETAILS) { System.out.println(datasetName); }
 			final JsonNode datasetJson = om.readTree(datasetFile);
 			DATASETS.put(datasetName, datasetJson);
-			
+			filesRead++;
 		}
+		System.out.println("Read "+filesRead+" datasets from "+DATASETS_DIR);
 		printFooter();
 		
 		printHeader("Loading groups");
 		this.groups = new ArrayList<>();
 		final File groupsDir = new File(GROUPS_DIR);
 		final File[] groupDirs = groupsDir.listFiles(DirectoryFilter.INSTANCE);
+		int groupsRead = 0;
 		for(File groupDir : groupDirs){
 			final String groupName = groupDir.getName();
 			TestGroup group = new TestGroup(groupName);
 			this.groups.add(group);
-			System.out.println(groupName);
+			if (SHOW_IMPORT_DETAILS) { System.out.println(groupName); }
+			groupsRead++;
 			
+			// int casesRead = 0;
 			final File[] caseFiles = groupDir.listFiles(JsonFileFilter.INSTANCE);
 			for(File caseFile : caseFiles){
 				final String caseName = caseFile.getName().substring(0, caseFile.getName().length()-5); // - ".json"
-				System.out.println("	"+caseName);
+				if (SHOW_IMPORT_DETAILS) { System.out.println("	"+caseName); }
+				// casesRead++;
 				
 				final JsonNode caseJson = om.readTree(caseFile);
                 TestCase testCase = null;
@@ -158,6 +170,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 				group.addTestCase(testCase);
 			}
 		}
+		System.out.println("Read "+groupsRead+" groups from "+GROUPS_DIR);
 		printFooter();
 	}
 
@@ -198,14 +211,13 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup>{
 					JsonNode actualResult = e.evaluate(testCase.getDataset());
 					
 					try{
-						Assert.assertEquals(testCase.expectedResult, actualResult);
+					   String expected = _objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(testCase.expectedResult);
+					   String actual = _objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(actualResult);
+						Assert.assertEquals(expected, actual);
 						notifier.fireTestFinished(testCase.getDescription());
 					}catch(AssertionError ex){
 						notifier.fireTestFailure(new Failure(testCase.getDescription(), ex));
 					}
-					
-					
-					
 				} catch (Throwable ex) {
 					
 					if(testCase.expectParseOrEvaluateException && (ex instanceof ParseException || ex instanceof EvaluateException)){

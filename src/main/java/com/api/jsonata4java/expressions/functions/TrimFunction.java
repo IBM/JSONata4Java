@@ -85,7 +85,9 @@ public class TrimFunction extends FunctionBase implements Function {
 				}
 			}
 		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+		   if (argCount != 0) {
+		      throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+		   } // else returns null
 		}
 
 		return result;

@@ -124,15 +124,19 @@ public class Tester {
 			e1.printStackTrace();
 		}
 		if (args.length > 0) {
-			File file = new File(args[0]);
-			System.out.println("Attempting to load JSON from file: " + args[0]);
-			try {
-				jsonObj = mapper.readTree(file);
-			} catch (JsonProcessingException e) {
-				System.err.println(e.getLocalizedMessage());
-			} catch (IOException e) {
-				System.err.println(e.getLocalizedMessage());
-			}
+		   if (args[0].equals("null") == false) {
+   			File file = new File(args[0]);
+   			System.out.println("Attempting to load JSON from file: " + args[0]);
+   			try {
+   				jsonObj = mapper.readTree(file);
+   			} catch (JsonProcessingException e) {
+   				System.err.println(e.getLocalizedMessage());
+   			} catch (IOException e) {
+   				System.err.println(e.getLocalizedMessage());
+   			}
+		   } else {
+		      jsonObj = null;
+		   }
 		}
 		try {
 			System.out.println("Using json:\n" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj));

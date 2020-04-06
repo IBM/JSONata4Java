@@ -22,6 +22,8 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -78,7 +80,18 @@ public class LowercaseFunction extends FunctionBase implements Function {
 					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
 			}
-		} else {
+		} else if (argCount == 2) {
+         if (!useContext) {
+            argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+         }
+         ParseTree value = ctx.exprValues().exprList();
+         expressionVisitor.getStack().push(argString);
+         result = expressionVisitor.visit(value);
+         if (result != null && result.isTextual()) {
+            result = new TextNode(result.textValue().toLowerCase());
+         }
+         expressionVisitor.getStack().pop();
+	   }else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
 
