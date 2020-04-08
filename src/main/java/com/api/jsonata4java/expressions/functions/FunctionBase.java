@@ -44,7 +44,7 @@ public abstract class FunctionBase {
 	 * @param ctx The Function_callContext for the function.
 	 * @return int The number of arguments for the function
 	 */
-	public int getArgumentCount(Function_callContext ctx) {
+	static public int getArgumentCount(Function_callContext ctx) {
 		if (ctx.emptyValues() != null)
 			return 0; // no variables
 		if (ctx.exprValues().exprList() == null)

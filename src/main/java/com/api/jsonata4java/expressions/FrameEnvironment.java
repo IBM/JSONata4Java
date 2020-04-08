@@ -123,4 +123,8 @@ public class FrameEnvironment {
       }
       _variableMap.put(varName, varValue);
    }
+   
+   public void setNullDollar() {
+   	_variableMap.put("$", null);
+   }
 }

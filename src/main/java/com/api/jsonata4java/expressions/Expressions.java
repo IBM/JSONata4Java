@@ -42,12 +42,11 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionLexer;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class Expressions {
 	ParseTree tree = null;
 	String expression = null;
-	ExpressionsVisitor _eval = new ExpressionsVisitor(JsonNodeFactory.instance.objectNode());
+	ExpressionsVisitor _eval = new ExpressionsVisitor(null,new FrameEnvironment(null));
 
 	/**
 	 * Returns a list of $something references in the given expression, using the
@@ -141,8 +140,7 @@ public class Expressions {
 
       JsonNode result = null;
 
-      ExpressionsVisitor eval = new ExpressionsVisitor(rootContext);
-      _eval = eval;
+      _eval.setRootContext(rootContext);
       if (timeoutMS <= 0L) {
          throw new EvaluateException("The timeoutMS must be a positive number. Received "+timeoutMS);
       }
@@ -166,7 +164,7 @@ public class Expressions {
       return result;
 	   
 	}
-
+	
 	/**
 	 * Evaluate the stored expression against the supplied event and application
 	 * interface data.
@@ -181,8 +179,7 @@ public class Expressions {
 
 		JsonNode result = null;
 
-		ExpressionsVisitor eval = new ExpressionsVisitor(rootContext);
-		_eval = eval;
+		_eval.setRootContext(rootContext);
 
 		try {
 			result = _eval.visitTree(tree); // was eval.visit();
@@ -197,6 +194,10 @@ public class Expressions {
 		}
 		// else return JsonNode as null
 		return result;
+	}
+	
+	public FrameEnvironment getEnvironment() {
+		return _eval.getEnvironment();
 	}
 
 	public ExpressionsVisitor getExpr() {

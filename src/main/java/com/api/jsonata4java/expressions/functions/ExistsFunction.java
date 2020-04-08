@@ -25,7 +25,9 @@ package com.api.jsonata4java.expressions.functions;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.PropertyDoesNotExistEvaluateRuntimeException;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -35,6 +37,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 public class ExistsFunction extends FunctionBase implements Function {
 
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_EXISTS);
+	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_EXISTS);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_EXISTS);
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
@@ -55,6 +58,23 @@ public class ExistsFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				try {
 					arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+					if (arg != null && arg.isNull()) {
+						return null;
+					}
+					if (arg == null) {
+						// special test to see if there is a function that exists with this name
+						ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
+						if (exprCtx instanceof Function_declContext) {
+							arg = BooleanNode.TRUE;
+						} else {
+							String functionName = exprCtx.getText();
+							if (expressionVisitor.getFunction(functionName) != null) {
+								arg = BooleanNode.TRUE;
+							} else if (Constants.FUNCTIONS.get(functionName) != null) {
+								arg = BooleanNode.TRUE;
+							}
+						}
+					}
 				} catch (PropertyDoesNotExistEvaluateRuntimeException pdne) {
 					return BooleanNode.FALSE;
 				} catch (NullPointerException npe) {
@@ -62,12 +82,16 @@ public class ExistsFunction extends FunctionBase implements Function {
 				} catch (EvaluateRuntimeException ere) {
 					return BooleanNode.FALSE;
 				}
+			} else {
+				if (arg == null || arg.isNull()) {
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				}
 			}
 			// evaluate the expression the property exists iff a
 			// PropertyDoesNotExistEvaluateRuntimeException is NOT thrown
 			// NOTE: $exists(null) returns true according to
 			// http://try.jsonata.org/
-			if (arg == null) {
+			if (arg == null || arg.isNull()) {
 				result = BooleanNode.FALSE;
 			} else {
 				result = BooleanNode.TRUE;

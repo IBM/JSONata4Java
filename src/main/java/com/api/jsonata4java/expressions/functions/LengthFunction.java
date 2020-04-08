@@ -22,6 +22,8 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.util.Objects;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -72,7 +74,9 @@ public class LengthFunction extends FunctionBase implements Function {
 			if (argString != null) {
 				if (argString.isTextual()) {
 					final String str = argString.textValue();
-					result = new LongNode(str.length());
+					String strData = Objects.requireNonNull(str).intern();
+					int strLen = strData.codePointCount(0, strData.length());
+					result = new LongNode(strLen);
 				} else {
 					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}

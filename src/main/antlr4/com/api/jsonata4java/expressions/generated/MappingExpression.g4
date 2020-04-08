@@ -24,6 +24,11 @@
 
 grammar MappingExpression;
 
+//options {
+//    // Allow any char but \uFFFF (16 bit -1)
+//    charVocabulary='\u0000'-'\uFFFE';
+//}
+
 /* The start rule; begin parsing here.
    operator precedence is implied by the ordering in this list */
 
@@ -56,7 +61,7 @@ expr:
  | expr 'in' expr                                         # membership
  | expr 'and' expr                                        # logand
  | expr 'or' expr                                         # logor
- | expr '?' expr ':' expr                                 # conditional
+ | expr '?' expr (':' expr)?                              # conditional
  | expr CHAIN expr                                        # fct_chain
  | '(' (expr (';' (expr)?)*)? ')'                         # parens
  | VAR_ID                                                 # var_recall
@@ -84,8 +89,8 @@ FALSE : 'false';
 
 
 STRING
-	: '\'' (ESC | ~['\\])* '\''
-	| '"'  (ESC | ~["\\])* '"'
+	: '\'' (ESC | ['\\'u(a-f|A-F|0-9)4] | ~['\\])* '\''
+	| '"'  (ESC | ['\\'u(a-f|A-F|0-9)4] | ~["\\])* '"'
 	;
 
 NULL : 'null';
@@ -140,7 +145,7 @@ ID
 
 
 fragment ESC :   '\\' (["'\\/bfnrt] | UNICODE) ;
-fragment UNICODE : 'u' HEX HEX HEX HEX ;
+fragment UNICODE : [\u0080-\uFFFF]; // 'u' HEX HEX HEX HEX ;
 fragment HEX : [0-9a-fA-F] ;
 
 fragment INT :   '0' | [1-9] [0-9]* ; // no leading zeros

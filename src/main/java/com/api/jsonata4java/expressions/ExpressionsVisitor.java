@@ -351,7 +351,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
    }
 
    JsonNodeFactory factory = JsonNodeFactory.instance;
-   private FrameEnvironment _environment = new FrameEnvironment(null);
+   private FrameEnvironment _environment = null; // new FrameEnvironment(null);
    
    /**
     * This stack is used for storing the current "context" under which to evaluate
@@ -369,14 +369,36 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
    ParseTreeProperty<Integer> values = new ParseTreeProperty<Integer>();
 
-   public ExpressionsVisitor(JsonNode rootContext) throws EvaluateRuntimeException {
-      if (rootContext != null) {
-         this.stack.push(rootContext);
-         // add a variable for the rootContext
-         this._environment.setVariable("$", rootContext);
-      }
+   public ExpressionsVisitor() {
+   	setEnvironment(null);
+   	setRootContext(null);
+   }
+   
+   public ExpressionsVisitor(JsonNode rootContext, FrameEnvironment environment) throws EvaluateRuntimeException {
+   	setEnvironment(environment);
+   	setRootContext(rootContext);
    }
 
+   protected FrameEnvironment getEnvironment() {
+   	return _environment;
+   }
+   
+   protected void setEnvironment(FrameEnvironment  environment) {
+   	if (environment == null) {
+   		environment = new FrameEnvironment(null);
+   	}
+   	_environment = environment;   	
+   }
+   protected void setRootContext(JsonNode rootContext) {
+   	this.stack.clear();
+   	if (rootContext != null) {
+	   	this.stack.push(rootContext);
+	      // add a variable for the rootContext
+	      this._environment.setVariable("$", rootContext);
+   	} else {
+   		this._environment.setNullDollar();;
+   	}
+   }
    JsonNode append(JsonNode arg1, JsonNode arg2) {
       // disregard undefined args
       if (arg1 == null) {
@@ -472,7 +494,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
             }
          }
          JsonNode result = visit(tree);
-         output.add(result);
+         if (result != null) {
+            output.add(result);
+         }
       }
    }
 
@@ -745,7 +769,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
                   // is used in such an odd way
                   // if we need strict JSONata compliance in this respect then
                   // we can change this
-                  throw new NonNumericArrayIndexException();
+                  
+               	// throw new NonNumericArrayIndexException();
+               	return sourceArray; // wnm3 added for case002 on multiple-array-selectors
                }
 
             }
@@ -1033,7 +1059,23 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
       /* the conditional ternary operator ?: */
       JsonNode cond = visit(ctx.expr(0)); // get value of left subexpression
       if (cond instanceof BooleanNode) {
-         return BooleanUtils.convertJsonNodeToBoolean(cond) ? visit(ctx.expr(1)) : visit(ctx.expr(2));
+         ExprContext ctx1 = ctx.expr(1);
+         ExprContext ctx2 = ctx.expr(2);
+         if (ctx1 != null && ctx2 != null) {
+            return BooleanUtils.convertJsonNodeToBoolean(cond) ? visit(ctx.expr(1)) : visit(ctx.expr(2));
+         } else {
+            if (BooleanUtils.convertJsonNodeToBoolean(cond)) {
+               if (ctx1 != null) {
+                  return visit(ctx1);
+               }
+               return null;
+            } else {
+               if (ctx2 != null) {
+                  return visit(ctx2);
+               }
+               return null;
+            }
+         }
       }
       return cond;
    }
@@ -1613,7 +1655,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
          for (int i = 0; i < keys.size(); i++) {
             String key = keys.get(i);
             JsonNode value = values.get(i);
-            object.set(key, value);
+            if (value != null) {
+            	object.set(key, value);
+            }
          }
 
          return object;

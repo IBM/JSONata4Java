@@ -33,6 +33,7 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.functions.Function;
+import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Array_constructorContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.BooleanContext;
@@ -776,6 +777,9 @@ public class FunctionUtils {
 	 * @return true if the context variable should be used as the first parameter
 	 */
 	public static boolean useContextVariable(Function_callContext ctx, String signature) {
+		if (FunctionBase.getArgumentCount(ctx) == 0) {
+			return true;
+		}
 		if (ctx == null || ctx.getParent() == null) {
 			return false;
 		}

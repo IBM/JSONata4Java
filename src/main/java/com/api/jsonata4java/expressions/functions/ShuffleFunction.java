@@ -58,8 +58,12 @@ public class ShuffleFunction extends FunctionBase implements Function {
 			}
 			// if arg is an array, return its length. Any other type of
 			// input returns 1.
-			if (argArray == null) {
-				throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+			if (argArray == null || argArray.isNull()) {
+				if (useContext == true) {
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				} else {
+					return null;
+				}
 			} else if (argArray.isArray()) {
 				ArrayNode array = (ArrayNode) argArray;
 				result = JsonNodeFactory.instance.arrayNode(array.size());

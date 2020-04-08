@@ -14,6 +14,7 @@ import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.FrameEnvironment;
 import com.api.jsonata4java.expressions.ParseException;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
@@ -94,6 +95,7 @@ public class Expression {
 
    ExpressionsVisitor _eval = null;
    Expressions _expr = null;
+   FrameEnvironment _environment = new FrameEnvironment(null);
    Map<String, DeclaredFunction> _functionMap = new HashMap<String, DeclaredFunction>();
    Map<String, ExprContext> _variableMap = new HashMap<String, ExprContext>();
 
@@ -154,7 +156,7 @@ public class Expression {
     * @throws ParseException
     */
    public JsonNode evaluate(JsonNode rootContext) throws EvaluateException, ParseException {
-      ExpressionsVisitor eval = new ExpressionsVisitor(rootContext);
+      ExpressionsVisitor eval = new ExpressionsVisitor(rootContext,new FrameEnvironment(null));
       // process any stored bindings
       for (Iterator<String> it = _variableMap.keySet().iterator(); it.hasNext();) {
          String key = it.next();

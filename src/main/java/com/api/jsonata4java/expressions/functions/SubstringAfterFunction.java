@@ -22,6 +22,8 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.util.Objects;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -109,7 +111,7 @@ public class SubstringAfterFunction extends FunctionBase implements Function {
 				// Find chars in str
 				final int index = str.indexOf(chars);
 				if (index != -1) {
-					result = new TextNode(str.substring(index + 1));
+					result = new TextNode(substr(str, index + 1));
 				} else {
 					// argChars is not present... just return argString
 					result = new TextNode(str);
@@ -121,7 +123,59 @@ public class SubstringAfterFunction extends FunctionBase implements Function {
 
 		return result;
 	}
+	
+	/**
+	 * 
+	 * @param str
+	 * @param start  Location at which to begin extracting characters. If a negative
+	 *               number is given, it is treated as strLength - start where
+	 *               strLength is the length of the string. For example,
+	 *               str.substr(-3) is treated as str.substr(str.length - 3)
+	 * @return A new string containing the extracted section of the given string. If
+	 *         length is 0 or a negative number, an empty string is returned.
+	 */
+	private static String substr(String str, Integer start) {
 
+		Integer length = null;
+		// below has to convert start and length for emojis and unicode
+		int origLen = str.length();
+		
+		String strData = Objects.requireNonNull(str).intern();
+		int strLen = strData.codePointCount(0, strData.length());
+		// If start is negative, substr() uses it as a character index from the
+		// end of the string; the index of the last character is -1.
+		start = strData.offsetByCodePoints(0, start >= 0 ? start : ((strLen + start) < 0 ? 0 : strLen + start));
+		// If start is negative and abs(start) is larger than the length of the
+		// string, substr() uses 0 as the start index.
+		if (start < 0) {
+			start = 0;
+		}
+		// If length is omitted, substr() extracts characters to the end of the
+		// string.
+		if (length == null) {
+			length = strData.length();
+		}
+		
+		length = strData.offsetByCodePoints(0, length);
+
+		if (start >= 0) {
+			// If start is positive and is greater than or equal to the length of
+			// the string, substr() returns an empty string.
+			if (start >= origLen) {
+				return "";
+			}
+		}
+
+		// collect length characters (unless it reaches the end of the string
+		// first, in which case it will return fewer)
+		int end = start + length;
+		if (end > origLen) {
+			end = origLen;
+		}
+
+		return strData.substring(start, end);
+	}
+	
 	@Override
 	public String getSignature() {
 		// accepts a string (or context variable), a string, returns a string

@@ -22,6 +22,8 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.util.Objects;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -133,46 +135,46 @@ public class SubstringFunction extends FunctionBase implements Function {
 	 */
 	private static String substr(String str, Integer start, Integer length) {
 
-		int strlen = str.length();
+		// below has to convert start and length for emojis and unicode
+		int origLen = str.length();
+		
+		String strData = Objects.requireNonNull(str).intern();
+		int strLen = strData.codePointCount(0, strData.length());
+		// If start is negative, substr() uses it as a character index from the
+		// end of the string; the index of the last character is -1.
+		start = strData.offsetByCodePoints(0, start >= 0 ? start : ((strLen + start) < 0 ? 0 : strLen + start));
+		// If start is negative and abs(start) is larger than the length of the
+		// string, substr() uses 0 as the start index.
+		if (start < 0) {
+			start = 0;
+		}
+		// If length is omitted, substr() extracts characters to the end of the
+		// string.
+		if (length == null) {
+			length = strData.length();
+		} else if (length < 0) {
+			// If length is 0 or negative, substr() returns an empty string.
+			return "";
+		}
+		
+		length = strData.offsetByCodePoints(0, length);
 
 		if (start >= 0) {
 			// If start is positive and is greater than or equal to the length of
 			// the string, substr() returns an empty string.
-			if (start >= strlen) {
+			if (start >= origLen) {
 				return "";
-			}
-
-		} else {
-			// If start is negative, substr() uses it as a character index from the
-			// end of the string; the index of the last character is -1.
-			start = strlen + start;
-
-			// If start is negative and abs(start) is larger than the length of the
-			// string, substr() uses 0 as the start index.
-			if (start < 0) {
-				start = 0;
 			}
 		}
 
-		if (length == null) {
-			// If length is omitted, substr() extracts characters to the end of the
-			// string.
-			return str.substring(start);
-		} else {
-			// If length is 0 or negative, substr() returns an empty string.
-			if (length <= 0) {
-				return "";
-			}
-
-			// collect length characters (unless it reaches the end of the string
-			// first, in which case it will return fewer)
-			int end = start + length;
-			if (end > strlen) {
-				end = strlen;
-			}
-
-			return str.substring(start, end);
+		// collect length characters (unless it reaches the end of the string
+		// first, in which case it will return fewer)
+		int end = start + length;
+		if (end > origLen) {
+			end = origLen;
 		}
+
+		return strData.substring(start, end);
 	}
 
 	@Override

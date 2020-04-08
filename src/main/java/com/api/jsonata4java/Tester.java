@@ -32,6 +32,7 @@ import com.api.jsonata4java.expressions.ParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
  * Expression evaluation test utility
@@ -126,13 +127,17 @@ public class Tester {
 		if (args.length > 0) {
 		   if (args[0].equals("null") == false) {
    			File file = new File(args[0]);
-   			System.out.println("Attempting to load JSON from file: " + args[0]);
-   			try {
-   				jsonObj = mapper.readTree(file);
-   			} catch (JsonProcessingException e) {
-   				System.err.println(e.getLocalizedMessage());
-   			} catch (IOException e) {
-   				System.err.println(e.getLocalizedMessage());
+   			if (file.exists()) {
+      			System.out.println("Attempting to load JSON from file: " + args[0]);
+      			try {
+      				jsonObj = mapper.readTree(file);
+      			} catch (JsonProcessingException e) {
+      				System.err.println(e.getLocalizedMessage());
+      			} catch (IOException e) {
+      				System.err.println(e.getLocalizedMessage());
+      			}
+   			} else {
+   			   jsonObj = new TextNode(args[0]);
    			}
 		   } else {
 		      jsonObj = null;

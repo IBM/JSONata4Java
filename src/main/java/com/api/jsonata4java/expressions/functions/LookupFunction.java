@@ -115,6 +115,9 @@ public class LookupFunction extends FunctionBase implements Function {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
 		}
 
+		if (result != null && result.isArray() && result.size() == 0) {
+			result = null;
+		}
 		return result;
 	}
 	

@@ -63,8 +63,12 @@ public class SortFunction extends FunctionBase implements Function {
 			}
 			// if arg is an array, return its length. Any other type of input
 			// returns 1.
-			if (arg == null) {
-				return null; // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+			if (arg == null || arg.isNull()) {
+				if (useContext) {
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				} else {
+					return null;
+				}
 			} else if (arg.isArray()) {
 				ArrayNode array = (ArrayNode) arg;
 				for (int i = 0; i < array.size(); i++) {

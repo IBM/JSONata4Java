@@ -59,7 +59,7 @@ public class AverageFunction extends FunctionBase implements Function {
 			}
 			// check to see if there is a valid context value
 			if (!arg.isArray()) {
-				throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 			argCount++;
 		}
