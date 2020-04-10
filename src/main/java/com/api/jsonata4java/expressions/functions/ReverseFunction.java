@@ -59,14 +59,18 @@ public class ReverseFunction extends FunctionBase implements Function {
 			// if arg is an array, return its length. Any other type of
 			// input returns 1.
 			if (argArray == null) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				return null; // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			} else if (argArray.isArray()) {
 				ArrayNode array = (ArrayNode) argArray;
 				for (int i = array.size() - 1; i >= 0; i--) {
 					result.add(array.get(i));
 				}
 			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY);
+				if (argArray.isNull()) {
+					result.add(argArray);
+				} else {
+					throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY);
+				}
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);

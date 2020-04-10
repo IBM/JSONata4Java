@@ -26,6 +26,7 @@ import java.util.Iterator;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
@@ -58,7 +59,7 @@ public class SpreadFunction extends FunctionBase implements Function {
 
    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
       // Create the variable to return
-      ArrayNode result = JsonNodeFactory.instance.arrayNode();
+      SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
 
       // Retrieve the number of arguments
       JsonNode argObject = JsonNodeFactory.instance.nullNode();
@@ -126,8 +127,8 @@ public class SpreadFunction extends FunctionBase implements Function {
 
       if (result != null && argIsArray == false) {
          JsonNode test = ExpressionsVisitor.unwrapArray(result);
-         if (test.isArray()) {
-            result = (ArrayNode) test;
+         if (test.isArray() && test instanceof SelectorArrayNode) {
+            result = (SelectorArrayNode) test;
          } else {
             return test;
          }
@@ -141,7 +142,7 @@ public class SpreadFunction extends FunctionBase implements Function {
       return "<x-:a<o>";
    }
 
-   public void addObject(ArrayNode result, ObjectNode obj) {
+   public void addObject(SelectorArrayNode result, ObjectNode obj) {
       for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
          String key = it.next();
          ObjectNode cell = JsonNodeFactory.instance.objectNode();

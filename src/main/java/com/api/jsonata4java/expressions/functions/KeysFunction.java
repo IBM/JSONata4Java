@@ -26,6 +26,7 @@ import java.util.Iterator;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -55,7 +56,7 @@ public class KeysFunction extends FunctionBase implements Function {
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 		// Create the variable to return
-		ArrayNode result = JsonNodeFactory.instance.arrayNode();
+		SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
 
 		// Retrieve the number of arguments
 		JsonNode argObject = JsonNodeFactory.instance.nullNode();
@@ -97,7 +98,7 @@ public class KeysFunction extends FunctionBase implements Function {
 		return result;
 	}
 	
-	static void findObjects(ArrayNode array,ArrayNode result) {
+	static void findObjects(ArrayNode array,SelectorArrayNode result) {
 		for (int i=0;i<array.size(); i++) {
 			JsonNode arrayNode = array.get(i);
 			if (arrayNode != null) {
@@ -110,7 +111,7 @@ public class KeysFunction extends FunctionBase implements Function {
 			}
 		}
 	}
-	static void captureKeys(ObjectNode argObject, ArrayNode result) {
+	static void captureKeys(ObjectNode argObject, SelectorArrayNode result) {
 		JsonNode value = null;
 		String key = null;
 		ObjectNode obj = (ObjectNode) argObject;

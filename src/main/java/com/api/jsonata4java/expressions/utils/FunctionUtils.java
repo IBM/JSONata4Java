@@ -410,9 +410,9 @@ public class FunctionUtils {
 	 */
 	public static JsonNode getContextVariable(ExpressionsVisitor exprVisitor) {
 		JsonNode result = JsonNodeFactory.instance.nullNode();
-		if (exprVisitor.getStack().isEmpty() == false) {
-			result = exprVisitor.getStack().pop();
-			exprVisitor.getStack().push(result);
+		if (exprVisitor.getContextStack().isEmpty() == false) {
+			result = exprVisitor.getContextStack().pop();
+			exprVisitor.getContextStack().push(result);
 		}
 		return result;
 	}

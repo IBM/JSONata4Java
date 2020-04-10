@@ -24,6 +24,7 @@ package com.api.jsonata4java.expressions;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -33,6 +34,18 @@ import com.fasterxml.jackson.databind.JsonNode;
  * {@link ExpressionsVisitor} to manage the current block's environment.
  */
 public class FrameEnvironment {
+   /**
+    * This stack is used for storing the current "context" under which to evaluate
+    * predicate-type array indexes, e.g. [{"a":1}, {"a":2}][a=2] -> {"a":2}
+    * Specifically, it is used to resolve path expressions (a, in the above)
+    * against each of the elements in the array in order to figure out which
+    * elements match the predicate and which don't.
+    * 
+    * We use a stack (rather than just a singleton) here, since predicates can be
+    * nested inside other predicates, e.g. [{"x":2}, {"x":3}] [x=(["a":101, "b":2},
+    * {"a":102, "b":3}][a=101]).b] -> {"x":2}
+    */
+   private Stack<JsonNode> _stack = new Stack<JsonNode>();
    FrameEnvironment _enclosingFrame = null;
    private Map<String, DeclaredFunction> _functionMap = new HashMap<String, DeclaredFunction>();
    private boolean _isAsync = false;
@@ -70,6 +83,23 @@ public class FrameEnvironment {
    }
 
    public JsonNode getVariable(String varName) {
+   	if ("$".equals(varName)) {
+   		// get this from the stack
+   		JsonNode result = getContextStack().peek();
+   		// result = ExpressionsVisitor.flatten(result, null);
+   		return result;
+   	}
+   	
+   	if ("$$".equals(varName)) {
+   		Stack<JsonNode>stack = getContextStack();
+   		if (stack.isEmpty()) {
+   			return null;
+   		}
+   		JsonNode result = getContextStack().get(0);
+   		// result = ExpressionsVisitor.flatten(result, null);
+   		return result;
+   	}
+   	
       JsonNode retVar = _variableMap.get(varName);
       if (retVar != null) {
          return retVar;
@@ -124,7 +154,61 @@ public class FrameEnvironment {
       _variableMap.put(varName, varValue);
    }
    
-   public void setNullDollar() {
-   	_variableMap.put("$", null);
+   public int sizeContext() {
+   	while(_enclosingFrame != null) {
+   		return _enclosingFrame.sizeContext();
+   	}
+   	return _stack.size();
    }
+   
+   public Stack<JsonNode> getContextStack() {
+   	// jump back to original environment to get the "real" stack
+   	while(_enclosingFrame != null) {
+   		return _enclosingFrame.getContextStack();
+   	}
+   	return _stack;
+   }
+   
+   public boolean isEmptyContext() {
+   	while(_enclosingFrame != null) {
+   		return _enclosingFrame.isEmptyContext();
+   	}
+   	return _stack.isEmpty();
+   }
+   
+   public JsonNode peekContext() {
+   	while(_enclosingFrame != null) {
+   		return _enclosingFrame.peekContext();
+   	}
+
+   	if (isEmptyContext()) {
+   		return null;
+   	}
+
+   	return (JsonNode)_stack.peek();
+   }
+   
+   public JsonNode popContext() {
+   	while(_enclosingFrame != null) {
+   		return _enclosingFrame.popContext();
+   	}
+   	return _stack.pop();
+   }
+   
+   public JsonNode pushContext(JsonNode context) {
+   	while(_enclosingFrame != null) {
+   		return _enclosingFrame.pushContext(context);
+   	}
+   	return _stack.push(context);
+   }
+   
+   public void clearContext() {
+   	if (_enclosingFrame != null) {
+   		Stack<JsonNode> stack = _enclosingFrame.getContextStack();
+   		stack.clear();
+   		return;
+   	}
+   	_stack.clear();
+   }
+   
 }

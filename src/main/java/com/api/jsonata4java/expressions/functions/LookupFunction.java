@@ -24,11 +24,11 @@ package com.api.jsonata4java.expressions.functions;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -78,7 +78,7 @@ public class LookupFunction extends FunctionBase implements Function {
 						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 					}
 					final String key = keyObj.asText();
-					ArrayNode array = JsonNodeFactory.instance.arrayNode();
+					SelectorArrayNode array = new SelectorArrayNode(JsonNodeFactory.instance);
 					// Check the type of the argument
 					if (argObject.isObject()) {
 						ObjectNode obj = (ObjectNode) argObject;
@@ -91,7 +91,7 @@ public class LookupFunction extends FunctionBase implements Function {
 						}
 					} else {
 						if (argObject.isArray()) {
-							findObjects((ArrayNode)argObject, key, array);
+							findObjects((SelectorArrayNode)argObject, key, array);
 							if (array.size() == 0) {
 							   result = null;
 							} else if (array.size() != 1) {
@@ -121,13 +121,13 @@ public class LookupFunction extends FunctionBase implements Function {
 		return result;
 	}
 	
-	static void findObjects(ArrayNode array, String key, ArrayNode result) {
+	static void findObjects(SelectorArrayNode array, String key, SelectorArrayNode result) {
 		for (int i=0;i<array.size(); i++) {
 			JsonNode arrayNode = array.get(i);
 			if (arrayNode != null) {
 				if (arrayNode.isArray()) {
-					ArrayNode subResult = JsonNodeFactory.instance.arrayNode();
-					findObjects((ArrayNode)arrayNode, key, subResult);
+					SelectorArrayNode subResult = new SelectorArrayNode(JsonNodeFactory.instance);
+					findObjects((SelectorArrayNode)arrayNode, key, subResult);
 					// if (subResult.size() != 0) {
 						result.add(subResult);
 					// }
@@ -137,7 +137,7 @@ public class LookupFunction extends FunctionBase implements Function {
 			}
 		}
 	}
-	static void captureKeyValues(ObjectNode obj, String key, ArrayNode result) {
+	static void captureKeyValues(ObjectNode obj, String key, SelectorArrayNode result) {
 		JsonNode value = obj.get(key);
 		if (value != null) {
 			result.add(value);

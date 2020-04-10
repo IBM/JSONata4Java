@@ -71,41 +71,38 @@ public class MinFunction extends FunctionBase implements Function {
 				argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
 			if (argArray != null) {
-				if (argArray.isArray()) {
-					// Convert the input node to an ArrayNode and make check that the
-					// array is not empty
-					ArrayNode items = (ArrayNode) argArray;
-					if (items.size() > 0) {
-						JsonNode min = null;
-						for (JsonNode item : items) {
-							if (item.isNumber()) {
-								// Check whether the current item is less than the
-								// current min
-								if (min == null || item.asDouble() < min.asDouble()) {
-									min = item;
-								}
-							} else {
-								/*
-								 * The input array contains an item that is not a number. Throw a suitable
-								 * exception
-								 */
-								throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+				if (argArray.isArray() == false) {
+					argArray = ExpressionsVisitor.ensureArray(argArray);
+				}
+				// Convert the input node to an ArrayNode and make check that the
+				// array is not empty
+				ArrayNode items = (ArrayNode) argArray;
+				if (items.size() > 0) {
+					JsonNode min = null;
+					for (JsonNode item : items) {
+						if (item.isNumber()) {
+							// Check whether the current item is less than the
+							// current min
+							if (min == null || item.asDouble() < min.asDouble()) {
+								min = item;
 							}
-						} // FOR
+						} else {
+							/*
+							 * The input array contains an item that is not a number. Throw a suitable
+							 * exception
+							 */
+							throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+						}
+					} // FOR
 
-						// Return the node that represents the minimum value
-						result = min;
-					} else {
-						/*
-						 * The input array is empty. Throw a suitable exception
-						 */
-						throw new EvaluateRuntimeException(ERR_ARG_TYPE);
-					}
+					// Return the node that represents the minimum value
+					result = min;
 				} else {
 					/*
-					 * The input argument is not an array. Throw a suitable exception
+					 * The input array is empty. Signal returning null 
 					 */
-					throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+					// throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+					return null;
 				}
 			}
 		} else {

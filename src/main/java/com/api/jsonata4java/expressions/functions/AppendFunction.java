@@ -24,6 +24,7 @@ package com.api.jsonata4java.expressions.functions;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.ArrayUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
@@ -41,7 +42,7 @@ public class AppendFunction extends FunctionBase implements Function {
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 
-		ArrayNode result = JsonNodeFactory.instance.arrayNode();
+		SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
 
 		// Retrieve the number of arguments
 		JsonNode argArray = JsonNodeFactory.instance.nullNode();

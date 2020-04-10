@@ -59,7 +59,7 @@ public class ExistsFunction extends FunctionBase implements Function {
 				try {
 					arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 					if (arg != null && arg.isNull()) {
-						return null;
+						return BooleanNode.TRUE;
 					}
 					if (arg == null) {
 						// special test to see if there is a function that exists with this name

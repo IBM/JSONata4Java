@@ -28,6 +28,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
@@ -39,7 +40,6 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_re
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -76,7 +76,7 @@ public class EachFunction extends FunctionBase implements Function {
          .format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_SPREAD);
 
    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-      ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
+      SelectorArrayNode resultArray = new SelectorArrayNode(JsonNodeFactory.instance);
       boolean useContext = ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
             || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
       JsonNode objNode = null;
@@ -195,7 +195,7 @@ public class EachFunction extends FunctionBase implements Function {
       return "<x-:a<o>";
    }
 
-   public void addObject(ArrayNode result, ObjectNode obj) {
+   public void addObject(SelectorArrayNode result, ObjectNode obj) {
       for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
          String key = it.next();
          ObjectNode cell = JsonNodeFactory.instance.objectNode();

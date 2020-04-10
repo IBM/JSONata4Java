@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -68,7 +69,7 @@ public class MatchFunction extends FunctionBase implements Function {
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 		// Create the variable to return
-		ArrayNode result = null;
+		SelectorArrayNode result = null;
 
 		// Retrieve the number of arguments
 		JsonNode argString = JsonNodeFactory.instance.nullNode();
@@ -119,7 +120,7 @@ public class MatchFunction extends FunctionBase implements Function {
 					final Matcher matcher = regexPattern.matcher(str);
 
 					// Check to see if a limit was specified
-					result = JsonNodeFactory.instance.arrayNode();
+					result = new SelectorArrayNode(JsonNodeFactory.instance);
 					if (limit == -1) {
 						// No limits... match all occurrences in the string
 						while (matcher.find()) {

@@ -67,7 +67,7 @@ expr:
  | VAR_ID                                                 # var_recall
  | NUMBER                                                 # number
  | STRING                                                 # string
- | NULL                                                   # null
+ | 'null'                                                 # null
  ;
 
 fieldList : STRING ':' expr (',' STRING ':' expr)*;
