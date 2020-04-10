@@ -89,8 +89,8 @@ FALSE : 'false';
 
 
 STRING
-	: '\'' (ESC | ['\\'u(a-f|A-F|0-9)4] | ~['\\])* '\''
-	| '"'  (ESC | ['\\'u(a-f|A-F|0-9)4] | ~["\\])* '"'
+	: '\'' (ESC | ~['\\])* '\''
+	| '"'  (ESC | ~["\\])* '"'
 	;
 
 NULL : 'null';
@@ -145,7 +145,7 @@ ID
 
 
 fragment ESC :   '\\' (["'\\/bfnrt] | UNICODE) ;
-fragment UNICODE : [\u0080-\uFFFF]; // 'u' HEX HEX HEX HEX ;
+fragment UNICODE : ([\u0080-\uFFFF] | 'u' HEX HEX HEX HEX) ;
 fragment HEX : [0-9a-fA-F] ;
 
 fragment INT :   '0' | [1-9] [0-9]* ; // no leading zeros

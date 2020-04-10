@@ -29,6 +29,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -91,7 +92,7 @@ public class LookupFunction extends FunctionBase implements Function {
 						}
 					} else {
 						if (argObject.isArray()) {
-							findObjects((SelectorArrayNode)argObject, key, array);
+							findObjects((ArrayNode)argObject, key, array);
 							if (array.size() == 0) {
 							   result = null;
 							} else if (array.size() != 1) {
@@ -121,13 +122,13 @@ public class LookupFunction extends FunctionBase implements Function {
 		return result;
 	}
 	
-	static void findObjects(SelectorArrayNode array, String key, SelectorArrayNode result) {
+	static void findObjects(ArrayNode array, String key, ArrayNode result) {
 		for (int i=0;i<array.size(); i++) {
 			JsonNode arrayNode = array.get(i);
 			if (arrayNode != null) {
 				if (arrayNode.isArray()) {
-					SelectorArrayNode subResult = new SelectorArrayNode(JsonNodeFactory.instance);
-					findObjects((SelectorArrayNode)arrayNode, key, subResult);
+					ArrayNode subResult = new ArrayNode(JsonNodeFactory.instance);
+					findObjects((ArrayNode)arrayNode, key, subResult);
 					// if (subResult.size() != 0) {
 						result.add(subResult);
 					// }
@@ -137,7 +138,7 @@ public class LookupFunction extends FunctionBase implements Function {
 			}
 		}
 	}
-	static void captureKeyValues(ObjectNode obj, String key, SelectorArrayNode result) {
+	static void captureKeyValues(ObjectNode obj, String key, ArrayNode result) {
 		JsonNode value = obj.get(key);
 		if (value != null) {
 			result.add(value);

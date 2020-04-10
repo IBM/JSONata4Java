@@ -759,8 +759,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						// if we need strict JSONata compliance in this respect then
 						// we can change this
 
-						// throw new NonNumericArrayIndexException();
-						return sourceArray; // wnm3 added for case002 on multiple-array-selectors
+						throw new NonNumericArrayIndexException();
+						// return sourceArray; // wnm3 added for case002 on multiple-array-selectors
 					}
 
 				}
@@ -1361,6 +1361,13 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		if (LOG.isLoggable(Level.FINEST))
 			LOG.exiting(CLASS, METHOD, result);
 		return result;
+	}
+	
+	boolean isSequence(JsonNode node) {
+		if (node != null && node instanceof SelectorArrayNode) {
+			return true;
+		}
+		return false;
 	}
 
 	JsonNode lookup(JsonNode input, String key) {
