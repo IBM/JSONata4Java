@@ -107,7 +107,7 @@ public class Utils {
 		JsonNode result = expr.evaluate(jsonObj);
       System.err.print("* " + expression);
 		System.err.println(" returned " + result);
-		assertTrue(mapper.writeValueAsString(result).equals(mapper.writeValueAsString(expected)));
+		Assert.assertEquals(mapper.writeValueAsString(result),mapper.writeValueAsString(expected));
 	}
 
 	public static void simpleTestExpectException(String expression, String expectedExceptionMessage) throws Exception {

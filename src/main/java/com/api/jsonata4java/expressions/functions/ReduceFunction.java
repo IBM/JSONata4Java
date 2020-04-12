@@ -67,11 +67,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 */
 public class ReduceFunction extends FunctionBase implements Function {
 
-   public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SPREAD);
-   public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SPREAD);
-   public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SPREAD);
+   public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_REDUCE);
+   public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_REDUCE);
+   public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_REDUCE);
    public static String ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS = String
-         .format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_SPREAD);
+         .format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_REDUCE);
 
    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
       boolean useContext = ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
@@ -88,9 +88,11 @@ public class ReduceFunction extends FunctionBase implements Function {
       // expect something that evaluates to an object and either a variable
       // pointing to a function, or a function declaration
 
-      if (arrNode == null || !arrNode.isArray()) {
-         throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FILTER));
+      if (arrNode == null /* || !arrNode.isArray() */ ) {
+         // throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_REDUCE));
+      	return null;
       }
+      arrNode = ExpressionsVisitor.ensureArray(arrNode);
       ArrayNode mapArray = (ArrayNode) arrNode;
 
       int startIndex = 1;

@@ -67,6 +67,7 @@ public class AverageFunction extends FunctionBase implements Function {
 		// Make sure that we have the right number of arguments
 		if (argCount == 1) {
 			if (!useContext) {
+				FunctionUtils.validateArguments(ERR_ARG_TYPE, expressionVisitor, ctx, 0, getSignature());
 				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
 			if (arg == null) {

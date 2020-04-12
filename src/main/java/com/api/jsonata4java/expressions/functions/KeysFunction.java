@@ -56,7 +56,7 @@ public class KeysFunction extends FunctionBase implements Function {
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 		// Create the variable to return
-		SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
+		ObjectNode result = new ObjectNode(JsonNodeFactory.instance);
 
 		// Retrieve the number of arguments
 		JsonNode argObject = JsonNodeFactory.instance.nullNode();
@@ -76,10 +76,14 @@ public class KeysFunction extends FunctionBase implements Function {
 				return null;
 			}
 			// Check the type of the argument
+			String key = "";
 			if (argObject.isObject()) {
 				ObjectNode obj = (ObjectNode) argObject;
 				for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
-					result.add(it.next());
+					key = it.next();
+					if (result.get(key) == null) {
+						result.put(key,true);
+					}
 				}
 			} else {
 				if (argObject.isArray()) {
@@ -88,17 +92,24 @@ public class KeysFunction extends FunctionBase implements Function {
 					/*
 					 * The input argument is not an array. Throw a suitable exception
 					 */
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+					return null;
+					// throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
-
-		return result;
+		if (result.size() == 0) {
+			return null;
+		}
+		SelectorArrayNode output = new SelectorArrayNode(JsonNodeFactory.instance);
+		for (Iterator<String>it = result.fieldNames(); it.hasNext(); ) {
+			output.add(it.next());
+		}
+		return ExpressionsVisitor.unwrapArray(output);
 	}
 	
-	static void findObjects(ArrayNode array,SelectorArrayNode result) {
+	static void findObjects(ArrayNode array,ObjectNode result) {
 		for (int i=0;i<array.size(); i++) {
 			JsonNode arrayNode = array.get(i);
 			if (arrayNode != null) {
@@ -111,15 +122,17 @@ public class KeysFunction extends FunctionBase implements Function {
 			}
 		}
 	}
-	static void captureKeys(ObjectNode argObject, SelectorArrayNode result) {
-		JsonNode value = null;
+	static void captureKeys(ObjectNode argObject, ObjectNode result) {
+//		JsonNode value = null;
 		String key = null;
 		ObjectNode obj = (ObjectNode) argObject;
 		for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
 			key = it.next();
-			result.add(key);
-			value = obj.get(key);
-			if (value != null) {
+			if (result.get(key) == null) {
+				result.put(key,true);
+			}
+//			value = obj.get(key);
+//			if (value != null) {
 //				if (value.isArray()) {
 //					ArrayNode subArray = JsonNodeFactory.instance.arrayNode();
 //					findObjects((ArrayNode)value,subArray);
@@ -129,7 +142,7 @@ public class KeysFunction extends FunctionBase implements Function {
 //				} else if (value.isObject()) {
 //					// not implemented in jsonata.js
 //				}
-			}
+//			}
 		}
 	}
 

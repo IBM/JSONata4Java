@@ -55,6 +55,7 @@ public class SumFunction extends FunctionBase implements Function {
 		// Make sure that we have the right number of arguments
 		if (argCount == 1) {
 			if (!useContext) {
+				FunctionUtils.validateArguments(ERR_ARG1ARRTYPE, expressionVisitor, ctx, 0, getSignature());
 				argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
 			// if arg is an array, sum its values

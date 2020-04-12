@@ -47,8 +47,13 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 //			"hof-zip-map",
 			"lambdas",
 //			"function-zip",
-			"regex", "function-assert",
-//            "function-shuffle",
+			"regex",
+			"encoding",
+			"function-assert",
+			"function-error",
+			"function-eval",
+			"hof-single",
+//       "function-shuffle",
 //			"function-lookup",
 //			"function-keys",
 //			"function-spread",
@@ -94,6 +99,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 				"case015", "case016", "case017", "case018", "case019", "case020", "case022", "case025");
 		SKIP_CASES("function-exists", "case006");
 		SKIP_CASES("range-operator", "case013");
+		SKIP_CASES("hof-reduce","case010");
 	}
 
 	private static void SKIP_CASES(String group, String... casesArray) {

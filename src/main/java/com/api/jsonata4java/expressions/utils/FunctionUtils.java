@@ -25,18 +25,21 @@ package com.api.jsonata4java.expressions.utils;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.CommonTokenFactory;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
+import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.functions.Function;
 import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Array_constructorContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.BooleanContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Context_refContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprOrSeqContext;
@@ -44,10 +47,13 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprOr
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.FieldListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.IdContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Object_constructorContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.PathContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Unary_opContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
@@ -561,6 +567,90 @@ public class FunctionUtils {
 		return result;
 	}
 
+	/**
+	 * Checks the expression at the supplied index from the context's
+	 * {@link ExprValuesContext} {@link ExprListContext}, preserving the null value
+	 * (or returning null if the index is invalid) to determine if the arguments are valid
+	 * according to the supplied signature
+	 * 
+	 * @param exprVisitor used to visit the context's values
+	 * @param ctx         context providing {@link ExprValuesContext}
+	 *                    {@link ExprListContext}
+	 * @param index       non-negative index into the {@link ExprListContext}
+	 * @param signature   the acceptable arguments signature
+	 * @throws EvaluateRuntimeException if the variables do not match the signature
+	 */
+	public static void validateArguments(String possibleException, ExpressionsVisitor exprVisitor, Function_callContext ctx,
+			int index, String signature) {
+		try {
+			if (ctx != null && ctx.exprValues() != null) {
+				ExprContext exprCtx = ctx.exprValues().exprList().expr(index);
+				// determine the type of this expression to see if it matches the signature
+				if (checkArgument(exprVisitor, exprCtx,signature)) {
+					return;
+				} // else throw exception
+			}
+		} catch (IndexOutOfBoundsException e) {
+			; // return result = null;
+		} catch (ArithmeticException e) {
+			;
+		}
+		throw new EvaluateRuntimeException(possibleException);
+	}
+
+	/** 
+	 * Tests whether the supplied exprCtx meets the signature expectations. Note: 
+	 * $ or $$ references to context are not explicitly tested as they are resolved 
+	 * after this point. This test is for explicit variable declarations.  
+	 * @param exprCtx argument to be tested
+	 * @param signature test to be performed
+	 * @return true if the argument meets the test
+	 */
+	public static boolean checkArgument(ExpressionsVisitor exprVisitor, ExprContext exprCtx, String signature) {
+		boolean result = false; // pessimistic
+		switch(signature) {
+		case "<a<n>-:n>":
+		case "<a<n>:n>": {
+			if (exprCtx instanceof Array_constructorContext) {
+				// must be array of numbers or a number 
+				ParseTree ruleCtx = exprCtx.getChild(ExprOrSeqListContext.class, 0);
+				if (ruleCtx == null) {
+					// empty array
+					return true;
+				}
+				ruleCtx = ((ExprOrSeqListContext)ruleCtx).getChild(ExprOrSeqContext.class,0);
+				if (ruleCtx != null) {
+					ParseTree test = ((ExprOrSeqContext)ruleCtx).getChild(Context_refContext.class,0);
+					if (test != null) {
+						return true;
+					}
+					test = ((ExprOrSeqContext)ruleCtx).getChild(NumberContext.class,0);
+					if (test != null) {
+						return true;
+					}
+				}
+				if (ruleCtx instanceof Array_constructorContext) {
+					ruleCtx = ((Array_constructorContext) ruleCtx).getPayload();
+					if (ruleCtx instanceof Context_refContext) {
+						return true;
+					}
+				}
+				JsonNode test = exprVisitor.visit(ruleCtx);
+				if (test.isNumber()) {
+					return true;
+				}
+			} else if (exprCtx instanceof NumberContext || exprCtx instanceof Unary_opContext) {
+				// must be array of numbers or a number 
+				return true;				
+			} else if (exprCtx instanceof PathContext) {
+				return true;
+			} else if (exprCtx instanceof IdContext) {
+				return true;
+			}
+		}
+		}
+		return result;
+	}
 	/**
 	 * Gets the expression at the supplied index from the context's
 	 * {link ExprValuesContext} {link ExprListContext]

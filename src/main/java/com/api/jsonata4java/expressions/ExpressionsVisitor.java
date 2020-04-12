@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.expressions;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -83,6 +84,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	int maxDepth = -1;
 	boolean keepSingleton = false;
 	long maxTime = 0L;
+	static String _pattern = "#0.##";
+	static DecimalFormat _decimalFormat = new DecimalFormat(_pattern);
 
 	private void checkRunaway() {
 		if (checkRuntime) {
@@ -263,9 +266,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 
 		switch (node.getNodeType()) {
-		case STRING:
+		case STRING: {
 			return node.textValue();
+		}
+		case NUMBER: {
+			if (node.isDouble() || node.isDouble()) {
+				return _decimalFormat.format(node.asDouble());
+			}
+		}
+
 		default:
+			// arrays and objects
 			ObjectMapper objectMapper = new ObjectMapper();
 			try {
 				return objectMapper.writeValueAsString(node);
@@ -910,7 +921,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						output.addAll(seq);
 					}
 				}
-
 			}
 		}
 
@@ -968,48 +978,80 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			result = areJsonNodesEqual(left, right) ? BooleanNode.FALSE : BooleanNode.TRUE;
 
 		} else if (ctx.op.getType() == MappingExpressionParser.LT) {
-			if (left == null || left.isNull() || right == null || right.isNull()) {
+			if (left == null || right == null) {
+				result = null;
+			} else if (left.isNull() || right.isNull()) {
 				throw new EvaluateRuntimeException(
 						"The expressions either side of operator \"<\" must evaluate to numeric or string values");
+			} else if (left.isBoolean() || right.isBoolean()) {
+				result = null;
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
 				result = (left.asDouble() < right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
 				result = (left.asLong() < right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
-				result = (left.asText().compareTo(right.asText()) == -1) ? BooleanNode.TRUE : BooleanNode.FALSE;
+				if (left.getNodeType() != right.getNodeType()) {
+					throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
+							+ " either side of operator \">\" must be of the same data type");
+				}
+				result = (left.asText().compareTo(right.asText()) < 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			}
 		} else if (ctx.op.getType() == MappingExpressionParser.GT) {
-			if (left == null || left.isNull() || right == null || right.isNull()) {
+			if (left == null || right == null) {
+				result = null;
+			} else if (left.isNull() || right.isNull()) {
 				throw new EvaluateRuntimeException(
 						"The expressions either side of operator \">\" must evaluate to numeric or string values");
+			} else if (left.isBoolean() || right.isBoolean()) {
+				result = null;
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
 				result = (left.asDouble() > right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
 				result = (left.asLong() > right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
-				result = (left.asText().compareTo(right.asText()) == 1) ? BooleanNode.TRUE : BooleanNode.FALSE;
+				if (left.getNodeType() != right.getNodeType()) {
+					throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
+							+ " either side of operator \">\" must be of the same data type");
+				}
+				result = (left.asText().compareTo(right.asText()) > 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			}
 		} else if (ctx.op.getType() == MappingExpressionParser.LE) {
-			if (left == null || left.isNull() || right == null || right.isNull()) {
+			if (left == null || right == null) {
+				result = null;
+			} else if (left.isNull() || right.isNull()) {
 				throw new EvaluateRuntimeException(
 						"The expressions either side of operator \"<=\" must evaluate to numeric or string values");
+			} else if (left.isBoolean() || right.isBoolean()) {
+				result = null;
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
 				result = (left.asDouble() <= right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
 				result = (left.asLong() <= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
-				result = (left.asText().compareTo(right.asText()) != 1) ? BooleanNode.TRUE : BooleanNode.FALSE;
+				if (left.getNodeType() != right.getNodeType()) {
+					throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
+							+ " either side of operator \"<=\" must be of the same data type");
+				}
+				result = (left.asText().compareTo(right.asText()) <= 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			}
 		} else if (ctx.op.getType() == MappingExpressionParser.GE) {
-			if (left == null || left.isNull() || right == null || right.isNull()) {
+			if (left == null || right == null) {
+				result = null;
+			} else if (left.isNull() || right.isNull()) {
 				throw new EvaluateRuntimeException(
 						"The expressions either side of operator \">=\" must evaluate to numeric or string values");
+			} else if (left.isBoolean() || right.isBoolean()) {
+				result = null;
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
 				result = (left.asDouble() >= right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
 				result = (left.asLong() >= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
-				result = (left.asText().compareTo(right.asText()) != -1) ? BooleanNode.TRUE : BooleanNode.FALSE;
+				if (left.getNodeType() != right.getNodeType()) {
+					throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
+							+ " either side of operator \">=\" must be of the same data type");
+				}
+				result = (left.asText().compareTo(right.asText()) >= 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			}
 		}
 
@@ -1270,14 +1312,15 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode result = null;
 		String functionName = ctx.VAR_ID().getText();
 
-		Function function = Constants.FUNCTIONS.get(functionName);
-		if (function != null) {
-			result = function.invoke(this, ctx);
-		} else {
-			DeclaredFunction declFct = getFunction(functionName);
-			if (declFct == null) {
+		DeclaredFunction declFct = getFunction(functionName);
+		if (declFct == null) {
+			Function function = Constants.FUNCTIONS.get(functionName);
+			if (function != null) {
+				result = function.invoke(this, ctx);
+			} else {
 				throw new EvaluateRuntimeException("Unknown function: " + functionName);
 			}
+		} else {
 			result = declFct.invoke(this, ctx);
 		}
 		return result;
@@ -1362,7 +1405,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			LOG.exiting(CLASS, METHOD, result);
 		return result;
 	}
-	
+
 	boolean isSequence(JsonNode node) {
 		if (node != null && node instanceof SelectorArrayNode) {
 			return true;
@@ -1425,112 +1468,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	}
 
 	// private boolean flattenOutput = true;
-
-//   @Override
-//   public JsonNode visitMap_function(MappingExpressionParser.Map_functionContext ctx) {
-//      ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
-//      // expect something that evaluates to an array and either a variable
-//      // pointing to a function, or a function declaration
-//      VarListContext varList = ctx.varList();
-//      List<ExprListContext> exprListContext = ctx.exprList();
-//      ExprListContext exprList = exprListContext.get(0);
-//      boolean useContext = ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
-//            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
-//      JsonNode arrayObj = null;
-//      if (useContext) {
-//         arrayObj = FunctionUtils.getContextVariable(this);
-//      } else {
-//         arrayObj = visit(exprList.expr(0));
-//      }
-//      if (arrayObj == null || !arrayObj.isArray()) {
-//         throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FILTER));
-//      }
-//      ArrayNode mapArray = (ArrayNode) arrayObj;
-//
-//      ExprListContext fctBody = null;
-//      if (exprListContext.size() > (useContext ? 0 : 1)) {
-//         fctBody = exprListContext.get(useContext ? 0 : 1);
-//      }
-//
-//      // below are mutually exclusive
-//      TerminalNode varid = ctx.VAR_ID();
-//      if (varid != null) {
-//         // is this a known function reference?
-//         Function function = Constants.FUNCTIONS.get(varid.getText());
-//         if (function != null) {
-//            for (int i = 0; i < mapArray.size(); i++) {
-//               Function_callContext callCtx = new Function_callContext(ctx);
-//               // note: callCtx.children should be empty unless carrying an
-//               // exception
-//               JsonNode element = mapArray.get(i);
-//               resultArray.add(FunctionUtils.processFctCallVariables(this, function, varid, callCtx, element));
-//            }
-//         } else {
-//            // get the function to be executed from the functionMap and execute
-//            DeclaredFunction fct = functionMap.get(varid.getText());
-//            if (fct == null) {
-//               throw new EvaluateRuntimeException(
-//                     "Expected function variable reference " + varid.getText() + " to resolve to a declared function.");
-//            }
-//            int varCount = fct.getVariableCount();
-//            for (int i = 0; i < mapArray.size(); i++) {
-//               JsonNode element = mapArray.get(i);
-//               ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-//               switch (varCount) {
-//               case 1: {
-//                  // just pass the mapArray variable
-//                  evc = FunctionUtils.fillExprVarContext(ctx, element);
-//                  break;
-//               }
-//               case 2: {
-//                  // pass the mapArray variable and index
-//                  evc = FunctionUtils.fillExprVarContext(ctx, element);
-//                  evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-//                  break;
-//               }
-//               case 3: {
-//                  // pass the mapArray variable, index, and array
-//                  evc = FunctionUtils.fillExprVarContext(ctx, element);
-//                  evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-//                  evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
-//                  break;
-//               }
-//               }
-//               resultArray.add(fct.invoke(this, evc));
-//            }
-//         }
-//      } else {
-//         // we have a declared function for mapping
-//         DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
-//         int varCount = fct.getVariableCount();
-//         for (int i = 0; i < mapArray.size(); i++) {
-//            JsonNode element = mapArray.get(i);
-//            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-//            switch (varCount) {
-//            case 1: {
-//               // just pass the mapArray variable
-//               evc = FunctionUtils.fillExprVarContext(ctx, element);
-//               break;
-//            }
-//            case 2: {
-//               // pass the mapArray variable and index
-//               evc = FunctionUtils.fillExprVarContext(ctx, element);
-//               evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-//               break;
-//            }
-//            case 3: {
-//               // pass the mapArray variable, index, and array
-//               evc = FunctionUtils.fillExprVarContext(ctx, element);
-//               evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-//               evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
-//               break;
-//            }
-//            }
-//            resultArray.add(fct.invoke(this, evc));
-//         }
-//      }
-//      return resultArray;
-//   }
 
 	@Override
 	public JsonNode visitMembership(MappingExpressionParser.MembershipContext ctx) {
@@ -1818,7 +1755,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			int count = iEnd - iStart + 1;
 			if (iEnd > iStart && count > 10000000) {
 				// note: below should read 1e7 not 1e6...
-				throw new EvaluateRuntimeException(ERR_TOO_BIG+ count + ".");
+				throw new EvaluateRuntimeException(ERR_TOO_BIG + count + ".");
 			}
 			for (int i = start.asInt(); i <= end.asInt(); i++) {
 				result.add(new LongNode(i)); // use longs to align with the output of
