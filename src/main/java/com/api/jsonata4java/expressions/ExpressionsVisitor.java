@@ -56,10 +56,12 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprOr
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.IdContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Object_constructorContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.PathContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Root_pathContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.SeqContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
 import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -1088,7 +1090,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		/* the conditional ternary operator ?: */
 		JsonNode cond = visit(ctx.expr(0)); // get value of left subexpression
-		if (cond instanceof BooleanNode) {
+		if (cond == null) {
+			ExprContext ctx2 = ctx.expr(2);
+			if (ctx2 != null) {
+				return visit(ctx2);
+			} else {
+				return null;
+			}
+		} else if (cond instanceof BooleanNode) {
 			ExprContext ctx1 = ctx.expr(1);
 			ExprContext ctx2 = ctx.expr(2);
 			if (ctx1 != null && ctx2 != null) {
@@ -1123,6 +1132,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						// nothing left to visit
 						return context;
 					}
+					/**
+					 * can not just replace ctx child since this can be called
+					 * recursively with different stack values so need to 
+					 * replace child[0] in the new context we create below 
+					 */
 					CommonToken token = null;
 					ExprContext expr = null;
 					switch (context.getNodeType()) {
@@ -1132,11 +1146,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					}
 					case ARRAY: {
 						child0 = FunctionUtils.getArrayConstructorContext(ctx, (ArrayNode) context);
-						ctx.children.set(0, child0);
 						expr = new MappingExpressionParser.ArrayContext(ctx);
 						for (int i = 0; i < ctx.children.size(); i++) {
 							expr.children.add(ctx.children.get(i));
 						}
+						expr.children.set(0, child0);
 						result = visit(expr);
 						break;
 					}
@@ -1145,37 +1159,35 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 								? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, context.asText())
 								: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, context.asText()));
 						TerminalNodeImpl tn = new TerminalNodeImpl(token);
-						BooleanContext nc = new MappingExpressionParser.BooleanContext(ctx);
-						nc.addAnyChild(tn);
-						child0 = nc;
-						ctx.children.set(0, child0);
-						result = visit(ctx);
+						BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
+						bc.children.set(0,tn);
+						result = visit(bc);
 						break;
 					}
 					case MISSING:
 					case NULL: {
 						token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NULL, null);
 						TerminalNodeImpl tn = new TerminalNodeImpl(token);
-						child0 = tn;
-						ctx.children.set(0, child0);
-						result = visit(ctx);
+						NullContext nc = new MappingExpressionParser.NullContext(ctx);
+						nc.children.set(0, tn);
+						result = visit(nc);
 						break;
 					}
 					case NUMBER: {
 						token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER, context.asText());
 						TerminalNodeImpl tn = new TerminalNodeImpl(token);
-						child0 = tn;
-						ctx.children.set(0, child0);
-						result = visit(ctx);
+						NumberContext nc = new NumberContext(ctx);
+						nc.children.set(0, child0);
+						result = visit(nc);
 						break;
 					}
 					case OBJECT: {
 						child0 = FunctionUtils.getObjectConstructorContext(ctx, (ObjectNode) context);
-						ctx.children.set(0, child0);
 						expr = new MappingExpressionParser.PathContext(ctx);
 						for (int i = 0; i < ctx.children.size(); i++) {
 							expr.children.add(ctx.children.get(i));
 						}
+						expr.children.set(0,child0);
 						result = visit(expr);
 						break;
 					}
@@ -1183,16 +1195,16 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					default: {
 						token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, context.asText());
 						TerminalNodeImpl tn = new TerminalNodeImpl(token);
-						child0 = tn;
-						ctx.children.set(0, child0);
-						result = visit(ctx);
+						StringContext sc = new StringContext(ctx);
+						sc.children.set(0, child0);
+						result = visit(sc);
 						break;
 					}
 					} // end switch
 						// result = visit(expr);
 				}
 			} else {
-				result = visit(ctx);
+				result = visit(child0);
 			}
 		}
 		return result;

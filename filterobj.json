@@ -1,0 +1,62 @@
+{
+   "results": [
+      {
+         "id": "00uj8pe5xarGA3VYy0h7",
+         "status": "STAGED",
+         "profile": {
+            "firstName": "Test",
+            "lastName": "334",
+            "mobilePhone": null,
+            "secondEmail": null,
+            "login": "xxxxxxxxxxxxxx",
+            "email": "xxxxxxxxxxxxxx"
+         }
+      },
+      {
+         "id": "00uj8pe5xc0HBaczt0h7",
+         "status": "STAGED",
+         "profile": {
+            "firstName": "Test",
+            "lastName": "445",
+            "mobilePhone": null,
+            "secondEmail": null,
+            "userType": "super",
+            "login": "xxxxxxxxxxxxxx",
+            "email": "xxxxxxxxxxxxxx"
+         }
+      },
+      {
+         "id": "00uj8pe5xeqI98wwp0h7",
+         "status": "PROVISIONED",
+         "profile": {
+            "firstName": "Test",
+            "lastName": "556",
+            "mobilePhone": null,
+        "billToAccounts": [
+               "624780:standard"
+            ],
+            "secondEmail": null,
+            "login": "xxxxxxxxxxxxxx",
+            "email": "xxxxxxxxxxxxxx"
+         }
+      },
+      {
+         "id": "00unxk5tzcKcwJU2s0h7",
+         "status": "PROVISIONED",
+         "profile": {
+            "firstName": "BRENDA",
+            "lastName": "SMART",
+            "mobilePhone": "0408770744",
+            "billToAccounts": [
+               "624780:super",
+          "624780:super"
+            ],
+            "secondEmail": null,
+            "userType": "User",
+            "CustomerRoleType": "Director",
+            "login": "xxxxxxxxxxxxxx",
+            "email": "xxxxxxxxxxxxxx"
+         }
+      }
+   ]
+}
