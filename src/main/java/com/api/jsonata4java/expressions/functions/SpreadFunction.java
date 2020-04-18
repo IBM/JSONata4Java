@@ -136,6 +136,15 @@ public class SpreadFunction extends FunctionBase implements Function {
       return result;
    }
 
+	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
    @Override
    public String getSignature() {
       // accepts anything (or context variable), returns an array of objects

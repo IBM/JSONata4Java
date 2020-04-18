@@ -68,9 +68,9 @@ public class ExistsFunction extends FunctionBase implements Function {
 							arg = BooleanNode.TRUE;
 						} else {
 							String functionName = exprCtx.getText();
-							if (expressionVisitor.getFunction(functionName) != null) {
+							if (expressionVisitor.getDeclaredFunction(functionName) != null) {
 								arg = BooleanNode.TRUE;
-							} else if (Constants.FUNCTIONS.get(functionName) != null) {
+							} else if (expressionVisitor.getJsonataFunction(functionName) != null) {
 								arg = BooleanNode.TRUE;
 							}
 						}
@@ -101,6 +101,15 @@ public class ExistsFunction extends FunctionBase implements Function {
 		}
 
 		return result;
+	}
+
+	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
 	}
 
 	@Override

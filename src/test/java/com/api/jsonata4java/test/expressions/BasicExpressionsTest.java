@@ -300,7 +300,7 @@ public class BasicExpressionsTest {
       simpleTest(
             "$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n"
                   + "   function($v){$v.entity.filter=true})",
-            expectArray, jsonObj);
+                  mapper.readTree("{\"entity\":{\"filter\":true}}")/* expectArray */, jsonObj);
       expectArray.removeAll();
       test(
             "$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n"
@@ -772,12 +772,12 @@ public class BasicExpressionsTest {
          simpleTestExpectException("[0,1,2,3,4][\"hello\"]", NonNumericArrayIndexException.MSG);
          simpleTestExpectException("[0,1,2,3,4][[\"hello\"]]", NonNumericArrayIndexException.MSG);
          simpleTest("[0,1,2,3,4][true]", "[0,1,2,3,4]");
-         simpleTestExpectException("[0,1,2,3,4][[true]]", NonNumericArrayIndexException.MSG);
+         simpleTest("[0,1,2,3,4][[true]]", "[0,1,2,3,4]"); // 1.8.2 doesn't throw NonNumericArrayIndexException.MSG);
          simpleTestExpectException("[0,1,2,3,4][{\"hello\":\"world\"}]", NonNumericArrayIndexException.MSG);
          simpleTestExpectException("[0,1,2,3,4][[{\"hello\":\"world\"}]]", NonNumericArrayIndexException.MSG);
          simpleTest("[0,1,2,3,4][false]", null);
-         simpleTestExpectException("[0,1,2,3,4][[false]]", NonNumericArrayIndexException.MSG);
-         simpleTestExpectException("[0,1,2,3,4][[[false]]]", NonNumericArrayIndexException.MSG);
+         simpleTest("[0,1,2,3,4][[false]]", null); // 1.8.2 doesn't throw NonNumericArrayIndexException.MSG);
+         simpleTest("[0,1,2,3,4][[[false]]]", null); // 1.8.2 doesn't throw NonNumericArrayIndexException.MSG);
       }
 
       {
@@ -1097,8 +1097,9 @@ public class BasicExpressionsTest {
           result.asInt() == 3);
       } catch (Exception e) {
          // Above no longer throws Parse nor Evaluate Exceptions
+      	System.out.println(e.getMessage());
          assertTrue(e.getMessage().equals(
-               "line 1:5 at [@2,5:4='<EOF>',<-1>,1:5]: mismatched input '<EOF>' expecting {'(', 'true', 'false', STRING, 'null', '[', '{', '$$', NUMBER, 'function', '-', VAR_ID, ID}\n"));
+               "line 1:5 at [@2,5:4='<EOF>',<-1>,1:5]: mismatched input '<EOF>' expecting {'(', 'true', 'false', STRING, 'null', '[', '{', '$', '$$', '**', NUMBER, 'function', '*', '-', VAR_ID, ID}\n"));
       }
       
       try {
@@ -1892,10 +1893,10 @@ public class BasicExpressionsTest {
          simpleTestExpectException(input + ".a[\"\"]", NonNumericArrayIndexException.MSG);
          simpleTestExpectException(input + ".a[\"hello\"]", NonNumericArrayIndexException.MSG);
          simpleTest(input + ".a[true]", "[ 1, 2, 3, 4, 5, 6, 7]");
-         simpleTestExpectException(input + ".a[[true]]", NonNumericArrayIndexException.MSG);
+         simpleTest(input + ".a[[true]]", "[ 1, 2, 3, 4, 5, 6, 7]"); // 1.8.2 doesn't throw this NonNumericArrayIndexException.MSG);
          simpleTest(input + ".a[false]", null);
-         simpleTestExpectException(input + ".a[[false]]", NonNumericArrayIndexException.MSG);
-         simpleTestExpectException(input + ".a[[[false]]]", NonNumericArrayIndexException.MSG);
+         simpleTest(input + ".a[[false]]", null); // 1.8.2 doesn't throw NonNumericArrayIndexException.MSG);
+         simpleTest(input + ".a[[[false]]]", null); // 1.8.2 doesn't throw NonNumericArrayIndexException.MSG);
          simpleTest("(" + input + ").a", "[ 1, 2, 3, 4, 5, 6, 7]");
          simpleTest("($count(" + input + ".a))", "7");
          simpleTest("(" + input + ".a)", "[ 1, 2, 3, 4, 5, 6, 7]");

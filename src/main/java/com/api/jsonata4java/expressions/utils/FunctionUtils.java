@@ -66,14 +66,17 @@ public class FunctionUtils {
 	 * Extends a supplied {@link ExprValuesContext} using the supplied context and
 	 * array node content
 	 * 
-	 * @param ctx context to serve as a parent context and provide invoking state
-	 * @param evc expression values context to be updated
-	 * @param arrayNode array values to be added to the expression values context
+	 * @param ctx
+	 *                  context to serve as a parent context and provide invoking
+	 *                  state
+	 * @param evc
+	 *                  expression values context to be updated
+	 * @param arrayNode
+	 *                  array values to be added to the expression values context
 	 * @return {@link ExprValuesContext} updated with the supplied context and array
 	 *         context
 	 */
-	public static ExprValuesContext addArrayExprVarContext(ExprContext ctx, ExprValuesContext evc,
-			ArrayNode arrayNode) {
+	public static ExprValuesContext addArrayExprVarContext(ExprContext ctx, ExprValuesContext evc, ArrayNode arrayNode) {
 		if (evc == null) {
 			evc = new ExprValuesContext(ctx, ctx.invokingState);
 		}
@@ -90,9 +93,12 @@ public class FunctionUtils {
 	 * Extends an {@link ExprValuesContext} using the context containing the
 	 * supplied index value
 	 * 
-	 * @param ctx context to serve as a parent context and provide invoking state
-	 * @param evc expression values context to be updated
-	 * @param index value to be added to the expression values context
+	 * @param ctx
+	 *              context to serve as a parent context and provide invoking state
+	 * @param evc
+	 *              expression values context to be updated
+	 * @param index
+	 *              value to be added to the expression values context
 	 * @return {@link ExprValuesContext} updated using the context containing the
 	 *         supplied index value
 	 */
@@ -116,9 +122,12 @@ public class FunctionUtils {
 	 * Extends an {@link ExprValuesContext} using the context containing the
 	 * supplied object value
 	 * 
-	 * @param ctx context to serve as a parent context and provide invoking state
-	 * @param evc expression values context to be updated
-	 * @param object value to be added to the expression values context
+	 * @param ctx
+	 *               context to serve as a parent context and provide invoking state
+	 * @param evc
+	 *               expression values context to be updated
+	 * @param object
+	 *               value to be added to the expression values context
 	 * @return {@link ExprValuesContext} updated using the context containing the
 	 *         supplied index value
 	 */
@@ -138,9 +147,12 @@ public class FunctionUtils {
 	 * Extends an {@link ExprValuesContext} using the context containing the
 	 * supplied string value
 	 * 
-	 * @param ctx context to serve as the parent of the generated context
-	 * @param evc expression values context
-	 * @param string value to be added to the ExprValuesContext
+	 * @param ctx
+	 *               context to serve as the parent of the generated context
+	 * @param evc
+	 *               expression values context
+	 * @param string
+	 *               value to be added to the ExprValuesContext
 	 * @return {@link ExprValuesContext} updated using the context containing the
 	 *         supplied index value
 	 */
@@ -164,17 +176,25 @@ public class FunctionUtils {
 	 * Creates an {@link ExprValuesContext} containing a parenthesized comma
 	 * separated variable list of the supplied elements
 	 * 
-	 * @param ctx      context used to create the {@link ExprValuesContext}
-	 * @param elements the values to be added to the list
+	 * @param fctVarCount
+	 *                 the maximum number of  parameters the receiving function will accept
+	 * @param ctx
+	 *                 context used to create the {@link ExprValuesContext}
+	 * @param elements
+	 *                 the values to be added to the list
 	 * @return {@link ExprValuesContext} containing a parenthesized comma separated
 	 *         variable list of the supplied elements
 	 */
-	public static ExprValuesContext fillExprVarContext(ExprContext ctx, JsonNode... elements) {
+	public static ExprValuesContext fillExprVarContext(int fctVarCount, ExprContext ctx, JsonNode... elements) {
 		ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
 		ExprListContext elc = new ExprListContext(ctx.getParent(), ctx.invokingState);
 		evc.addAnyChild(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__1, "(")));
 		CommonToken token = null;
 		for (int i = 0; i < elements.length; i++) {
+			// only fill as many parameters as the receiving function will accept
+			if (i > fctVarCount) {
+				break;
+			}
 			JsonNode element = elements[i];
 			if (i > 1) {
 				token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__2, ",");
@@ -243,10 +263,13 @@ public class FunctionUtils {
 	 * Sets up the {@link ExprValuesContext} variables for the function($v,$k)
 	 * signature used in each call for pairs of values and keys
 	 * 
-	 * @param ctx   context to be used to create the new {@link ExprListContext} to
+	 * @param ctx
+	 *              context to be used to create the new {@link ExprListContext} to
 	 *              contain the key, value pair
-	 * @param key key used to relate the supplied value in the ExprValuesContext
-	 * @param value content to be added to the ExprValuesContext
+	 * @param key
+	 *              key used to relate the supplied value in the ExprValuesContext
+	 * @param value
+	 *              content to be added to the ExprValuesContext
 	 * @return {@link ExprValuesContext} containing the key and value in its
 	 *         parenthesized comma separated variable {@link ExprListContext}
 	 */
@@ -325,9 +348,11 @@ public class FunctionUtils {
 	 * Creates an {@link Array_constructorContext} from the supplied context and
 	 * array
 	 * 
-	 * @param ctx context to serve as parent of generated context.
-	 * @param array ArrayNode whose content is used to create the Array_constructor 
-	 *         context
+	 * @param ctx
+	 *              context to serve as parent of generated context.
+	 * @param array
+	 *              ArrayNode whose content is used to create the Array_constructor
+	 *              context
 	 * @return {@link Array_constructorContext} created from the supplied context
 	 *         and array
 	 */
@@ -411,7 +436,8 @@ public class FunctionUtils {
 	 * Retrieve the latest context variable from the {@link ExpressionsVisitor}
 	 * stack, allowing for a null to be returned (in lieu of a NullNode)
 	 * 
-	 * @param exprVisitor the expression visitor whose stack is being used
+	 * @param exprVisitor
+	 *                    the expression visitor whose stack is being used
 	 * @return the latest context variable, or a NullNode if none are available.
 	 */
 	public static JsonNode getContextVariable(ExpressionsVisitor exprVisitor) {
@@ -442,8 +468,10 @@ public class FunctionUtils {
 	 * Creates an {@link Object_constructorContext} from the supplied context and
 	 * object
 	 * 
-	 * @param ctx ObjectConstructorContext
-	 * @param object ObjectNode whose context is sought
+	 * @param ctx
+	 *               ObjectConstructorContext
+	 * @param object
+	 *               ObjectNode whose context is sought
 	 * @return {@link Object_constructorContext} created from the supplied context
 	 *         and object
 	 */
@@ -451,6 +479,8 @@ public class FunctionUtils {
 		Object_constructorContext obj = new Object_constructorContext(ctx);
 		List<ParseTree> children = obj.children;
 		children.add(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.OBJ_OPEN, "{")));
+		// FieldListContext flc = new FieldListContext(ctx); // obj.getParent(),
+		// obj.invokingState);
 		FieldListContext flc = new FieldListContext(obj.getParent(), obj.invokingState);
 		int count = 0;
 		CommonToken token = null;
@@ -535,16 +565,18 @@ public class FunctionUtils {
 	 * {@link ExprValuesContext} {@link ExprListContext}, preserving the null value
 	 * (or returning null if the index is invalid)
 	 * 
-	 * @param exprVisitor used to visit the context's values
-	 * @param ctx         context providing {@link ExprValuesContext}
+	 * @param exprVisitor
+	 *                    used to visit the context's values
+	 * @param ctx
+	 *                    context providing {@link ExprValuesContext}
 	 *                    {@link ExprListContext}
-	 * @param index       non-negative index into the {@link ExprListContext}
+	 * @param index
+	 *                    non-negative index into the {@link ExprListContext}
 	 * @return value of the interpretation of the index-th expression from the
 	 *         context's {@link ExprValuesContext} {@link ExprListContext}, or a
 	 *         NullNode if none exists
 	 */
-	public static JsonNode getValuesListExpression(ExpressionsVisitor exprVisitor, Function_callContext ctx,
-			int index) {
+	public static JsonNode getValuesListExpression(ExpressionsVisitor exprVisitor, Function_callContext ctx, int index) {
 		JsonNode result = null;
 		try {
 			if (ctx != null && ctx.exprValues() != null) {
@@ -570,23 +602,28 @@ public class FunctionUtils {
 	/**
 	 * Checks the expression at the supplied index from the context's
 	 * {@link ExprValuesContext} {@link ExprListContext}, preserving the null value
-	 * (or returning null if the index is invalid) to determine if the arguments are valid
-	 * according to the supplied signature
+	 * (or returning null if the index is invalid) to determine if the arguments are
+	 * valid according to the supplied signature
 	 * 
-	 * @param exprVisitor used to visit the context's values
-	 * @param ctx         context providing {@link ExprValuesContext}
+	 * @param exprVisitor
+	 *                    used to visit the context's values
+	 * @param ctx
+	 *                    context providing {@link ExprValuesContext}
 	 *                    {@link ExprListContext}
-	 * @param index       non-negative index into the {@link ExprListContext}
-	 * @param signature   the acceptable arguments signature
-	 * @throws EvaluateRuntimeException if the variables do not match the signature
+	 * @param index
+	 *                    non-negative index into the {@link ExprListContext}
+	 * @param signature
+	 *                    the acceptable arguments signature
+	 * @throws EvaluateRuntimeException
+	 *                                  if the variables do not match the signature
 	 */
-	public static void validateArguments(String possibleException, ExpressionsVisitor exprVisitor, Function_callContext ctx,
-			int index, String signature) {
+	public static void validateArguments(String possibleException, ExpressionsVisitor exprVisitor,
+			Function_callContext ctx, int index, String signature) {
 		try {
 			if (ctx != null && ctx.exprValues() != null) {
 				ExprContext exprCtx = ctx.exprValues().exprList().expr(index);
 				// determine the type of this expression to see if it matches the signature
-				if (checkArgument(exprVisitor, exprCtx,signature)) {
+				if (checkArgument(exprVisitor, exprCtx, signature)) {
 					return;
 				} // else throw exception
 			}
@@ -598,33 +635,36 @@ public class FunctionUtils {
 		throw new EvaluateRuntimeException(possibleException);
 	}
 
-	/** 
-	 * Tests whether the supplied exprCtx meets the signature expectations. Note: 
-	 * $ or $$ references to context are not explicitly tested as they are resolved 
-	 * after this point. This test is for explicit variable declarations.  
-	 * @param exprCtx argument to be tested
-	 * @param signature test to be performed
+	/**
+	 * Tests whether the supplied exprCtx meets the signature expectations. Note: $
+	 * or $$ references to context are not explicitly tested as they are resolved
+	 * after this point. This test is for explicit variable declarations.
+	 * 
+	 * @param exprCtx
+	 *                  argument to be tested
+	 * @param signature
+	 *                  test to be performed
 	 * @return true if the argument meets the test
 	 */
 	public static boolean checkArgument(ExpressionsVisitor exprVisitor, ExprContext exprCtx, String signature) {
 		boolean result = false; // pessimistic
-		switch(signature) {
+		switch (signature) {
 		case "<a<n>-:n>":
 		case "<a<n>:n>": {
 			if (exprCtx instanceof Array_constructorContext) {
-				// must be array of numbers or a number 
+				// must be array of numbers or a number
 				ParseTree ruleCtx = exprCtx.getChild(ExprOrSeqListContext.class, 0);
 				if (ruleCtx == null) {
 					// empty array
 					return true;
 				}
-				ruleCtx = ((ExprOrSeqListContext)ruleCtx).getChild(ExprOrSeqContext.class,0);
+				ruleCtx = ((ExprOrSeqListContext) ruleCtx).getChild(ExprOrSeqContext.class, 0);
 				if (ruleCtx != null) {
-					ParseTree test = ((ExprOrSeqContext)ruleCtx).getChild(Context_refContext.class,0);
+					ParseTree test = ((ExprOrSeqContext) ruleCtx).getChild(Context_refContext.class, 0);
 					if (test != null) {
 						return true;
 					}
-					test = ((ExprOrSeqContext)ruleCtx).getChild(NumberContext.class,0);
+					test = ((ExprOrSeqContext) ruleCtx).getChild(NumberContext.class, 0);
 					if (test != null) {
 						return true;
 					}
@@ -640,8 +680,8 @@ public class FunctionUtils {
 					return true;
 				}
 			} else if (exprCtx instanceof NumberContext || exprCtx instanceof Unary_opContext) {
-				// must be array of numbers or a number 
-				return true;				
+				// must be array of numbers or a number
+				return true;
 			} else if (exprCtx instanceof PathContext) {
 				return true;
 			} else if (exprCtx instanceof IdContext) {
@@ -651,14 +691,18 @@ public class FunctionUtils {
 		}
 		return result;
 	}
+
 	/**
-	 * Gets the expression at the supplied index from the context's
-	 * {link ExprValuesContext} {link ExprListContext]
+	 * Gets the expression at the supplied index from the context's {link
+	 * ExprValuesContext} {link ExprListContext]
 	 * 
-	 * @param exprVisitor used to visit the context's values
-	 * @param ctx         context providing {@link ExprValuesContext}
+	 * @param exprVisitor
+	 *                    used to visit the context's values
+	 * @param ctx
+	 *                    context providing {@link ExprValuesContext}
 	 *                    {@link ExprListContext}
-	 * @param index       non-negative index into the {@link ExprListContext}
+	 * @param index
+	 *                    non-negative index into the {@link ExprListContext}
 	 * @return value of the interpretation of the index-th expression from the
 	 *         context's {@link ExprValuesContext} {@link ExprListContext}, or a
 	 *         NullNode if none exists
@@ -677,17 +721,22 @@ public class FunctionUtils {
 	 * separated variable list of JsonNode elements, sets it in the supplied context
 	 * (ctx) and then executes the function to return its result.
 	 * 
-	 * @param exprVisitor used to invoke the function after updating its context
+	 * @param exprVisitor
+	 *                    used to invoke the function after updating its context
 	 *                    variables
-	 * @param function    the function to be invoked
-	 * @param varid       the variable to be associated with the elements
-	 * @param ctx         the context to be updated and used by the function when
+	 * @param function
+	 *                    the function to be invoked
+	 * @param varid
+	 *                    the variable to be associated with the elements
+	 * @param ctx
+	 *                    the context to be updated and used by the function when
 	 *                    invoked
-	 * @param elements    the values to be set in the {@link ExprValuesContext} used
+	 * @param elements
+	 *                    the values to be set in the {@link ExprValuesContext} used
 	 *                    by the function when invoked
 	 * @return the result of calling the function with the updated context
 	 */
-	public static JsonNode processFctCallVariables(ExpressionsVisitor exprVisitor, Function function,
+	public static JsonNode processVariablesCallFunction(ExpressionsVisitor exprVisitor, Function function,
 			TerminalNode varid, Function_callContext ctx, JsonNode... elements) {
 		ExprListContext elc = new ExprListContext(ctx.getParent(), ctx.invokingState);
 		ExprValuesContext evc = new ExprValuesContext(ctx.getParent(), ctx.invokingState);
@@ -764,26 +813,35 @@ public class FunctionUtils {
 	 * separated variable list of JsonNode elements, sets it in the supplied context
 	 * (ctx) and then executes the function to return its result.
 	 * 
-	 * @param exprVisitor used to invoke the function after updating its context
+	 * @param exprVisitor
+	 *                    used to invoke the function after updating its context
 	 *                    variables
-	 * @param function    the function to be invoked
-	 * @param varid       the variable to be associated with the elements
-	 * @param ctx         the context to be updated and used by the function when
+	 * @param function
+	 *                    the function to be invoked
+	 * @param varid
+	 *                    the variable to be associated with the elements
+	 * @param ctx
+	 *                    the context to be updated and used by the function when
 	 *                    invoked
-	 * @param value       the value to be set in the {@link ExprValuesContext} used
+	 * @param value
+	 *                    the value to be set in the {@link ExprValuesContext} used
 	 *                    by the function when invoked
-	 * @param key         the key to be set in the {@link ExprValuesContext} used by
+	 * @param key
+	 *                    the key to be set in the {@link ExprValuesContext} used by
 	 *                    the function when invoked
-	 * @param object      the object to be set in the {@link ExprValuesContext} used
+	 * @param object
+	 *                    the object to be set in the {@link ExprValuesContext} used
 	 *                    by the function when invoked
 	 * @return the result of calling the function with the updated context
 	 */
-	public static JsonNode processFctCallVariables(ExpressionsVisitor exprVisitor, Function function,
-			TerminalNode varid, Function_callContext ctx, JsonNode value, String key, ObjectNode object) {
+	public static JsonNode processFctCallVariables(ExpressionsVisitor exprVisitor, Function function, TerminalNode varid,
+			Function_callContext ctx, JsonNode value, String key, ObjectNode object) {
 		ExprListContext elc = new ExprListContext(ctx.getParent(), ctx.invokingState);
 		ExprValuesContext evc = new ExprValuesContext(ctx.getParent(), ctx.invokingState);
 		evc.addAnyChild(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__1, "(")));
 		CommonToken token = null;
+		int fctVarCount = function.getMaxArgs();
+
 		// add the value
 		JsonNode element = value;
 		switch (element.getNodeType()) {
@@ -837,19 +895,23 @@ public class FunctionUtils {
 			break;
 		}
 		}
-		token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__2, ",");
-		TerminalNode tn = new TerminalNodeImpl(token);
-		elc.addAnyChild(tn);
-		token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, key);
-		tn = new TerminalNodeImpl(token);
-		StringContext sc = new StringContext(ctx);
-		sc.addAnyChild(tn);
-		elc.addAnyChild(sc);
-		token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__2, ",");
-		tn = new TerminalNodeImpl(token);
-		elc.addAnyChild(tn);
-		elc.addAnyChild(getObjectConstructorContext(ctx, object));
+		if (fctVarCount > 1) {
+			token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__2, ",");
+			TerminalNode tn = new TerminalNodeImpl(token);
+			elc.addAnyChild(tn);
+			token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, key);
+			tn = new TerminalNodeImpl(token);
+			StringContext sc = new StringContext(ctx);
+			sc.addAnyChild(tn);
+			elc.addAnyChild(sc);
+		}
 
+		if (fctVarCount > 2) {
+			token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__2, ",");
+			TerminalNode tn = new TerminalNodeImpl(token);
+			elc.addAnyChild(tn);
+			elc.addAnyChild(getObjectConstructorContext(ctx, object));
+		}
 		evc.addAnyChild(elc);
 		evc.addAnyChild(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__3, ")")));
 		ctx.addAnyChild(varid);
@@ -861,8 +923,10 @@ public class FunctionUtils {
 	 * Determine if the function should use the context variable as its first
 	 * parameter
 	 * 
-	 * @param ctx       the context used to invoke the function
-	 * @param signature the function signature for the function being tested. If
+	 * @param ctx
+	 *                  the context used to invoke the function
+	 * @param signature
+	 *                  the function signature for the function being tested. If
 	 *                  this contains a hyphen, then it can use the context
 	 * @return true if the context variable should be used as the first parameter
 	 */
@@ -875,7 +939,7 @@ public class FunctionUtils {
 		}
 		// only allow if parent is a chain,
 		// or if the signature contains the hyphen the and parent is a path
-		return ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext) || ((signature.indexOf("-") != -1)
-				&& (ctx.getParent() instanceof MappingExpressionParser.PathContext)));
+		return ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
+				|| ((signature.indexOf("-") != -1) && (ctx.getParent() instanceof MappingExpressionParser.PathContext)));
 	}
 }

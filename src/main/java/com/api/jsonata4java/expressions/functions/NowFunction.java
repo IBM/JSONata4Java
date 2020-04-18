@@ -68,6 +68,15 @@ public class NowFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 0;
+	}
+	@Override
+	public int getMinArgs() {
+		return 0;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts a number (or context variable), returns a number
 		return "<:s>";

@@ -68,6 +68,15 @@ public class MillisFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 0;
+	}
+	@Override
+	public int getMinArgs() {
+		return 0;
+	}
+
+	@Override
 	public String getSignature() {
 		// returns a number
 		return "<:n>";

@@ -165,6 +165,15 @@ public class MatchFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 3;
+	}
+	@Override
+	public int getMinArgs() {
+		return 2;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts a string (or context variable), a function (that accepts a string and
 		// returns an object), an optional number, returns an array of objects

@@ -100,24 +100,15 @@ public class EachFunction extends FunctionBase implements Function {
       if (varid instanceof Var_recallContext) {
          TerminalNode VAR_ID = ((Var_recallContext)varid).VAR_ID();
          String varID = varid.getText();
-         Function function = Constants.FUNCTIONS.get(varid.getText());
-         if (function != null) {
-            for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
-               String key = it.next();
-               JsonNode field = object.get(key);
-               Function_callContext callCtx = new Function_callContext(ctx);
-               // note: callCtx.children should be empty unless carrying an
-               // exception
-               resultArray.add(FunctionUtils.processFctCallVariables(expressionVisitor, function, VAR_ID, callCtx, field));
-            }
-         } else {
-            // get the function to be executed from the functionMap and execute
-            DeclaredFunction fct = expressionVisitor.getFunction(varID);
-            if (fct == null) {
-               throw new EvaluateRuntimeException(
-                     "Expected function variable reference " + varID + " to resolve to a declared function.");
-            }
+         // get the function to be executed from the functionMap and execute
+         DeclaredFunction fct = expressionVisitor.getDeclaredFunction(varID);
+         if (fct != null) {
             int varCount = fct.getVariableCount();
+	         int fctVarCount = fct.getMaxArgs();
+	         if (varCount > fctVarCount) {
+	         	// only send variables function can consume
+	         	varCount = fctVarCount;
+	         }
             for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
                String key = it.next();
                JsonNode field = object.get(key);
@@ -125,18 +116,18 @@ public class EachFunction extends FunctionBase implements Function {
                switch (varCount) {
                case 1: {
                   // just pass the field value
-                  evc = FunctionUtils.fillExprVarContext(ctx, field);
+                  evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
                   break;
                }
                case 2: {
                   // pass the field value and key
-                  evc = FunctionUtils.fillExprVarContext(ctx, field);
+                  evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
                   evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
                   break;
                }
                case 3: {
                   // pass the field value, key, and object
-                  evc = FunctionUtils.fillExprVarContext(ctx, field);
+                  evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
                   evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
                   evc = FunctionUtils.addObjectExprVarContext(ctx, evc, object);
                   break;
@@ -147,6 +138,21 @@ public class EachFunction extends FunctionBase implements Function {
                   resultArray.add(fctResult);
                }
             }
+         } else {
+	         Function function = expressionVisitor.getJsonataFunction(varid.getText());
+	         if (function != null) {
+	            for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
+	               String key = it.next();
+	               JsonNode field = object.get(key);
+	               Function_callContext callCtx = new Function_callContext(ctx);
+	               // note: callCtx.children should be empty unless carrying an
+	               // exception
+	               resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, field));
+	            }
+	         } else {
+	            throw new EvaluateRuntimeException(
+	                  "Expected function variable reference " + varID + " to resolve to a declared nor Jsonata function.");
+	         }
          }
       } else if (varid instanceof Function_declContext) {
          Function_declContext fctDeclCtx = (Function_declContext) exprList.expr((useContext ? 0 : 1));
@@ -156,6 +162,11 @@ public class EachFunction extends FunctionBase implements Function {
          ExprListContext fctBody = fctDeclCtx.exprList();
          DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
          int varCount = fct.getVariableCount();
+         int fctVarCount = fct.getMaxArgs();
+         if (varCount > fctVarCount) {
+         	// only send variables function can consume
+         	varCount = fctVarCount;
+         }
          for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
             String key = it.next();
             JsonNode field = object.get(key);
@@ -163,18 +174,18 @@ public class EachFunction extends FunctionBase implements Function {
             switch (varCount) {
             case 1: {
                // just pass the field value
-               evc = FunctionUtils.fillExprVarContext(ctx, field);
+               evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
                break;
             }
             case 2: {
                // pass the field value and key
-               evc = FunctionUtils.fillExprVarContext(ctx, field);
+               evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
                evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
                break;
             }
             case 3: {
                // pass the field value, key, and object
-               evc = FunctionUtils.fillExprVarContext(ctx, field);
+               evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
                evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
                evc = FunctionUtils.addObjectExprVarContext(ctx, evc, object);
                break;
@@ -188,6 +199,15 @@ public class EachFunction extends FunctionBase implements Function {
       }
       return resultArray;
    }
+
+	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
 
    @Override
    public String getSignature() {

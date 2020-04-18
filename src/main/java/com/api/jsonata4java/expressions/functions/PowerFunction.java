@@ -30,6 +30,7 @@ import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.LongNode;
 
 /**
  * http://docs.jsonata.org/numeric-functions.html
@@ -90,11 +91,15 @@ public class PowerFunction extends FunctionBase implements Function {
 					if (argExponent != null) {
 						if (argExponent.isNumber()) {
 							// Calculate the result and create the node to return
-							double power = Math.pow(argNumber.doubleValue(), argExponent.doubleValue());
+							Double power = Math.pow(argNumber.doubleValue(), argExponent.doubleValue());
 
-							if (power != Double.POSITIVE_INFINITY && power != Double.NEGATIVE_INFINITY
-									&& power != Double.NaN) {
-								result = new DoubleNode(power);
+							if (power.isInfinite() == false // != Double.POSITIVE_INFINITY && power != Double.NEGATIVE_INFINITY
+									&& power.isNaN() == false) {
+								if (power - power.longValue() ==  0.0) {
+								   result = new LongNode(power.longValue());
+								} else {
+								   result = new DoubleNode(power);
+								}
 							} else {
 								/*
 								 * The result cannot be represented as a number. Throw a suitable exception.
@@ -119,6 +124,15 @@ public class PowerFunction extends FunctionBase implements Function {
 		}
 
 		return result;
+	}
+
+	@Override
+	public int getMaxArgs() {
+		return 2;
+	}
+	@Override
+	public int getMinArgs() {
+		return 2;
 	}
 
 	@Override

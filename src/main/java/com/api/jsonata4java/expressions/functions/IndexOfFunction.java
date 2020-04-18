@@ -82,6 +82,15 @@ public class IndexOfFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// takes an array, returns a number
 		return "<ax:n>";

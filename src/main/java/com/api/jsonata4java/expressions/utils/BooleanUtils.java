@@ -52,8 +52,17 @@ public class BooleanUtils {
 			return node.asBoolean();
 		case STRING:
 			return !node.asText().isEmpty();
-		case NUMBER:
-			return node.asLong() != 0;
+		case NUMBER: {
+			Double number = node.doubleValue();
+			if (number.isNaN() == false && number.isInfinite() == false) {
+				if (number - number.longValue() ==  0.0) {
+					return node.asLong() != 0;
+				} else {
+					return node.asDouble() != 0.0d;
+				}
+			}
+			return false;
+		}
 		case NULL:
 			return false;
 		case BINARY:

@@ -89,6 +89,15 @@ public class FromMillisFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 3;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts a number (or context variable), an optional string, another optional
 		// string, returns a number

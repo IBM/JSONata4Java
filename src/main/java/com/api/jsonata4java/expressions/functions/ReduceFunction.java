@@ -109,45 +109,60 @@ public class ReduceFunction extends FunctionBase implements Function {
       if (varid instanceof Var_recallContext) {
          TerminalNode VAR_ID = ((Var_recallContext)varid).VAR_ID();
          String varID = varid.getText();
-         Function function = Constants.FUNCTIONS.get(varid.getText());
-         if (function != null) {
-            for (int i = startIndex; i < mapArray.size(); i++) {
-               Function_callContext callCtx = new Function_callContext(ctx);
-               // note: callCtx.children should be empty unless carrying an
-               // exception
-               JsonNode element = mapArray.get(i);
-               prevResult = FunctionUtils.processFctCallVariables(expressionVisitor, function, VAR_ID, callCtx, prevResult, element);
-            }
+         // get the function to be executed from the functionMap and execute
+         DeclaredFunction fct = expressionVisitor.getDeclaredFunction(varID);
+         if (fct != null) {
+	         int fctVarCount = fct.getMaxArgs();
+	         for (int i = startIndex; i < mapArray.size(); i++) {
+	            JsonNode element = mapArray.get(i);
+	            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
+	            evc = FunctionUtils.fillExprVarContext(fctVarCount, ctx, prevResult, element);
+	            prevResult = fct.invoke(expressionVisitor, evc);
+	         }  
          } else {
-            // get the function to be executed from the functionMap and execute
-            DeclaredFunction fct = expressionVisitor.getFunction(varID);
-            if (fct == null) {
-               throw new EvaluateRuntimeException(
-                     "Expected function variable reference " + varID + " to resolve to a declared function.");
-            }
-            for (int i = startIndex; i < mapArray.size(); i++) {
-               JsonNode element = mapArray.get(i);
-               ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-               evc = FunctionUtils.fillExprVarContext(ctx, prevResult, element);
-               prevResult = fct.invoke(expressionVisitor, evc);
-            }  
+	         Function function = expressionVisitor.getJsonataFunction(varid.getText());
+	         if (function != null) {
+	            for (int i = startIndex; i < mapArray.size(); i++) {
+	               Function_callContext callCtx = new Function_callContext(ctx);
+	               // note: callCtx.children should be empty unless carrying an
+	               // exception
+	               JsonNode element = mapArray.get(i);
+	               prevResult = FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, prevResult, element);
+	            }
+	         } else {
+	            throw new EvaluateRuntimeException(
+	                  "Expected function variable reference " + varID + " to resolve to a declared nor Jsonata function.");
+	         }
          }
       } else if (varid instanceof Function_declContext) {
          Function_declContext fctDeclCtx = (Function_declContext) exprList.expr((useContext ? 0 : 1));
    
          // we have a declared function for filter
          VarListContext varList = fctDeclCtx.varList();
+         if (varList.getChildCount() < 5) { // ( $x , $y )
+         	throw new EvaluateRuntimeException("The second argument of reduce function must be a function with at least two arguments");
+         }
          ExprListContext fctBody = fctDeclCtx.exprList();
          DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
+         int fctVarCount = fct.getMaxArgs();
          for (int i = startIndex; i < mapArray.size(); i++) {
             JsonNode element = mapArray.get(i);
             ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-            evc = FunctionUtils.fillExprVarContext(ctx, prevResult, element);
+            evc = FunctionUtils.fillExprVarContext(fctVarCount, ctx, prevResult, element);
             prevResult = fct.invoke(expressionVisitor, evc);
          }
       }
       return prevResult;
    }
+
+	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
 
    @Override
    public String getSignature() {

@@ -69,6 +69,14 @@ public class DeclaredFunction {
 	public int getVariableCount() {
 		return getVariables().size();
 	}
+	
+	public int getMaxArgs() {
+		return getVariableCount();
+	}
+
+	public int getMinArgs() {
+		return getVariableCount();
+	}
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, ParserRuleContext ruleValues) {
 		JsonNode result = null;
@@ -82,8 +90,8 @@ public class DeclaredFunction {
    		int exprListCount = exprValuesCtx.size();
    		// ensure a direct mapping is possible
    		if (varListCount != exprListCount) {
-   			throw new EvaluateRuntimeException(
-   					"Expected equal counts for varibles (" + varListCount + ") and values (" + exprListCount + ")");
+//   			throw new EvaluateRuntimeException(
+//   					"Expected equal counts for varibles (" + varListCount + ") and values (" + exprListCount + ")");
    		}
    		for (int i = 0; i < varListCount; i++) {
    			String varID = varListCtx.get(i).getText();

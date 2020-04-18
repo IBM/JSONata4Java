@@ -24,7 +24,9 @@ package com.api.jsonata4java.expressions.functions;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
 import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -65,18 +67,40 @@ public class BooleanFunction extends FunctionBase implements Function {
 		}
 
 		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
+		if (argCount == 1 || useContext) {
 			if (!useContext) {
 				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
 			if (arg != null) {
 				result = BooleanUtils.convertJsonNodeToBoolean(arg) ? BooleanNode.TRUE : BooleanNode.FALSE;
+			} else {
+				// special test to see if there is a function that exists with this name
+				ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
+				if (exprCtx instanceof Function_declContext) {
+					result = BooleanNode.FALSE;
+				} else {
+					String functionName = exprCtx.getText();
+					if (expressionVisitor.getDeclaredFunction(functionName) != null) {
+						result = BooleanNode.FALSE;
+					} else if (expressionVisitor.getJsonataFunction(functionName) != null) {
+						result = BooleanNode.FALSE;
+					}
+				}
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
 
 		return result;
+	}
+
+	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
 	}
 
 	@Override

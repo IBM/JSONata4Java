@@ -89,6 +89,15 @@ public class ShuffleFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts anything (or context variable), returns an array
 		return "<x-:a>";

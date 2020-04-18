@@ -77,8 +77,8 @@ public class SqrtFunction extends FunctionBase implements Function {
 				// Check the type of the argument
 				if (argNumber.isNumber()) {
 					// Make sure that the number is a valid positive number
-					double number = argNumber.doubleValue();
-					if (number >= 0 && number != Double.NaN // Should not be possible
+					Double number = argNumber.doubleValue();
+					if (number >= 0 && number.isNaN() == false && number.isInfinite() == false // Should not be possible
 															// because it should be
 															// caught in
 															// ExpressionsVisitor::visitNumber
@@ -108,6 +108,15 @@ public class SqrtFunction extends FunctionBase implements Function {
 		}
 
 		return result;
+	}
+
+	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
 	}
 
 	@Override

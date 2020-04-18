@@ -110,6 +110,15 @@ public class ToMillisFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 2;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts a string (or context variable), an optional string, returns a number
 		return "<s-s?:n>";

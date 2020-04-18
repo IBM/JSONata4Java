@@ -80,6 +80,15 @@ public class ReverseFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts an array (or context variable), returns an array
 		return "<a-:a>";

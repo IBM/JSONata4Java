@@ -99,6 +99,15 @@ public class LowercaseFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts a string (or context variable), returns a string
 		return "<s-:s>";

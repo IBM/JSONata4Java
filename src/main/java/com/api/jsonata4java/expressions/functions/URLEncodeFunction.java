@@ -22,7 +22,10 @@
 
 package com.api.jsonata4java.expressions.functions;
 
-import java.util.Objects;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
@@ -31,7 +34,7 @@ import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.LongNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -47,11 +50,11 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $length("Hello World")==11
  *
  */
-public class LengthFunction extends FunctionBase implements Function {
+public class URLEncodeFunction extends FunctionBase implements Function {
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_LENGTH);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_LENGTH);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_LENGTH);
+	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_URL_ENCODE);
+	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_URL_ENCODE);
+	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_URL_ENCODE);
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 		// Create the variable to return
@@ -74,9 +77,29 @@ public class LengthFunction extends FunctionBase implements Function {
 			if (argString != null) {
 				if (argString.isTextual()) {
 					final String str = argString.textValue();
-					String strData = Objects.requireNonNull(str).intern();
-					int strLen = strData.codePointCount(0, strData.length());
-					result = new LongNode(strLen);
+//					char testChar = ' ';
+//					for (int i=0;i<str.length();i++) {
+//						testChar = str.charAt(i);
+//						if (testChar > 0xFF) {
+//							throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_ENCODE+": "+str.substring(i,i+1));
+//						}
+//					}
+					try {
+						String strResult = "";
+						URI uri = new URI(str); // .getRawPath();
+						String query = uri.getQuery();
+						if (query != null) {
+							int offset = str.indexOf(query);
+							if (offset >0) {
+								strResult = str.substring(0,offset);
+								result = new TextNode(strResult+encodeURI(query));
+							}
+						} else {
+							result = new TextNode(str);
+						}
+					} catch (URISyntaxException e) {
+						throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_ENCODE+": \""+str+"\"");
+					}
 				} else {
 					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
@@ -88,6 +111,31 @@ public class LengthFunction extends FunctionBase implements Function {
 		return result;
 	}
 
+	String encodeURI(String uri) {
+		String result = null;
+		if (uri != null) {
+	   	try {
+	   		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI
+	   		// Not encoded: A-Z a-z 0-9 ; , / ? : @ & = + $ - _ . ! ~ * ' ( ) #
+				result =  URLEncoder.encode(uri, "UTF-8").replaceAll("\\+", "%20")
+						.replaceAll("%20", " ")  .replaceAll("\\%21", "!")
+						.replaceAll("\\%23", "#").replaceAll("\\%24", "$")
+						.replaceAll("\\%26", "&").replaceAll("\\%27", "'")
+						.replaceAll("\\%28", "(").replaceAll("\\%29", ")")
+						.replaceAll("\\%2A", "*").replaceAll("\\%2B", "+")
+						.replaceAll("\\%2C", ",").replaceAll("\\%2D", "-")
+						.replaceAll("\\%2E", ".").replaceAll("\\%2F", "/")
+		            .replaceAll("\\%3A", ":").replaceAll("\\%3B", ";")
+		            .replaceAll("\\%3D", "=").replaceAll("\\%3F", "?")
+		            .replaceAll("\\%40", "@").replaceAll("\\%5F", "_")
+		            .replaceAll("\\%7E", "~");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+		}
+   	return result;
+	}
+	
 	@Override
 	public int getMaxArgs() {
 		return 1;

@@ -129,6 +129,15 @@ public class RoundFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 2;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts a number (or context variable), an optional number, returns a number
 		return "<n-n?:n>";

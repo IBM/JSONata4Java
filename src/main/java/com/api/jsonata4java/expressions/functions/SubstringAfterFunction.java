@@ -111,7 +111,11 @@ public class SubstringAfterFunction extends FunctionBase implements Function {
 				// Find chars in str
 				final int index = str.indexOf(chars);
 				if (index != -1) {
-					result = new TextNode(substr(str, index + 1));
+					if ((index+chars.length()) < str.length()) {
+						result = new TextNode(substr(str, index+chars.length()));
+					} else {
+						result = new TextNode("");
+					}
 				} else {
 					// argChars is not present... just return argString
 					result = new TextNode(str);
@@ -176,6 +180,15 @@ public class SubstringAfterFunction extends FunctionBase implements Function {
 		return strData.substring(start, end);
 	}
 	
+	@Override
+	public int getMaxArgs() {
+		return 2;
+	}
+	@Override
+	public int getMinArgs() {
+		return 2;
+	}
+
 	@Override
 	public String getSignature() {
 		// accepts a string (or context variable), a string, returns a string

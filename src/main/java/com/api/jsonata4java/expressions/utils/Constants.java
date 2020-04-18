@@ -78,6 +78,11 @@ import com.api.jsonata4java.expressions.functions.SubstringFunction;
 import com.api.jsonata4java.expressions.functions.SumFunction;
 import com.api.jsonata4java.expressions.functions.ToMillisFunction;
 import com.api.jsonata4java.expressions.functions.TrimFunction;
+import com.api.jsonata4java.expressions.functions.TypeFunction;
+import com.api.jsonata4java.expressions.functions.URLDecodeComponentFunction;
+import com.api.jsonata4java.expressions.functions.URLDecodeFunction;
+import com.api.jsonata4java.expressions.functions.URLEncodeComponentFunction;
+import com.api.jsonata4java.expressions.functions.URLEncodeFunction;
 import com.api.jsonata4java.expressions.functions.UnpackFunction;
 import com.api.jsonata4java.expressions.functions.UppercaseFunction;
 import com.api.jsonata4java.expressions.functions.ZipFunction;
@@ -105,6 +110,12 @@ public class Constants {
    public static final String FUNCTION_BASE64_ENCODE = "$base64encode";
    public static final String FUNCTION_BASE64_DECODE = "$base64decode";
    public static final String FUNCTION_MATCH = "$match";
+   public static final String FUNCTION_URL_ENCODE = "$encodeUrl";
+   public static final String FUNCTION_URL_ENCODE_COMPONENT = "$encodeUrlComponent";
+   public static final String FUNCTION_URL_DECODE = "$decodeUrl";
+   public static final String FUNCTION_URL_DECODE_COMPONENT = "$decodeUrlComponent";
+   public static final String FUNCTION_TYPE = "$type";
+   
 
    // JSONata numeric functions
    public static final String FUNCTION_NUMBER = "$number";
@@ -214,7 +225,12 @@ public class Constants {
       FUNCTIONS.put(FUNCTION_MAP, new MapFunction());
       FUNCTIONS.put(FUNCTION_REDUCE, new ReduceFunction());
       FUNCTIONS.put(FUNCTION_SIFT, new SiftFunction());
-
+      FUNCTIONS.put(FUNCTION_URL_DECODE, new URLDecodeFunction());
+      FUNCTIONS.put(FUNCTION_URL_ENCODE, new URLEncodeFunction());
+      FUNCTIONS.put(FUNCTION_URL_DECODE_COMPONENT, new URLDecodeComponentFunction());
+      FUNCTIONS.put(FUNCTION_URL_ENCODE_COMPONENT, new URLEncodeComponentFunction());
+      FUNCTIONS.put(FUNCTION_TYPE, new TypeFunction());
+      
       // Initialize the default decimal format symbols
       DEFAULT_DECIMAL_FORMAT_SYMBOLS.setExponentSeparator("e");
       DEFAULT_DECIMAL_FORMAT_SYMBOLS.setInfinity("Infinity");

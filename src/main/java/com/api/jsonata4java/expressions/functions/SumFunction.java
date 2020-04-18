@@ -120,6 +120,15 @@ public class SumFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// takes an array of numbers, returns a number
 		return "<a<n>:n>";

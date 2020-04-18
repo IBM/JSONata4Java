@@ -111,7 +111,7 @@ public class JoinFunction extends FunctionBase implements Function {
 			Iterator<JsonNode> elements = ((ArrayNode) argArray).elements();
 			while (elements.hasNext()) {
 				JsonNode element = elements.next();
-				if (element.isValueNode()) {
+				if (element.isTextual()) {
 					stringJoiner.add(element.asText());
 				} else if (element.isArray()){
 				   for (Iterator<JsonNode>it = ((ArrayNode)element).iterator();it.hasNext();) {
@@ -133,6 +133,15 @@ public class JoinFunction extends FunctionBase implements Function {
 		}
 
 		return result;
+	}
+
+	@Override
+	public int getMaxArgs() {
+		return 2;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
 	}
 
 	@Override

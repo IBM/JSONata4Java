@@ -104,7 +104,7 @@ public class SortFunction extends FunctionBase implements Function {
 							+ fctCtx.getText() + " that is an " + fctCtx.getClass().getName());
 				}
 				String varID = ((MappingExpressionParser.Var_recallContext) fctCtx).VAR_ID().getText();
-				fct = expressionVisitor.getFunction(varID);
+				fct = expressionVisitor.getDeclaredFunction(varID);
 				if (fct == null) {
 					throw new EvaluateRuntimeException(
 							String.format(Constants.ERR_MSG_VARIABLE_FCT_NOT_FOUND, varID, Constants.FUNCTION_SORT));
@@ -136,6 +136,15 @@ public class SortFunction extends FunctionBase implements Function {
 		}
 
 		return result;
+	}
+
+	@Override
+	public int getMaxArgs() {
+		return 2;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
 	}
 
 	@Override
@@ -178,10 +187,11 @@ public class SortFunction extends FunctionBase implements Function {
 				array.set(k++, right.get(j++));
 			}
 		} else {
+			int varCount = fct.getMaxArgs();
 			while (i < lSize && j < rSize) {
 				// set up the variables for the function then call it
 				ExprValuesContext evc = new ExprValuesContext(ctx.getParent(), ctx.invokingState);
-				evc = FunctionUtils.fillExprVarContext(ctx, left.get(i), right.get(j));
+				evc = FunctionUtils.fillExprVarContext(varCount, ctx, left.get(i), right.get(j));
 				JsonNode comp = fct.invoke(exprVisitor, evc);
 				if (comp != null && comp.asBoolean()) {
 					array.set(k++, right.get(j++));

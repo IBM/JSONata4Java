@@ -22,9 +22,15 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.util.List;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,34 +58,101 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $trim(" Hello \n World ")=="Hello World"
  *
  */
-public class TrimFunction extends FunctionBase implements Function {
+public class TypeFunction extends FunctionBase implements Function {
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TRIM);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_TRIM);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_TRIM);
+	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TYPE);
+	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_TYPE);
+	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_TYPE);
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 		// Create the variable to return
 		JsonNode result = null;
 
 		// Retrieve the number of arguments
-		JsonNode argString = JsonNodeFactory.instance.nullNode();
+		JsonNode arg = JsonNodeFactory.instance.nullNode();
 		boolean useContext = FunctionUtils.useContextVariable(ctx, getSignature());
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
-			argString = FunctionUtils.getContextVariable(expressionVisitor);
+			arg = FunctionUtils.getContextVariable(expressionVisitor);
 			argCount++;
 		}
 
 		// Make sure that we have the right number of arguments
 		if (argCount == 1) {
 			if (!useContext) {
-				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argString != null) {
-				if (argString.isTextual()) {
-					final String str = argString.textValue();
-					result = new TextNode(str.trim().replaceAll("\\s+", " "));
+			// test for functions first
+			ExprValuesContext valuesCtx = ctx.exprValues();
+			ExprListContext exprList = valuesCtx.exprList();
+			List<ExprContext> exprCtxList = exprList.expr();
+			if (exprCtxList.size() > 0) {
+				ExprContext exprCtx = exprCtxList.get(0);
+				if (exprCtx instanceof Function_callContext) {
+					result = new TextNode("function");
+				} else if (exprCtx instanceof Var_recallContext) {
+					if (exprCtx.getChildCount() > 0) {
+						String varID = exprCtx.getChild(0).getText();
+						// determine what this references
+						DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(varID);
+						if (declFct != null) {
+							result = new TextNode("function");
+						} else {
+							Function fct = expressionVisitor.getJsonataFunction(varID);
+							if (fct != null) {
+								result = new TextNode("function");
+							} else {
+								arg = expressionVisitor.getVariable(varID);
+							}
+						}
+					}
+				}
+			}
+			if (result == null) {
+				if (arg != null) {
+					switch (arg.getNodeType()) {
+					case ARRAY: {
+						result = new TextNode("array");
+						break;
+					}
+					case OBJECT: {
+						result = new TextNode("object");
+						break;
+					}
+					case STRING: {
+						result = new TextNode("string");
+						break;
+					}
+					case NUMBER: {
+						result = new TextNode("number");
+						break;
+					}
+					case BOOLEAN: {
+						result = new TextNode("boolean");
+						break;
+					}
+					case BINARY: {
+						break;
+					}
+					case NULL: {
+						result = new TextNode("null");
+						break;
+					}
+					case POJO: {
+						result = new TextNode("undefined");
+						break;
+					}
+					case MISSING: {
+						result = new TextNode("undefined");
+						break;
+					}
+					default: {
+						result = new TextNode("undefined");
+						break;
+					}
+					}
+				} else {
+					result = null; 
 				}
 			}
 		} else {

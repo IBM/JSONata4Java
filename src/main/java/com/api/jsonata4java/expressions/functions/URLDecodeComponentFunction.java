@@ -22,8 +22,9 @@
 
 package com.api.jsonata4java.expressions.functions;
 
-import java.util.Objects;
+import java.io.UnsupportedEncodingException;
 
+import com.api.jsonata4java.JSONataUtils;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -31,7 +32,7 @@ import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.LongNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -47,11 +48,11 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $length("Hello World")==11
  *
  */
-public class LengthFunction extends FunctionBase implements Function {
+public class URLDecodeComponentFunction extends FunctionBase implements Function {
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_LENGTH);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_LENGTH);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_LENGTH);
+	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_URL_DECODE_COMPONENT);
+	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_URL_DECODE_COMPONENT);
+	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_URL_DECODE_COMPONENT);
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 		// Create the variable to return
@@ -74,9 +75,21 @@ public class LengthFunction extends FunctionBase implements Function {
 			if (argString != null) {
 				if (argString.isTextual()) {
 					final String str = argString.textValue();
-					String strData = Objects.requireNonNull(str).intern();
-					int strLen = strData.codePointCount(0, strData.length());
-					result = new LongNode(strLen);
+					char testChar = ' ';
+					for (int i=0;i<str.length();i++) {
+						testChar = str.charAt(i);
+						if (testChar > 0xFF) {
+							throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_DECODE_COMPONENT+": \""+str.substring(i,i+1)+"\"");
+						}
+					}
+					try {
+						result = new TextNode(JSONataUtils.decodeURIComponent(str));
+					} catch (UnsupportedEncodingException e) {
+						throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_DECODE_COMPONENT+": \""+str+"\"");
+					} catch (IllegalArgumentException iae) {
+						throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_DECODE_COMPONENT+": \""+str+"\"");
+					}
+
 				} else {
 					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}

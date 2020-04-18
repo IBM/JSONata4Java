@@ -26,14 +26,22 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
+import com.api.jsonata4java.expressions.functions.Function;
+import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * Object to manage access to variable and function maps used in the
  * {@link ExpressionsVisitor} to manage the current block's environment.
  */
 public class FrameEnvironment {
+   private Map<String, DeclaredFunction> _declFunctionMap = new HashMap<String, DeclaredFunction>();
+   FrameEnvironment _enclosingFrame = null;
+   private boolean _isAsync = false;
+   private Map<String, Function> _jsonataFunctionMap = new HashMap<String, Function>();
    /**
     * This stack is used for storing the current "context" under which to evaluate
     * predicate-type array indexes, e.g. [{"a":1}, {"a":2}][a=2] -> {"a":2}
@@ -46,9 +54,6 @@ public class FrameEnvironment {
     * {"a":102, "b":3}][a=101]).b] -> {"x":2}
     */
    private Stack<JsonNode> _stack = new Stack<JsonNode>();
-   FrameEnvironment _enclosingFrame = null;
-   private Map<String, DeclaredFunction> _functionMap = new HashMap<String, DeclaredFunction>();
-   private boolean _isAsync = false;
    private JS4JDate _timestamp = null;
    private Map<String, JsonNode> _variableMap = new HashMap<String, JsonNode>();
 
@@ -60,7 +65,8 @@ public class FrameEnvironment {
     */
    public FrameEnvironment(FrameEnvironment enclosingFrame) {
       _enclosingFrame = enclosingFrame;
-      _functionMap = new HashMap<String, DeclaredFunction>();
+      _declFunctionMap = new HashMap<String, DeclaredFunction>();
+      _jsonataFunctionMap = new HashMap<String,Function>();
       _variableMap = new HashMap<String, JsonNode>();
       if (enclosingFrame == null) {
          _timestamp = new JS4JDate();
@@ -71,14 +77,49 @@ public class FrameEnvironment {
       return _isAsync;
    }
 
-   public DeclaredFunction getFunction(String fctName) {
-      DeclaredFunction retFct = _functionMap.get(fctName);
-      if (retFct != null) {
+   public void clearContext() {
+   	if (_enclosingFrame != null) {
+   		Stack<JsonNode> stack = _enclosingFrame.getContextStack();
+   		stack.clear();
+   		return;
+   	}
+   	_stack.clear();
+   }
+
+   public Stack<JsonNode> getContextStack() {
+   	// jump back to original environment to get the "real" stack
+   	while(_enclosingFrame != null) {
+   		return _enclosingFrame.getContextStack();
+   	}
+   	return _stack;
+   }
+
+   public DeclaredFunction getDeclaredFunction(String fctName) {
+      DeclaredFunction retFct = _declFunctionMap.get(fctName);
+      if (retFct != null || _declFunctionMap.containsKey(fctName)) {
          return retFct;
       }
       if (_enclosingFrame != null) {
-         return _enclosingFrame.getFunction(fctName);
+         return _enclosingFrame.getDeclaredFunction(fctName);
       }
+      return null;
+   }
+
+   public Function getJsonataFunction(String fctName) {
+   	Function fct = _jsonataFunctionMap.get(fctName);
+   	if (fct != null || _jsonataFunctionMap.containsKey(fctName)) {
+   		return fct;
+   	}
+      if (_enclosingFrame != null) {
+         return _enclosingFrame.getJsonataFunction(fctName);
+      }
+      /**
+       * try standard Jsonata functions as last resort having checked all the environments
+       */
+      fct = Constants.FUNCTIONS.get(fctName);
+		if (fct != null) {
+			return fct;
+		}
       return null;
    }
 
@@ -86,7 +127,11 @@ public class FrameEnvironment {
    	if ("$".equals(varName)) {
    		// get this from the stack
    		JsonNode result = getContextStack().peek();
-   		// result = ExpressionsVisitor.flatten(result, null);
+   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
+   			if (result.size() == 1) {
+   				result = ((ArrayNode)result).get(0);
+   			}
+   		}
    		return result;
    	}
    	
@@ -96,12 +141,16 @@ public class FrameEnvironment {
    			return null;
    		}
    		JsonNode result = getContextStack().get(0);
-   		// result = ExpressionsVisitor.flatten(result, null);
+   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
+   			if (result.size() == 1) {
+   				result = ((ArrayNode)result).get(0);
+   			}
+   		}
    		return result;
    	}
    	
       JsonNode retVar = _variableMap.get(varName);
-      if (retVar != null) {
+      if (retVar != null || _variableMap.containsKey(varName)) {
          return retVar;
       }
       if (_enclosingFrame != null) {
@@ -110,6 +159,13 @@ public class FrameEnvironment {
       return null;
    }
 
+   public boolean isEmptyContext() {
+   	while(_enclosingFrame != null) {
+   		return _enclosingFrame.isEmptyContext();
+   	}
+   	return _stack.isEmpty();
+   }
+   
    public Long millis() {
       if (_timestamp != null) {
          return _timestamp.getTime();
@@ -119,7 +175,7 @@ public class FrameEnvironment {
       }
       return null;
    }
-
+   
    public String now() {
       if (_timestamp != null) {
          return _timestamp.toString();
@@ -128,52 +184,6 @@ public class FrameEnvironment {
          return _enclosingFrame.now();
       }
       return null;
-   }
-
-   public void setAsync(boolean isAsync) {
-      _isAsync = isAsync;
-   }
-   
-   public void setFunction(String fctName, DeclaredFunction fctValue) throws EvaluateRuntimeException {
-      if (fctName == null) {
-         throw new EvaluateRuntimeException("function name is null.");
-      }
-      if (fctValue == null) {
-         throw new EvaluateRuntimeException("function value is null.");
-      }
-      _functionMap.put(fctName, fctValue);
-   }
-   
-   public void setVariable(String varName, JsonNode varValue) throws EvaluateRuntimeException {
-      if (varName == null) {
-         throw new EvaluateRuntimeException("variable name is null.");
-      }
-      if (varValue == null) {
-         throw new EvaluateRuntimeException("variable value is null.");
-      }
-      _variableMap.put(varName, varValue);
-   }
-   
-   public int sizeContext() {
-   	while(_enclosingFrame != null) {
-   		return _enclosingFrame.sizeContext();
-   	}
-   	return _stack.size();
-   }
-   
-   public Stack<JsonNode> getContextStack() {
-   	// jump back to original environment to get the "real" stack
-   	while(_enclosingFrame != null) {
-   		return _enclosingFrame.getContextStack();
-   	}
-   	return _stack;
-   }
-   
-   public boolean isEmptyContext() {
-   	while(_enclosingFrame != null) {
-   		return _enclosingFrame.isEmptyContext();
-   	}
-   	return _stack.isEmpty();
    }
    
    public JsonNode peekContext() {
@@ -202,13 +212,46 @@ public class FrameEnvironment {
    	return _stack.push(context);
    }
    
-   public void clearContext() {
-   	if (_enclosingFrame != null) {
-   		Stack<JsonNode> stack = _enclosingFrame.getContextStack();
-   		stack.clear();
-   		return;
+   public void setAsync(boolean isAsync) {
+      _isAsync = isAsync;
+   }
+   
+   public void setDeclaredFunction(String fctName, DeclaredFunction fctValue) throws EvaluateRuntimeException {
+      if (fctName == null) {
+         throw new EvaluateRuntimeException("function name is null.");
+      }
+      if (fctValue == null) {
+         throw new EvaluateRuntimeException("function value is null.");
+      }
+      _declFunctionMap.put(fctName, fctValue);
+   }
+   
+   public void setJsonataFunction(String fctName, Function fctValue) throws EvaluateRuntimeException {
+      if (fctName == null) {
+         throw new EvaluateRuntimeException("function name is null.");
+      }
+      if (fctValue == null) {
+         throw new EvaluateRuntimeException("function value is null.");
+      }
+      _jsonataFunctionMap.put(fctName, fctValue);
+   }
+   
+   public void setVariable(String varName, JsonNode varValue) throws EvaluateRuntimeException {
+      if (varName == null) {
+         throw new EvaluateRuntimeException("variable name is null.");
+      }
+      // can allow variables to reference undefined (function-typeOf:case001
+		//      if (varValue == null) {
+		//         throw new EvaluateRuntimeException("variable value is null.");
+		//      }
+      _variableMap.put(varName, varValue);
+   }
+   
+   public int sizeContext() {
+   	while(_enclosingFrame != null) {
+   		return _enclosingFrame.sizeContext();
    	}
-   	_stack.clear();
+   	return _stack.size();
    }
    
 }

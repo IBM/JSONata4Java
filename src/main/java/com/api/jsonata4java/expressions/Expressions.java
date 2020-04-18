@@ -102,7 +102,7 @@ public class Expressions {
 			parser.addErrorListener(errorListener);
 			lexer.addErrorListener(errorListener);
 
-			tree = parser.expr();
+			tree = parser.expr(); // _to_eof();
 			if (errorListener.heardErrors()) {
 				if (tree != null && tree.getChildCount() > 0) {
 					ParseTree error = tree.getChild(0);

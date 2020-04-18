@@ -27,7 +27,12 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.fasterxml.jackson.databind.JsonNode;
 
 public interface Function {
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx);
+	
+	public int getMaxArgs();
 
+	public int getMinArgs();
+	
 	public String getSignature();
+	
+	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx);
 }

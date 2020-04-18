@@ -96,4 +96,13 @@ public class AppendFunction extends FunctionBase implements Function {
 		return "<x-x:a>";
 	}
 
+	@Override
+	public int getMaxArgs() {
+		return 2;
+	}
+	@Override
+	public int getMinArgs() {
+		return 2;
+	}
+
 }

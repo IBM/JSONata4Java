@@ -67,6 +67,15 @@ public class RandomFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 0;
+	}
+	@Override
+	public int getMinArgs() {
+		return 0;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts nothing, returns a number
 		return "<:n>";

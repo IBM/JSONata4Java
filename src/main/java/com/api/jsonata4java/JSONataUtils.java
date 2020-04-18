@@ -31,6 +31,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.InvalidObjectException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
@@ -45,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 import javax.management.modelmbean.InvalidTargetObjectTypeException;
@@ -514,4 +520,116 @@ public class JSONataUtils implements Serializable {
 		System.out.println("createSequence(NullNode.instance)=" + createSequence(NullNode.instance));
 
 	}
+   /**
+    * Decodes the passed UTF-8 String using an algorithm that's compatible with
+    * JavaScript's <code>decodeURIComponent</code> function. Returns
+    * <code>null</code> if the String is <code>null</code>.
+    * 
+    * @param s
+    *           The UTF-8 encoded String to be decoded
+    * @return the decoded String
+    * @throws UnsupportedEncodingException 
+    */
+   public static String decodeURIComponent(String s) throws UnsupportedEncodingException {
+      if (s == null) {
+         return null;
+      }
+
+      String result = null;
+
+      result = URLDecoder.decode(s, "UTF-8");
+
+      return result;
+   }
+
+   /**
+    * Encodes the passed String as UTF-8 using an algorithm that's compatible
+    * with JavaScript's <code>encodeURIComponent</code> function. Returns
+    * <code>null</code> if the String is <code>null</code>.
+    * 
+    * @param s
+    *           The String to be encoded
+    * @return the encoded String
+    * @throws URISyntaxException 
+    */
+   public static String encodeURIComponent(String s) throws URISyntaxException {
+   	if (s == null) {
+   		return null;
+   	}
+      String test = new URI(null, null, s, null).getRawPath();
+      if (test.equals(s)) {
+      	try {
+      		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI
+      		// Not encoded: A-Z a-z 0-9 ; , / ? : @ & = + $ - _ . ! ~ * ' ( ) #
+				test = URLEncoder.encode(s, "UTF-8").replaceAll("\\+", "%20")
+						.replaceAll("%20", " ")  .replaceAll("\\%21", "!")
+						.replaceAll("\\%27", "'").replaceAll("\\%28", "(")
+						.replaceAll("\\%29", ")").replaceAll("\\%2A", "*")
+						.replaceAll("\\%2D", "-").replaceAll("\\%2E", ".")
+		            .replaceAll("\\%5F", "_").replaceAll("\\%7E", "~");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+      }
+      return test;
+   }
+
+   /**
+	 * 
+	 * @param str
+	 * @param start  Location at which to begin extracting characters. If a negative
+	 *               number is given, it is treated as strLength - start where
+	 *               strLength is the length of the string. For example,
+	 *               str.substr(-3) is treated as str.substr(str.length - 3)
+	 * @param length The number of characters to extract. If this argument is null,
+	 *               all the characters from start to the end of the string are
+	 *               extracted.
+	 * @return A new string containing the extracted section of the given string. If
+	 *         length is 0 or a negative number, an empty string is returned.
+	 */
+   static public String substr(String str, Integer start, Integer length) {
+
+		// below has to convert start and length for emojis and unicode
+		int origLen = str.length();
+		
+		String strData = Objects.requireNonNull(str).intern();
+		int strLen = strData.codePointCount(0, strData.length());
+		// If start is negative, substr() uses it as a character index from the
+		// end of the string; the index of the last character is -1.
+		start = strData.offsetByCodePoints(0, start >= 0 ? start : ((strLen + start) < 0 ? 0 : strLen + start));
+		// If start is negative and abs(start) is larger than the length of the
+		// string, substr() uses 0 as the start index.
+		if (start < 0) {
+			start = 0;
+		}
+		// If length is omitted, substr() extracts characters to the end of the
+		// string.
+		if (length == null) {
+			length = strData.length();
+		} else if (length < 0) {
+			// If length is 0 or negative, substr() returns an empty string.
+			return "";
+		}
+		
+		length = strData.offsetByCodePoints(0, length);
+
+		if (start >= 0) {
+			// If start is positive and is greater than or equal to the length of
+			// the string, substr() returns an empty string.
+			if (start >= origLen) {
+				return "";
+			}
+		}
+
+		// collect length characters (unless it reaches the end of the string
+		// first, in which case it will return fewer)
+		int end = start + length;
+		if (end > origLen) {
+			end = origLen;
+		}
+
+		return strData.substring(start, end);
+	}
+
+
 }

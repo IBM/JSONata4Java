@@ -64,7 +64,10 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 //			"context",
 //			"closures",
 			"sorting", // we don't support the order-by operator (^) yet
-//			"tail-recursion", 		// tail-recursion requires function definition support, which we don't have yet
+			"tail-recursion", 		// tail-recursion requires function definition support, which we don't have yet
+			"transforms",
+			"library-joins",
+			"function-formatNumber"
 //			"function-applications",
 //			"partial-application",
 //			"transforms",
@@ -99,7 +102,23 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 				"case015", "case016", "case017", "case018", "case019", "case020", "case022", "case025");
 		SKIP_CASES("function-exists", "case006");
 		SKIP_CASES("range-operator", "case013");
-		SKIP_CASES("hof-reduce","case010");
+		SKIP_CASES("hof-reduce","case001","case009","case010");
+		SKIP_CASES("function-typeOf","case011");
+		SKIP_CASES("function-sift","case000","case001","case002","case004");
+		SKIP_CASES("function-sort","case010");
+		SKIP_CASES("function-each","case000");
+		SKIP_CASES("function-signatures","case000","case001","case002","case007","case008","case009","case010","case011",
+				"case012","case013","case014","case015",
+				"case016","case017","case018","case019","case020","case021","case022","case023");
+		SKIP_CASES("hof-filter","case000","case001");
+		SKIP_CASES("function-applications","case013","case014","case017","case018","case019");
+		SKIP_CASES("hof-map","case003","case004");
+		// @ references issue #48
+		SKIP_CASES("joins","employee-map-reduce-11");
+		SKIP_CASES("joins","library-joins-10");
+		SKIP_CASES("parent-operator","parent-27");
+		// # references issue #50
+		SKIP_CASES("joins","index-15");
 	}
 
 	private static void SKIP_CASES(String group, String... casesArray) {
@@ -179,9 +198,10 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 				if (caseJson.isObject()) {
 					testCase = new TestCase(group, caseName, caseJson);
 				} else if (caseJson.isArray()) {
+					int subTestIndex = 0;
 					ArrayNode testCases = (ArrayNode) caseJson;
 					for (JsonNode testCaseJson : testCases) {
-						testCase = new TestCase(group, caseName, testCaseJson);
+						testCase = new TestCase(group, caseName+"-"+(subTestIndex++), testCaseJson);
 					}
 				} else {
 					throw new RuntimeException("[" + group.getGroupName() + "." + caseName + "] Not a JSON object or array");
@@ -219,7 +239,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			} else {
 
 				notifier.fireTestStarted(testCase.getDescription());
-
+				
 				try {
 					Expressions e = Expressions.parse(testCase.getExpr());
 
@@ -437,6 +457,12 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			// for now, we just take this to mean "expect a ParseException or an
 			// EvaluateException"
 			expectParseOrEvaluateException = o.has("code");
+			if (!expectParseOrEvaluateException) {
+				if (o.has("error")) {
+					ObjectNode error = (ObjectNode) o.get("error");
+					expectParseOrEvaluateException = error.has("code");
+				}
+			}
 
 			// TODO: depth:
 			// If the depth of evaluation should be limited, this specifies the depth.

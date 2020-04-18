@@ -101,6 +101,15 @@ public class UnpackFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts an object (or context variable), returns an array of strings
 		return "<o-:a<s>>";

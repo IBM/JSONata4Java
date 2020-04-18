@@ -109,6 +109,15 @@ public class MergeFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts a number (or context variable), returns a number
 		return "<a<0>-:o>";

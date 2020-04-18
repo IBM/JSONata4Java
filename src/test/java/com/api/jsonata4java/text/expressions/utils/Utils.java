@@ -22,7 +22,6 @@
 
 package com.api.jsonata4java.text.expressions.utils;
 
-import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,6 +30,7 @@ import java.nio.file.Paths;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Random;
+
 import org.junit.Assert;
 
 import com.api.jsonata4java.expressions.EvaluateException;
@@ -107,7 +107,7 @@ public class Utils {
 		JsonNode result = expr.evaluate(jsonObj);
       System.err.print("* " + expression);
 		System.err.println(" returned " + result);
-		Assert.assertEquals(mapper.writeValueAsString(result),mapper.writeValueAsString(expected));
+		Assert.assertEquals(mapper.writeValueAsString(expected),mapper.writeValueAsString(result));
 	}
 
 	public static void simpleTestExpectException(String expression, String expectedExceptionMessage) throws Exception {

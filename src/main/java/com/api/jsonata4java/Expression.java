@@ -96,7 +96,7 @@ public class Expression {
    ExpressionsVisitor _eval = null;
    Expressions _expr = null;
    FrameEnvironment _environment = new FrameEnvironment(null);
-   Map<String, DeclaredFunction> _functionMap = new HashMap<String, DeclaredFunction>();
+   Map<String, DeclaredFunction> _declaredFunctionMap = new HashMap<String, DeclaredFunction>();
    Map<String, ExprContext> _variableMap = new HashMap<String, ExprContext>();
 
    /**
@@ -122,7 +122,7 @@ public class Expression {
       if (binding.getType() == BindingType.VARIABLE) {
          _variableMap.put(binding.getVarName(), binding.getExpression());
       } else {
-         _functionMap.put(binding.getVarName(), binding.getFunction());
+         _declaredFunctionMap.put(binding.getVarName(), binding.getFunction());
       }
    }
 
@@ -163,10 +163,10 @@ public class Expression {
          ExprContext ctx = _variableMap.get(key);
          eval.setVariable(key, eval.visit(ctx));
       }
-      for (Iterator<String> it = _functionMap.keySet().iterator(); it.hasNext();) {
+      for (Iterator<String> it = _declaredFunctionMap.keySet().iterator(); it.hasNext();) {
          String key = it.next();
-         DeclaredFunction fct = _functionMap.get(key);
-         eval.setFunction(key, fct);
+         DeclaredFunction fct = _declaredFunctionMap.get(key);
+         eval.setDeclaredFunction(key, fct);
       }
       return eval.visit(_expr.getTree());
    }
@@ -243,6 +243,6 @@ public class Expression {
     */
    public void registerFunction(String fctName, String implementation) throws ParseException, IOException {
       Binding fctBinding = new Binding(fctName, implementation);
-      _functionMap.put(fctBinding.getVarName(), fctBinding.getFunction());
+      _declaredFunctionMap.put(fctBinding.getVarName(), fctBinding.getFunction());
    }
 }

@@ -157,6 +157,17 @@ public class Tester {
 			try {
 				expr = Expressions.parse(expression);
 			} catch (ParseException e) {
+				String errMsg = e.getLocalizedMessage();
+				int index = errMsg.indexOf("extraneous input '");
+				if (index >= 0) {
+					errMsg = errMsg.substring(index+"extraneous input '".length());
+					index = errMsg.indexOf("'");
+					if (index >= 0) {
+						errMsg = errMsg.substring(0,index);
+						System.err.println("Syntax error: \""+errMsg+"\"");
+						continue;
+					}
+				}
 				System.err.println(e.getLocalizedMessage());
 				continue;
 			} catch (EvaluateRuntimeException ere) {

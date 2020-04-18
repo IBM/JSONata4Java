@@ -54,6 +54,8 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprCo
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprOrSeqContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+// import com.api.jsonata4java.expressions.generated.MappingExpressionParser.FieldListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.IdContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
@@ -88,7 +90,13 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	long maxTime = 0L;
 	static String _pattern = "#0.##";
 	static DecimalFormat _decimalFormat = new DecimalFormat(_pattern);
-
+	boolean firstStepCons = false;
+	boolean lastStepCons = false;
+	List<ParseTree> steps = new ArrayList<ParseTree>();
+	boolean firstStep = false;
+	boolean lastStep = false;
+	boolean needsAppend = false;
+	
 	private void checkRunaway() {
 		if (checkRuntime) {
 			if (maxDepth != -1 && currentDepth > maxDepth) {
@@ -120,10 +128,28 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	}
 
 	public JsonNode visitTree(ParseTree tree) {
+		int treeSize = tree.getChildCount();
+		steps.clear();
+		for (int i = 0; i < treeSize; i++) {
+			steps.add(tree.getChild(i));
+		}
+		if (tree.getChild(0) instanceof Array_constructorContext) {
+			firstStepCons = true;
+		}
+		// test for laststep array construction child[n-1] instanceof
+		// Array_constructorContext
+		if (tree.getChild(treeSize - 1) instanceof Array_constructorContext) {
+			lastStepCons = true;
+		}
+		if (tree.equals(steps.get(0))) {
+			firstStep = true;
+		} else {
+			firstStep = false;
+		}
 		JsonNode result = visit(tree);
 		// simulates lastStep processing
 		if (result != null && result.isArray() && result.size() == 1 && ((ArrayNode) result).get(0)
-				.isArray() /* && ((ArrayNode)result).get(0) instanceof SelectorArrayNode == false */ ) {
+				.isArray()) {
 			result = ((ArrayNode) result).get(0);
 		}
 		return result;
@@ -134,6 +160,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode result = null;
 		if (checkRuntime) {
 			evaluateEntry();
+		}
+		if (steps.size() > 0 && tree.equals(steps.get(steps.size() - 1))) {
+			lastStep = true;
 		}
 		result = super.visit(tree);
 		if (!keepSingleton) {
@@ -460,8 +489,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		return result;
 	}
 
-	public DeclaredFunction getFunction(String fctName) {
-		return _environment.getFunction(fctName);
+	public DeclaredFunction getDeclaredFunction(String fctName) {
+		return _environment.getDeclaredFunction(fctName);
+	}
+
+	public Function getJsonataFunction(String fctName) {
+		return _environment.getJsonataFunction(fctName);
 	}
 
 	public Stack<JsonNode> getContextStack() {
@@ -497,7 +530,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			}
 			JsonNode result = visit(tree);
 			if (result != null) {
-				output.add(result);
+				if (needsAppend && result.isArray()) {
+					output.addAll((ArrayNode)result);
+				} else {
+					output.add(result);
+				}
 			}
 		}
 	}
@@ -581,7 +618,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				}
 			}
 			// added for Issue#30
-//         output = unwrapArray(output);
+			// output = unwrapArray(output);
 
 		} else {
 			// the LHS is just an object
@@ -771,8 +808,33 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						// is used in such an odd way
 						// if we need strict JSONata compliance in this respect then
 						// we can change this
-
-						throw new NonNumericArrayIndexException();
+						if (indexInContext.isBoolean()) {
+							if (indexInContext.asBoolean()) {
+								return sourceArray;
+							} else {
+								if (indexesInContext.size() == 1) {
+									return null;
+								}
+								return sourceArray; // null;
+							}
+						} else {
+							if (indexInContext.isArray()) {
+								ArrayNode indexArray = (ArrayNode) indexInContext;
+								boolean isOkay = false;
+								for (int j = 0; j < indexArray.size(); j++) {
+									if (indexArray.get(j).asBoolean()) {
+										isOkay = true;
+										break;
+									}
+								}
+								if (isOkay) {
+									return sourceArray;
+								} else {
+									return null;
+								}
+							}
+							throw new NonNumericArrayIndexException();
+						}
 						// return sourceArray; // wnm3 added for case002 on multiple-array-selectors
 					}
 
@@ -893,6 +955,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		if (LOG.isLoggable(Level.FINEST))
 			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 
+		needsAppend = true;
 		// System.out.println("========");
 		// for(ParseTree child : ctx.children) {
 		// System.out.println(child.getText());
@@ -924,6 +987,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					}
 				}
 			}
+			needsAppend = false;
 		}
 
 		if (LOG.isLoggable(Level.FINEST))
@@ -1133,9 +1197,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						return context;
 					}
 					/**
-					 * can not just replace ctx child since this can be called
-					 * recursively with different stack values so need to 
-					 * replace child[0] in the new context we create below 
+					 * can not just replace ctx child since this can be called recursively with
+					 * different stack values so need to replace child[0] in the new context we
+					 * create below
 					 */
 					CommonToken token = null;
 					ExprContext expr = null;
@@ -1160,7 +1224,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 								: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, context.asText()));
 						TerminalNodeImpl tn = new TerminalNodeImpl(token);
 						BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
-						bc.children.set(0,tn);
+						bc.children.set(0, tn);
 						result = visit(bc);
 						break;
 					}
@@ -1177,7 +1241,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER, context.asText());
 						TerminalNodeImpl tn = new TerminalNodeImpl(token);
 						NumberContext nc = new NumberContext(ctx);
-						nc.children.set(0, child0);
+						nc.children.set(0, tn);
 						result = visit(nc);
 						break;
 					}
@@ -1187,7 +1251,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						for (int i = 0; i < ctx.children.size(); i++) {
 							expr.children.add(ctx.children.get(i));
 						}
-						expr.children.set(0,child0);
+						expr.children.set(0, child0);
 						result = visit(expr);
 						break;
 					}
@@ -1196,7 +1260,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, context.asText());
 						TerminalNodeImpl tn = new TerminalNodeImpl(token);
 						StringContext sc = new StringContext(ctx);
-						sc.children.set(0, child0);
+						sc.children.set(0, tn);
 						result = visit(sc);
 						break;
 					}
@@ -1258,6 +1322,32 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode result = unwrapArray(resultArray);
 		return result;
 	}
+	
+//	@Override
+//	public JsonNode visitExpr_to_eof(MappingExpressionParser.Expr_to_eofContext ctx) {
+//		ParseTree tree = ctx.expr();
+//		int treeSize = tree.getChildCount();
+//		steps.clear();
+//		for (int i = 0; i < treeSize; i++) {
+//			steps.add(tree.getChild(i));
+//		}
+//		if (tree.getChild(0) instanceof Array_constructorContext) {
+//			firstStepCons = true;
+//		}
+//		// test for laststep array construction child[n-1] instanceof
+//		// Array_constructorContext
+//		if (tree.getChild(treeSize - 1) instanceof Array_constructorContext) {
+//			lastStepCons = true;
+//		}
+//		if (tree.equals(steps.get(0))) {
+//			firstStep = true;
+//		} else {
+//			firstStep = false;
+//		}
+//
+//		JsonNode result = visit(tree);
+//		return result;
+//	}
 
 	@Override
 	public JsonNode visitFct_chain(Fct_chainContext ctx) {
@@ -1318,15 +1408,46 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode result = unwrapArray(resultArray);
 		return result;
 	}
+	
+	@Override
+	public JsonNode visitFieldList(MappingExpressionParser.FieldListContext ctx) {
+		ObjectNode resultObject = new ObjectNode(JsonNodeFactory.instance);
+		if (_environment.isEmptyContext()) {
+			// signal no match
+			return null;
+		}
+		JsonNode elt = _environment.peekContext();
+		if (elt == null || elt.isObject() == false) {
+			// signal no match
+			return null;
+		}
+		String key = "";
+		JsonNode value = null;
+		for (int i=0;i<ctx.getChildCount();i+=4) {
+			// expect name ':' expr ,
+			key = sanitise(((TerminalNodeImpl)ctx.getChild(i)).getText());
+			value = visit(ctx.getChild(i+2));
+			if (value != null) {
+				resultObject.set(key, value);
+			}
+		}
+		if (resultObject.size() == 0) {
+			return null;
+		}
+		return resultObject;
+	}
 
 	@Override
 	public JsonNode visitFunction_call(MappingExpressionParser.Function_callContext ctx) {
 		JsonNode result = null;
 		String functionName = ctx.VAR_ID().getText();
 
-		DeclaredFunction declFct = getFunction(functionName);
+		DeclaredFunction declFct = getDeclaredFunction(functionName);
 		if (declFct == null) {
-			Function function = Constants.FUNCTIONS.get(functionName);
+			Function function = getJsonataFunction(functionName);
+			if (function == null) {
+				function = Constants.FUNCTIONS.get(functionName);
+			}
 			if (function != null) {
 				result = function.invoke(this, ctx);
 			} else {
@@ -1356,7 +1477,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		MappingExpressionParser.VarListContext varList = fctDeclCtx.varList();
 		MappingExpressionParser.ExprListContext exprList = fctDeclCtx.exprList();
 		DeclaredFunction fct = new DeclaredFunction(varList, exprList);
-		setFunction(fctName, fct);
+		setDeclaredFunction(fctName, fct);
 		return result;
 	}
 
@@ -1585,15 +1706,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		// convert the keys to strings, stripping surrounding quotes and
 		// unescaping any special JSON chars
-		if (ctx.fieldList() == null) {
+		if (ctx.fieldList() == null) { // (ctx.expr() == null) {
 			// empty object: {}
 			return object;
 		} else {
-			List<String> keys = ctx.fieldList().STRING().stream().map(k -> k.getText()).map(k -> sanitise(k))
+			// FieldListContext fieldList = (FieldListContext)ctx.expr();
+			// List<String> keys = fieldList.STRING().stream().map(k -> k.getText()).map(k -> sanitise(k))
+			List<String> keys = ctx.fieldList().STRING().stream().map(k -> k.getText()).map(k -> sanitise(k))					
 					.collect(Collectors.toList());
 
+			// List<JsonNode> values = fieldList.expr().stream().map(e -> visit(e)).collect(Collectors.toList());
 			List<JsonNode> values = ctx.fieldList().expr().stream().map(e -> visit(e)).collect(Collectors.toList());
-
 			if (keys.size() != values.size()) {
 				// this shouldn't have parsed in the first place
 				throw new EvaluateRuntimeException("Object key/value count mismatch!");
@@ -1691,16 +1814,35 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				IdContext idCtx = new MappingExpressionParser.IdContext(rhsCtx);
 				idCtx.addChild(node);
 				rhs = resolvePath(lhs, idCtx);
+			} else if (rhsCtx instanceof NumberContext) {
+				throw new EvaluateRuntimeException(
+						"The literal value " + visit(rhsCtx) + " cannot be used as a step within a path expression");
+//			} else if (rhsCtx instanceof FieldListContext) {
+//				_environment.pushContext(lhs);
+//				rhs = visit(rhsCtx);
+//				_environment.popContext();
 			} else {
 				rhs = resolvePath(lhs, rhsCtx);
 			}
-
 			if (rhs == null) { // okay to return NullNode here so don't test "|| rhs.isNull()"
 				result = null;
-			} else if ((rhs instanceof SelectorArrayNode) && rhs.size() == 0) {
-				// if no results are present (i.e. results is empty) we need to return
-				// null (i.e. *no match*)
-				result = null;
+			} else if (rhs instanceof SelectorArrayNode) {
+				if (rhs.size() == 0) {
+					// if no results are present (i.e. results is empty) we need to return
+					// null (i.e. *no match*)
+					return null;
+				} else {
+					if ((firstStepCons && firstStep) || (lastStep && lastStepCons)) {
+						List<JsonNode> cells = ((SelectorArrayNode) rhs).getSelectionGroups();
+						result = new ArrayNode(JsonNodeFactory.instance);
+						for (JsonNode cell : cells) {
+							((ArrayNode) result).add(cell);
+						}
+						firstStepCons = false;
+					} else {
+						result = rhs;
+					}
+				}
 			} else {
 				result = rhs;
 			}
@@ -1831,8 +1973,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		return result;
 	}
 
-	public void setFunction(String fctName, DeclaredFunction fctValue) {
-		_environment.setFunction(fctName, fctValue);
+	public void setDeclaredFunction(String fctName, DeclaredFunction fctValue) {
+		_environment.setDeclaredFunction(fctName, fctValue);
+	}
+
+	public void setJsonataFunction(String fctName, Function fctValue) {
+		_environment.setJsonataFunction(fctName, fctValue);
 	}
 
 	@Override
@@ -1847,8 +1993,26 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			MappingExpressionParser.VarListContext varList = fctDeclCtx.varList();
 			MappingExpressionParser.ExprListContext exprList = fctDeclCtx.exprList();
 			DeclaredFunction fct = new DeclaredFunction(varList, exprList);
-			setFunction(varName, fct);
+			setDeclaredFunction(varName, fct);
 		} else if (expr instanceof MappingExpressionParser.Function_callContext) {
+			Function_callContext fctCallCtx = (Function_callContext)expr;
+			
+			String functionName = fctCallCtx.VAR_ID().getText();
+
+			DeclaredFunction declFct = getDeclaredFunction(functionName);
+			if (declFct == null) {
+				Function function = getJsonataFunction(functionName);
+				if (function != null) {
+					setJsonataFunction(varName,function);
+					// result = function.invoke(this, ctx);
+				} else {
+					throw new EvaluateRuntimeException("Unknown function: " + functionName);
+				}
+			} else {
+				setDeclaredFunction(varName,declFct);
+//				result = declFct.invoke(this, ctx);
+			}
+
 			result = visit(expr);
 		} else {
 			result = visit(expr);
@@ -1861,9 +2025,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitVar_recall(MappingExpressionParser.Var_recallContext ctx) {
 		final String varName = ctx.getText();
 		JsonNode result = getVariable(varName);
-//      if (result == null) {
-//         throw new EvaluateRuntimeException(varName + " is unknown (e.g., unassigned variable)");
-//      }
 		return result;
 	}
 

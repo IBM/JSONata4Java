@@ -22,6 +22,9 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.util.Objects;
+
+import com.api.jsonata4java.JSONataUtils;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -30,7 +33,6 @@ import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.TextNode;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -100,6 +102,9 @@ public class PadFunction extends FunctionBase implements Function {
 								useContext ? 1 : 2);
 						if (argChar != null && argChar.isTextual()) {
 							padStr = argChar.asText();
+							if (padStr.length() > 2) {
+								throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
+							}
 						} else {
 							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
 						}
@@ -108,9 +113,9 @@ public class PadFunction extends FunctionBase implements Function {
 					// Generate the result.. padding to the left or right depending
 					// on the width argument
 					if (width < 0) {
-						result = new TextNode(StringUtils.leftPad(str, -width, padStr));
+						result = new TextNode(leftPad(str, -width, padStr));
 					} else {
-						result = new TextNode(StringUtils.rightPad(str, width, padStr));
+						result = new TextNode(rightPad(str, width, padStr));
 					}
 				} else {
 					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
@@ -122,6 +127,72 @@ public class PadFunction extends FunctionBase implements Function {
 		}
 
 		return result;
+	}
+
+	public static String leftPad(final String str, final int size, String padStr) {
+		if (str == null) {
+			return null;
+		}
+		if (padStr == null) {
+			padStr = " ";
+		}
+		
+		String strData = Objects.requireNonNull(str).intern();
+		int strLen = strData.codePointCount(0, strData.length());
+
+		String padData = Objects.requireNonNull(padStr).intern();
+		int padLen = strData.codePointCount(0, padData.length());
+
+		if (padLen == 0) {
+			padStr = " ";
+		}
+		final int pads = size - strLen;
+		if (pads <= 0) {
+			return str;
+		}
+		String padding = "";
+		for (int i=0;i<pads+1;i++) {
+			padding += padStr;
+		}
+		return JSONataUtils.substr(padding, 0, pads).concat(str);
+	}
+
+	public static String rightPad(final String str, final int size, String padStr) {
+		if (str == null) {
+			return null;
+		}
+		if (padStr == null) {
+			padStr = " ";
+		}
+		
+		String strData = Objects.requireNonNull(str).intern();
+		int strLen = strData.codePointCount(0, strData.length());
+
+		String padData = Objects.requireNonNull(padStr).intern();
+		int padLen = strData.codePointCount(0, padData.length());
+
+		if (padLen == 0) {
+			padStr = " ";
+		}
+		final int pads = size - strLen;
+		if (pads <= 0) {
+			return str;
+		}
+		String padding = "";
+		for (int i=0;i<pads+1;i++) {
+			padding += padStr;
+		}
+		return str.concat(JSONataUtils.substr(padding, 0, pads));
+	}
+
+	@Override
+	public int getMaxArgs() {
+		return 3;
+	}
+
+	@Override
+	public int getMinArgs() {
+		return 2;
 	}
 
 	@Override

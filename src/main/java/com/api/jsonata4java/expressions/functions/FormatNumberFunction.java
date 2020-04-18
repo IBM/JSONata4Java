@@ -148,7 +148,8 @@ public class FormatNumberFunction extends FunctionBase implements Function {
 						// Create the formatter and format the number
 						DecimalFormat formatter = new DecimalFormat();
 						formatter.setDecimalFormatSymbols(symbols);
-						formatter.applyLocalizedPattern(picture);
+						String fixedPicture = picture.replaceAll("9","0");
+						formatter.applyLocalizedPattern(fixedPicture);
 						result = new TextNode(formatter.format(number));
 					} else {
 						// Non-textual picture argument
@@ -293,6 +294,15 @@ public class FormatNumberFunction extends FunctionBase implements Function {
 		}
 
 		return formattingChar;
+	}
+
+	@Override
+	public int getMaxArgs() {
+		return 3;
+	}
+	@Override
+	public int getMinArgs() {
+		return 2;
 	}
 
 	@Override

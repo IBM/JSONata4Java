@@ -77,7 +77,11 @@ public class SplitFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argString == null || argString.isNull()) {
+				useContext = false;
+			} else {
+				argCount++;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -157,6 +161,15 @@ public class SplitFunction extends FunctionBase implements Function {
 		}
 
 		return result;
+	}
+
+	@Override
+	public int getMaxArgs() {
+		return 3;
+	}
+	@Override
+	public int getMinArgs() {
+		return 2;
 	}
 
 	@Override

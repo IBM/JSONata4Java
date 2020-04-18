@@ -171,6 +171,15 @@ public class ReplaceFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 3;
+	}
+	@Override
+	public int getMinArgs() {
+		return 2;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts a string (or context variable), a string of function, an optional
 		// number, returns a string

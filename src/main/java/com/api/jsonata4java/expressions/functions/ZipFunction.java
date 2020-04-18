@@ -88,6 +88,15 @@ public class ZipFunction extends FunctionBase implements Function {
 	}
 
 	@Override
+	public int getMaxArgs() {
+		return 10000;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
+	}
+
+	@Override
 	public String getSignature() {
 		// accepts one or more arrays, returns an array
 		return "<a+:a>";

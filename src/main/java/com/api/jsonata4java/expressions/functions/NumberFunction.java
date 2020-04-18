@@ -68,7 +68,7 @@ public class NumberFunction extends FunctionBase implements Function {
 		}
 
 		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
+		if (argCount == 1 || useContext) {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
@@ -106,6 +106,15 @@ public class NumberFunction extends FunctionBase implements Function {
 		}
 
 		return result;
+	}
+
+	@Override
+	public int getMaxArgs() {
+		return 1;
+	}
+	@Override
+	public int getMinArgs() {
+		return 1;
 	}
 
 	@Override
