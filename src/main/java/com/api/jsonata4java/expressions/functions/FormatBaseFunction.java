@@ -64,7 +64,11 @@ public class FormatBaseFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argNumber != null && argNumber.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -74,35 +78,36 @@ public class FormatBaseFunction extends FunctionBase implements Function {
 			}
 
 			// Make sure that the first argument is a number
-			if (argNumber != null) {
-				if (argNumber.isNumber()) {
-					// Read the number from the argument
-					final int number = argNumber.asInt();
+			if (argNumber == null) {
+				return null;
+			}
+			if (argNumber.isNumber()) {
+				// Read the number from the argument
+				final int number = argNumber.asInt();
 
-					// Check to see if we have an radix argument and read it if we do
-					int radix = 10;
-					if (argCount == 2) {
-						final JsonNode argRadix = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-								useContext ? 0 : 1);
-						if (argRadix != null) {
-							if (argRadix.isNumber()) {
-								radix = argRadix.asInt();
+				// Check to see if we have an radix argument and read it if we do
+				int radix = 10;
+				if (argCount == 2) {
+					final JsonNode argRadix = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+							useContext ? 0 : 1);
+					if (argRadix != null) {
+						if (argRadix.isNumber()) {
+							radix = argRadix.asInt();
 
-								// Make sure that the radix specified is valid
-								if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX) {
-									throw new EvaluateRuntimeException(Constants.ERR_MSG_INVALID_RADIX);
-								}
-							} else {
-								throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+							// Make sure that the radix specified is valid
+							if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX) {
+								throw new EvaluateRuntimeException(Constants.ERR_MSG_INVALID_RADIX);
 							}
+						} else {
+							throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 						}
 					}
-
-					// Convert the number to a string in the specified base
-					result = new TextNode(Integer.toString(number, radix));
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
+
+				// Convert the number to a string in the specified base
+				result = new TextNode(Integer.toString(number, radix));
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
@@ -117,7 +122,7 @@ public class FormatBaseFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

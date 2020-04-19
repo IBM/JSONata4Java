@@ -70,7 +70,11 @@ public class PadFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argString != null && argString.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -81,45 +85,46 @@ public class PadFunction extends FunctionBase implements Function {
 			final JsonNode argWidth = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
 
 			// Make sure that the first argument is a string
-			if (argString != null) {
-				if (argString.isTextual()) {
-					// Read the string from the argument
-					final String str = argString.textValue();
+			if (argString == null) {
+				return null;
+			}
+			if (argString.isTextual()) {
+				// Read the string from the argument
+				final String str = argString.textValue();
 
-					// Now read the width argument
-					int width = 0;
-					if (argWidth != null && argWidth.isNumber()) {
-						width = argWidth.asInt();
-					} else {
-						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-					}
+				// Now read the width argument
+				int width = 0;
+				if (argWidth != null && argWidth.isNumber()) {
+					width = argWidth.asInt();
+				} else {
+					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+				}
 
-					// Check to see if we have an optional padding character and read
-					// it if we do
-					String padStr = " ";
-					if (argCount == 3) {
-						final JsonNode argChar = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-								useContext ? 1 : 2);
-						if (argChar != null && argChar.isTextual()) {
-							padStr = argChar.asText();
-							if (padStr.length() > 2) {
-								throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
-							}
-						} else {
+				// Check to see if we have an optional padding character and read
+				// it if we do
+				String padStr = " ";
+				if (argCount == 3) {
+					final JsonNode argChar = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+							useContext ? 1 : 2);
+					if (argChar != null && argChar.isTextual()) {
+						padStr = argChar.asText();
+						if (padStr.length() > 2) {
 							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
 						}
-					}
-
-					// Generate the result.. padding to the left or right depending
-					// on the width argument
-					if (width < 0) {
-						result = new TextNode(leftPad(str, -width, padStr));
 					} else {
-						result = new TextNode(rightPad(str, width, padStr));
+						throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
 					}
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
+
+				// Generate the result.. padding to the left or right depending
+				// on the width argument
+				if (width < 0) {
+					result = new TextNode(leftPad(str, -width, padStr));
+				} else {
+					result = new TextNode(rightPad(str, width, padStr));
+				}
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(
@@ -192,7 +197,7 @@ public class PadFunction extends FunctionBase implements Function {
 
 	@Override
 	public int getMinArgs() {
-		return 2;
+		return 1; // account for context variable
 	}
 
 	@Override

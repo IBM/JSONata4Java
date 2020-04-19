@@ -77,10 +77,10 @@ public class SplitFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString == null || argString.isNull()) {
-				useContext = false;
-			} else {
+			if (argString != null && argString.isNull() == false) {
 				argCount++;
+			} else {
+				useContext = false;
 			}
 		}
 
@@ -95,19 +95,23 @@ public class SplitFunction extends FunctionBase implements Function {
 				}
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
+			// check to see if we got a textual reference
 			final JsonNode argSeparator = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
 					useContext ? 0 : 1);
 			int limit = -1; // assume unlimited
 			// Make sure that the separator is not null
 			if (argSeparator == null || !(argSeparator.isTextual())) {
 				if (argString == null) {
-					throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+					if (useContext) {
+						throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+					}
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
 				/*
 				 * TODO: Add support for regex patterns using / delimiters once the grammar has
 				 * been updated. For now, simply throw an exception.
 				 */
-				throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+				throw new EvaluateRuntimeException("The matcher function argument passed to function \""+Constants.FUNCTION_SPLIT+"\" does not return the correct object structure");
 			}
 			if (argString == null) {
 				return null;
@@ -169,7 +173,7 @@ public class SplitFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 2;
+		return 1; // account for context variable
 	}
 
 	@Override

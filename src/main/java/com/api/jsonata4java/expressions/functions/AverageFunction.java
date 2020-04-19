@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.LongNode;
 
 /**
  * Always returns as a DoubleNode (regardless of input)
@@ -51,17 +52,15 @@ public class AverageFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			arg = FunctionUtils.getContextVariable(expressionVisitor);
-			if (arg == null) {
-				if (argCount > 0) {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+			if (arg != null && arg.isNull() == false) {
+				// check to see if there is a valid context value
+				if (!arg.isArray()) {
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
-				return null;
+				argCount++;
+			} else {
+				useContext = false;
 			}
-			// check to see if there is a valid context value
-			if (!arg.isArray()) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-			argCount++;
 		}
 
 		// Make sure that we have the right number of arguments
@@ -75,10 +74,8 @@ public class AverageFunction extends FunctionBase implements Function {
 			} else if (arg.isArray()) {
 				ArrayNode arr = (ArrayNode) arg;
 
-				if (arr.size() == 0) {// avoid divide by 0 errors
-					// we could just return "0" here, but this is not how
-					// http://try.jsonata.org/ behaves
-					throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+				if (arr.size() == 0) { // avoid divide by 0 errors
+					return null;
 				}
 
 				double sum = 0;
@@ -94,12 +91,24 @@ public class AverageFunction extends FunctionBase implements Function {
 					}
 				}
 
-				double avg = sum / arr.size();
-
-				return new DoubleNode(avg);
+				Double avg = sum / arr.size();
+				if (avg - avg.longValue() ==  0.0) {
+				   return new LongNode(avg.longValue());
+				} else {
+				   return new DoubleNode(avg);
+				}
 
 			} else if (arg.isNumber()) {
-				return new DoubleNode(arg.asDouble());
+				if (arg.isLong()) {
+					return arg;
+				} else {
+					Double avg = arg.asDouble();
+					if (avg - avg.longValue() ==  0.0) {
+					   return new LongNode(avg.longValue());
+					} else {
+					   return new DoubleNode(avg);
+					}
+				}
 			} else {
 				throw new EvaluateRuntimeException(ERR_ARG_TYPE);
 			}
@@ -121,7 +130,7 @@ public class AverageFunction extends FunctionBase implements Function {
 
 	@Override
 	public String getSignature() {
-		// accepts an array of numbers, returns a number
+		// accepts an array of numbers (or context variable), returns a number
 		return "<a<n>-:n>";
 	}
 }

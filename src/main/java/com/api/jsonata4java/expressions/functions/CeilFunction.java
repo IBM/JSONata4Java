@@ -1,3 +1,4 @@
+
 /**
  * (c) Copyright 2018, 2019 IBM Corporation
  * 1 New Orchard Road, 
@@ -63,13 +64,14 @@ public class CeilFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argNumber == null) {
-				return null;
+			if (argNumber != null && argNumber.isNull() == false) {
+				if (!argNumber.isNumber()) {
+					throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+				}
+				argCount++;
+			} else {
+				useContext = false;
 			}
-			if (!argNumber.isNumber()) {
-				throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-			}
-			argCount++;
 		}
 
 		// Make sure that we have the right number of arguments
@@ -77,22 +79,23 @@ public class CeilFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argNumber != null) {
-				if (argNumber.isNumber()) {
-					if (!argNumber.isIntegralNumber()) {
-						// Math.ceil only accepts a double
-						double ceil = Math.ceil(argNumber.doubleValue());
+			if (argNumber == null) {
+				return null;
+			}
+			if (argNumber.isNumber()) {
+				if (!argNumber.isIntegralNumber()) {
+					// Math.ceil only accepts a double
+					double ceil = Math.ceil(argNumber.doubleValue());
 
-						// Create the node to return
-						result = new LongNode((long) ceil);
-					} else {
-						// The argument is already an integer... simply return the
-						// node
-						result = argNumber;
-					}
+					// Create the node to return
+					result = new LongNode((long) ceil);
 				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+					// The argument is already an integer... simply return the
+					// node
+					result = argNumber;
 				}
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
@@ -107,7 +110,7 @@ public class CeilFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

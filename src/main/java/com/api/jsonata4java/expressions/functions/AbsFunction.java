@@ -66,13 +66,14 @@ public class AbsFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argNumber == null) {
-				return null;
+			if (argNumber != null && argNumber.isNull() == false) {
+				argCount++;
+				if (!argNumber.isNumber()) {
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				}
+			} else {
+				useContext = false;
 			}
-			if (!argNumber.isNumber()) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-			argCount++;
 		}
 
 		// Make sure that we have the right number of arguments
@@ -80,25 +81,26 @@ public class AbsFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argNumber != null) {
-				// Check the type of the argument
-				if (argNumber.isNumber()) {
-					if (argNumber.isInt()) {
-						int number = argNumber.intValue();
-						result = new IntNode(Math.abs(number));
-					} else if (argNumber.isLong()) {
-						long number = argNumber.longValue();
-						result = new LongNode(Math.abs(number));
-					} else if (argNumber.isFloat()) {
-						float number = argNumber.floatValue();
-						result = new FloatNode(Math.abs(number));
-					} else if (argNumber.isDouble()) {
-						double number = argNumber.doubleValue();
-						result = new DoubleNode(Math.abs(number));
-					}
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+			if (argNumber == null) {
+				return null;
+			}
+			// Check the type of the argument
+			if (argNumber.isNumber()) {
+				if (argNumber.isInt()) {
+					int number = argNumber.intValue();
+					result = new IntNode(Math.abs(number));
+				} else if (argNumber.isLong()) {
+					long number = argNumber.longValue();
+					result = new LongNode(Math.abs(number));
+				} else if (argNumber.isFloat()) {
+					float number = argNumber.floatValue();
+					result = new FloatNode(Math.abs(number));
+				} else if (argNumber.isDouble()) {
+					double number = argNumber.doubleValue();
+					result = new DoubleNode(Math.abs(number));
 				}
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
@@ -113,7 +115,7 @@ public class AbsFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -77,7 +78,11 @@ public class MatchFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argString != null && argString.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -85,77 +90,95 @@ public class MatchFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argString != null) {
-				if (!argString.isTextual()) {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
-				final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-						useContext ? 0 : 1);
-				int limit = -1;
-				// Make sure that we have the right number of arguments
-				if (argString == null || !argString.isTextual() || argString.asText().isEmpty()) {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
-				// Make sure that the pattern is a non-empty string
-				if (argPattern != null && argPattern.isTextual() && !(argPattern.asText().isEmpty())) {
-					// Check to see if the separator is just a string
-					final String str = argString.textValue();
-					final String pattern = argPattern.textValue();
+			if (argString == null) {
+				return null;
+			}
+			if (!argString.isTextual()) {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+			}
+			final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+					useContext ? 0 : 1);
+			int limit = -1;
+			// Make sure that we have the right number of arguments
+			if (argString == null || !argString.isTextual() || argString.asText().isEmpty()) {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+			}
+			// Make sure that the pattern is a non-empty string
+			if (argPattern != null && argPattern.isTextual() && !(argPattern.asText().isEmpty())) {
+				// Check to see if the separator is just a string
+				final String str = argString.textValue();
+				final String pattern = argPattern.textValue();
 
-					if (argCount == 3) {
-						final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-								useContext ? 1 : 2);
+				if (argCount == 3) {
+					final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+							useContext ? 1 : 2);
 
-						// Check to see if we have an optional limit argument we check it
-						if (argLimit != null) {
-							if (argLimit.isNumber() && argLimit.asInt() >= 0) {
-								limit = argLimit.asInt();
-							} else {
-								throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
-							}
+					// Check to see if we have an optional limit argument we check it
+					if (argLimit != null) {
+						if (argLimit.isNumber() && argLimit.asInt() >= 0) {
+							limit = argLimit.asInt();
+						} else {
+							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
 						}
 					}
+				}
 
-					final Pattern regexPattern = Pattern.compile(pattern);
-					final Matcher matcher = regexPattern.matcher(str);
+				final Pattern regexPattern = Pattern.compile(pattern);
+				final Matcher matcher = regexPattern.matcher(str);
 
-					// Check to see if a limit was specified
-					result = new SelectorArrayNode(JsonNodeFactory.instance);
-					if (limit == -1) {
-						// No limits... match all occurrences in the string
-						while (matcher.find()) {
-							ObjectNode obj = JsonNodeFactory.instance.objectNode();
-							obj.put("match", str.substring(matcher.start(), matcher.end()));
-							obj.put("start", new Long(matcher.start()));
-							ArrayNode groups = JsonNodeFactory.instance.arrayNode();
-							obj.set("groups", groups);
-							groups.add(matcher.group());
-							result.add(obj);
-						}
-					} else if (limit > 0) {
-						int count = 0;
-						while (matcher.find() && count < limit) {
-							count++;
-							ObjectNode obj = JsonNodeFactory.instance.objectNode();
-							obj.put("match", str.substring(matcher.start(), matcher.end()));
-							obj.put("start", new Long(matcher.start()));
-							ArrayNode groups = JsonNodeFactory.instance.arrayNode();
-							obj.set("groups", groups);
-							groups.add(matcher.group());
-							result.add(obj);
-						}
-					} else {
-						return null;
+				// Check to see if a limit was specified
+				result = new SelectorArrayNode(JsonNodeFactory.instance);
+				if (limit == -1) {
+					// No limits... match all occurrences in the string
+					while (matcher.find()) {
+						ObjectNode obj = JsonNodeFactory.instance.objectNode();
+						obj.put("match", str.substring(matcher.start(), matcher.end()));
+						obj.put("start", new Long(matcher.start()));
+						ArrayNode groups = JsonNodeFactory.instance.arrayNode();
+						obj.set("groups", groups);
+						groups.add(matcher.group());
+						result.add(obj);
+					}
+				} else if (limit > 0) {
+					int count = 0;
+					while (matcher.find() && count < limit) {
+						count++;
+						ObjectNode obj = JsonNodeFactory.instance.objectNode();
+						obj.put("match", str.substring(matcher.start(), matcher.end()));
+						obj.put("start", new Long(matcher.start()));
+						ArrayNode groups = JsonNodeFactory.instance.arrayNode();
+						obj.set("groups", groups);
+						groups.add(matcher.group());
+						result.add(obj);
 					}
 				} else {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+					return null;
 				}
 			} else {
-				/*
-				 * TODO: Add support for regex patterns using / delimiters once the grammar has
-				 * been updated. For now, simply throw an exception.
-				 */
-				throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+				// check for a function call context as 2nd parameter
+				ExprContext exprCtx = ctx.exprValues().exprList().expr(useContext ? 0 : 1);
+				if (exprCtx instanceof Function_callContext) {
+					// try for declared then jsonata
+					Function_callContext fctCallCtx= (Function_callContext)exprCtx;
+					String fctName = fctCallCtx.VAR_ID().getText();
+					DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(fctName);
+					if (declFct == null) {
+						Function function = expressionVisitor.getJsonataFunction(fctName);
+						if (function != null) {
+							result = (SelectorArrayNode) function.invoke(expressionVisitor, fctCallCtx);
+						} else {
+							throw new EvaluateRuntimeException("Unknown function: " + fctName);
+						}
+					} else {
+						result = (SelectorArrayNode) declFct.invoke(expressionVisitor, fctCallCtx);
+					}
+				} else {
+					/*
+					 * TODO: Add support for regex patterns using / delimiters once the grammar has
+					 * been updated. For now, simply throw an exception.
+					 */
+					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+				}
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount <= 1 ? ERR_ARG1BADTYPE : ERR_ARG4BADTYPE);
@@ -170,7 +193,7 @@ public class MatchFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 2;
+		return 1; // account for context variable
 	}
 
 	@Override

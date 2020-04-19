@@ -64,7 +64,11 @@ public class KeysFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argObject = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argObject != null && argObject.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -152,7 +156,7 @@ public class KeysFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

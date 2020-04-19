@@ -63,54 +63,59 @@ public class LookupFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argObject = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argObject != null && argObject.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
-		if (argCount == 1 || argCount == 2) {
+		if (argCount >= 1 && argCount <= 3) {
 			if (!useContext) {
 				argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argObject != null) {
-				if (argCount == 2) {
-					JsonNode keyObj = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-							useContext ? 0 : 1);
-					if (keyObj == null || !keyObj.isTextual()) {
-						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+			if (argObject == null) {
+				return null;
+			}
+			if (argCount == 2) {
+				JsonNode keyObj = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+						useContext ? 0 : 1);
+				if (keyObj == null || !keyObj.isTextual()) {
+					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+				}
+				final String key = keyObj.asText();
+				SelectorArrayNode array = new SelectorArrayNode(JsonNodeFactory.instance);
+				// Check the type of the argument
+				if (argObject.isObject()) {
+					ObjectNode obj = (ObjectNode) argObject;
+					captureKeyValues(obj, key, array);
+					if (array.size() != 1) {
+						result = array;
+					} else {
+						// make singleton
+						result = array.get(0);
 					}
-					final String key = keyObj.asText();
-					SelectorArrayNode array = new SelectorArrayNode(JsonNodeFactory.instance);
-					// Check the type of the argument
-					if (argObject.isObject()) {
-						ObjectNode obj = (ObjectNode) argObject;
-						captureKeyValues(obj, key, array);
-						if (array.size() != 1) {
+				} else {
+					if (argObject.isArray()) {
+						findObjects((ArrayNode)argObject, key, array);
+						if (array.size() == 0) {
+						   result = null;
+						} else if (array.size() != 1) {
 							result = array;
 						} else {
 							// make singleton
 							result = array.get(0);
 						}
 					} else {
-						if (argObject.isArray()) {
-							findObjects((ArrayNode)argObject, key, array);
-							if (array.size() == 0) {
-							   result = null;
-							} else if (array.size() != 1) {
-								result = array;
-							} else {
-								// make singleton
-								result = array.get(0);
-							}
-						} else {
-							/*
-							 * The input argument is not an array. Throw a suitable exception
-							 */
-							throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-						}
+						/*
+						 * The input argument is not an array. Throw a suitable exception
+						 */
+						throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 					}
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
@@ -152,12 +157,12 @@ public class LookupFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 2;
+		return 1; // account for context variable
 	}
 
 	@Override
 	public String getSignature() {
-		// accepts an object (or context variable), a string, returns anything
-		return "<o-s:x>";
+		// accepts an anything (or context variable), a string, returns anything
+		return "<x-s:x>";
 	}
 }

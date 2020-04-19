@@ -937,16 +937,40 @@ public class FunctionUtils {
 		if (ctx == null) { // || ctx.getParent() == null) {
 			return false;
 		}
+		// does the signature permit use of the context as a argument
+		if (signature.indexOf("-") == -1) {
+			return false;
+		}
 		int argCount = FunctionBase.getArgumentCount(ctx);
 		if (argCount == 0) {
 			return true;
 		}
-		if (fct.getMinArgs() <= argCount && argCount <= fct.getMaxArgs()) {
+		int min = fct.getMinArgs();
+		int max = fct.getMaxArgs();
+		// check when no optional arguments
+		if (min == max) {
+			return argCount != min;
+		}
+		
+		int optional = 0;
+		int optionIndex = signature.indexOf("?");
+		while (optionIndex != -1) {
+			optional++;
+			signature = signature.substring(optionIndex+1);
+			optionIndex = signature.indexOf("?");
+			
+		}
+		if (argCount < max-optional) {
+			return true;
+		} else {
 			return false;
 		}
+//		if (fct.getMinArgs() <= argCount && argCount <= fct.getMaxArgs()) {
+//			return false;
+//		}
 		// only allow if parent is a chain,
 		// or if the signature contains the hyphen the and parent is a path
-		return ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
-				|| ((signature.indexOf("-") != -1) && (ctx.getParent() instanceof MappingExpressionParser.PathContext)));
+//		return ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
+//				|| ((signature.indexOf("-") != -1) && (ctx.getParent() instanceof MappingExpressionParser.PathContext)));
 	}
 }

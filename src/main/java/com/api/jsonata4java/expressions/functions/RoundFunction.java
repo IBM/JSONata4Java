@@ -78,7 +78,11 @@ public class RoundFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argNumber != null && argNumber.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 		// Make sure that we have the right number of arguments
 		if (argCount == 1 || argCount == 2) {
@@ -87,39 +91,40 @@ public class RoundFunction extends FunctionBase implements Function {
 			}
 
 			// Make sure that we have the number argument
-			if (argNumber != null) {
-				if (argNumber.isNumber()) {
-					/*
-					 * We do not need to check whether the number specified is within the acceptable
-					 * range of Double.MAX_VALUE and -Double.MAX_VALUE. This will already have been
-					 * done in the ExpressionsVisitor::visitNumber method.
-					 * 
-					 * For now, we simply need to convert the number to a BigDecimal. We use
-					 * BigDecimal because it allows us to specify the required rounding strategy.
-					 */
-					BigDecimal bigDec = argNumber.decimalValue();
+			if (argNumber == null) {
+				return null;
+			}
+			if (argNumber.isNumber()) {
+				/*
+				 * We do not need to check whether the number specified is within the acceptable
+				 * range of Double.MAX_VALUE and -Double.MAX_VALUE. This will already have been
+				 * done in the ExpressionsVisitor::visitNumber method.
+				 * 
+				 * For now, we simply need to convert the number to a BigDecimal. We use
+				 * BigDecimal because it allows us to specify the required rounding strategy.
+				 */
+				BigDecimal bigDec = argNumber.decimalValue();
 
-					// If argPrecision is null... default to zero
-					int precision = 0;
-					if (argCount == 2) {
-						argPrecision = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-								useContext ? 0 : 1);
-						if (argPrecision != null) {
-							// Make sure that precision is an integer
-							if (argPrecision.isIntegralNumber()) {
-								precision = argPrecision.intValue();
-							} else {
-								throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-							}
+				// If argPrecision is null... default to zero
+				int precision = 0;
+				if (argCount == 2) {
+					argPrecision = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+							useContext ? 0 : 1);
+					if (argPrecision != null) {
+						// Make sure that precision is an integer
+						if (argPrecision.isIntegralNumber()) {
+							precision = argPrecision.intValue();
+						} else {
+							throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 						}
 					}
-
-					// Now round the number and create the node to return
-					BigDecimal round = bigDec.setScale(precision, RoundingMode.HALF_EVEN);
-					result = NumberUtils.convertNumberToValueNode(round.toPlainString());
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
+
+				// Now round the number and create the node to return
+				BigDecimal round = bigDec.setScale(precision, RoundingMode.HALF_EVEN);
+				result = NumberUtils.convertNumberToValueNode(round.toPlainString());
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
@@ -134,7 +139,7 @@ public class RoundFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

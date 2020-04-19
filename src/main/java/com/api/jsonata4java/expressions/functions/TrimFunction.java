@@ -68,7 +68,11 @@ public class TrimFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argString != null && argString.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -83,9 +87,9 @@ public class TrimFunction extends FunctionBase implements Function {
 				}
 			}
 		} else {
-		   if (argCount != 0) {
-		      throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-		   } // else returns null
+			if (argCount != 0) {
+				throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+			} // else returns null
 		}
 
 		return result;
@@ -95,14 +99,15 @@ public class TrimFunction extends FunctionBase implements Function {
 	public int getMaxArgs() {
 		return 1;
 	}
+
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context
 	}
 
 	@Override
 	public String getSignature() {
-		// accepts a string (or context variable), returns a number
-		return "<s-:n>";
+		// accepts a string (or context variable), returns a string
+		return "<s-:s>";
 	}
 }

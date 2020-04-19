@@ -64,7 +64,11 @@ public class FromMillisFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argNumber != null && argNumber.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -72,14 +76,15 @@ public class FromMillisFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argNumber != null) {
-				if (argNumber.isNumber()) {
-					final Long millis = argNumber.asLong();
-					Instant instant = Instant.ofEpochMilli(millis);
-					result = new TextNode(instant.toString());
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
+			if (argNumber == null) {
+				return null;
+			}
+			if (argNumber.isNumber()) {
+				final Long millis = argNumber.asLong();
+				Instant instant = Instant.ofEpochMilli(millis);
+				result = new TextNode(instant.toString());
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
@@ -94,7 +99,7 @@ public class FromMillisFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

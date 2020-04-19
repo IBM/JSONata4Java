@@ -63,11 +63,15 @@ public class BooleanFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			arg = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (arg != null && (arg.isNull() == false || argCount == 0)) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
-		if (argCount == 1 || useContext) {
+		if (argCount == 1) {
 			if (!useContext) {
 				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
@@ -78,7 +82,7 @@ public class BooleanFunction extends FunctionBase implements Function {
 				ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
 				if (exprCtx instanceof Function_declContext) {
 					result = BooleanNode.FALSE;
-				} else {
+				} else if (exprCtx != null) {
 					String functionName = exprCtx.getText();
 					if (expressionVisitor.getDeclaredFunction(functionName) != null) {
 						result = BooleanNode.FALSE;
@@ -100,7 +104,7 @@ public class BooleanFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

@@ -85,7 +85,10 @@ public class DeclaredFunction {
 		if (ruleValues instanceof ExprValuesContext) {
 		   exprValues = (ExprValuesContext)ruleValues;
    		List<TerminalNode> varListCtx = _varList.VAR_ID();
-   		List<ExprContext> exprValuesCtx = exprValues.exprList().expr();
+         List<ExprContext> exprValuesCtx = new ArrayList<ExprContext>();
+         if (exprValues != null) {
+         	exprValuesCtx = exprValues.exprList().expr();
+         }
    		int varListCount = varListCtx.size();
    		int exprListCount = exprValuesCtx.size();
    		// ensure a direct mapping is possible
@@ -102,7 +105,10 @@ public class DeclaredFunction {
 		   fctCallValues = (Function_callContext)ruleValues;
          List<TerminalNode> varListCtx = _varList.VAR_ID();
          exprValues = (ExprValuesContext)fctCallValues.exprValues();
-         List<ExprContext> exprValuesCtx = exprValues.exprList().expr();
+         List<ExprContext> exprValuesCtx = new ArrayList<ExprContext>();
+         if (exprValues != null) {
+         	exprValuesCtx = exprValues.exprList().expr();
+         }
          int varListCount = varListCtx.size();
          int exprListCount = exprValuesCtx.size();
          // ensure a direct mapping is possible

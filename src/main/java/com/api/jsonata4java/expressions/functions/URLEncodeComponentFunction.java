@@ -64,7 +64,11 @@ public class URLEncodeComponentFunction extends FunctionBase implements Function
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argString != null && argString.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -72,24 +76,25 @@ public class URLEncodeComponentFunction extends FunctionBase implements Function
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argString != null) {
-				if (argString.isTextual()) {
-					final String str = argString.textValue();
-					char testChar = ' ';
-					for (int i=0;i<str.length();i++) {
-						testChar = str.charAt(i);
-						if (testChar > 0xFF) {
-							throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_ENCODE_COMPONENT+": \""+str.substring(i,i+1)+"\"");
-						}
+			if (argString == null) {
+				return null;
+			}
+			if (argString.isTextual()) {
+				final String str = argString.textValue();
+				char testChar = ' ';
+				for (int i=0;i<str.length();i++) {
+					testChar = str.charAt(i);
+					if (testChar > 0xFF) {
+						throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_ENCODE_COMPONENT+": \""+str.substring(i,i+1)+"\"");
 					}
-					try {
-						result = new TextNode(JSONataUtils.encodeURIComponent(str));
-					} catch (URISyntaxException e) {
-						throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_ENCODE_COMPONENT+": \""+str+"\"");
-					}
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
+				try {
+					result = new TextNode(JSONataUtils.encodeURIComponent(str));
+				} catch (URISyntaxException e) {
+					throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_ENCODE_COMPONENT+": \""+str+"\"");
+				}
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
@@ -104,7 +109,7 @@ public class URLEncodeComponentFunction extends FunctionBase implements Function
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

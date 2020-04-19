@@ -79,95 +79,107 @@ public class ReduceFunction extends FunctionBase implements Function {
       JsonNode arrNode = null;
       ExprValuesContext valuesCtx = ctx.exprValues();
       ExprListContext exprList = valuesCtx.exprList();
+      int argCount = getArgumentCount(ctx);
       if (useContext) {
          // pop context var from stack
          arrNode = FunctionUtils.getContextVariable(expressionVisitor);
-      } else {
-         arrNode = expressionVisitor.visit(exprList.expr(0));
+			if (arrNode != null && arrNode.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
       }
-      // expect something that evaluates to an object and either a variable
-      // pointing to a function, or a function declaration
-
-      if (arrNode == null /* || !arrNode.isArray() */ ) {
-         // throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_REDUCE));
-      	return null;
-      }
-      arrNode = ExpressionsVisitor.ensureArray(arrNode);
-      ArrayNode mapArray = (ArrayNode) arrNode;
-
-      int startIndex = 1;
-      NumberContext init = null;
-      JsonNode prevResult = mapArray.get(0);
-      ExprContext initCtx = exprList.expr((useContext? 1 : 2));
-      if (initCtx != null) {
-         init = (NumberContext)initCtx;
-         prevResult = expressionVisitor.visit(init);
-         startIndex = 0;
-      }
-
-      ExprContext varid = exprList.expr((useContext ? 0 : 1));
-      if (varid instanceof Var_recallContext) {
-         TerminalNode VAR_ID = ((Var_recallContext)varid).VAR_ID();
-         String varID = varid.getText();
-         // get the function to be executed from the functionMap and execute
-         DeclaredFunction fct = expressionVisitor.getDeclaredFunction(varID);
-         if (fct != null) {
+      JsonNode prevResult = null;
+      if (argCount == 2 || argCount == 3) {
+      	if (!useContext) {
+	         arrNode = expressionVisitor.visit(exprList.expr(0));
+	      }
+	      // expect something that evaluates to an object and either a variable
+	      // pointing to a function, or a function declaration
+	
+	      if (arrNode == null /* || !arrNode.isArray() */ ) {
+	         // throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_REDUCE));
+	      	return null;
+	      }
+	      arrNode = ExpressionsVisitor.ensureArray(arrNode);
+	      ArrayNode mapArray = (ArrayNode) arrNode;
+	
+	      int startIndex = 1;
+	      NumberContext init = null;
+	      prevResult = mapArray.get(0);
+	      ExprContext initCtx = exprList.expr((useContext? 1 : 2));
+	      if (initCtx != null) {
+	         init = (NumberContext)initCtx;
+	         prevResult = expressionVisitor.visit(init);
+	         startIndex = 0;
+	      }
+	
+	      ExprContext varid = exprList.expr((useContext ? 0 : 1));
+	      if (varid instanceof Var_recallContext) {
+	         TerminalNode VAR_ID = ((Var_recallContext)varid).VAR_ID();
+	         String varID = varid.getText();
+	         // get the function to be executed from the functionMap and execute
+	         DeclaredFunction fct = expressionVisitor.getDeclaredFunction(varID);
+	         if (fct != null) {
+		         int fctVarCount = fct.getMaxArgs();
+		         for (int i = startIndex; i < mapArray.size(); i++) {
+		            JsonNode element = mapArray.get(i);
+		            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
+		            evc = FunctionUtils.fillExprVarContext(fctVarCount, ctx, prevResult, element);
+		            prevResult = fct.invoke(expressionVisitor, evc);
+		         }  
+	         } else {
+		         Function function = expressionVisitor.getJsonataFunction(varid.getText());
+		         if (function != null) {
+		            for (int i = startIndex; i < mapArray.size(); i++) {
+		               Function_callContext callCtx = new Function_callContext(ctx);
+		               // note: callCtx.children should be empty unless carrying an
+		               // exception
+		               JsonNode element = mapArray.get(i);
+		               prevResult = FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, prevResult, element);
+		            }
+		         } else {
+		            throw new EvaluateRuntimeException(
+		                  "Expected function variable reference " + varID + " to resolve to a declared nor Jsonata function.");
+		         }
+	         }
+	      } else if (varid instanceof Function_declContext) {
+	         Function_declContext fctDeclCtx = (Function_declContext) exprList.expr((useContext ? 0 : 1));
+	   
+	         // we have a declared function for filter
+	         VarListContext varList = fctDeclCtx.varList();
+	         if (varList.getChildCount() < 5) { // ( $x , $y )
+	         	throw new EvaluateRuntimeException("The second argument of reduce function must be a function with at least two arguments");
+	         }
+	         ExprListContext fctBody = fctDeclCtx.exprList();
+	         DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
 	         int fctVarCount = fct.getMaxArgs();
 	         for (int i = startIndex; i < mapArray.size(); i++) {
 	            JsonNode element = mapArray.get(i);
 	            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
 	            evc = FunctionUtils.fillExprVarContext(fctVarCount, ctx, prevResult, element);
 	            prevResult = fct.invoke(expressionVisitor, evc);
-	         }  
-         } else {
-	         Function function = expressionVisitor.getJsonataFunction(varid.getText());
-	         if (function != null) {
-	            for (int i = startIndex; i < mapArray.size(); i++) {
-	               Function_callContext callCtx = new Function_callContext(ctx);
-	               // note: callCtx.children should be empty unless carrying an
-	               // exception
-	               JsonNode element = mapArray.get(i);
-	               prevResult = FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, prevResult, element);
-	            }
-	         } else {
-	            throw new EvaluateRuntimeException(
-	                  "Expected function variable reference " + varID + " to resolve to a declared nor Jsonata function.");
 	         }
-         }
-      } else if (varid instanceof Function_declContext) {
-         Function_declContext fctDeclCtx = (Function_declContext) exprList.expr((useContext ? 0 : 1));
-   
-         // we have a declared function for filter
-         VarListContext varList = fctDeclCtx.varList();
-         if (varList.getChildCount() < 5) { // ( $x , $y )
-         	throw new EvaluateRuntimeException("The second argument of reduce function must be a function with at least two arguments");
-         }
-         ExprListContext fctBody = fctDeclCtx.exprList();
-         DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
-         int fctVarCount = fct.getMaxArgs();
-         for (int i = startIndex; i < mapArray.size(); i++) {
-            JsonNode element = mapArray.get(i);
-            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-            evc = FunctionUtils.fillExprVarContext(fctVarCount, ctx, prevResult, element);
-            prevResult = fct.invoke(expressionVisitor, evc);
-         }
-      }
+	      }
+		} else {
+			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+		}
       return prevResult;
    }
 
 	@Override
 	public int getMaxArgs() {
-		return 1;
+		return 3;
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 1; // account for context variable
 	}
 
    @Override
    public String getSignature() {
       // accepts anything (or context variable), returns an array of objects
-      return "<x-:a<o>";
+      return "<afj?:j";
    }
 
    public void addObject(ArrayNode result, ObjectNode obj) {

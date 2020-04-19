@@ -62,7 +62,11 @@ public class MaxFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argArray = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argArray != null && argArray.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -70,40 +74,41 @@ public class MaxFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argArray != null) {
-				if (argArray.isArray() == false) {
-					argArray = ExpressionsVisitor.ensureArray(argArray);
-				}
-				// Convert the input node to an ArrayNode and make check that the
-				// array is not empty
-				ArrayNode items = (ArrayNode) argArray;
-				if (items.size() > 0) {
-					JsonNode max = null;
-					for (JsonNode item : items) {
-						if (item.isNumber()) {
-							// Check whether the current item is more than the
-							// current max
-							if (max == null || item.asDouble() > max.asDouble()) {
-								max = item;
-							}
-						} else {
-							/*
-							 * The input array contains an item that is not a number. Throw a suitable
-							 * exception
-							 */
-							throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+			if (argArray == null) {
+				return null;
+			}
+			if (argArray.isArray() == false) {
+				argArray = ExpressionsVisitor.ensureArray(argArray);
+			}
+			// Convert the input node to an ArrayNode and make check that the
+			// array is not empty
+			ArrayNode items = (ArrayNode) argArray;
+			if (items.size() > 0) {
+				JsonNode max = null;
+				for (JsonNode item : items) {
+					if (item.isNumber()) {
+						// Check whether the current item is more than the
+						// current max
+						if (max == null || item.asDouble() > max.asDouble()) {
+							max = item;
 						}
-					} // FOR
+					} else {
+						/*
+						 * The input array contains an item that is not a number. Throw a suitable
+						 * exception
+						 */
+						throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+					}
+				} // FOR
 
-					// Return the node that represents the maximum value
-					result = max;
-				} else {
-					/*
-					 * The input array is empty. Single with undefined
-					 */
-					// throw new EvaluateRuntimeException(ERR_ARG_TYPE);
-					return null;
-				}
+				// Return the node that represents the maximum value
+				result = max;
+			} else {
+				/*
+				 * The input array is empty. Single with undefined
+				 */
+				// throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+				return null;
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
@@ -118,7 +123,7 @@ public class MaxFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

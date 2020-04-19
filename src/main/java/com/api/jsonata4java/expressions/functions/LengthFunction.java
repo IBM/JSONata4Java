@@ -63,7 +63,11 @@ public class LengthFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argString != null && argString.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -71,15 +75,16 @@ public class LengthFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argString != null) {
-				if (argString.isTextual()) {
-					final String str = argString.textValue();
-					String strData = Objects.requireNonNull(str).intern();
-					int strLen = strData.codePointCount(0, strData.length());
-					result = new LongNode(strLen);
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
+			if (argString == null) {
+				return null;
+			}
+			if (argString.isTextual()) {
+				final String str = argString.textValue();
+				String strData = Objects.requireNonNull(str).intern();
+				int strLen = strData.codePointCount(0, strData.length());
+				result = new LongNode(strLen);
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
@@ -94,7 +99,7 @@ public class LengthFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

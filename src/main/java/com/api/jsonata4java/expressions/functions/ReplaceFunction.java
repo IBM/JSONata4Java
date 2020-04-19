@@ -96,7 +96,11 @@ public class ReplaceFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argString != null && argString.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -176,12 +180,12 @@ public class ReplaceFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 2;
+		return 1; // account for context variable
 	}
 
 	@Override
 	public String getSignature() {
-		// accepts a string (or context variable), a string of function, an optional
+		// accepts a string (or context variable), a string or function, an optional
 		// number, returns a string
 		return "<s-(sf)(sf)n?:s>";
 	}

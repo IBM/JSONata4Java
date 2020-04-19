@@ -67,7 +67,11 @@ public class PowerFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argNumber != null && argNumber.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -79,44 +83,45 @@ public class PowerFunction extends FunctionBase implements Function {
 					useContext ? 0 : 1);
 
 			// Make sure that we have the base argument
-			if (argNumber != null) {
-				if (argNumber.isNumber()) {
-					/*
-					 * We do not need to check whether the base and exponent arguments specified are
-					 * within the acceptable range of Double.MAX_VALUE and -Double.MAX_VALUE. This
-					 * will already have been done in the ExpressionsVisitor::visitNumber method.
-					 * 
-					 * Make that we have the exponent argument.
-					 */
-					if (argExponent != null) {
-						if (argExponent.isNumber()) {
-							// Calculate the result and create the node to return
-							Double power = Math.pow(argNumber.doubleValue(), argExponent.doubleValue());
+			if (argNumber == null) {
+				return null;
+			}
+			if (argNumber.isNumber()) {
+				/*
+				 * We do not need to check whether the base and exponent arguments specified are
+				 * within the acceptable range of Double.MAX_VALUE and -Double.MAX_VALUE. This
+				 * will already have been done in the ExpressionsVisitor::visitNumber method.
+				 * 
+				 * Make that we have the exponent argument.
+				 */
+				if (argExponent != null) {
+					if (argExponent.isNumber()) {
+						// Calculate the result and create the node to return
+						Double power = Math.pow(argNumber.doubleValue(), argExponent.doubleValue());
 
-							if (power.isInfinite() == false // != Double.POSITIVE_INFINITY && power != Double.NEGATIVE_INFINITY
-									&& power.isNaN() == false) {
-								if (power - power.longValue() ==  0.0) {
-								   result = new LongNode(power.longValue());
-								} else {
-								   result = new DoubleNode(power);
-								}
+						if (power.isInfinite() == false // != Double.POSITIVE_INFINITY && power != Double.NEGATIVE_INFINITY
+								&& power.isNaN() == false) {
+							if (power - power.longValue() ==  0.0) {
+							   result = new LongNode(power.longValue());
 							} else {
-								/*
-								 * The result cannot be represented as a number. Throw a suitable exception.
-								 */
-								final String msg = String.format(Constants.ERR_MSG_POWER_FUNC_RESULT_NOT_NUMBER,
-										argNumber.asText(), argExponent.asText());
-								throw new EvaluateRuntimeException(msg);
+							   result = new DoubleNode(power);
 							}
 						} else {
-							throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+							/*
+							 * The result cannot be represented as a number. Throw a suitable exception.
+							 */
+							final String msg = String.format(Constants.ERR_MSG_POWER_FUNC_RESULT_NOT_NUMBER,
+									argNumber.asText(), argExponent.asText());
+							throw new EvaluateRuntimeException(msg);
 						}
 					} else {
 						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 					}
 				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(
@@ -132,7 +137,7 @@ public class PowerFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 2;
+		return 1; // account for context variable
 	}
 
 	@Override

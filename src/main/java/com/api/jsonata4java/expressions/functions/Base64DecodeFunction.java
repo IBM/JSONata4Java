@@ -67,11 +67,15 @@ public class Base64DecodeFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			// check to see if there is a valid context value
-			if (!argString.isTextual()) {
-				throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+			if (argString != null && argString.isNull() == false) {
+				// check to see if there is a valid context value
+				if (!argString.isTextual()) {
+					throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+				}
+				argCount++;
+			} else {
+				useContext = false;
 			}
-			argCount++;
 		}
 
 		// Make sure that we have the right number of arguments
@@ -79,18 +83,19 @@ public class Base64DecodeFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argString != null) {
-				if (argString.isTextual()) {
-					final String str = argString.textValue();
+			if (argString == null) {
+				return null;
+			}
+			if (argString.isTextual()) {
+				final String str = argString.textValue();
 
-					try {
-						result = new TextNode(new String(Base64.getDecoder().decode(str), "utf-8"));
-					} catch (UnsupportedEncodingException e) {
-						throw new EvaluateRuntimeException(ERR_RUNTIME_ERROR);
-					}
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				try {
+					result = new TextNode(new String(Base64.getDecoder().decode(str), "utf-8"));
+				} catch (UnsupportedEncodingException e) {
+					throw new EvaluateRuntimeException(ERR_RUNTIME_ERROR);
 				}
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
@@ -105,7 +110,7 @@ public class Base64DecodeFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

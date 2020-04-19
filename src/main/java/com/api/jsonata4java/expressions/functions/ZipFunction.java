@@ -47,7 +47,11 @@ public class ZipFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argObject = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argObject != null && argObject.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments

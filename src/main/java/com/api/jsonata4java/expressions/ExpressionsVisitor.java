@@ -51,6 +51,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ArrayContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Array_constructorContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.BooleanContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Context_refContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprOrSeqContext;
@@ -1245,7 +1246,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			leftStr = "";
 		} else {
 			if (left != null && left.isDouble()) {
-				leftStr = castString(left, true);
+				leftStr = castString(left, false);
 			} else {
 				leftStr = castString(left, false);
 			}
@@ -1255,7 +1256,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			rightStr = "";
 		} else {
 			if (right != null && right.isDouble()) {
-				rightStr = castString(right, true);
+				rightStr = castString(right, false);
 			} else {
 				rightStr = castString(right, false);
 			}
@@ -1635,8 +1636,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode left = visit(ctx.expr(0)); // get value of left subexpression
 		JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
 
-		if (left == null || right == null)
-			return null;
+//		if (left == null || right == null)
+//			return null;
 
 		result = BooleanUtils.convertJsonNodeToBoolean(left) && BooleanUtils.convertJsonNodeToBoolean(right)
 				? BooleanNode.TRUE
@@ -1652,8 +1653,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode left = visit(ctx.expr(0)); // get value of left subexpression
 		JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
 
-		if (left == null || right == null)
-			return null;
+//		if (left == null || right == null)
+//			return null;
 
 		result = BooleanUtils.convertJsonNodeToBoolean(left) || BooleanUtils.convertJsonNodeToBoolean(right)
 				? BooleanNode.TRUE
@@ -1712,7 +1713,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		double left = leftNode.asDouble();
 		double right = rightNode.asDouble();
 
-		final double result;
+		final Double result;
 
 		if (ctx.op.getType() == MappingExpressionParser.MUL) {
 			result = left * right;
@@ -1732,9 +1733,13 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			throw new EvaluateRuntimeException("Unrecognised token " + ctx.op.getText());
 		}
 
+		// check for Infinity and Nan
+		if (result.isInfinite() || result.isNaN()) {
+			throw new EvaluateRuntimeException("Number out of range: \"null\"");
+		}
 		// coerce the result to a long iff the result is exactly .0
 		if (isWholeNumber(result)) {
-			return new LongNode((long) result);
+			return new LongNode(result.longValue());
 		} else {
 			return new DoubleNode(result);
 		}
@@ -1798,6 +1803,20 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					}
 				} else if (valueNode instanceof Var_recallContext) {
 					value = visit(valueNode);
+					if (value == null) {
+						String varName = ((Var_recallContext)valueNode).VAR_ID().getText();
+						DeclaredFunction declFct = getDeclaredFunction(varName);
+						if (declFct != null) {
+							value = new TextNode("");
+						} else {
+							Function fct = getJsonataFunction(varName);
+							if (fct != null) {
+								value = new TextNode("");
+							} else {
+								value = null;
+							}
+						}
+					}
 				} else {
 					value = visit(valueNode);
 					// check for double infinity
@@ -2031,7 +2050,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitTo_array(MappingExpressionParser.To_arrayContext ctx) {
 		JsonNode result = null;
 		ExprContext expr = ctx.expr();
-		if (expr instanceof MappingExpressionParser.PathContext) {
+		if (expr instanceof MappingExpressionParser.PathContext || expr instanceof Context_refContext) {
 			JsonNode tmpResult = visit(expr);
 			if (tmpResult instanceof ExpressionsVisitor.SelectorArrayNode) {
 				result = tmpResult;
@@ -2148,21 +2167,21 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitVar_recall(MappingExpressionParser.Var_recallContext ctx) {
 		final String varName = ctx.getText();
 		JsonNode result = getVariable(varName);
-		// double check to see if this could be a function reference and if so, return
-		// NullNode rather than null
-		if (result == null) {
-			DeclaredFunction declFct = getDeclaredFunction(varName);
-			if (declFct != null) {
-				result = new TextNode("");
-			} else {
-				Function fct = getJsonataFunction(varName);
-				if (fct != null) {
-					result = new TextNode("");
-				} else {
-					result = null;
-				}
-			}
-		}
+//		// double check to see if this could be a function reference and if so, return
+//		// NullNode rather than null
+//		if (result == null) {
+//			DeclaredFunction declFct = getDeclaredFunction(varName);
+//			if (declFct != null) {
+//				result = new TextNode("");
+//			} else {
+//				Function fct = getJsonataFunction(varName);
+//				if (fct != null) {
+//					result = new TextNode("");
+//				} else {
+//					result = null;
+//				}
+//			}
+//		}
 
 		return result;
 	}

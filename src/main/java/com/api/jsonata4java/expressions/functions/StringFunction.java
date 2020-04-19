@@ -27,6 +27,7 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -68,10 +69,11 @@ public class StringFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			arg = FunctionUtils.getContextVariable(expressionVisitor);
-			if (arg != null && arg.isNull()) {
-				arg = null;
+			if (arg != null && arg.isNull() == false || argCount == 0) {
+				argCount++;
+			} else {
+				useContext = false;
 			}
-			argCount++;
 		}
 
 		// Make sure that we have the right number of arguments
@@ -87,24 +89,39 @@ public class StringFunction extends FunctionBase implements Function {
 					if (exprCtx instanceof Function_callContext || exprCtx instanceof Function_declContext) {
 						arg = new TextNode("");
 					}
-				}
-			}
-			if (arg != null) {
-				boolean prettify = false;
-				if (argCount == 2) {
-					JsonNode arg2 = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
-					if (arg2 != null && arg2.isBoolean()) {
-						prettify = BooleanUtils.convertJsonNodeToBoolean(arg2);
-					} else {
-						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+					if (exprCtx instanceof Var_recallContext) {
+						String varName = ((Var_recallContext)exprCtx).VAR_ID().getText();
+						DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(varName);
+						if (declFct != null) {
+							arg = new TextNode("");
+						} else {
+							Function fct = expressionVisitor.getJsonataFunction(varName);
+							if (fct != null) {
+								arg = new TextNode("");
+							} else {
+								arg = null;
+							}
+						}
 					}
 				}
-				String asString = ExpressionsVisitor.castString(arg, prettify);
-				if (asString == null) {
-					result = null;
+			}
+			if (arg == null || (arg.isNull() && useContext)) {
+				return null;
+			}
+			boolean prettify = false;
+			if (argCount == 2) {
+				JsonNode arg2 = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
+				if (arg2 != null && arg2.isBoolean()) {
+					prettify = BooleanUtils.convertJsonNodeToBoolean(arg2);
 				} else {
-					result = new TextNode(asString);
+					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
+			}
+			String asString = ExpressionsVisitor.castString(arg, prettify);
+			if (asString == null) {
+				result = null;
+			} else {
+				result = new TextNode(asString);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
@@ -119,12 +136,12 @@ public class StringFunction extends FunctionBase implements Function {
 
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override
 	public String getSignature() {
 		// accepts any value or context, returns a string
-		return "<x-b:s>";
+		return "<x-b?:s>";
 	}
 }

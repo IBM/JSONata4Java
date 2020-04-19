@@ -26,12 +26,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.functions.Function;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * Object to manage access to variable and function maps used in the
@@ -127,11 +125,11 @@ public class FrameEnvironment {
    	if ("$".equals(varName)) {
    		// get this from the stack
    		JsonNode result = getContextStack().peek();
-   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
-   			if (result.size() == 1) {
-   				result = ((ArrayNode)result).get(0);
-   			}
-   		}
+//   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
+//   			if (result.size() == 1) {
+//   				result = ((ArrayNode)result).get(0);
+//   			}
+//   		}
    		return result;
    	}
    	
@@ -141,11 +139,11 @@ public class FrameEnvironment {
    			return null;
    		}
    		JsonNode result = getContextStack().get(0);
-   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
-   			if (result.size() == 1) {
-   				result = ((ArrayNode)result).get(0);
-   			}
-   		}
+//   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
+//   			if (result.size() == 1) {
+//   				result = ((ArrayNode)result).get(0);
+//   			}
+//   		}
    		return result;
    	}
    	

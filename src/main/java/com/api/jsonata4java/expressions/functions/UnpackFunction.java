@@ -56,7 +56,11 @@ public class UnpackFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argInput = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argInput != null && argInput.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -106,7 +110,7 @@ public class UnpackFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

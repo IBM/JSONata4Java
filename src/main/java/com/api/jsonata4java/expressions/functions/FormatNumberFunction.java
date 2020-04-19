@@ -44,9 +44,9 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * specified by the picture string.
  * 
  * The behaviour of this function is consistent with the XPath/XQuery function
- * fn:format-number as defined in the XPath F&amp;O 3.1 specification. The picture
- * string parameter defines how the number is formatted and has the same syntax
- * as fn:format-number.
+ * fn:format-number as defined in the XPath F&amp;O 3.1 specification. The
+ * picture string parameter defines how the number is formatted and has the same
+ * syntax as fn:format-number.
  * 
  * The optional third argument options is used to override the default locale
  * specific formatting characters such as the decimal separator. If supplied,
@@ -85,14 +85,15 @@ public class FormatNumberFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argNumber == null) {
-				return null;
+			if (argNumber != null && argNumber.isNull() == false) {
+				// check to see if there is a valid context value
+				if (!argNumber.isNumber()) {
+					throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+				}
+				argCount++;
+			} else {
+				useContext = false;
 			}
-			// check to see if there is a valid context value
-			if (!argNumber.isNumber()) {
-				throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-			}
-			argCount++;
 		}
 
 		// Make sure that we have the right number of arguments
@@ -108,57 +109,58 @@ public class FormatNumberFunction extends FunctionBase implements Function {
 			}
 
 			// Make sure that the first argument is a number
-			if (argNumber != null) {
-				/*
-				 * Now make sure that the first argument is a number. If it is not, we need to
-				 * return the relevant representation of NaN (not a number) so that it can be
-				 * rendered in the response.
-				 */
-				final double number;
-				if (argNumber.isNumber()) {
-					// Read the number
-					number = argNumber.asDouble();
-				} else {
-					// The number argument specified is not a number
-					number = Double.NaN;
-				}
+			if (argNumber == null) {
+				return null;
+			}
+			/*
+			 * Now make sure that the first argument is a number. If it is not, we need to
+			 * return the relevant representation of NaN (not a number) so that it can be
+			 * rendered in the response.
+			 */
+			final double number;
+			if (argNumber.isNumber()) {
+				// Read the number
+				number = argNumber.asDouble();
+			} else {
+				// The number argument specified is not a number
+				number = Double.NaN;
+			}
 
-				// Make sure that the picture string is not null
-				final JsonNode argPicture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-						useContext ? 0 : 1);
-				if (argPicture != null) {
-					// Check to see if the picture string is just a string
-					if (argPicture.isTextual()) {
-						// final double number = argNumber.asDouble();
-						final String picture = argPicture.textValue();
+			// Make sure that the picture string is not null
+			final JsonNode argPicture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+					useContext ? 0 : 1);
+			if (argPicture != null) {
+				// Check to see if the picture string is just a string
+				if (argPicture.isTextual()) {
+					// final double number = argNumber.asDouble();
+					final String picture = argPicture.textValue();
 
-						// Check to see if we have an optional options argument and
-						// read it if we do
-						DecimalFormatSymbols symbols = Constants.DEFAULT_DECIMAL_FORMAT_SYMBOLS;
-						if (argCount == 3) {
-							final JsonNode argOptions = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-									useContext ? 1 : 2);
-							if (argOptions != null && argOptions.isObject()) {
-								symbols = processOptionsArg(argOptions);
-							} else {
-								throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
-							}
+					// Check to see if we have an optional options argument and
+					// read it if we do
+					DecimalFormatSymbols symbols = Constants.DEFAULT_DECIMAL_FORMAT_SYMBOLS;
+					if (argCount == 3) {
+						final JsonNode argOptions = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+								useContext ? 1 : 2);
+						if (argOptions != null && argOptions.isObject()) {
+							symbols = processOptionsArg(argOptions);
+						} else {
+							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
 						}
-
-						// Create the formatter and format the number
-						DecimalFormat formatter = new DecimalFormat();
-						formatter.setDecimalFormatSymbols(symbols);
-						String fixedPicture = picture.replaceAll("9","0");
-						formatter.applyLocalizedPattern(fixedPicture);
-						result = new TextNode(formatter.format(number));
-					} else {
-						// Non-textual picture argument
-						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 					}
+
+					// Create the formatter and format the number
+					DecimalFormat formatter = new DecimalFormat();
+					formatter.setDecimalFormatSymbols(symbols);
+					String fixedPicture = picture.replaceAll("9", "0");
+					formatter.applyLocalizedPattern(fixedPicture);
+					result = new TextNode(formatter.format(number));
 				} else {
-					// Null picture argument
+					// Non-textual picture argument
 					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
+			} else {
+				// Null picture argument
+				throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(
@@ -300,9 +302,10 @@ public class FormatNumberFunction extends FunctionBase implements Function {
 	public int getMaxArgs() {
 		return 3;
 	}
+
 	@Override
 	public int getMinArgs() {
-		return 2;
+		return 1; // account for context variable
 	}
 
 	@Override

@@ -72,19 +72,20 @@ public class ContainsFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString == null) {
-				return null;
-			}
-			// check to see if there is a valid context value
-			if (!argString.isTextual()) {
-            // handle Object
-            if (argString.isObject()) {
-               argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-            } else {
-               throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-            }
+			if (argString != null && argString.isNull() == false) {
+				// check to see if there is a valid context value
+				if (!argString.isTextual()) {
+	            // handle Object
+	            if (argString.isObject()) {
+	               argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+	            } else {
+	               throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+	            }
+				} else {
+				   argCount++;
+				}
 			} else {
-			   argCount++;
+				useContext = false;
 			}
 		}
 
@@ -101,29 +102,27 @@ public class ContainsFunction extends FunctionBase implements Function {
 			}
 			final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
 
-			if (argString != null) {
-				if (!argString.isTextual()) {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
-				// Make sure argPattern is not null
-				if (argPattern != null) {
-					// Check to see if the pattern is just a string
-					if (argPattern.isTextual()) {
-						final String str = argString.textValue();
-						final String pattern = argPattern.textValue();
+			if (!argString.isTextual()) {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+			}
+			// Make sure argPattern is not null
+			if (argPattern != null) {
+				// Check to see if the pattern is just a string
+				if (argPattern.isTextual()) {
+					final String str = argString.textValue();
+					final String pattern = argPattern.textValue();
 
-						// Do a simple String::contains
-						result = str.contains(pattern) ? BooleanNode.TRUE : BooleanNode.FALSE;
-					} else {
-						/*
-						 * TODO: Add support for regex patterns once the grammar has been updated. For
-						 * now, simply throw an exception.
-						 */
-						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-					}
+					// Do a simple String::contains
+					result = str.contains(pattern) ? BooleanNode.TRUE : BooleanNode.FALSE;
 				} else {
+					/*
+					 * TODO: Add support for regex patterns once the grammar has been updated. For
+					 * now, simply throw an exception.
+					 */
 					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount < 2 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
@@ -138,7 +137,7 @@ public class ContainsFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 2;
+		return 1; // account for context variable
 	}
 
 	@Override

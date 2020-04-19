@@ -51,112 +51,116 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class SpreadFunction extends FunctionBase implements Function {
 
-   public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SPREAD);
-   public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SPREAD);
-   public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SPREAD);
-   public static String ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS = String
-         .format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_SPREAD);
+	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SPREAD);
+	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SPREAD);
+	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SPREAD);
+	public static String ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS = String
+			.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_SPREAD);
 
-   public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-      // Create the variable to return
-      SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
+	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+		// Create the variable to return
+		SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
 
-      // Retrieve the number of arguments
-      JsonNode argObject = JsonNodeFactory.instance.nullNode();
-      boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-      int argCount = getArgumentCount(ctx);
-      if (useContext) {
-         argObject = FunctionUtils.getContextVariable(expressionVisitor);
-         argCount++;
-      }
-      boolean argIsArray = false;
-      // Make sure that we have the right number of arguments
-      if (argCount == 1) {
-         if (!useContext) {
-            argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-            if (argObject == null) {
-               ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
-               if (exprCtx instanceof Function_declContext) {
-                  argObject = new TextNode("");
-               }
-            }
-         }
+		// Retrieve the number of arguments
+		JsonNode argObject = JsonNodeFactory.instance.nullNode();
+		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+		int argCount = getArgumentCount(ctx);
+		if (useContext) {
+			argObject = FunctionUtils.getContextVariable(expressionVisitor);
+			if (argObject != null && argObject.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
+		}
+		boolean argIsArray = false;
+		// Make sure that we have the right number of arguments
+		if (argCount == 1) {
+			if (!useContext) {
+				argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+				if (argObject == null) {
+					ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
+					if (exprCtx instanceof Function_declContext) {
+						argObject = new TextNode("");
+					}
+				}
+			}
 
-         if (argObject != null) {
-            if (argObject.isObject()) {
-               ObjectNode obj = (ObjectNode) argObject;
-               if (obj.size() > 0) {
-                  addObject(result, obj);
-               } else {
-                  return null;
-               }
-            } else if (argObject.isArray()) {
-               argIsArray = true;
-               ArrayNode objArray = (ArrayNode) argObject;
-               if (objArray.size() == 0) {
-                  return null;
-               }
-               // process each object in the array
-               for (int i = 0; i < objArray.size(); i++) {
-                  JsonNode node = objArray.get(i);
-                  if (node.isObject()) {
-                     ObjectNode obj = (ObjectNode) node;
-                     addObject(result, obj);
-                  } else {
-                     // jsonata.js 1.8 just keeps non-objects
-                     // throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS);
-                     result.add(node);
-                  }
+			if (argObject == null) {
+				return null;
+			}
+			if (argObject.isObject()) {
+				ObjectNode obj = (ObjectNode) argObject;
+				if (obj.size() > 0) {
+					addObject(result, obj);
+				} else {
+					return null;
+				}
+			} else if (argObject.isArray()) {
+				argIsArray = true;
+				ArrayNode objArray = (ArrayNode) argObject;
+				if (objArray.size() == 0) {
+					return null;
+				}
+				// process each object in the array
+				for (int i = 0; i < objArray.size(); i++) {
+					JsonNode node = objArray.get(i);
+					if (node.isObject()) {
+						ObjectNode obj = (ObjectNode) node;
+						addObject(result, obj);
+					} else {
+						// jsonata.js 1.8 just keeps non-objects
+						// throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS);
+						result.add(node);
+					}
 
-               }
-            } else {
-               /*
-                * The input argument is not an object nor array of objects. Throw a suitable
-                * exception
-                */
-               // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-               // jsonata.js 1.8 just adds the argument
-               result.add(argObject);
-            }
-         } else {
-            result = null;
-         }
-      } else {
-         throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-      }
+				}
+			} else {
+				/*
+				 * The input argument is not an object nor array of objects. Throw a suitable
+				 * exception
+				 */
+				// throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				// jsonata.js 1.8 just adds the argument
+				result.add(argObject);
+			}
+		} else {
+			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+		}
 
-      if (result != null && argIsArray == false) {
-         JsonNode test = ExpressionsVisitor.unwrapArray(result);
-         if (test.isArray() && test instanceof SelectorArrayNode) {
-            result = (SelectorArrayNode) test;
-         } else {
-            return test;
-         }
-      }
-      return result;
-   }
+		if (result != null && argIsArray == false) {
+			JsonNode test = ExpressionsVisitor.unwrapArray(result);
+			if (test.isArray() && test instanceof SelectorArrayNode) {
+				result = (SelectorArrayNode) test;
+			} else {
+				return test;
+			}
+		}
+		return result;
+	}
 
 	@Override
 	public int getMaxArgs() {
 		return 1;
 	}
+
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
-   @Override
-   public String getSignature() {
-      // accepts anything (or context variable), returns an array of objects
-      return "<x-:a<o>";
-   }
+	@Override
+	public String getSignature() {
+		// accepts anything (or context variable), returns an array of objects
+		return "<x-:a<o>";
+	}
 
-   public void addObject(SelectorArrayNode result, ObjectNode obj) {
-      for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
-         String key = it.next();
-         ObjectNode cell = JsonNodeFactory.instance.objectNode();
-         cell.set(key, obj.get(key));
-         result.add(cell);
-      }
-   }
+	public void addObject(SelectorArrayNode result, ObjectNode obj) {
+		for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
+			String key = it.next();
+			ObjectNode cell = JsonNodeFactory.instance.objectNode();
+			cell.set(key, obj.get(key));
+			result.add(cell);
+		}
+	}
 }

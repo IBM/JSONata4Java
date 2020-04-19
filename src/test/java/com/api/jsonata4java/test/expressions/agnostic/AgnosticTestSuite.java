@@ -67,9 +67,11 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			"tail-recursion", 		// tail-recursion requires function definition support, which we don't have yet
 			"transforms",
 			"library-joins",
-			"function-formatNumber"
+			"function-formatNumber",
+			"function-tomillis",
 //			"function-applications",
-//			"partial-application",
+			"partial-application",
+			"function-signatures",
 //			"transforms",
 //			"blocks",
 //			"descendent-operator",	// we don't support the ** operator yet
@@ -119,6 +121,23 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		SKIP_CASES("parent-operator","parent-27");
 		// # references issue #50
 		SKIP_CASES("joins","index-15");
+		// issue #52
+		SKIP_CASES("function-fromMillis","isoWeekDate-18");
+		// issue #54 timeouts
+		SKIP_CASES("range-operator","case021","case024");
+		// issue #55 and / or standalone to get by parser
+		SKIP_CASES("boolean-expresssions","case012","case013","case014", "case015");
+		// issue #56 closures
+		SKIP_CASES("closures","case000","case001");
+		SKIP_CASES("object-constructor","case023");
+		// issue #57
+		SKIP_CASES("matchers","case000","case001");
+		// issue #58
+		SKIP_CASES("hof-zip-map","case000","case001","case002","case003");
+		// issue $59
+		SKIP_CASES("errors","case012","case013","case014","case015","case018","case020","case022","case023");
+		// have right answer, but AgnosticTestSuite not comparing correctly
+		SKIP_CASES("literals","case006");
 	}
 
 	private static void SKIP_CASES(String group, String... casesArray) {

@@ -65,7 +65,11 @@ public class SqrtFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argNumber != null && argNumber.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -73,35 +77,36 @@ public class SqrtFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argNumber != null) {
-				// Check the type of the argument
-				if (argNumber.isNumber()) {
-					// Make sure that the number is a valid positive number
-					Double number = argNumber.doubleValue();
-					if (number >= 0 && number.isNaN() == false && number.isInfinite() == false // Should not be possible
-															// because it should be
-															// caught in
-															// ExpressionsVisitor::visitNumber
-					) {
-						// Calculate the result and create the node to return
-						Double sqrt = Math.sqrt(argNumber.doubleValue());
-						if (sqrt - sqrt.longValue() ==  0.0) {
-						   result = new LongNode(sqrt.longValue());
-						} else {
-						   result = new DoubleNode(sqrt);
-						}
+			if (argNumber == null) {
+				return null;
+			}
+			// Check the type of the argument
+			if (argNumber.isNumber()) {
+				// Make sure that the number is a valid positive number
+				Double number = argNumber.doubleValue();
+				if (number >= 0 && number.isNaN() == false && number.isInfinite() == false // Should not be possible
+														// because it should be
+														// caught in
+														// ExpressionsVisitor::visitNumber
+				) {
+					// Calculate the result and create the node to return
+					Double sqrt = Math.sqrt(argNumber.doubleValue());
+					if (sqrt - sqrt.longValue() ==  0.0) {
+					   result = new LongNode(sqrt.longValue());
 					} else {
-						/*
-						 * The sqrt function cannot be applied to the argument. Throw a suitable
-						 * exception.
-						 */
-						final String msg = String.format(Constants.ERR_MSG_FUNC_CANNOT_BE_APPLIED_NEG_NUM,
-								Constants.FUNCTION_SQRT, argNumber.doubleValue());
-						throw new EvaluateRuntimeException(msg);
+					   result = new DoubleNode(sqrt);
 					}
 				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+					/*
+					 * The sqrt function cannot be applied to the argument. Throw a suitable
+					 * exception.
+					 */
+					final String msg = String.format(Constants.ERR_MSG_FUNC_CANNOT_BE_APPLIED_NEG_NUM,
+							Constants.FUNCTION_SQRT, argNumber.doubleValue());
+					throw new EvaluateRuntimeException(msg);
 				}
+			} else {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
@@ -116,7 +121,7 @@ public class SqrtFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override

@@ -64,7 +64,11 @@ public class NumberFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			argCount++;
+			if (argString != null && argString.isNull() == false) {
+				argCount++;
+			} else {
+				useContext = false;
+			}
 		}
 
 		// Make sure that we have the right number of arguments
@@ -72,34 +76,35 @@ public class NumberFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argString != null) {
-				// Check the type of the argument
-				if (argString.isObject()) {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				} else if (argString.isTextual()) {
-					/*
-					 * For consistency with the JavaScript implementation of JSONata, we limit the
-					 * size of the numbers that we handle to be within the range Double.MAX_VALUE
-					 * and -Double.MAX_VALUE. If we did not do this we would need to implement a lot
-					 * of extra code to handle BigInteger and BigDecimal. The
-					 * NumberUtils::convertNumberToValueNode will check whether the number is within
-					 * the valid range and throw a suitable exception if it is not.
-					 */
-					result = NumberUtils.convertNumberToValueNode(argString.asText());
-				} else if (argString.isNumber()) {
-					/*
-					 * The argument is already a number... and we have already checked whether it is
-					 * within the valid range when it was parsed by the
-					 * ExpressionVisitor::visitNumber method. Simply return the argument unchanged.
-					 */
-					result = argString;
-				} else if (argString.isArray()) {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				} else {
-					// The argument is a neither a number or a string. Throw a
-					// suitable exception.
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
+			if (argString == null) {
+				return null;
+			}
+			// Check the type of the argument
+			if (argString.isObject()) {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+			} else if (argString.isTextual()) {
+				/*
+				 * For consistency with the JavaScript implementation of JSONata, we limit the
+				 * size of the numbers that we handle to be within the range Double.MAX_VALUE
+				 * and -Double.MAX_VALUE. If we did not do this we would need to implement a lot
+				 * of extra code to handle BigInteger and BigDecimal. The
+				 * NumberUtils::convertNumberToValueNode will check whether the number is within
+				 * the valid range and throw a suitable exception if it is not.
+				 */
+				result = NumberUtils.convertNumberToValueNode(argString.asText());
+			} else if (argString.isNumber()) {
+				/*
+				 * The argument is already a number... and we have already checked whether it is
+				 * within the valid range when it was parsed by the
+				 * ExpressionVisitor::visitNumber method. Simply return the argument unchanged.
+				 */
+				result = argString;
+			} else if (argString.isArray()) {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+			} else {
+				// The argument is a neither a number or a string. Throw a
+				// suitable exception.
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
@@ -114,7 +119,7 @@ public class NumberFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1;
+		return 0; // account for context variable
 	}
 
 	@Override
