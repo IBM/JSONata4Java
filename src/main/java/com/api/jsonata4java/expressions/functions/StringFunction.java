@@ -24,7 +24,9 @@ package com.api.jsonata4java.expressions.functions;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
 import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -66,21 +68,38 @@ public class StringFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			arg = FunctionUtils.getContextVariable(expressionVisitor);
+			if (arg != null && arg.isNull()) {
+				arg = null;
+			}
 			argCount++;
 		}
 
 		// Make sure that we have the right number of arguments
-		if (argCount >= 1 && argCount <=2) {
+		if (argCount >= 1 && argCount <= 2) {
 			if (!useContext) {
+				/**
+				 * need to peek at the expression context since Function_callContext evaluates
+				 * to ""
+				 */
+				ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
 				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+				if (arg == null) {
+					if (exprCtx instanceof Function_callContext || exprCtx instanceof Function_declContext) {
+						arg = new TextNode("");
+					}
+				}
 			}
 			if (arg != null) {
 				boolean prettify = false;
 				if (argCount == 2) {
 					JsonNode arg2 = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
-					prettify = BooleanUtils.convertJsonNodeToBoolean(arg2);
-				} 
-				String asString = ExpressionsVisitor.castString(arg,prettify);
+					if (arg2 != null && arg2.isBoolean()) {
+						prettify = BooleanUtils.convertJsonNodeToBoolean(arg2);
+					} else {
+						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+					}
+				}
+				String asString = ExpressionsVisitor.castString(arg, prettify);
 				if (asString == null) {
 					result = null;
 				} else {
@@ -90,7 +109,6 @@ public class StringFunction extends FunctionBase implements Function {
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
-
 		return result;
 	}
 
@@ -98,6 +116,7 @@ public class StringFunction extends FunctionBase implements Function {
 	public int getMaxArgs() {
 		return 2;
 	}
+
 	@Override
 	public int getMinArgs() {
 		return 1;

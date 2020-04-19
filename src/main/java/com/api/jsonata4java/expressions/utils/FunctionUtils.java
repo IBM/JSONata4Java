@@ -580,7 +580,8 @@ public class FunctionUtils {
 		JsonNode result = null;
 		try {
 			if (ctx != null && ctx.exprValues() != null) {
-				result = exprVisitor.visit(ctx.exprValues().exprList().expr(index));
+				ExprContext exprCtx = ctx.exprValues().exprList().expr(index);
+				result = exprVisitor.visit(exprCtx);
 			}
 		} catch (IndexOutOfBoundsException e) {
 			; // return result = null;

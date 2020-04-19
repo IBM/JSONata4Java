@@ -23,6 +23,8 @@
 package com.api.jsonata4java.expressions;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -84,24 +86,34 @@ import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 	public static class CustomPrettyPrinter implements PrettyPrinter {
 
 		private int indentAmt = 0;
-		private boolean needsNewline = true;
+		private boolean keepSameLine = true;
 		private final String newline = System.getProperty("line.separator");
 		public int rootValueSeparators = 0;
 
 		@Override
 		public void beforeArrayValues(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			newline(jsonGen);
+			if (!keepSameLine) {
+				newline(jsonGen);
+			}
+			keepSameLine = true;
 		}
 
 		@Override
 		public void beforeObjectEntries(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			newline(jsonGen);
+			if (!keepSameLine) {
+				newline(jsonGen);
+			}
+			keepSameLine = true;
 		}
 
 		private void newline(JsonGenerator jsonGen) throws IOException {
@@ -109,22 +121,24 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			for (int i = 0; i < indentAmt; ++i) {
 				jsonGen.writeRaw("  ");
 			}
-			needsNewline = true;
+			keepSameLine = true;
 		}
 
 		@Override
 		public void writeArrayValueSeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
 			jsonGen.writeRaw(",");
 			newline(jsonGen);
-			needsNewline = false;
+			keepSameLine = false;
 		}
 
 		@Override
 		public void writeEndArray(JsonGenerator jsonGen, int nrOfValues) throws IOException, JsonGenerationException {
 			--indentAmt;
-			newline(jsonGen);
+			if (nrOfValues > 0) {
+				newline(jsonGen);
+			}
 			jsonGen.writeRaw(']');
-			needsNewline = false;
+			keepSameLine = false;
 		}
 
 		@Override
@@ -132,20 +146,20 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			--indentAmt;
 			newline(jsonGen);
 			jsonGen.writeRaw('}');
-			needsNewline = indentAmt == 0;
+			keepSameLine = indentAmt == 0;
 		}
 
 		@Override
 		public void writeObjectEntrySeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
 			jsonGen.writeRaw(",");
 			newline(jsonGen);
-			needsNewline = false;
+			keepSameLine = false;
 		}
 
 		@Override
 		public void writeObjectFieldValueSeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
 			jsonGen.writeRaw(": ");
-			needsNewline = false;
+			keepSameLine = true;
 		}
 
 		@Override
@@ -155,22 +169,22 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		@Override
 		public void writeStartArray(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			if (!needsNewline) {
+			if (!keepSameLine) {
 				newline(jsonGen);
 			}
 			jsonGen.writeRaw("[");
 			++indentAmt;
-			needsNewline = false;
+			keepSameLine = true;
 		}
 
 		@Override
 		public void writeStartObject(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			if (!needsNewline) {
+			if (!keepSameLine) {
 				newline(jsonGen);
 			}
 			jsonGen.writeRaw('{');
 			++indentAmt;
-			needsNewline = false;
+			keepSameLine = false;
 		}
 	}
 
@@ -232,6 +246,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public static String ERR_TOO_BIG = "The size of the sequence allocated by the range operator (..) must not exceed 1e6.  Attempted to allocate ";
 	private static final Logger LOG = Logger.getLogger(CLASS);
 	static CustomPrettyPrinter prettyPrinter = new CustomPrettyPrinter();
+   static Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+	static ObjectMapper objectMapper = new ObjectMapper();
 
 	/**
 	 * This defines the behavior of the "=" and "in" operators
@@ -314,57 +330,57 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				String expStr = ".e+";
 				if (index >= 0) {
 					int minusSize = dValue < 0.0d ? 1 : 0;
-					int exp = new Integer(test.substring(index+1));
+					int exp = new Integer(test.substring(index + 1));
 					if (exp < 0) {
 						expStr = ".e";
 					}
 					// how many digits before E?
 					int len = test.indexOf(".");
-					if (len-minusSize+Math.abs(exp) <= 21) {
-						strVal = _decimalFormat.format(dValue);
-					} else {
-						// need to check for ".0E" to make it the whole number e+exp 
-						if (test.indexOf(".0E") > 0) {
-							strVal = test.substring(0,len)+expStr.substring(1)+test.substring(index+1);
-						} else {
-							strVal = test.substring(0,index)+expStr+test.substring(index+1);
+					if (len - minusSize + Math.abs(exp) <= 21) {
+						if (exp > 0) {
+							strVal = _decimalFormat.format(dValue);
+							return strVal;
+						}
+						if (exp > -7) {
+							strVal = new BigDecimal(dValue, new MathContext(15)).toString().toLowerCase();
+							if (strVal.indexOf(".") >= 0) {
+								while (strVal.endsWith("0") && strVal.length() > 0) {
+									strVal = strVal.substring(0,strVal.length()-1);
+								}
+							}
+							return strVal;
 						}
 					}
+					// need to check for ".0E" to make it the whole number e+exp
+					if (test.indexOf(".0E") > 0) {
+						strVal = test.substring(0, len) + expStr.substring(1) + test.substring(index + 1);
+					} else {
+						strVal = test.substring(0, index) + expStr + test.substring(index + 1);
+					}
 				} else {
-					strVal = _decimalFormat.format(dValue);
+					if (prettify) {
+						strVal = _decimalFormat.format(dValue);
+					} else {
+						strVal = new BigDecimal(dValue, new MathContext(15)).toString().toLowerCase();
+						if (strVal.indexOf(".") >= 0) {
+							while (strVal.endsWith("0") && strVal.length() > 0) {
+								strVal = strVal.substring(0,strVal.length()-1);
+							}
+						}
+					}
 				}
-//				// at what point do we use scientific notation?
-//				String strVal = _decimalFormat.format(dValue);
-//				if (strVal.length() > 21) {
-//					strVal = dValue.toString();
-//					int index = strVal.indexOf(".0E");
-//					if (index > 0) {
-//						if (-1.0d < dValue && dValue < 1.0d) {
-//							strVal = strVal.substring(0, index) + ".e-" + strVal.substring(index + 3);
-//						} else {
-//							strVal = strVal.substring(0, index) + ".e+" + strVal.substring(index + 3);
-//						}
-//					} else {
-//						index = strVal.indexOf("E");
-//						if (index > 0) {
-//							if (-1.0d < dValue &&  dValue < 1.0d) {
-//								strVal = strVal.substring(0,index)+"e-"+strVal.substring(index+1);
-//							} else {
-//								strVal = strVal.substring(0,index)+"e+"+strVal.substring(index+1);
-//							}
-//						}
-//					}
-//				}
 				return strVal;
 			}
 		}
 
 		default:
 			// arrays and objects
-			ObjectMapper objectMapper = new ObjectMapper();
 			try {
 				if (prettify) {
-					return objectMapper.writer(prettyPrinter).writeValueAsString(node);
+					JsonElement jsonElt = JsonParser.parseString(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
+					return gson.toJson(jsonElt);
+
+//					return objectMapper.writer(prettyPrinter).writeValueAsString(node);
 				} else {
 					return objectMapper.writeValueAsString(node);
 				}
@@ -1329,13 +1345,21 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		if (left == null) {
 			leftStr = "";
 		} else {
-			leftStr = castString(left, false);
+			if (left != null && left.isDouble()) {
+				leftStr = castString(left, true);
+			} else {
+				leftStr = castString(left, false);
+			}
 		}
 
 		if (right == null) {
 			rightStr = "";
 		} else {
-			rightStr = castString(right, false);
+			if (right != null && right.isDouble()) {
+				rightStr = castString(right, true);
+			} else {
+				rightStr = castString(right, false);
+			}
 		}
 
 		JsonNode result = new TextNode(leftStr + rightStr);
@@ -1800,7 +1824,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			result = left / right;
 		} else if (ctx.op.getType() == MappingExpressionParser.REM) {
 			if (right == 0.0d) {
-				return  new DoubleNode(Double.POSITIVE_INFINITY); // null;
+				return new DoubleNode(Double.POSITIVE_INFINITY); // null;
 			}
 			result = left % right;
 		} else {
@@ -1878,7 +1902,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				} else {
 					value = visit(valueNode);
 					// check for double infinity
-					if (value.isDouble()) {
+					if (value != null && value.isDouble()) {
 						Double d = value.asDouble();
 						if (Double.isNaN(d) || Double.isInfinite(d)) {
 							throw new EvaluateRuntimeException("Number out of range: null");
@@ -2146,7 +2170,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		if (result != null && result.isArray() && result.size() == 1 && ((ArrayNode) result).get(0).isArray()) {
 			result = ((ArrayNode) result).get(0);
 		}
-		if (result.isDouble()) {
+		if (result != null && result.isDouble()) {
 			Double d = result.asDouble();
 			if (Double.isInfinite(d) || Double.isNaN(d)) {
 				result = JsonNodeFactory.instance.nullNode();
