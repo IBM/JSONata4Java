@@ -50,7 +50,7 @@ public class SubstringFunction extends FunctionBase implements Function {
 
 		// Retrieve the number of arguments
 		JsonNode argString = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(ctx, getSignature());
+		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);

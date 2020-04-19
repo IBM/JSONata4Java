@@ -28,7 +28,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
@@ -74,8 +73,9 @@ public class ReduceFunction extends FunctionBase implements Function {
          .format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_REDUCE);
 
    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-      boolean useContext = ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
-            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
+      boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature()); 
+//      		((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
+//            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
       JsonNode arrNode = null;
       ExprValuesContext valuesCtx = ctx.exprValues();
       ExprListContext exprList = valuesCtx.exprList();

@@ -74,7 +74,7 @@ public class RoundFunction extends FunctionBase implements Function {
 		// Retrieve the number of arguments
 		JsonNode argNumber = JsonNodeFactory.instance.nullNode();
 		JsonNode argPrecision = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(ctx, getSignature());
+		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argNumber = FunctionUtils.getContextVariable(expressionVisitor);

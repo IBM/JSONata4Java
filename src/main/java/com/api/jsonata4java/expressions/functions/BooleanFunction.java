@@ -59,7 +59,7 @@ public class BooleanFunction extends FunctionBase implements Function {
 
 		// Retrieve the number of arguments
 		JsonNode arg = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(ctx, getSignature());
+		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			arg = FunctionUtils.getContextVariable(expressionVisitor);

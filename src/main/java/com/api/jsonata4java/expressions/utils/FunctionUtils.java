@@ -923,6 +923,8 @@ public class FunctionUtils {
 	 * Determine if the function should use the context variable as its first
 	 * parameter
 	 * 
+	 * @param fct     
+	 *                  the function checking whether to use the context variable
 	 * @param ctx
 	 *                  the context used to invoke the function
 	 * @param signature
@@ -930,11 +932,15 @@ public class FunctionUtils {
 	 *                  this contains a hyphen, then it can use the context
 	 * @return true if the context variable should be used as the first parameter
 	 */
-	public static boolean useContextVariable(Function_callContext ctx, String signature) {
-		if (FunctionBase.getArgumentCount(ctx) == 0) {
+	public static boolean useContextVariable(Function fct, Function_callContext ctx, String signature) {
+		if (ctx == null) { // || ctx.getParent() == null) {
+			return false;
+		}
+		int argCount = FunctionBase.getArgumentCount(ctx);
+		if (argCount == 0) {
 			return true;
 		}
-		if (ctx == null || ctx.getParent() == null) {
+		if (fct.getMinArgs() <= argCount && argCount <= fct.getMaxArgs()) {
 			return false;
 		}
 		// only allow if parent is a chain,

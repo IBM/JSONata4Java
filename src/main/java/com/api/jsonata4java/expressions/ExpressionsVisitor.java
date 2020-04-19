@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.expressions;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,7 +33,6 @@ import java.util.List;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.CommonTokenFactory;
@@ -55,6 +55,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprLi
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprOrSeqContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
 // import com.api.jsonata4java.expressions.generated.MappingExpressionParser.FieldListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.IdContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullContext;
@@ -64,11 +65,15 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.PathCo
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Root_pathContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.SeqContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.api.jsonata4java.expressions.utils.NumberUtils;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.PrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -82,99 +87,91 @@ import com.fasterxml.jackson.databind.node.TextNode;
 
 public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
-	int currentDepth = 0;
-	long startTime = new Date().getTime();
-	boolean checkRuntime = false;
-	int maxDepth = -1;
-	boolean keepSingleton = false;
-	long maxTime = 0L;
-	static String _pattern = "#0.##";
-	static DecimalFormat _decimalFormat = new DecimalFormat(_pattern);
-	boolean firstStepCons = false;
-	boolean lastStepCons = false;
-	List<ParseTree> steps = new ArrayList<ParseTree>();
-	boolean firstStep = false;
-	boolean lastStep = false;
-	boolean needsAppend = false;
-	
-	private void checkRunaway() {
-		if (checkRuntime) {
-			if (maxDepth != -1 && currentDepth > maxDepth) {
-				throw new EvaluateRuntimeException(
-						"Stack overflow error: Check for non-terminating recursive function. Consider rewriting as tail-recursive.");
+	public static class CustomPrettyPrinter implements PrettyPrinter {
+
+		private int indentAmt = 0;
+		private boolean needsNewline = true;
+		private final String newline = System.getProperty("line.separator");
+		public int rootValueSeparators = 0;
+
+		@Override
+		public void beforeArrayValues(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
+			newline(jsonGen);
+		}
+
+		@Override
+		public void beforeObjectEntries(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
+			newline(jsonGen);
+		}
+
+		private void newline(JsonGenerator jsonGen) throws IOException {
+			jsonGen.writeRaw(newline);
+			for (int i = 0; i < indentAmt; ++i) {
+				jsonGen.writeRaw("  ");
 			}
+			needsNewline = true;
 		}
-		if (maxTime != 0 && (new Date().getTime() - startTime > maxTime)) {
-			throw new EvaluateRuntimeException("Expression evaluation timeout: Check for infinite loop");
-		}
-	}
 
-	private void evaluateEntry() {
-		currentDepth++;
-		checkRunaway();
-	}
+		@Override
+		public void writeArrayValueSeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
+			jsonGen.writeRaw(",");
+			newline(jsonGen);
+			needsNewline = false;
+		}
 
-	private void evaluateExit() {
-		currentDepth--;
-		checkRunaway();
-	}
+		@Override
+		public void writeEndArray(JsonGenerator jsonGen, int nrOfValues) throws IOException, JsonGenerationException {
+			--indentAmt;
+			newline(jsonGen);
+			jsonGen.writeRaw(']');
+			needsNewline = false;
+		}
 
-	public void timeboxExpression(long timeoutMS, int maxDepth) {
-		if (timeoutMS > 0L && maxDepth > 0) {
-			this.maxDepth = maxDepth;
-			this.maxTime = timeoutMS;
-			checkRuntime = true;
+		@Override
+		public void writeEndObject(JsonGenerator jsonGen, int nrOfEntries) throws IOException, JsonGenerationException {
+			--indentAmt;
+			newline(jsonGen);
+			jsonGen.writeRaw('}');
+			needsNewline = indentAmt == 0;
 		}
-	}
 
-	public JsonNode visitTree(ParseTree tree) {
-		int treeSize = tree.getChildCount();
-		steps.clear();
-		for (int i = 0; i < treeSize; i++) {
-			steps.add(tree.getChild(i));
+		@Override
+		public void writeObjectEntrySeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
+			jsonGen.writeRaw(",");
+			newline(jsonGen);
+			needsNewline = false;
 		}
-		if (tree.getChild(0) instanceof Array_constructorContext) {
-			firstStepCons = true;
-		}
-		// test for laststep array construction child[n-1] instanceof
-		// Array_constructorContext
-		if (tree.getChild(treeSize - 1) instanceof Array_constructorContext) {
-			lastStepCons = true;
-		}
-		if (tree.equals(steps.get(0))) {
-			firstStep = true;
-		} else {
-			firstStep = false;
-		}
-		JsonNode result = visit(tree);
-		// simulates lastStep processing
-		if (result != null && result.isArray() && result.size() == 1 && ((ArrayNode) result).get(0)
-				.isArray()) {
-			result = ((ArrayNode) result).get(0);
-		}
-		return result;
-	}
 
-	@Override
-	public JsonNode visit(ParseTree tree) {
-		JsonNode result = null;
-		if (checkRuntime) {
-			evaluateEntry();
+		@Override
+		public void writeObjectFieldValueSeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
+			jsonGen.writeRaw(": ");
+			needsNewline = false;
 		}
-		if (steps.size() > 0 && tree.equals(steps.get(steps.size() - 1))) {
-			lastStep = true;
+
+		@Override
+		public void writeRootValueSeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
+			++rootValueSeparators;
 		}
-		result = super.visit(tree);
-		if (!keepSingleton) {
-			if (result != null && result instanceof SelectorArrayNode
-					&& ((SelectorArrayNode) result).getSelectionGroups().size() == 1) {
-				result = ((SelectorArrayNode) result).getSelectionGroups().get(0);
+
+		@Override
+		public void writeStartArray(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
+			if (!needsNewline) {
+				newline(jsonGen);
 			}
+			jsonGen.writeRaw("[");
+			++indentAmt;
+			needsNewline = false;
 		}
-		if (checkRuntime) {
-			evaluateExit();
+
+		@Override
+		public void writeStartObject(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
+			if (!needsNewline) {
+				newline(jsonGen);
+			}
+			jsonGen.writeRaw('{');
+			++indentAmt;
+			needsNewline = false;
 		}
-		return result;
 	}
 
 	/**
@@ -223,6 +220,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 	}
 
+	static String _pattern = "#0.##";
+	static DecimalFormat _decimalFormat = new DecimalFormat(_pattern);
 	private static final String CLASS = ExpressionsVisitor.class.getName();
 	public static String ERR_MSG_INVALID_PATH_ENTRY = String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY,
 			(Object[]) null);
@@ -231,11 +230,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public static String ERR_SEQ_RHS_INTEGER = "The right side of the range operator (..) must evaluate to an integer";
 	// note: below should read 1e7 not 1e6
 	public static String ERR_TOO_BIG = "The size of the sequence allocated by the range operator (..) must not exceed 1e6.  Attempted to allocate ";
-
 	private static final Logger LOG = Logger.getLogger(CLASS);
+	static CustomPrettyPrinter prettyPrinter = new CustomPrettyPrinter();
 
 	/**
-	 * This defines the behaviour of the "=" and "in" operators
+	 * This defines the behavior of the "=" and "in" operators
 	 * 
 	 * @param left
 	 * @param right
@@ -286,12 +285,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	 * $string(5) == "5" [1..5].$string() == ["1", "2", "3", "4", "5"]
 	 * 
 	 * @param node
-	 *             JsonNode whose content is to be cast as a String
+	 *                 JsonNode whose content is to be cast as a String
+	 * @param prettify
+	 *                 Whether the objects or arrays should be pretty printed
 	 * @throws EvaluateRuntimeException
 	 *                                  if json serialization fails
 	 * @return the String representation of the supplied node
 	 */
-	public static String castString(JsonNode node) throws EvaluateRuntimeException {
+	public static String castString(JsonNode node, boolean prettify) throws EvaluateRuntimeException {
 		if (node == null) {
 			return null;
 		}
@@ -301,8 +302,60 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			return node.textValue();
 		}
 		case NUMBER: {
-			if (node.isDouble() || node.isDouble()) {
-				return _decimalFormat.format(node.asDouble());
+			if (node.isDouble()) {
+				Double dValue = node.asDouble();
+				if (Double.isInfinite(dValue) || Double.isNaN(dValue)) {
+					throw new EvaluateRuntimeException("Attempting to invoke string function on Infinity or NaN");
+				}
+				String test = dValue.toString();
+				// try to determine precision
+				String strVal = "";
+				int index = test.indexOf("E");
+				String expStr = ".e+";
+				if (index >= 0) {
+					int minusSize = dValue < 0.0d ? 1 : 0;
+					int exp = new Integer(test.substring(index+1));
+					if (exp < 0) {
+						expStr = ".e";
+					}
+					// how many digits before E?
+					int len = test.indexOf(".");
+					if (len-minusSize+Math.abs(exp) <= 21) {
+						strVal = _decimalFormat.format(dValue);
+					} else {
+						// need to check for ".0E" to make it the whole number e+exp 
+						if (test.indexOf(".0E") > 0) {
+							strVal = test.substring(0,len)+expStr.substring(1)+test.substring(index+1);
+						} else {
+							strVal = test.substring(0,index)+expStr+test.substring(index+1);
+						}
+					}
+				} else {
+					strVal = _decimalFormat.format(dValue);
+				}
+//				// at what point do we use scientific notation?
+//				String strVal = _decimalFormat.format(dValue);
+//				if (strVal.length() > 21) {
+//					strVal = dValue.toString();
+//					int index = strVal.indexOf(".0E");
+//					if (index > 0) {
+//						if (-1.0d < dValue && dValue < 1.0d) {
+//							strVal = strVal.substring(0, index) + ".e-" + strVal.substring(index + 3);
+//						} else {
+//							strVal = strVal.substring(0, index) + ".e+" + strVal.substring(index + 3);
+//						}
+//					} else {
+//						index = strVal.indexOf("E");
+//						if (index > 0) {
+//							if (-1.0d < dValue &&  dValue < 1.0d) {
+//								strVal = strVal.substring(0,index)+"e-"+strVal.substring(index+1);
+//							} else {
+//								strVal = strVal.substring(0,index)+"e+"+strVal.substring(index+1);
+//							}
+//						}
+//					}
+//				}
+				return strVal;
 			}
 		}
 
@@ -310,7 +363,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			// arrays and objects
 			ObjectMapper objectMapper = new ObjectMapper();
 			try {
-				return objectMapper.writeValueAsString(node);
+				if (prettify) {
+					return objectMapper.writer(prettyPrinter).writeValueAsString(node);
+				} else {
+					return objectMapper.writeValueAsString(node);
+				}
 			} catch (JsonProcessingException e) {
 				throw new EvaluateRuntimeException(
 						"Failed to cast value " + node + " to a string. Reason: " + e.getMessage());
@@ -334,6 +391,20 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		} else {
 			return JsonNodeFactory.instance.arrayNode().add(input);
 		}
+	}
+
+	static public ArrayNode flatten(JsonNode arg, ArrayNode flattened) {
+		if (flattened == null) {
+			flattened = new ArrayNode(JsonNodeFactory.instance);
+		}
+		if (arg.isArray()) {
+			for (Iterator<JsonNode> it = ((ArrayNode) arg).iterator(); it.hasNext();) {
+				flatten(it.next(), flattened);
+			}
+		} else {
+			flattened.add(arg);
+		}
+		return flattened;
 	}
 
 	private static boolean isWholeNumber(double n) {
@@ -397,8 +468,28 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 	}
 
-	JsonNodeFactory factory = JsonNodeFactory.instance;
 	private FrameEnvironment _environment = null; // new FrameEnvironment(null);
+
+	boolean checkRuntime = false;
+
+	int currentDepth = 0;
+	JsonNodeFactory factory = JsonNodeFactory.instance;
+	boolean firstStep = false;
+	boolean firstStepCons = false;
+	boolean keepSingleton = false;
+	boolean lastStep = false;
+
+	boolean lastStepCons = false;
+
+	int maxDepth = -1;
+
+	long maxTime = 0L;
+
+	boolean needsAppend = false;
+
+	long startTime = new Date().getTime();
+
+	List<ParseTree> steps = new ArrayList<ParseTree>();
 
 	ParseTreeProperty<Integer> values = new ParseTreeProperty<Integer>();
 
@@ -410,24 +501,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public ExpressionsVisitor(JsonNode rootContext, FrameEnvironment environment) throws EvaluateRuntimeException {
 		setEnvironment(environment);
 		setRootContext(rootContext);
-	}
-
-	protected FrameEnvironment getEnvironment() {
-		return _environment;
-	}
-
-	protected void setEnvironment(FrameEnvironment environment) {
-		if (environment == null) {
-			environment = new FrameEnvironment(null);
-		}
-		_environment = environment;
-	}
-
-	protected void setRootContext(JsonNode rootContext) {
-		this._environment.clearContext();
-		if (rootContext != null) {
-			this._environment.pushContext(rootContext);
-		}
 	}
 
 	JsonNode append(JsonNode arg1, JsonNode arg2) {
@@ -452,18 +525,34 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		return ((ArrayNode) arg1).add(((ArrayNode) arg2));
 	}
 
-	static public ArrayNode flatten(JsonNode arg, ArrayNode flattened) {
-		if (flattened == null) {
-			flattened = new ArrayNode(JsonNodeFactory.instance);
-		}
-		if (arg.isArray()) {
-			for (Iterator<JsonNode> it = ((ArrayNode) arg).iterator(); it.hasNext();) {
-				flatten(it.next(), flattened);
+	private void checkRunaway() {
+		if (checkRuntime) {
+			if (maxDepth != -1 && currentDepth > maxDepth) {
+				throw new EvaluateRuntimeException(
+						"Stack overflow error: Check for non-terminating recursive function. Consider rewriting as tail-recursive.");
 			}
-		} else {
-			flattened.add(arg);
 		}
-		return flattened;
+		if (maxTime != 0 && (new Date().getTime() - startTime > maxTime)) {
+			throw new EvaluateRuntimeException("Expression evaluation timeout: Check for infinite loop");
+		}
+	}
+
+	private void evaluateEntry() {
+		currentDepth++;
+		checkRunaway();
+	}
+
+	private void evaluateExit() {
+		currentDepth--;
+		checkRunaway();
+	}
+
+	public Stack<JsonNode> getContextStack() {
+		return _environment.getContextStack();
+	}
+
+	public DeclaredFunction getDeclaredFunction(String fctName) {
+		return _environment.getDeclaredFunction(fctName);
 	}
 
 	/**
@@ -489,16 +578,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		return result;
 	}
 
-	public DeclaredFunction getDeclaredFunction(String fctName) {
-		return _environment.getDeclaredFunction(fctName);
+	protected FrameEnvironment getEnvironment() {
+		return _environment;
 	}
 
 	public Function getJsonataFunction(String fctName) {
 		return _environment.getJsonataFunction(fctName);
-	}
-
-	public Stack<JsonNode> getContextStack() {
-		return _environment.getContextStack();
 	}
 
 	public int getValue(ParseTree node) {
@@ -507,6 +592,33 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 	public JsonNode getVariable(String varName) {
 		return _environment.getVariable(varName);
+	}
+
+	boolean isSequence(JsonNode node) {
+		if (node != null && node instanceof SelectorArrayNode) {
+			return true;
+		}
+		return false;
+	}
+
+	JsonNode lookup(JsonNode input, String key) {
+		JsonNode result = null;
+		if (input.isArray()) {
+			result = new SelectorArrayNode(factory); // factory.arrayNode();
+			for (int ii = 0; ii < input.size(); ii++) {
+				JsonNode res = lookup(input.get(ii), key);
+				if (res != null) {
+					if (res.isArray()) {
+						((SelectorArrayNode) result).addAll((ArrayNode) res);
+					} else {
+						((SelectorArrayNode) result).add(res);
+					}
+				}
+			}
+		} else if (input != null && input instanceof ObjectNode) {
+			result = ((ObjectNode) input).get(key);
+		}
+		return result;
 	}
 
 	protected void processArrayContent(ExprOrSeqContext expr, ArrayNode output) {
@@ -531,7 +643,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			JsonNode result = visit(tree);
 			if (result != null) {
 				if (needsAppend && result.isArray()) {
-					output.addAll((ArrayNode)result);
+					output.addAll((ArrayNode) result);
 				} else {
 					output.add(result);
 				}
@@ -634,8 +746,42 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		return result;
 	}
 
+	public void setDeclaredFunction(String fctName, DeclaredFunction fctValue) {
+		_environment.setDeclaredFunction(fctName, fctValue);
+	}
+
+	protected void setEnvironment(FrameEnvironment environment) {
+		if (environment == null) {
+			environment = new FrameEnvironment(null);
+		}
+		_environment = environment;
+	}
+
+	public void setJsonataFunction(String fctName, Function fctValue) {
+		_environment.setJsonataFunction(fctName, fctValue);
+	}
+
+	protected void setRootContext(JsonNode rootContext) {
+		this._environment.clearContext();
+		if (rootContext != null) {
+			this._environment.pushContext(rootContext);
+		}
+	}
+
 	public void setValue(ParseTree node, int value) {
 		values.put(node, value);
+	}
+
+	public void setVariable(String varName, JsonNode varValue) throws EvaluateRuntimeException {
+		_environment.setVariable(varName, varValue);
+	}
+
+	public void timeboxExpression(long timeoutMS, int maxDepth) {
+		if (timeoutMS > 0L && maxDepth > 0) {
+			this.maxDepth = maxDepth;
+			this.maxTime = timeoutMS;
+			checkRuntime = true;
+		}
 	}
 
 	/**
@@ -668,6 +814,28 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				}
 			}
 		} // else don't process null
+	}
+
+	@Override
+	public JsonNode visit(ParseTree tree) {
+		JsonNode result = null;
+		if (checkRuntime) {
+			evaluateEntry();
+		}
+		if (steps.size() > 0 && tree.equals(steps.get(steps.size() - 1))) {
+			lastStep = true;
+		}
+		result = super.visit(tree);
+		if (!keepSingleton) {
+			if (result != null && result instanceof SelectorArrayNode
+					&& ((SelectorArrayNode) result).getSelectionGroups().size() == 1) {
+				result = ((SelectorArrayNode) result).getSelectionGroups().get(0);
+			}
+		}
+		if (checkRuntime) {
+			evaluateExit();
+		}
+		return result;
 	}
 
 	@Override
@@ -1006,6 +1174,32 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		return result;
 	}
 
+//	@Override
+//	public JsonNode visitExpr_to_eof(MappingExpressionParser.Expr_to_eofContext ctx) {
+//		ParseTree tree = ctx.expr();
+//		int treeSize = tree.getChildCount();
+//		steps.clear();
+//		for (int i = 0; i < treeSize; i++) {
+//			steps.add(tree.getChild(i));
+//		}
+//		if (tree.getChild(0) instanceof Array_constructorContext) {
+//			firstStepCons = true;
+//		}
+//		// test for laststep array construction child[n-1] instanceof
+//		// Array_constructorContext
+//		if (tree.getChild(treeSize - 1) instanceof Array_constructorContext) {
+//			lastStepCons = true;
+//		}
+//		if (tree.equals(steps.get(0))) {
+//			firstStep = true;
+//		} else {
+//			firstStep = false;
+//		}
+//
+//		JsonNode result = visit(tree);
+//		return result;
+//	}
+
 	@Override
 	public JsonNode visitComp_op(MappingExpressionParser.Comp_opContext ctx) {
 		BooleanNode result = null;
@@ -1135,13 +1329,13 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		if (left == null) {
 			leftStr = "";
 		} else {
-			leftStr = castString(left);
+			leftStr = castString(left, false);
 		}
 
 		if (right == null) {
 			rightStr = "";
 		} else {
-			rightStr = castString(right);
+			rightStr = castString(right, false);
 		}
 
 		JsonNode result = new TextNode(leftStr + rightStr);
@@ -1322,32 +1516,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode result = unwrapArray(resultArray);
 		return result;
 	}
-	
-//	@Override
-//	public JsonNode visitExpr_to_eof(MappingExpressionParser.Expr_to_eofContext ctx) {
-//		ParseTree tree = ctx.expr();
-//		int treeSize = tree.getChildCount();
-//		steps.clear();
-//		for (int i = 0; i < treeSize; i++) {
-//			steps.add(tree.getChild(i));
-//		}
-//		if (tree.getChild(0) instanceof Array_constructorContext) {
-//			firstStepCons = true;
-//		}
-//		// test for laststep array construction child[n-1] instanceof
-//		// Array_constructorContext
-//		if (tree.getChild(treeSize - 1) instanceof Array_constructorContext) {
-//			lastStepCons = true;
-//		}
-//		if (tree.equals(steps.get(0))) {
-//			firstStep = true;
-//		} else {
-//			firstStep = false;
-//		}
-//
-//		JsonNode result = visit(tree);
-//		return result;
-//	}
 
 	@Override
 	public JsonNode visitFct_chain(Fct_chainContext ctx) {
@@ -1408,7 +1576,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode result = unwrapArray(resultArray);
 		return result;
 	}
-	
+
 	@Override
 	public JsonNode visitFieldList(MappingExpressionParser.FieldListContext ctx) {
 		ObjectNode resultObject = new ObjectNode(JsonNodeFactory.instance);
@@ -1423,10 +1591,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		String key = "";
 		JsonNode value = null;
-		for (int i=0;i<ctx.getChildCount();i+=4) {
+		for (int i = 0; i < ctx.getChildCount(); i += 4) {
 			// expect name ':' expr ,
-			key = sanitise(((TerminalNodeImpl)ctx.getChild(i)).getText());
-			value = visit(ctx.getChild(i+2));
+			key = sanitise(((TerminalNodeImpl) ctx.getChild(i)).getText());
+			value = visit(ctx.getChild(i + 2));
 			if (value != null) {
 				resultObject.set(key, value);
 			}
@@ -1479,10 +1647,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		DeclaredFunction fct = new DeclaredFunction(varList, exprList);
 		setDeclaredFunction(fctName, fct);
 		return result;
-	}
-
-	public void setVariable(String varName, JsonNode varValue) throws EvaluateRuntimeException {
-		_environment.setVariable(varName, varValue);
 	}
 
 	@Override
@@ -1539,32 +1703,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		return result;
 	}
 
-	boolean isSequence(JsonNode node) {
-		if (node != null && node instanceof SelectorArrayNode) {
-			return true;
-		}
-		return false;
-	}
-
-	JsonNode lookup(JsonNode input, String key) {
-		JsonNode result = null;
-		if (input.isArray()) {
-			result = new SelectorArrayNode(factory); // factory.arrayNode();
-			for (int ii = 0; ii < input.size(); ii++) {
-				JsonNode res = lookup(input.get(ii), key);
-				if (res != null) {
-					if (res.isArray()) {
-						((SelectorArrayNode) result).addAll((ArrayNode) res);
-					} else {
-						((SelectorArrayNode) result).add(res);
-					}
-				}
-			}
-		} else if (input != null && input instanceof ObjectNode) {
-			result = ((ObjectNode) input).get(key);
-		}
-		return result;
-	}
+	// private boolean flattenOutput = true;
 
 	@Override
 	public JsonNode visitLogand(MappingExpressionParser.LogandContext ctx) {
@@ -1599,8 +1738,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		return result;
 	}
-
-	// private boolean flattenOutput = true;
 
 	@Override
 	public JsonNode visitMembership(MappingExpressionParser.MembershipContext ctx) {
@@ -1658,12 +1795,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			result = left * right;
 		} else if (ctx.op.getType() == MappingExpressionParser.DIV) {
 			if (right == 0.0d) {
-				return null;
+				return new DoubleNode(Double.POSITIVE_INFINITY); // null;
 			}
 			result = left / right;
 		} else if (ctx.op.getType() == MappingExpressionParser.REM) {
 			if (right == 0.0d) {
-				return null;
+				return  new DoubleNode(Double.POSITIVE_INFINITY); // null;
 			}
 			result = left % right;
 		} else {
@@ -1711,24 +1848,62 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			return object;
 		} else {
 			// FieldListContext fieldList = (FieldListContext)ctx.expr();
-			// List<String> keys = fieldList.STRING().stream().map(k -> k.getText()).map(k -> sanitise(k))
-			List<String> keys = ctx.fieldList().STRING().stream().map(k -> k.getText()).map(k -> sanitise(k))					
-					.collect(Collectors.toList());
-
-			// List<JsonNode> values = fieldList.expr().stream().map(e -> visit(e)).collect(Collectors.toList());
-			List<JsonNode> values = ctx.fieldList().expr().stream().map(e -> visit(e)).collect(Collectors.toList());
-			if (keys.size() != values.size()) {
+			// List<String> keys = fieldList.STRING().stream().map(k -> k.getText()).map(k
+			// -> sanitise(k))
+//			List<String> keys = ctx.fieldList().STRING().stream().map(k -> k.getText()).map(k -> sanitise(k))
+//					.collect(Collectors.toList());
+			List<TerminalNode> keyNodes = ctx.fieldList().STRING();
+			List<ExprContext> valueNodes = ctx.fieldList().expr();
+			if (keyNodes.size() != valueNodes.size()) {
 				// this shouldn't have parsed in the first place
 				throw new EvaluateRuntimeException("Object key/value count mismatch!");
 			}
-
-			for (int i = 0; i < keys.size(); i++) {
-				String key = keys.get(i);
-				JsonNode value = values.get(i);
+			ExprContext valueNode = null;
+			JsonNode value = null;
+			String fctName = null;
+			String key = "";
+			for (int i = 0; i < keyNodes.size(); i++) {
+				key = keyNodes.get(i).getText();
+				key = sanitise(key);
+				// try to get the value for the corresponding expression
+				valueNode = valueNodes.get(i);
+				if (valueNode instanceof Function_declContext) {
+					visit(valueNode);
+					fctName = ((Function_declContext) valueNode).FUNCTIONID().getText();
+					if (getDeclaredFunction(fctName) != null) {
+						value = new TextNode("");
+					}
+				} else if (valueNode instanceof Var_recallContext) {
+					value = visit(valueNode);
+				} else {
+					value = visit(valueNode);
+					// check for double infinity
+					if (value.isDouble()) {
+						Double d = value.asDouble();
+						if (Double.isNaN(d) || Double.isInfinite(d)) {
+							throw new EvaluateRuntimeException("Number out of range: null");
+						}
+					}
+				}
 				if (value != null) {
 					object.set(key, value);
 				}
 			}
+			// List<JsonNode> values = fieldList.expr().stream().map(e ->
+			// visit(e)).collect(Collectors.toList());
+//			List<JsonNode> values = ctx.fieldList().expr().stream().map(e -> visit(e)).collect(Collectors.toList());
+//			if (keys.size() != values.size()) {
+//				// this shouldn't have parsed in the first place
+//				throw new EvaluateRuntimeException("Object key/value count mismatch!");
+//			}
+//
+//			for (int i = 0; i < keys.size(); i++) {
+//				String key = keys.get(i);
+//				JsonNode value = values.get(i);
+//				if (value != null) {
+//					object.set(key, value);
+//				}
+//			}
 
 			return object;
 		}
@@ -1947,6 +2122,39 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		return result;
 	}
 
+	public JsonNode visitTree(ParseTree tree) {
+		int treeSize = tree.getChildCount();
+		steps.clear();
+		for (int i = 0; i < treeSize; i++) {
+			steps.add(tree.getChild(i));
+		}
+		if (tree.getChild(0) instanceof Array_constructorContext) {
+			firstStepCons = true;
+		}
+		// test for laststep array construction child[n-1] instanceof
+		// Array_constructorContext
+		if (tree.getChild(treeSize - 1) instanceof Array_constructorContext) {
+			lastStepCons = true;
+		}
+		if (tree.equals(steps.get(0))) {
+			firstStep = true;
+		} else {
+			firstStep = false;
+		}
+		JsonNode result = visit(tree);
+		// simulates lastStep processing
+		if (result != null && result.isArray() && result.size() == 1 && ((ArrayNode) result).get(0).isArray()) {
+			result = ((ArrayNode) result).get(0);
+		}
+		if (result.isDouble()) {
+			Double d = result.asDouble();
+			if (Double.isInfinite(d) || Double.isNaN(d)) {
+				result = JsonNodeFactory.instance.nullNode();
+			}
+		}
+		return result;
+	}
+
 	@Override
 	public JsonNode visitUnary_op(MappingExpressionParser.Unary_opContext ctx) {
 		JsonNode result = null;
@@ -1973,14 +2181,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		return result;
 	}
 
-	public void setDeclaredFunction(String fctName, DeclaredFunction fctValue) {
-		_environment.setDeclaredFunction(fctName, fctValue);
-	}
-
-	public void setJsonataFunction(String fctName, Function fctValue) {
-		_environment.setJsonataFunction(fctName, fctValue);
-	}
-
 	@Override
 	public JsonNode visitVar_assign(MappingExpressionParser.Var_assignContext ctx) {
 		final String varName = ctx.VAR_ID().getText();
@@ -1995,21 +2195,21 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			DeclaredFunction fct = new DeclaredFunction(varList, exprList);
 			setDeclaredFunction(varName, fct);
 		} else if (expr instanceof MappingExpressionParser.Function_callContext) {
-			Function_callContext fctCallCtx = (Function_callContext)expr;
-			
+			Function_callContext fctCallCtx = (Function_callContext) expr;
+
 			String functionName = fctCallCtx.VAR_ID().getText();
 
 			DeclaredFunction declFct = getDeclaredFunction(functionName);
 			if (declFct == null) {
 				Function function = getJsonataFunction(functionName);
 				if (function != null) {
-					setJsonataFunction(varName,function);
+					setJsonataFunction(varName, function);
 					// result = function.invoke(this, ctx);
 				} else {
 					throw new EvaluateRuntimeException("Unknown function: " + functionName);
 				}
 			} else {
-				setDeclaredFunction(varName,declFct);
+				setDeclaredFunction(varName, declFct);
 //				result = declFct.invoke(this, ctx);
 			}
 
@@ -2025,6 +2225,22 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitVar_recall(MappingExpressionParser.Var_recallContext ctx) {
 		final String varName = ctx.getText();
 		JsonNode result = getVariable(varName);
+		// double check to see if this could be a function reference and if so, return
+		// NullNode rather than null
+		if (result == null) {
+			DeclaredFunction declFct = getDeclaredFunction(varName);
+			if (declFct != null) {
+				result = new TextNode("");
+			} else {
+				Function fct = getJsonataFunction(varName);
+				if (fct != null) {
+					result = new TextNode("");
+				} else {
+					result = null;
+				}
+			}
+		}
+
 		return result;
 	}
 

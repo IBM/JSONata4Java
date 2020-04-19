@@ -28,7 +28,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
@@ -64,8 +63,9 @@ public class SiftFunction extends FunctionBase implements Function {
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
       ObjectNode resultObject = new ObjectNode(JsonNodeFactory.instance);
-      boolean useContext = ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
-            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
+      boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature()); 
+//      		((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
+//            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
       JsonNode objNode = null;
       ExprValuesContext valuesCtx = ctx.exprValues();
       ExprListContext exprList = valuesCtx.exprList();

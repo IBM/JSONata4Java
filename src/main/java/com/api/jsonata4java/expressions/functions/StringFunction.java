@@ -25,6 +25,7 @@ package com.api.jsonata4java.expressions.functions;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -61,7 +62,7 @@ public class StringFunction extends FunctionBase implements Function {
 
 		// Retrieve the number of arguments
 		JsonNode arg = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(ctx, getSignature());
+		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			arg = FunctionUtils.getContextVariable(expressionVisitor);
@@ -69,12 +70,17 @@ public class StringFunction extends FunctionBase implements Function {
 		}
 
 		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
+		if (argCount >= 1 && argCount <=2) {
 			if (!useContext) {
 				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
 			if (arg != null) {
-				String asString = ExpressionsVisitor.castString(arg);
+				boolean prettify = false;
+				if (argCount == 2) {
+					JsonNode arg2 = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
+					prettify = BooleanUtils.convertJsonNodeToBoolean(arg2);
+				} 
+				String asString = ExpressionsVisitor.castString(arg,prettify);
 				if (asString == null) {
 					result = null;
 				} else {
@@ -90,7 +96,7 @@ public class StringFunction extends FunctionBase implements Function {
 
 	@Override
 	public int getMaxArgs() {
-		return 1;
+		return 2;
 	}
 	@Override
 	public int getMinArgs() {
@@ -100,6 +106,6 @@ public class StringFunction extends FunctionBase implements Function {
 	@Override
 	public String getSignature() {
 		// accepts any value or context, returns a string
-		return "<x-:s>";
+		return "<x-b:s>";
 	}
 }

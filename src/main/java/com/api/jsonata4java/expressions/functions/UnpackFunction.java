@@ -52,7 +52,7 @@ public class UnpackFunction extends FunctionBase implements Function {
 
 		// Retrieve the number of arguments
 		JsonNode argInput = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(ctx, getSignature());
+		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argInput = FunctionUtils.getContextVariable(expressionVisitor);

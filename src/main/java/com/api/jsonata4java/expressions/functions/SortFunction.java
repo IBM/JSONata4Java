@@ -48,7 +48,7 @@ public class SortFunction extends FunctionBase implements Function {
 		ArrayNode result = JsonNodeFactory.instance.arrayNode();
 		// Retrieve the number of arguments
 		JsonNode arg = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(ctx, getSignature());
+		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			arg = FunctionUtils.getContextVariable(expressionVisitor);
