@@ -22,7 +22,6 @@
 
 package com.api.jsonata4java.expressions;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.text.DecimalFormat;
@@ -72,10 +71,7 @@ import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.api.jsonata4java.expressions.utils.NumberUtils;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.PrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -92,101 +88,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
-
-	public static class CustomPrettyPrinter implements PrettyPrinter {
-
-		private int indentAmt = 0;
-		private boolean keepSameLine = true;
-		private final String newline = System.getProperty("line.separator");
-		public int rootValueSeparators = 0;
-
-		@Override
-		public void beforeArrayValues(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			if (!keepSameLine) {
-				newline(jsonGen);
-			}
-			keepSameLine = true;
-		}
-
-		@Override
-		public void beforeObjectEntries(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			if (!keepSameLine) {
-				newline(jsonGen);
-			}
-			keepSameLine = true;
-		}
-
-		private void newline(JsonGenerator jsonGen) throws IOException {
-			jsonGen.writeRaw(newline);
-			for (int i = 0; i < indentAmt; ++i) {
-				jsonGen.writeRaw("  ");
-			}
-			keepSameLine = true;
-		}
-
-		@Override
-		public void writeArrayValueSeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			jsonGen.writeRaw(",");
-			newline(jsonGen);
-			keepSameLine = false;
-		}
-
-		@Override
-		public void writeEndArray(JsonGenerator jsonGen, int nrOfValues) throws IOException, JsonGenerationException {
-			--indentAmt;
-			if (nrOfValues > 0) {
-				newline(jsonGen);
-			}
-			jsonGen.writeRaw(']');
-			keepSameLine = false;
-		}
-
-		@Override
-		public void writeEndObject(JsonGenerator jsonGen, int nrOfEntries) throws IOException, JsonGenerationException {
-			--indentAmt;
-			newline(jsonGen);
-			jsonGen.writeRaw('}');
-			keepSameLine = indentAmt == 0;
-		}
-
-		@Override
-		public void writeObjectEntrySeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			jsonGen.writeRaw(",");
-			newline(jsonGen);
-			keepSameLine = false;
-		}
-
-		@Override
-		public void writeObjectFieldValueSeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			jsonGen.writeRaw(": ");
-			keepSameLine = true;
-		}
-
-		@Override
-		public void writeRootValueSeparator(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			++rootValueSeparators;
-		}
-
-		@Override
-		public void writeStartArray(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			if (!keepSameLine) {
-				newline(jsonGen);
-			}
-			jsonGen.writeRaw("[");
-			++indentAmt;
-			keepSameLine = true;
-		}
-
-		@Override
-		public void writeStartObject(JsonGenerator jsonGen) throws IOException, JsonGenerationException {
-			if (!keepSameLine) {
-				newline(jsonGen);
-			}
-			jsonGen.writeRaw('{');
-			++indentAmt;
-			keepSameLine = false;
-		}
-	}
 
 	/**
 	 * This is how we indicate to upstream operators that we are currently inside a
@@ -245,7 +146,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	// note: below should read 1e7 not 1e6
 	public static String ERR_TOO_BIG = "The size of the sequence allocated by the range operator (..) must not exceed 1e6.  Attempted to allocate ";
 	private static final Logger LOG = Logger.getLogger(CLASS);
-	static CustomPrettyPrinter prettyPrinter = new CustomPrettyPrinter();
    static Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 	static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -380,7 +280,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					JsonElement jsonElt = JsonParser.parseString(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
 					return gson.toJson(jsonElt);
 
-//					return objectMapper.writer(prettyPrinter).writeValueAsString(node);
 				} else {
 					return objectMapper.writeValueAsString(node);
 				}
