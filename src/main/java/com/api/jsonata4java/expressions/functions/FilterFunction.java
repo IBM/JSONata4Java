@@ -158,7 +158,10 @@ public class FilterFunction extends FunctionBase implements Function {
 		               // note: callCtx.children should be empty unless carrying an
 		               // exception
 		               JsonNode element = mapArray.get(i);
-		               resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, element));
+			            JsonNode fctResult = FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, element);
+			            if (fctResult != null && fctResult.asBoolean()) {
+			               resultArray.addAsSelectionGroup(element);
+			            }
 		            }
 		         } else {
 		            throw new EvaluateRuntimeException(
@@ -222,12 +225,12 @@ public class FilterFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1; // account for context variable 
+		return 2; 
 	}
 
    @Override
    public String getSignature() {
-      // accepts anything (or context variable), returns an array of objects
+      // accepts anything, returns an array of objects
       return "<af>";
    }
 

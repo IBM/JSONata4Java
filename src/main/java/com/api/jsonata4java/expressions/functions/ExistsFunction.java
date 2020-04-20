@@ -113,12 +113,12 @@ public class ExistsFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 0; // account for context variable
+		return 1;
 	}
 
 	@Override
 	public String getSignature() {
-		// accepts a number (or context variable), returns a number
-		return "<n-:n>";
+		// accepts anything, returns a boolean
+		return "<x:b>";
 	}
 }

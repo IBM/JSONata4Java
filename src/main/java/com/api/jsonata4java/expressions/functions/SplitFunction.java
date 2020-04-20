@@ -178,8 +178,8 @@ public class SplitFunction extends FunctionBase implements Function {
 
 	@Override
 	public String getSignature() {
-		// accepts a string (or context variable), a string of function, an optional
+		// accepts a string (or context variable), a string or function, an optional
 		// number, returns an array of strings
-		return "<s-(sf)(sf)n?:a<s>>";
+		return "<s-(sf)n?:a<s>>";
 	}
 }

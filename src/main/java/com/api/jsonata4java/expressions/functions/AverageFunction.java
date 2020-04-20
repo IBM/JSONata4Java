@@ -131,6 +131,6 @@ public class AverageFunction extends FunctionBase implements Function {
 	@Override
 	public String getSignature() {
 		// accepts an array of numbers (or context variable), returns a number
-		return "<a<n>-:n>";
+		return "<a<n>:n>";
 	}
 }

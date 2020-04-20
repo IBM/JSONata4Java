@@ -148,14 +148,13 @@ public class SortFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 0; // account for context variable
+		return 1;
 	}
 
 	@Override
 	public String getSignature() {
-		// accepts an array (or context variable), an optional function, returns an
-		// array
-		return "<x-f?:n>";
+		// accepts an array, an optional function, returns an array
+		return "<af?:a>";
 	}
 
 	void msort(ArrayNode array, DeclaredFunction fct, ExpressionsVisitor exprVisitor, Function_callContext ctx) {

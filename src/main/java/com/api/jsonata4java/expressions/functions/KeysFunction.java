@@ -162,6 +162,6 @@ public class KeysFunction extends FunctionBase implements Function {
 	@Override
 	public String getSignature() {
 		// accepts an object (or context variable), returns an array of strings
-		return "<o-:a<s>>";
+		return "<x-:a<s>>";
 	}
 }

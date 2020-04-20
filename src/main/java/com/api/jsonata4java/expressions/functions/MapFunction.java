@@ -219,13 +219,13 @@ public class MapFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1; // account for context variable
+		return 2;
 	}
 
    @Override
    public String getSignature() {
-      // accepts an array (or context variable) and a function, returns an array of objects
-      return "<a-f:a>";
+      // accepts an array and a function, returns an array of objects
+      return "<af>";
    }
 
    public void addObject(SelectorArrayNode result, ObjectNode obj) {

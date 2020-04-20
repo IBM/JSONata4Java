@@ -96,8 +96,8 @@ public class AppendFunction extends FunctionBase implements Function {
 
 	@Override
 	public String getSignature() {
-		// accepts anything (or context variable), anything, returns an array
-		return "<x-x:a>";
+		// accepts anything, anything, returns an array
+		return "<xx:a>";
 	}
 
 	@Override
@@ -106,7 +106,7 @@ public class AppendFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 1; // account for context variable
+		return 2;
 	}
 
 }

@@ -65,13 +65,15 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 //			"closures",
 			"sorting", // we don't support the order-by operator (^) yet
 			"tail-recursion", 		// tail-recursion requires function definition support, which we don't have yet
-			"transforms",
+			"transform", // issue #47
+			"transforms", // issue #47
 			"library-joins",
 			"function-formatNumber",
 			"function-tomillis",
 //			"function-applications",
-			"partial-application",
+			"partial-application", // issue #53
 			"function-signatures",
+			"parent-operator" // issue #60
 //			"transforms",
 //			"blocks",
 //			"descendent-operator",	// we don't support the ** operator yet
@@ -118,11 +120,12 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		// @ references issue #48
 		SKIP_CASES("joins","employee-map-reduce-11");
 		SKIP_CASES("joins","library-joins-10");
-		SKIP_CASES("parent-operator","parent-27");
 		// # references issue #50
 		SKIP_CASES("joins","index-15");
 		// issue #52
 		SKIP_CASES("function-fromMillis","isoWeekDate-18");
+		// issue 53
+		SKIP_CASES("function-application","case016");
 		// issue #54 timeouts
 		SKIP_CASES("range-operator","case021","case024");
 		// issue #55 and / or standalone to get by parser

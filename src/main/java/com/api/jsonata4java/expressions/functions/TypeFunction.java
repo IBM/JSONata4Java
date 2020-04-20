@@ -174,12 +174,12 @@ public class TypeFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 0; // account for context variable
+		return 1;
 	}
 
 	@Override
 	public String getSignature() {
-		// accepts a string (or context variable), returns a number
-		return "<s-:n>";
+		// accepts anything, returns a number
+		return "<x:n>";
 	}
 }

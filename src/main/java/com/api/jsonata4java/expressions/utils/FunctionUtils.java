@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.CommonTokenFactory;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
@@ -45,6 +46,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprLi
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprOrSeqContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprOrSeqListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.FieldListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.IdContext;
@@ -937,21 +939,19 @@ public class FunctionUtils {
 		if (ctx == null) { // || ctx.getParent() == null) {
 			return false;
 		}
-		// does the signature permit use of the context as a argument
-		if (signature.indexOf("-") == -1) {
-			return false;
-		}
+
 		int argCount = FunctionBase.getArgumentCount(ctx);
 		if (argCount == 0) {
+			// no arguments so try to get from context
 			return true;
 		}
-		int min = fct.getMinArgs();
-		int max = fct.getMaxArgs();
-		// check when no optional arguments
-		if (min == max) {
-			return argCount != min;
+
+		ParserRuleContext prc = ctx.getParent();
+		if (prc != null && prc instanceof Fct_chainContext) {
+			// you are called from a chain so use current context
+			return true;
 		}
-		
+
 		int optional = 0;
 		int optionIndex = signature.indexOf("?");
 		while (optionIndex != -1) {
@@ -960,17 +960,23 @@ public class FunctionUtils {
 			optionIndex = signature.indexOf("?");
 			
 		}
-		if (argCount < max-optional) {
+
+		// does the signature permit use of the context as a argument
+		if (signature.indexOf("-") >= 0 && prc != null && prc instanceof PathContext) {
 			return true;
-		} else {
-			return false;
 		}
-//		if (fct.getMinArgs() <= argCount && argCount <= fct.getMaxArgs()) {
-//			return false;
-//		}
-		// only allow if parent is a chain,
-		// or if the signature contains the hyphen the and parent is a path
-//		return ((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
-//				|| ((signature.indexOf("-") != -1) && (ctx.getParent() instanceof MappingExpressionParser.PathContext)));
+		
+		int min = fct.getMinArgs();
+		int max = fct.getMaxArgs();
+		// check when no optional arguments presented
+		if (min == max) {
+			return argCount != min;
+		}
+		
+		if (argCount < max-optional) {
+			// should have required argument in context
+			return true;
+		}
+		return false;		
 	}
 }

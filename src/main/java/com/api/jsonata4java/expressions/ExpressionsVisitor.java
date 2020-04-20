@@ -136,19 +136,19 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 	}
 
-	static String _pattern = "#0.##";
-	static DecimalFormat _decimalFormat = new DecimalFormat(_pattern);
-	private static final String CLASS = ExpressionsVisitor.class.getName();
-	public static String ERR_MSG_INVALID_PATH_ENTRY = String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY,
+	static private final String _pattern = "#0.##";
+	static private final DecimalFormat _decimalFormat = new DecimalFormat(_pattern);
+	static private final String CLASS = ExpressionsVisitor.class.getName();
+	static public final String ERR_MSG_INVALID_PATH_ENTRY = String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY,
 			(Object[]) null);
-	public static String ERR_NEGATE_NON_NUMERIC = "Cannot negate a non-numeric value";
-	public static String ERR_SEQ_LHS_INTEGER = "The left side of the range operator (..) must evaluate to an integer";
-	public static String ERR_SEQ_RHS_INTEGER = "The right side of the range operator (..) must evaluate to an integer";
+	static public final String ERR_NEGATE_NON_NUMERIC = "Cannot negate a non-numeric value";
+	static public final String ERR_SEQ_LHS_INTEGER = "The left side of the range operator (..) must evaluate to an integer";
+	static public final String ERR_SEQ_RHS_INTEGER = "The right side of the range operator (..) must evaluate to an integer";
 	// note: below should read 1e7 not 1e6
-	public static String ERR_TOO_BIG = "The size of the sequence allocated by the range operator (..) must not exceed 1e6.  Attempted to allocate ";
-	private static final Logger LOG = Logger.getLogger(CLASS);
-   static Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
-	static ObjectMapper objectMapper = new ObjectMapper();
+	static public final String ERR_TOO_BIG = "The size of the sequence allocated by the range operator (..) must not exceed 1e6.  Attempted to allocate ";
+	static private final Logger LOG = Logger.getLogger(CLASS);
+   static private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+	static private final ObjectMapper objectMapper = new ObjectMapper();
 
 	/**
 	 * This defines the behavior of the "=" and "in" operators
@@ -384,30 +384,21 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 	}
 
-	private FrameEnvironment _environment = null; // new FrameEnvironment(null);
-
-	boolean checkRuntime = false;
-
-	int currentDepth = 0;
-	JsonNodeFactory factory = JsonNodeFactory.instance;
-	boolean firstStep = false;
-	boolean firstStepCons = false;
-	boolean keepSingleton = false;
-	boolean lastStep = false;
-
-	boolean lastStepCons = false;
-
-	int maxDepth = -1;
-
-	long maxTime = 0L;
-
-	boolean needsAppend = false;
-
-	long startTime = new Date().getTime();
-
-	List<ParseTree> steps = new ArrayList<ParseTree>();
-
-	ParseTreeProperty<Integer> values = new ParseTreeProperty<Integer>();
+	private FrameEnvironment _environment = null;
+	private boolean checkRuntime = false;
+	private int currentDepth = 0;
+	private JsonNodeFactory factory = JsonNodeFactory.instance;
+	private boolean firstStep = false;
+	private boolean firstStepCons = false;
+	private boolean inArrayConstructor = false;
+	private boolean keepSingleton = false;
+	private boolean lastStep = false;
+	private boolean lastStepCons = false;
+	private int maxDepth = -1;
+	private long maxTime = 0L;
+	private long startTime = new Date().getTime();
+	private List<ParseTree> steps = new ArrayList<ParseTree>();
+	private ParseTreeProperty<Integer> values = new ParseTreeProperty<Integer>();
 
 	public ExpressionsVisitor() {
 		setEnvironment(null);
@@ -558,7 +549,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			}
 			JsonNode result = visit(tree);
 			if (result != null) {
-				if (needsAppend && result.isArray()) {
+				if (inArrayConstructor && result.isArray()) {
 					output.addAll((ArrayNode) result);
 				} else {
 					output.add(result);
@@ -825,8 +816,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		// may contain negative values (these will be normalized later)
 		final List<Integer> indexesToReturn = new ArrayList<>();
 
+		ArrayNode output = JsonNodeFactory.instance.arrayNode();
 		boolean isPredicate = false;
-
+		boolean haveResult = false;
 		for (int i = 0; i < sourceArray.size(); i++) {
 			JsonNode e = sourceArray.get(i);
 
@@ -846,6 +838,46 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			_environment.pushContext(e);
 			JsonNode indexesInContext = visit(indexContext);
 			_environment.popContext();
+			
+			if (e.isObject()) {
+				// we have what we were after so add it to the output and return
+				if (indexesInContext != null) {
+					// check to see if the visit above found what we wanted
+					if (indexesInContext.isArray()) {
+						if (inArrayConstructor) { 
+							output.add(indexesInContext);
+						} else {
+							ArrayNode array = (ArrayNode)indexesInContext;
+							JsonNode elt = null;
+							for (int j=0;j<array.size();j++) {
+								elt = array.get(j);
+								if (elt != null) {
+									output.add(elt);
+								}
+							}
+						}
+					} else {
+						// visit above found the index we wanted
+						if (indexesInContext.isNumber()) {
+							// be sure to resolve the index in case it is negative
+							int index = indexesInContext.asInt();
+							if (index < 0) {
+								index = sourceArray.size() + index;
+							}
+							if (index == i) {
+								output.add(e);
+							}
+						} else if (indexesInContext.isBoolean()) {
+							if (indexesInContext.asBoolean()) {
+								output.add(e);
+							}
+						}
+					}
+				}
+				haveResult = true;
+				continue;
+				
+			}
 
 			if (indexesInContext == null) {
 
@@ -932,88 +964,88 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			}
 		}
 
-		// now construct the return value based on the indexes computed above
-
-		// Is this a (non-predicate) index into the result of a selection? If so,
-		// the semantics are slightly different to
-		// an ordinary array index:
-		//
-		// [[{"a":1}, {"a":2}, {"a":3}], [{"a":4}, {"a":5}], [{"a":6}]].a[n] ->
-		// our selection result will look like this:
-		// [ [1,2,3], [4,5], [6] ]
-		// ^ group
-		// n specifies the index (or set of indexes) to pull out from each group,
-		// e.g.:
-		// n=0 -> [1,4,6]
-		// n=1 -> [2,5]
-		// n=2 -> [3]
-		// n=[0,1] -> [1,2,4,5,6]
-		// n=[0,1,2] -> [1,2,3,4,5,6]
-		// n=[1,2] -> [2,3,5]
-
-		// some groups may not be arrays, e.g. [{"a":1}, {"a":2},
-		// {"a":[3,4]}].a[n] ->
-		// [1,2,[1,2]]
-		// n=0 -> [1,2,3]
-		// n=1 -> 4
-		// where a group is not an array, treat it as a singleton array
-		final ArrayNode output;
-		if (!isPredicate && sourceArray instanceof SelectorArrayNode) {
-			// ^ when predicates are used on selector results, normal array index
-			// semantics are applied
-
-			SelectorArrayNode sourceArraySel = (SelectorArrayNode) sourceArray;
-
-			// we need to stay in "selector" mode so that subsequent array index
-			// references are also treated specially
-			// e.g. [{"a":1}, {"a":2}}].a[0][0] -> returns [1,2]
-			SelectorArrayNode resultAsSel = new SelectorArrayNode(factory);
-			output = resultAsSel;
-
-			for (JsonNode group : sourceArraySel.getSelectionGroups()) {
-				// System.out.println(" group: "+group);
-
-				// resolve negative indexes (they should start from the end of this
-				// selection group)
-				group = ensureArray(group);
-				List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, group.size());
-
-				for (int index : resolvedIndexes) {
-
-					// System.out.println(" index: "+index);
-					if (group.isArray()) {
-						JsonNode atIndex = group.get(index);
-						if (atIndex == null) {
-							// we're done with this group
-							break;
-						}
-						resultAsSel.addAsSelectionGroup(atIndex);
-					} else {
-						// treat non-array groups as singleton arrays
-						if (index == 0) { // non-array groups only have an element at
-							// index 0
-							resultAsSel.addAsSelectionGroup(group);
+		if (!haveResult) {
+			// now construct the return value based on the indexes computed above
+	
+			// Is this a (non-predicate) index into the result of a selection? If so,
+			// the semantics are slightly different to
+			// an ordinary array index:
+			//
+			// [[{"a":1}, {"a":2}, {"a":3}], [{"a":4}, {"a":5}], [{"a":6}]].a[n] ->
+			// our selection result will look like this:
+			// [ [1,2,3], [4,5], [6] ]
+			// ^ group
+			// n specifies the index (or set of indexes) to pull out from each group,
+			// e.g.:
+			// n=0 -> [1,4,6]
+			// n=1 -> [2,5]
+			// n=2 -> [3]
+			// n=[0,1] -> [1,2,4,5,6]
+			// n=[0,1,2] -> [1,2,3,4,5,6]
+			// n=[1,2] -> [2,3,5]
+	
+			// some groups may not be arrays, e.g. [{"a":1}, {"a":2},
+			// {"a":[3,4]}].a[n] ->
+			// [1,2,[1,2]]
+			// n=0 -> [1,2,3]
+			// n=1 -> 4
+			// where a group is not an array, treat it as a singleton array
+			if (!isPredicate && sourceArray instanceof SelectorArrayNode) {
+				// ^ when predicates are used on selector results, normal array index
+				// semantics are applied
+	
+				SelectorArrayNode sourceArraySel = (SelectorArrayNode) sourceArray;
+	
+				// we need to stay in "selector" mode so that subsequent array index
+				// references are also treated specially
+				// e.g. [{"a":1}, {"a":2}}].a[0][0] -> returns [1,2]
+				SelectorArrayNode resultAsSel = new SelectorArrayNode(factory);
+				output = resultAsSel;
+	
+				for (JsonNode group : sourceArraySel.getSelectionGroups()) {
+					// System.out.println(" group: "+group);
+	
+					// resolve negative indexes (they should start from the end of this
+					// selection group)
+					group = ensureArray(group);
+					List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, group.size());
+	
+					for (int index : resolvedIndexes) {
+	
+						// System.out.println(" index: "+index);
+						if (group.isArray()) {
+							JsonNode atIndex = group.get(index);
+							if (atIndex == null) {
+								// we're done with this group
+								break;
+							}
+							resultAsSel.addAsSelectionGroup(atIndex);
+						} else {
+							// treat non-array groups as singleton arrays
+							if (index == 0) { // non-array groups only have an element at
+								// index 0
+								resultAsSel.addAsSelectionGroup(group);
+							}
 						}
 					}
 				}
-			}
-
-		} else {
-			output = factory.arrayNode();
-
-			// resolve negative indexes (they should start from the end of the
-			// source array)
-			List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, sourceArray.size());
-
-			// otherwise we just select from the array as normal
-			for (int index : resolvedIndexes) {
-				// ignore out-of-bounds indexes
-				if (index >= 0 && index < sourceArray.size()) {
-					output.add(sourceArray.get(index));
+	
+			} else {
+				output = factory.arrayNode();
+	
+				// resolve negative indexes (they should start from the end of the
+				// source array)
+				List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, sourceArray.size());
+	
+				// otherwise we just select from the array as normal
+				for (int index : resolvedIndexes) {
+					// ignore out-of-bounds indexes
+					if (index >= 0 && index < sourceArray.size()) {
+						output.add(sourceArray.get(index));
+					}
 				}
 			}
-		}
-
+		}	
 		// results now holds a sub-array of the source array
 		// containing only those values that are either at the specified indexes
 		// or match the predicate statement
@@ -1039,7 +1071,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		if (LOG.isLoggable(Level.FINEST))
 			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 
-		needsAppend = true;
+		inArrayConstructor = true;
 		// System.out.println("========");
 		// for(ParseTree child : ctx.children) {
 		// System.out.println(child.getText());
@@ -1071,7 +1103,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					}
 				}
 			}
-			needsAppend = false;
+			inArrayConstructor = false;
 		}
 
 		if (LOG.isLoggable(Level.FINEST))

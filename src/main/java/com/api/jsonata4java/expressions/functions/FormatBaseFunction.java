@@ -83,7 +83,12 @@ public class FormatBaseFunction extends FunctionBase implements Function {
 			}
 			if (argNumber.isNumber()) {
 				// Read the number from the argument
-				final int number = argNumber.asInt();
+				Double d = argNumber.asDouble();
+				Long l = Math.round(d);
+				if (Math.abs((double)l -d) == 0.5 && l % 2 == 1) {
+					l--;
+				}
+				final int number = (int)l.longValue();
 
 				// Check to see if we have an radix argument and read it if we do
 				int radix = 10;
@@ -92,7 +97,12 @@ public class FormatBaseFunction extends FunctionBase implements Function {
 							useContext ? 0 : 1);
 					if (argRadix != null) {
 						if (argRadix.isNumber()) {
-							radix = argRadix.asInt();
+							d = argRadix.asDouble();
+							l = Math.round(d);
+							if (Math.abs((double)l - d) == 0.5 && l % 2 == 1) {
+								l--;
+							}
+							radix = (int)l.longValue();
 
 							// Make sure that the radix specified is valid
 							if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX) {

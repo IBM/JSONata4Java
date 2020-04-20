@@ -118,12 +118,12 @@ public class MergeFunction extends FunctionBase implements Function {
 	}
 	@Override
 	public int getMinArgs() {
-		return 0; // account for context variable
+		return 1;
 	}
 
 	@Override
 	public String getSignature() {
-		// accepts an array of objects (or context variable), returns an object
-		return "<a<o>-:o>";
+		// accepts an array of objects, returns an object
+		return "<a<o>:o>";
 	}
 }

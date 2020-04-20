@@ -103,6 +103,6 @@ public class ZipFunction extends FunctionBase implements Function {
 	@Override
 	public String getSignature() {
 		// accepts one or more arrays, returns an array
-		return "<a+:a>";
+		return "<a+>";
 	}
 }
