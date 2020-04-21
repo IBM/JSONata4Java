@@ -30,6 +30,7 @@ import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.api.jsonata4java.expressions.utils.NumberUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.LongNode;
 
 /**
  * http://docs.jsonata.org/numeric-functions.html
@@ -101,6 +102,8 @@ public class NumberFunction extends FunctionBase implements Function {
 				result = argString;
 			} else if (argString.isArray()) {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+			} else if (argString.isBoolean()) {
+				result = argString.asBoolean() ? new LongNode(1) : new LongNode(0);
 			} else {
 				// The argument is a neither a number or a string. Throw a
 				// suitable exception.
@@ -109,7 +112,7 @@ public class NumberFunction extends FunctionBase implements Function {
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
-
+		
 		return result;
 	}
 

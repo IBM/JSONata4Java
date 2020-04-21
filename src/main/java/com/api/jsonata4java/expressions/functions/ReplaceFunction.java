@@ -109,7 +109,7 @@ public class ReplaceFunction extends FunctionBase implements Function {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
 			if (argString == null || !argString.isTextual()) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+				return null; // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 			if (argCount >= 2) {
 				final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,

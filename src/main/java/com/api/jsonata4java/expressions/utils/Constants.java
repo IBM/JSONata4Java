@@ -312,7 +312,7 @@ public class Constants {
    public static final String ERR_MSG_ARG3_BAD_TYPE = "Argument 3 of function %s does not match function signature";
    public static final String ERR_MSG_ARG4_BAD_TYPE = "Argument 4 of function %s does not match function signature";
    public static final String ERR_MSG_ARG5_BAD_TYPE = "Argument 5 of function %s does not match function signature";
-   public static final String ERR_MSG_ARG1_ARR_STR = "Argument 1 of function %s must be an array of string";
+   public static final String ERR_MSG_ARG1_ARR_STR = "Argument 1 of function %s must be an array of strings";
    public static final String ERR_MSG_ARG2_EMPTY_STR = "Second argument of function %s cannot be an empty string";
    public static final String ERR_MSG_INVALID_RADIX = "The radix of the $formatBase function must be between 2 and 36";
    public static final String ERR_MSG_RUNTIME_ERROR = "A runtime error occurred when invoking funtion %s";

@@ -62,7 +62,11 @@ public class NumberUtils {
 
 				// Check to see if the converted number is within the acceptable range
 				if (!doubleValue.isInfinite() && !doubleValue.isNaN()) {
-					result = new DoubleNode(doubleValue.doubleValue());
+					if (doubleValue - doubleValue.longValue() == 0.0) {
+						result = new LongNode(doubleValue.longValue());
+					} else {
+						result = new DoubleNode(doubleValue.doubleValue());
+					}
 				} else {
 					final String msg = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE, number);
 					throw new EvaluateRuntimeException(msg);

@@ -952,6 +952,7 @@ public class FunctionUtils {
 			return true;
 		}
 
+		String saveSig = signature;
 		int optional = 0;
 		int optionIndex = signature.indexOf("?");
 		while (optionIndex != -1) {
@@ -960,12 +961,8 @@ public class FunctionUtils {
 			optionIndex = signature.indexOf("?");
 			
 		}
+		signature = saveSig;
 
-		// does the signature permit use of the context as a argument
-		if (signature.indexOf("-") >= 0 && prc != null && prc instanceof PathContext) {
-			return true;
-		}
-		
 		int min = fct.getMinArgs();
 		int max = fct.getMaxArgs();
 		// check when no optional arguments presented
@@ -977,6 +974,11 @@ public class FunctionUtils {
 			// should have required argument in context
 			return true;
 		}
+		// does the signature permit use of the context as a argument
+		if (signature.indexOf("-") >= 0 && prc != null && prc instanceof PathContext) {
+			return true;
+		}
+		
 		return false;		
 	}
 }

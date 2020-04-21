@@ -22,8 +22,11 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -52,11 +55,8 @@ public class AverageFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			arg = FunctionUtils.getContextVariable(expressionVisitor);
-			if (arg != null && arg.isNull() == false) {
-				// check to see if there is a valid context value
-				if (!arg.isArray()) {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
+			ParserRuleContext prc = ctx.getParent();
+			if ((prc != null && prc instanceof Fct_chainContext) || (arg != null && arg.isNull() == false)) {
 				argCount++;
 			} else {
 				useContext = false;

@@ -79,6 +79,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -147,7 +148,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	// note: below should read 1e7 not 1e6
 	static public final String ERR_TOO_BIG = "The size of the sequence allocated by the range operator (..) must not exceed 1e6.  Attempted to allocate ";
 	static private final Logger LOG = Logger.getLogger(CLASS);
-   static private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+	static private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 	static private final ObjectMapper objectMapper = new ObjectMapper();
 
 	/**
@@ -169,11 +170,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		} else if (left.isTextual() && right.isTextual()) {
 			return (left.asText().equals(right.asText()));
 		} else if (left.isArray() && right.isArray()) {
-			// arrays are never considered equal by JSONata
-			return false;
+			return (left.equals(right));
 		} else if (left.isObject() && right.isObject()) {
-			// object are never considered equal by JSONata
-			return false;
+			return (left.equals(right));
 		} else if (left.isBoolean() && right.isBoolean()) {
 			return left == right;
 		} else {
@@ -246,7 +245,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 							strVal = new BigDecimal(dValue, new MathContext(15)).toString().toLowerCase();
 							if (strVal.indexOf(".") >= 0) {
 								while (strVal.endsWith("0") && strVal.length() > 0) {
-									strVal = strVal.substring(0,strVal.length()-1);
+									strVal = strVal.substring(0, strVal.length() - 1);
 								}
 							}
 							return strVal;
@@ -265,7 +264,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						strVal = new BigDecimal(dValue, new MathContext(15)).toString().toLowerCase();
 						if (strVal.indexOf(".") >= 0) {
 							while (strVal.endsWith("0") && strVal.length() > 0) {
-								strVal = strVal.substring(0,strVal.length()-1);
+								strVal = strVal.substring(0, strVal.length() - 1);
 							}
 						}
 					}
@@ -278,7 +277,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			// arrays and objects
 			try {
 				if (prettify) {
-					JsonElement jsonElt = JsonParser.parseString(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
+					JsonElement jsonElt = JsonParser
+							.parseString(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
 					return gson.toJson(jsonElt);
 
 				} else {
@@ -818,9 +818,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		ArrayNode output = JsonNodeFactory.instance.arrayNode();
 		boolean isPredicate = false;
-		boolean haveResult = false;
-		for (int i = 0; i < sourceArray.size(); i++) {
-			JsonNode e = sourceArray.get(i);
+
+		// trying changes to emulate jsonata.js behavior at 3:37pm 4/20
+		// act differently if we have a SelectorArrayNode
+		boolean sourceIsSAN = false;
+		List<JsonNode> selGroups = new ArrayList<JsonNode>();
+		if (sourceArray instanceof SelectorArrayNode) {
+//			sourceIsSAN = true;
+			selGroups = ((SelectorArrayNode) sourceArray).getSelectionGroups();
+		}
+		for (int i = 0; i < (sourceIsSAN ? selGroups.size() : sourceArray.size()); i++) {
+			JsonNode e = (sourceIsSAN ? selGroups.get(i) : sourceArray.get(i));
 
 			if (LOG.isLoggable(Level.FINEST))
 				LOG.logp(Level.FINEST, CLASS, METHOD, "Evaluating array index expression '" + indexContext.getText()
@@ -835,49 +843,141 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			// e.g. [{"x":2}, {"x":3}] [x=(["a":101, "b":2}, {"a":102,
 			// "b":3}][a=101]).b] -> {"x":2}
 
+			// check for predicate
 			_environment.pushContext(e);
-			JsonNode indexesInContext = visit(indexContext);
+			JsonNode indexesInContext = factory.arrayNode();
+//			if (indexContext instanceof Comp_opContext) {
+//				ArrayNode desiredIndexes = factory.arrayNode();
+//				isPredicate = true;
+//				// we can evaluate the comparision by testing its parts
+//				JsonNode left = visit(((Comp_opContext)indexContext).expr(0)); // get value of left subexpression
+//				JsonNode right = visit(((Comp_opContext)indexContext).expr(1)); // get value of right subexpression
+//				if (left!=null) {
+//					left = ensureArray(left);
+//					if (right != null) {
+//						right = ensureArray(right);
+//						// use the comparator to see which indexes to preserve
+//						for (int xx = 0; xx<left.size();xx++) {
+//							int type = ((Comp_opContext)indexContext).op.getType();
+//							switch(type) {
+//							case MappingExpressionParser.EQ: {
+//								if (left.get(xx).equals(right.get(0))) {
+//									desiredIndexes.add(xx);
+//								}
+//								break;
+//							}
+//							case MappingExpressionParser.NOT_EQ: {
+//								if (left.get(xx).equals(right.get(0)) == false) {
+//									desiredIndexes.add(xx);
+//								}
+//								break;
+//							}
+//							case MappingExpressionParser.LT: {
+//								// TODO: add comparison
+//								System.out.println("LT Comparator visit array");
+//								break;
+//							}
+//							case MappingExpressionParser.LE: {
+//								// TODO: add comparison
+//								System.out.println("LE Comparator visit array");
+//								break;
+//							}
+//							case MappingExpressionParser.GT: {
+//								// TODO: add comparison
+//								System.out.println("LT Comparator visit array");
+//								break;
+//							}
+//							case MappingExpressionParser.GE: {
+//								// TODO: add comparison
+//								System.out.println("Unknown Comparator ("+type+") visit array");
+//								break;
+//							}
+//							default: {
+//								break;
+//							}
+//						}
+//					}
+//				}
+//				indexesInContext = desiredIndexes;
+//			} else {
+			// below will resolve if the proposed indexContext applies to the current group
+			indexesInContext = visit(indexContext);
+//			}
 			_environment.popContext();
-			
-			if (e.isObject()) {
-				// we have what we were after so add it to the output and return
-				if (indexesInContext != null) {
-					// check to see if the visit above found what we wanted
-					if (indexesInContext.isArray()) {
-						if (inArrayConstructor) { 
-							output.add(indexesInContext);
-						} else {
-							ArrayNode array = (ArrayNode)indexesInContext;
-							JsonNode elt = null;
-							for (int j=0;j<array.size();j++) {
-								elt = array.get(j);
-								if (elt != null) {
-									output.add(elt);
-								}
-							}
-						}
-					} else {
-						// visit above found the index we wanted
-						if (indexesInContext.isNumber()) {
-							// be sure to resolve the index in case it is negative
-							int index = indexesInContext.asInt();
-							if (index < 0) {
-								index = sourceArray.size() + index;
-							}
-							if (index == i) {
-								output.add(e);
-							}
-						} else if (indexesInContext.isBoolean()) {
-							if (indexesInContext.asBoolean()) {
-								output.add(e);
-							}
-						}
-					}
-				}
-				haveResult = true;
-				continue;
-				
-			}
+//			if (e.isObject()) {
+//				// we have what we were after so add it to the output and return
+//				if (indexesInContext != null) {
+//					// check to see if the visit above found what we wanted
+//					if (indexesInContext.isArray()) {
+//						if (inArrayConstructor) { 
+//							output.add(indexesInContext);
+//						} else {
+//							ArrayNode array = (ArrayNode)indexesInContext;
+//							JsonNode elt = null;
+//							for (int j=0;j<array.size();j++) {
+//								elt = array.get(j);
+//								if (elt != null) {
+//									output.add(elt);
+//								}
+//							}
+//						}
+//					} else {
+//						// visit above found the index we wanted
+//						if (indexesInContext.isNumber()) {
+//							// be sure to resolve the index in case it is negative
+//							int index = indexesInContext.asInt();
+//							if (index < 0) {
+//								index = sourceArray.size() + index;
+//							}
+//							if (sourceIsSAN) {
+//								output.add(e);
+//							} else if (index == i) {
+//								output.add(e);
+//							}
+//						} else if (indexesInContext.isBoolean()) {
+//							if (indexesInContext.asBoolean()) {
+//								output.add(e);
+//							}
+//						}
+//					}
+//				}
+//				continue;
+//				
+//			} else if (e.isArray()) {
+//				ArrayNode eArray = (ArrayNode)e;
+//				if (indexesInContext != null) {
+//					// check to see if the visit above found what we wanted
+//					if (indexesInContext.isArray()) {
+//						ArrayNode array = (ArrayNode)indexesInContext;
+//						JsonNode elt = null;
+//						for (int j=0;j<array.size();j++) {
+//							elt = array.get(j);
+//							if (elt != null) {
+//								output.add(eArray.get(elt.asInt()));
+//							}
+//						}
+//					} else {
+//						// visit above found the index we wanted
+//						if (indexesInContext.isNumber()) {
+//							// be sure to resolve the index in case it is negative
+//							int index = indexesInContext.asInt();
+//							if (index < 0) {
+//								index = sourceArray.size() + index;
+//							}
+//							if (sourceIsSAN) {
+//								output.add(eArray.get(index));
+//							} else if (index == i) {
+//								output.add(eArray.get(index));
+//							}
+//						} else if (indexesInContext.isBoolean()) {
+//							if (indexesInContext.asBoolean()) {
+//								output.add(eArray);
+//							}
+//						}
+//					}
+//				}
+//				continue;
+//			}
 
 			if (indexesInContext == null) {
 
@@ -891,7 +991,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			} else if (indexesInContext.isBoolean()) {
 				// if, in context the index evaluates to a boolean node, we know to
 				// treat this index as a predicate statement
+//				if (!sourceIsSAN) {
 				isPredicate = true;
+//				}
 
 				// if it's true then the predicate matches this element, so include
 				// it
@@ -964,88 +1066,88 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			}
 		}
 
-		if (!haveResult) {
-			// now construct the return value based on the indexes computed above
-	
-			// Is this a (non-predicate) index into the result of a selection? If so,
-			// the semantics are slightly different to
-			// an ordinary array index:
-			//
-			// [[{"a":1}, {"a":2}, {"a":3}], [{"a":4}, {"a":5}], [{"a":6}]].a[n] ->
-			// our selection result will look like this:
-			// [ [1,2,3], [4,5], [6] ]
-			// ^ group
-			// n specifies the index (or set of indexes) to pull out from each group,
-			// e.g.:
-			// n=0 -> [1,4,6]
-			// n=1 -> [2,5]
-			// n=2 -> [3]
-			// n=[0,1] -> [1,2,4,5,6]
-			// n=[0,1,2] -> [1,2,3,4,5,6]
-			// n=[1,2] -> [2,3,5]
-	
-			// some groups may not be arrays, e.g. [{"a":1}, {"a":2},
-			// {"a":[3,4]}].a[n] ->
-			// [1,2,[1,2]]
-			// n=0 -> [1,2,3]
-			// n=1 -> 4
-			// where a group is not an array, treat it as a singleton array
-			if (!isPredicate && sourceArray instanceof SelectorArrayNode) {
-				// ^ when predicates are used on selector results, normal array index
-				// semantics are applied
-	
-				SelectorArrayNode sourceArraySel = (SelectorArrayNode) sourceArray;
-	
-				// we need to stay in "selector" mode so that subsequent array index
-				// references are also treated specially
-				// e.g. [{"a":1}, {"a":2}}].a[0][0] -> returns [1,2]
-				SelectorArrayNode resultAsSel = new SelectorArrayNode(factory);
-				output = resultAsSel;
-	
-				for (JsonNode group : sourceArraySel.getSelectionGroups()) {
-					// System.out.println(" group: "+group);
-	
-					// resolve negative indexes (they should start from the end of this
-					// selection group)
-					group = ensureArray(group);
-					List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, group.size());
-	
-					for (int index : resolvedIndexes) {
-	
-						// System.out.println(" index: "+index);
-						if (group.isArray()) {
-							JsonNode atIndex = group.get(index);
-							if (atIndex == null) {
-								// we're done with this group
-								break;
-							}
-							resultAsSel.addAsSelectionGroup(atIndex);
-						} else {
-							// treat non-array groups as singleton arrays
-							if (index == 0) { // non-array groups only have an element at
-								// index 0
-								resultAsSel.addAsSelectionGroup(group);
-							}
+//		if (output.size() == 0) {
+		// now construct the return value based on the indexes computed above
+
+		// Is this a (non-predicate) index into the result of a selection? If so,
+		// the semantics are slightly different to
+		// an ordinary array index:
+		//
+		// [[{"a":1}, {"a":2}, {"a":3}], [{"a":4}, {"a":5}], [{"a":6}]].a[n] ->
+		// our selection result will look like this:
+		// [ [1,2,3], [4,5], [6] ]
+		// ^ group
+		// n specifies the index (or set of indexes) to pull out from each group,
+		// e.g.:
+		// n=0 -> [1,4,6]
+		// n=1 -> [2,5]
+		// n=2 -> [3]
+		// n=[0,1] -> [1,2,4,5,6]
+		// n=[0,1,2] -> [1,2,3,4,5,6]
+		// n=[1,2] -> [2,3,5]
+
+		// some groups may not be arrays, e.g. [{"a":1}, {"a":2},
+		// {"a":[3,4]}].a[n] ->
+		// [1,2,[1,2]]
+		// n=0 -> [1,2,3]
+		// n=1 -> 4
+		// where a group is not an array, treat it as a singleton array
+		if (!isPredicate && sourceArray instanceof SelectorArrayNode) {
+			// ^ when predicates are used on selector results, normal array index
+			// semantics are applied
+
+			SelectorArrayNode sourceArraySel = (SelectorArrayNode) sourceArray;
+
+			// we need to stay in "selector" mode so that subsequent array index
+			// references are also treated specially
+			// e.g. [{"a":1}, {"a":2}}].a[0][0] -> returns [1,2]
+			SelectorArrayNode resultAsSel = new SelectorArrayNode(factory);
+			output = resultAsSel;
+
+			for (JsonNode group : sourceArraySel.getSelectionGroups()) {
+				// System.out.println(" group: "+group);
+
+				// resolve negative indexes (they should start from the end of this
+				// selection group)
+				group = ensureArray(group);
+				List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, group.size());
+
+				for (int index : resolvedIndexes) {
+
+					// System.out.println(" index: "+index);
+					if (group.isArray()) {
+						JsonNode atIndex = group.get(index);
+						if (atIndex == null) {
+							// we're done with this group
+							break;
+						}
+						resultAsSel.addAsSelectionGroup(atIndex);
+					} else {
+						// treat non-array groups as singleton arrays
+						if (index == 0) { // non-array groups only have an element at
+							// index 0
+							resultAsSel.addAsSelectionGroup(group);
 						}
 					}
 				}
-	
-			} else {
-				output = factory.arrayNode();
-	
-				// resolve negative indexes (they should start from the end of the
-				// source array)
-				List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, sourceArray.size());
-	
-				// otherwise we just select from the array as normal
-				for (int index : resolvedIndexes) {
-					// ignore out-of-bounds indexes
-					if (index >= 0 && index < sourceArray.size()) {
-						output.add(sourceArray.get(index));
-					}
+			}
+
+		} else {
+			output = factory.arrayNode();
+
+			// resolve negative indexes (they should start from the end of the
+			// source array)
+			List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, sourceArray.size());
+
+			// otherwise we just select from the array as normal
+			for (int index : resolvedIndexes) {
+				// ignore out-of-bounds indexes
+				if (index >= 0 && index < sourceArray.size()) {
+					output.add(sourceArray.get(index));
 				}
 			}
-		}	
+		}
+//		}	
 		// results now holds a sub-array of the source array
 		// containing only those values that are either at the specified indexes
 		// or match the predicate statement
@@ -1160,6 +1262,15 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			return BooleanNode.FALSE;
 		}
 
+		boolean lIsComparable = false;
+		boolean rIsComparable = false;
+		if (left != null && right != null) {
+			JsonNodeType ltype = left.getNodeType();
+			JsonNodeType rtype = right.getNodeType();
+			lIsComparable = ltype == JsonNodeType.NULL || ltype == JsonNodeType.STRING || ltype == JsonNodeType.NUMBER;
+			rIsComparable = rtype == JsonNodeType.NULL || rtype == JsonNodeType.STRING || rtype == JsonNodeType.NUMBER;
+		}
+
 		// below out for issue #11
 		// in all cases, if either are *no match*, JSONata returns *no match*
 		// if (left == null || right == null) {
@@ -1174,7 +1285,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				return BooleanNode.FALSE;
 			}
 			// else both not null
-			result = areJsonNodesEqual(left, right) ? BooleanNode.TRUE : BooleanNode.FALSE;
+			// check if the same types
+			if (left.getNodeType() == right.getNodeType()) {
+				return (areJsonNodesEqual(left, right) ? BooleanNode.TRUE : BooleanNode.FALSE);
+				// return (left.equals(right) ? BooleanNode.TRUE : BooleanNode.FALSE);
+			}
+			if (!lIsComparable || !rIsComparable) {
+				// signal expression
+				return null;
+			}
+			// different types of comparables return not equal
+			return BooleanNode.FALSE;
 		} else if (ctx.op.getType() == MappingExpressionParser.NOT_EQ) {
 			if (left == null && right != null) {
 				return BooleanNode.TRUE;
@@ -1183,8 +1304,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				return BooleanNode.TRUE;
 			}
 			// else both not null
-			result = areJsonNodesEqual(left, right) ? BooleanNode.FALSE : BooleanNode.TRUE;
-
+			// check if the same types
+			if (left.getNodeType() == right.getNodeType()) {
+				return (areJsonNodesEqual(left, right) ? BooleanNode.FALSE : BooleanNode.TRUE);
+				// return (left.equals(right) ? BooleanNode.FALSE : BooleanNode.TRUE);
+			}
+			if (!lIsComparable || !rIsComparable) {
+				// signal expression
+				return null;
+			}
+			// different types of comparables return not equal
+			return BooleanNode.TRUE;
 		} else if (ctx.op.getType() == MappingExpressionParser.LT) {
 			if (left == null || right == null) {
 				result = null;
@@ -1198,6 +1328,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
 				result = (left.asLong() < right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
+				if (!lIsComparable || !rIsComparable) {
+					// signal expression
+					return null;
+				}
 				if (left.getNodeType() != right.getNodeType()) {
 					throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
 							+ " either side of operator \">\" must be of the same data type");
@@ -1217,6 +1351,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
 				result = (left.asLong() > right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
+				if (!lIsComparable || !rIsComparable) {
+					// signal expression
+					return null;
+				}
 				if (left.getNodeType() != right.getNodeType()) {
 					throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
 							+ " either side of operator \">\" must be of the same data type");
@@ -1236,6 +1374,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
 				result = (left.asLong() <= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
+				if (!lIsComparable || !rIsComparable) {
+					// signal expression
+					return null;
+				}
 				if (left.getNodeType() != right.getNodeType()) {
 					throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
 							+ " either side of operator \"<=\" must be of the same data type");
@@ -1255,6 +1397,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
 				result = (left.asLong() >= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
+				if (!lIsComparable || !rIsComparable) {
+					// signal expression
+					return null;
+				}
 				if (left.getNodeType() != right.getNodeType()) {
 					throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
 							+ " either side of operator \">=\" must be of the same data type");
@@ -1262,7 +1408,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = (left.asText().compareTo(right.asText()) >= 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			}
 		}
-
 		return result;
 	}
 
@@ -1478,9 +1623,31 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode result = null;
 		Object exprObj = ctx.expr(1);
 		if (exprObj instanceof MappingExpressionParser.Function_callContext) {
-			_environment.pushContext(visit(ctx.expr(0)));
+			JsonNode test = visit(ctx.expr(0));
+			// leave it to the receiving function to complain
+//			if (test == null) {
+//				return null;
+//			}
+			_environment.pushContext(test);
 			result = visit(ctx.expr(1));
 			_environment.popContext();
+		} else if (exprObj instanceof Var_recallContext) {
+			String fctName = ((Var_recallContext) exprObj).VAR_ID().getText();
+			// assume this is a variable pointing to a function
+			DeclaredFunction declFct = getDeclaredFunction(fctName);
+			if (declFct == null) {
+				Function function = getJsonataFunction(fctName);
+				if (function == null) {
+					function = Constants.FUNCTIONS.get(fctName);
+				}
+				if (function != null) {
+					result = function.invoke(this, (Function_callContext) ctx.expr(1));
+				} else {
+					throw new EvaluateRuntimeException("Unknown function: " + fctName);
+				}
+			} else {
+				result = declFct.invoke(this, ctx.expr(1));
+			}
 		} else
 			throw new EvaluateRuntimeException("Expected a function but got " + ctx.expr(1).getText());
 		return result;
@@ -1708,6 +1875,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		// If the RHS is a single value, then it is treated as a singleton array.
 		right = ensureArray(right);
 
+		// unwrap left if singleton
+		left = unwrapArray(left);
+
 		BooleanNode result = BooleanNode.FALSE;
 		Iterator<JsonNode> elements = right.elements();
 		while (elements.hasNext()) {
@@ -1836,7 +2006,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				} else if (valueNode instanceof Var_recallContext) {
 					value = visit(valueNode);
 					if (value == null) {
-						String varName = ((Var_recallContext)valueNode).VAR_ID().getText();
+						String varName = ((Var_recallContext) valueNode).VAR_ID().getText();
 						DeclaredFunction declFct = getDeclaredFunction(varName);
 						if (declFct != null) {
 							value = new TextNode("");
@@ -2188,6 +2358,39 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			}
 
 			result = visit(expr);
+		} else if (expr instanceof Fct_chainContext) {
+			/**
+			 * 
+			 * 
+			 * HERE HERE HERE -- consider adding a map of Fct_chainContext keyed by varname
+			 * 
+			 * 
+			 */
+			// need to call the first
+			ExprContext exprCtx = ((Fct_chainContext) expr).expr(0);
+			if (exprCtx instanceof Var_recallContext) {
+				final String fctName = exprCtx.getText();
+				DeclaredFunction declFct = getDeclaredFunction(fctName);
+				if (declFct != null) {
+					setDeclaredFunction(varName, declFct);
+					// TODO set up an ExprValuesContext with the variable value(s) then call below
+					// _environment.pushContext(declFct.invoke(this, ruleValues));
+					result = visit(((Fct_chainContext) expr).expr(1));
+					// _environment.popContext();
+				} else {
+					Function fct = getJsonataFunction(fctName);
+					if (fct != null) {
+						setJsonataFunction(varName, fct);
+						// TODO set up a Function_callContext with an ExprValuesContext and call below
+						// with it instead of ctx
+						// _environment.pushContext(fct.invoke(this, ctx));
+						result = visit(((Fct_chainContext) expr).expr(1));
+						// _environment.popContext();
+					} else {
+						result = null;
+					}
+				}
+			}
 		} else {
 			result = visit(expr);
 			setVariable(varName, result);

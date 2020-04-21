@@ -36,6 +36,8 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprLi
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.VarListContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
+import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class DeclaredFunction {
@@ -121,7 +123,29 @@ public class DeclaredFunction {
             JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
             expressionVisitor.setVariable(varID, value);
          }
-		} // else EmptyValuesContext
+		} else if (ruleValues instanceof Var_recallContext) {
+			String fctName = ((Var_recallContext) ruleValues).VAR_ID().getText();
+			// assume this is a variable pointing to a function
+			DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(fctName);
+			if (declFct == null) {
+				Function function = expressionVisitor.getJsonataFunction(fctName);
+				if (function == null) {
+					function = Constants.FUNCTIONS.get(fctName);
+				}
+				if (function != null) {
+					result = function.invoke(expressionVisitor, (Function_callContext)ruleValues.getRuleContext());
+				} else {
+					throw new EvaluateRuntimeException("Unknown function: " + fctName);
+				}
+			} else {
+	         for (int i = 0; i < declFct.getVariableCount(); i++) {
+	            String varID = declFct._varList.VAR_ID().get(i).getText();
+	            JsonNode value = expressionVisitor.visit(_exprList.expr().get(i));
+	            expressionVisitor.setVariable(varID, value);
+	         }
+				result = expressionVisitor.visit(declFct._exprList);
+			}
+		}// else EmptyValuesContext
       result = expressionVisitor.visit(_exprList);
 		return result;
 	}

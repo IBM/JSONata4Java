@@ -376,7 +376,8 @@ public class BasicExpressionsTest {
       expectArray.removeAll();
       expectArray.add(mapper.readTree("{\"id\":\"858383, 858236\"}"));
       expectArray.add(mapper.readTree("{\"id\":\"858383, 345664\"}"));
-      simpleTest("[Account.Order].{\"id\" : $join(Product.ProductID, ', ')}",expectArray,jsonObj);
+      // jsonata 1.8.2 no longer allows join of arrays of anything but strings
+      test("[Account.Order].{\"id\" : $join(Product.ProductID, ', ')}",expectArray,"Argument 1 of function $join must be an array of strings",jsonObj);
    }
 
    @Test
@@ -1244,23 +1245,23 @@ public class BasicExpressionsTest {
       simpleTest("false!=false", "false");
 
       // JSONata never considers arrays to be equal (this may change)
-      simpleTest("[1]=[1]", "false");
+      simpleTest("[1]=[1]", "true"); // jsonata 1.8.2 no longer returns "false");
       simpleTest("[1]=[1,2]", "false");
-      simpleTest("[true]=[true]", "false");
-      simpleTest("[\"a\"]=[\"a\"]", "false");
+      simpleTest("[true]=[true]", "true"); // jsonata 1.8.2 no longer returns"false");
+      simpleTest("[\"a\"]=[\"a\"]", "true"); // jsonata 1.8.2 no longer returns"false");
       simpleTest("[2] in [1,[2]]", "false");
 
-      simpleTest("[1]!=[1]", "true");
+      simpleTest("[1]!=[1]", "false"); // jsonata 1.8.2 no longer returns "true");
       simpleTest("[1]!=[1,2]", "true");
-      simpleTest("[true]!=[true]", "true");
-      simpleTest("[\"a\"]!=[\"a\"]", "true");
+      simpleTest("[true]!=[true]", "false"); // jsonata 1.8.2 no longer returns "true");
+      simpleTest("[\"a\"]!=[\"a\"]", "false"); // jsonata 1.8.2 no longer returns "true");
 
       // JSONata never considers objects to be equal (this may change)
-      simpleTest("{}={}", "false");
-      simpleTest("{\"a\":1}={\"a\":1}", "false");
+      simpleTest("{}={}", "true");  // jsonata 1.8.2 no "false");
+      simpleTest("{\"a\":1}={\"a\":1}", "true");  // jsonata 1.8.2 no longer returns "false");
 
-      simpleTest("{}!={}", "true");
-      simpleTest("{\"a\":1}!={\"a\":1}", "true");
+      simpleTest("{}!={}", "false"); // jsonata 1.8.2 no longer returns "true");
+      simpleTest("{\"a\":1}!={\"a\":1}", "false"); // jsonata 1.8.2 no longer returns "true");
 
       // membership
       simpleTest("1 in [1,2]", "true");
@@ -1765,7 +1766,7 @@ public class BasicExpressionsTest {
       // should get a DoubleNode if sum includes any floats
 
       {
-         Assert.assertEquals(new DoubleNode(62), Expressions.parse("$sum([22, 44.0, -2, -2])").evaluate(null));
+         Assert.assertEquals(new LongNode(62), Expressions.parse("$sum([22, 44.0, -2, -2])").evaluate(null));
       }
 
       // expect exception when input array includes non-numerics
@@ -1799,7 +1800,7 @@ public class BasicExpressionsTest {
    @Test
    public void testAverageFunction() throws Exception {
       {
-         Assert.assertEquals(new DoubleNode(3.0), Expressions.parse("$average([1,2,3,4,5])").evaluate(null));
+         Assert.assertEquals(new LongNode(3), Expressions.parse("$average([1,2,3,4,5])").evaluate(null)); // jsonata 1.8.2 returns Long if whole number
       }
       {
          Assert.assertEquals(new DoubleNode(3.3), Expressions.parse("$average([1.1,2.2,3.3,4.4,5.5])").evaluate(null));
@@ -1826,13 +1827,15 @@ public class BasicExpressionsTest {
       {
          Assert.assertEquals(new DoubleNode(22.2), Expressions.parse("$average(22.2)").evaluate(null));
          Assert.assertEquals(new DoubleNode(-22.2), Expressions.parse("$average(-22.2)").evaluate(null));
-         Assert.assertEquals(new DoubleNode(22), Expressions.parse("$average(22)").evaluate(null));
-         Assert.assertEquals(new DoubleNode(-22), Expressions.parse("$average(-22)").evaluate(null));
+         Assert.assertEquals(new LongNode(22), Expressions.parse("$average(22)").evaluate(null)); // jsonata 1.8.2 returns Long if whole number
+         Assert.assertEquals(new LongNode(-22), Expressions.parse("$average(-22)").evaluate(null)); // jsonata 1.8.2 returns Long if whole number
       }
 
       // expect exception when input array is empty or includes non-numerics
       {
-         for (String param : new String[] { "true", "false", "\"hello\"", "{}", "[]", "[[1]]", "[[]]", "[true]",
+         for (String param : new String[] { "true", "false", "\"hello\"", "{}", 
+         		/*"[]", */ // jsonata 1.8.2 no longer sees $average([]) as an exception
+         		"[[1]]", "[[]]", "[true]",
                "[false]", "[\"hello\"]", "[{}]", "[2,\"hello\"]" // Note, "[0,1,2][3]" is null
          }) {
             Expressions e = Expressions.parse("$average(" + param + ")");
@@ -1861,7 +1864,7 @@ public class BasicExpressionsTest {
                Assert.assertEquals(AverageFunction.ERR_ARG2BADTYPE, ex.getMessage());
             }
          }
-         simpleTest("[1,2,3]~>$average()", "2.0");
+         simpleTest("[1,2,3]~>$average()", "2");
          simpleTest("a.b.c~>$average()", null);
       }
 
@@ -2096,13 +2099,13 @@ public class BasicExpressionsTest {
       // what about when the path doesn't exist?
       simpleTest("[{\"b\":1}][a=2]", null);
       simpleTest("[{\"b\":1}][a in [2]]", null);
-      simpleTest("[{\"b\":1}][a or true]", null);
+      simpleTest("[{\"b\":1}][a or true]", "{\"b\":1}"); // jsonata 1.8.2 no longer returns null);
       simpleTest("[{\"b\":1}][a and true]", null);
 
       // check singleton array / value equivlance used in the context of
       // predicates
       // test("[{\"a\":[1]}][a=1]", "{\"a\":[1]}"); // (even tho [1]!=1
-      simpleTest("[{\"a\":[1]}][a=[1]]", null); // because [1]!=[1]
+      simpleTest("[{\"a\":[1]}][a=[1]]", "{\"a\":[1]}"); // jsonata 1.8.2 no longer returns null);
 
       simpleTest("[{\"b\":1}][true]", "{\"b\":1}");
       simpleTest("[{\"a\":[1]}][1 in a]", "{\"a\":[1]}");

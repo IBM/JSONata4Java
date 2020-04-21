@@ -73,7 +73,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 //			"function-applications",
 			"partial-application", // issue #53
 			"function-signatures",
-			"parent-operator" // issue #60
+			"parent-operator", // issue #60
+			"function-distinct" // issue #62
 //			"transforms",
 //			"blocks",
 //			"descendent-operator",	// we don't support the ** operator yet
@@ -126,6 +127,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		SKIP_CASES("function-fromMillis","isoWeekDate-18");
 		// issue 53
 		SKIP_CASES("function-application","case016");
+		SKIP_CASES("function-applications","case012","case016","case021");
+		SKIP_CASES("hof-map","case008");
 		// issue #54 timeouts
 		SKIP_CASES("range-operator","case021","case024");
 		// issue #55 and / or standalone to get by parser
@@ -141,6 +144,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		SKIP_CASES("errors","case012","case013","case014","case015","case018","case020","case022","case023");
 		// have right answer, but AgnosticTestSuite not comparing correctly
 		SKIP_CASES("literals","case006");
+		// issue #61 variable to function chain
+		SKIP_CASES("function-applications","case005","case009","case015");
 	}
 
 	private static void SKIP_CASES(String group, String... casesArray) {

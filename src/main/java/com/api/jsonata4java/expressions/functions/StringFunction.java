@@ -69,7 +69,8 @@ public class StringFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			arg = FunctionUtils.getContextVariable(expressionVisitor);
-			if (arg != null && arg.isNull() == false || argCount == 0) {
+			// $string only reads context if no parameters are passed and can print NullNodes
+			if (arg != null && argCount == 0) {
 				argCount++;
 			} else {
 				useContext = false;

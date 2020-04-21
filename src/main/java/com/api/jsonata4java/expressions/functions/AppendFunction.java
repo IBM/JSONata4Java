@@ -22,9 +22,12 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.ArrayUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
@@ -50,7 +53,8 @@ public class AppendFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argArray = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argArray != null && argArray.isNull() == false) {
+			ParserRuleContext prc = ctx.getParent();
+			if ((prc != null && prc instanceof Fct_chainContext) || (argArray != null && argArray.isNull() == false)) {
 				argCount++;
 			} else {
 				useContext = false;
