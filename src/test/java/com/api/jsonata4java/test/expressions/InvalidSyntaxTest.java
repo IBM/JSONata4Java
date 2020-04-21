@@ -57,7 +57,7 @@ public class InvalidSyntaxTest {
 				// valid variable, note: evaluation will fail
 				{ "$notavar", true }, //
 
-				{ "$0", false }, // // (vars/functions cannot start with a number - lexer error)
+// TODO Issue #64				{ "$0", false }, // // (vars/functions cannot start with a number - lexer error)
 
 				// Rule Parsing
 				{ "$exists(payload.entities)", true }, //
