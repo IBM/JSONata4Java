@@ -571,6 +571,7 @@ public class JSONataUtils implements Serializable {
 				e.printStackTrace();
 			}
       }
+		test = test.replaceAll("=","%3D"); // overrides standard to match jsonata
       return test;
    }
 

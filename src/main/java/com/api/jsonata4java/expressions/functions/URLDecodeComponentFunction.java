@@ -85,7 +85,9 @@ public class URLDecodeComponentFunction extends FunctionBase implements Function
 				for (int i=0;i<str.length();i++) {
 					testChar = str.charAt(i);
 					if (testChar > 0xFF) {
-						throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_DECODE_COMPONENT+": \""+str.substring(i,i+1)+"\"");
+						String hexChars = Integer.toHexString(testChar).toUpperCase();
+						String unicode = "\\u"+hexChars;
+						throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_DECODE_COMPONENT+": \""+unicode+"\"");
 					}
 				}
 				try {

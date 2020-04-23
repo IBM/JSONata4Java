@@ -1,9 +1,12 @@
 package com.api.jsonata4java.test.expressions.agnostic;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +28,7 @@ import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
 import com.api.jsonata4java.test.expressions.agnostic.AgnosticTestSuite.TestGroup;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,7 +85,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 //			"variables" 			// we don't support arbitrary variable bindings yet (we have hard-coded $event, $state, and $instance only)
 	});
 
-	private static final ObjectMapper _objectMapper = new ObjectMapper();
+	private static final ObjectMapper _objectMapper = new ObjectMapper().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);;
 	private static final Map<String, List<String>> SKIP_CASES = new HashMap<>();
 	static {
 		// ensure we don't have scientific notation for numbers
@@ -102,7 +106,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		SKIP_CASES("comments", "case003");
 		SKIP_CASES("function-length", "case004", "case005", "case016");
 		SKIP_CASES("higher-order-functions", "case000", "case001", "case002");
-		SKIP_CASES("function-encodeUrlComponent", "case000", "case001", "case002");
+//		SKIP_CASES("function-encodeUrlComponent", "case000", "case001", "case002");
 		SKIP_CASES("object-constructor", "case008", "case009", "case010", "case011", "case012", "case013", "case014",
 				"case015", "case016", "case017", "case018", "case019", "case020", "case022", "case025");
 		SKIP_CASES("function-exists", "case006");
@@ -178,7 +182,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 	}
 
 	private void init() throws Exception {
-		final ObjectMapper om = new ObjectMapper();
+		final ObjectMapper om = new ObjectMapper().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);;
 
 		// load and parse all the dataset json files into memory
 		printHeader("Loading datasets");
@@ -190,7 +194,9 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			if (SHOW_IMPORT_DETAILS) {
 				System.out.println(datasetName);
 			}
-			final JsonNode datasetJson = om.readTree(datasetFile);
+			FileInputStream stream = new FileInputStream(datasetFile);
+			BufferedReader in = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+			final JsonNode datasetJson = om.readTree(in);
 			DATASETS.put(datasetName, datasetJson);
 			filesRead++;
 		}
@@ -219,8 +225,12 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 					System.out.println("	" + caseName);
 				}
 				// casesRead++;
-
-				final JsonNode caseJson = om.readTree(caseFile);
+				if (caseName.equals("case002") && groupName.equals("function-encodeUrlComponent")) {
+					System.out.println("foundit");
+				}
+				FileInputStream stream = new FileInputStream(caseFile);
+				BufferedReader in = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+				final JsonNode caseJson = om.readTree(in);
 				TestCase testCase = null;
 				if (caseJson.isObject()) {
 					testCase = new TestCase(group, caseName, caseJson);
@@ -268,6 +278,10 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 				notifier.fireTestStarted(testCase.getDescription());
 				
 				try {
+					if (testCase.getCaseName().equals("case002") && testCase.group.groupName.toString().equals("function-encodeUrlComponent")) {
+						System.out.println("found it");
+					}
+					
 					Expressions e = Expressions.parse(testCase.getExpr());
 
 					// introduce bindings if available
@@ -280,7 +294,6 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 					}
 
 					JsonNode actualResult = e.evaluate(testCase.getDataset());
-
 					try {
 						String expected = _objectMapper.writerWithDefaultPrettyPrinter()
 								.writeValueAsString(testCase.expectedResult);
@@ -410,7 +423,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			// The jsonata expression to be evaluated.
 			JsonNode expressionNode = o.get("expr");
 			if (expressionNode != null) {
-				this.expr = expressionNode.asText();
+				setExpr(expressionNode.asText());
 
 			} else {
 				JsonNode expressionFileNode = o.get("expr-file");
@@ -546,6 +559,21 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			return caseName;
 		}
 
+		public void setExpr(String expr) {
+			StringBuilder sb = new StringBuilder();
+			for (char c : expr.toCharArray()) {
+				if (c > 0x00FF) {
+					String hexChars = Integer.toHexString(c).toUpperCase();
+					hexChars = "0000".substring(0,4-hexChars.length())+hexChars;
+					String unicode = "\\u"+hexChars;
+					sb.append(unicode);
+				} else {
+					sb.append((char)c);
+				}
+			}
+			this.expr = sb.toString();
+		}
+		
 		private boolean shouldSkip() {
 			return this.group.shouldSkip() || (SKIP_CASES.containsKey(group.getGroupName())
 					&& SKIP_CASES.get(group.getGroupName()).contains(this.getCaseName()));

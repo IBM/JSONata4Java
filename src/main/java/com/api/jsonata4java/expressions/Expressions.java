@@ -82,7 +82,7 @@ public class Expressions {
 		// Expressions can include references to properties within an
 		// application interface ("state"),
 		// properties within an event, and various operators and functions.
-	   InputStream targetStream = new ByteArrayInputStream(mappingExpression.getBytes());
+	   InputStream targetStream = new ByteArrayInputStream(mappingExpression.getBytes("UTF-8"));
 		CharStream input = CharStreams.fromStream(targetStream,Charset.forName("UTF-8"));
 
 		MappingExpressionLexer lexer = new MappingExpressionLexer(input);

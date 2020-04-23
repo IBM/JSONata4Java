@@ -23,8 +23,8 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
@@ -85,8 +85,8 @@ public class URLEncodeFunction extends FunctionBase implements Function {
 				final String str = argString.textValue();
 				try {
 					String strResult = "";
-					URI uri = new URI(str);
-					String query = uri.getQuery();
+					URL url = new URL(str);
+					String query = url.getQuery();
 					if (query != null) {
 						int offset = str.indexOf(query);
 						if (offset >0) {
@@ -96,7 +96,7 @@ public class URLEncodeFunction extends FunctionBase implements Function {
 					} else {
 						result = new TextNode(str);
 					}
-				} catch (URISyntaxException e) {
+				} catch (MalformedURLException e) {
 					throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_ENCODE+": \""+str+"\"");
 				}
 			} else {

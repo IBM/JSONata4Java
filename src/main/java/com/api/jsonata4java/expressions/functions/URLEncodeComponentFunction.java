@@ -23,6 +23,7 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 import com.api.jsonata4java.JSONataUtils;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
@@ -81,11 +82,15 @@ public class URLEncodeComponentFunction extends FunctionBase implements Function
 			}
 			if (argString.isTextual()) {
 				final String str = argString.textValue();
-				char testChar = ' ';
-				for (int i=0;i<str.length();i++) {
-					testChar = str.charAt(i);
-					if (testChar > 0xFF) {
-						throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_ENCODE_COMPONENT+": \""+str.substring(i,i+1)+"\"");
+				String strData = Objects.requireNonNull(str).intern();
+				int strLen = strData.codePointCount(0, strData.length());
+				int cp = 0;
+				for (int i=0;i<strLen;i++) {
+					cp = strData.codePointAt(i);
+					if (cp > 0xFF) {
+						String hexChars = Integer.toHexString(cp).toUpperCase();
+						String unicode = "\\u"+hexChars;
+						throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_ENCODE_COMPONENT+": \""+unicode+"\"");
 					}
 				}
 				try {

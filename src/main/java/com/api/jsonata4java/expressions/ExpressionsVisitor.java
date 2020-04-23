@@ -297,7 +297,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	 * singleton array and return it.
 	 * 
 	 * @param input
-	 * @return
+	 * @return wrapped content ensured to be an array
 	 */
 	public static ArrayNode ensureArray(JsonNode input) {
 		if (input == null) {
@@ -726,17 +726,23 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	@Override
 	public JsonNode visit(ParseTree tree) {
 		JsonNode result = null;
+		
 		if (checkRuntime) {
 			evaluateEntry();
 		}
 		if (steps.size() > 0 && tree.equals(steps.get(steps.size() - 1))) {
 			lastStep = true;
 		}
+		
 		result = super.visit(tree);
+		
 		if (!keepSingleton) {
 			if (result != null && result instanceof SelectorArrayNode
 					&& ((SelectorArrayNode) result).getSelectionGroups().size() == 1) {
 				result = ((SelectorArrayNode) result).getSelectionGroups().get(0);
+//				if (result.size() == 1) {
+//					result = result.get(0);
+//				}
 			}
 		}
 		if (checkRuntime) {
@@ -2104,8 +2110,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			lhs = visit(lhsCtx);
 		}
 		if (lhs == null || lhs.isNull()) {
-			return null; // throw new
-								// EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY,"null"));
+			return null;
+			// throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY,"null"));
 		}
 		// reject path entries that are numbers or values
 		switch (lhs.getNodeType()) {
@@ -2402,22 +2408,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitVar_recall(MappingExpressionParser.Var_recallContext ctx) {
 		final String varName = ctx.getText();
 		JsonNode result = getVariable(varName);
-//		// double check to see if this could be a function reference and if so, return
-//		// NullNode rather than null
-//		if (result == null) {
-//			DeclaredFunction declFct = getDeclaredFunction(varName);
-//			if (declFct != null) {
-//				result = new TextNode("");
-//			} else {
-//				Function fct = getJsonataFunction(varName);
-//				if (fct != null) {
-//					result = new TextNode("");
-//				} else {
-//					result = null;
-//				}
-//			}
-//		}
-
 		return result;
 	}
 
