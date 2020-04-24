@@ -737,12 +737,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		result = super.visit(tree);
 		
 		if (!keepSingleton) {
-			if (result != null && result instanceof SelectorArrayNode
-					&& ((SelectorArrayNode) result).getSelectionGroups().size() == 1) {
-				result = ((SelectorArrayNode) result).getSelectionGroups().get(0);
-//				if (result.size() == 1) {
-//					result = result.get(0);
-//				}
+			if (result != null && result instanceof SelectorArrayNode) {
+//					&& ((SelectorArrayNode) result).getSelectionGroups().size() == 1) {
+//				result = ((SelectorArrayNode) result).getSelectionGroups().get(0);
+				if (result.size() == 1) {
+					result = result.get(0);
+				}
 			}
 		}
 		if (checkRuntime) {
