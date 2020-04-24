@@ -51,19 +51,19 @@ public class NumberUtils {
 		// Create the variable to return
 		ValueNode result = null;
 
-		try {
-			// First try to convert the number to a long
-			result = new LongNode(Long.valueOf(number));
-		} catch (NumberFormatException e) {
+//		try {
+//			// First try to convert the number to a long
+//			result = new LongNode(Long.valueOf(number));
+//		} catch (NumberFormatException e) {
 			// The number is not a long... it might be floating point number
 			try {
 				// Try to conver the number to a double
-				Double doubleValue = Double.valueOf(Double.valueOf(number));
+				Double doubleValue = Double.valueOf(number);
 
 				// Check to see if the converted number is within the acceptable range
 				if (!doubleValue.isInfinite() && !doubleValue.isNaN()) {
 					if (doubleValue - doubleValue.longValue() == 0.0) {
-						result = new LongNode(doubleValue.longValue());
+						result = new LongNode((long)doubleValue.doubleValue());
 					} else {
 						result = new DoubleNode(doubleValue.doubleValue());
 					}
@@ -75,7 +75,7 @@ public class NumberUtils {
 				final String msg = String.format(Constants.ERR_MSG_UNABLE_TO_CAST_VALUE_TO_NUMBER, number);
 				throw new EvaluateRuntimeException(msg);
 			}
-		}
+//		}
 
 		return result;
 	}

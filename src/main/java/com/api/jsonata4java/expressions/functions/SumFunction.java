@@ -77,7 +77,7 @@ public class SumFunction extends FunctionBase implements Function {
 				// against another integral
 				boolean shouldReturnAsLong = true;
 				for (JsonNode a : arr) {
-					if (a.isFloatingPointNumber()) {
+					if (a.isFloatingPointNumber() || a.isDouble()) {
 						shouldReturnAsLong = false;
 					} else if (!a.isIntegralNumber()) {
 						// also complain if any non-numeric types are included in the
@@ -93,7 +93,7 @@ public class SumFunction extends FunctionBase implements Function {
 					}
 					return new LongNode(sum);
 				} else {
-					double sum = 0.0;
+					double sum = 0.0d;
 					for (JsonNode a : arr) {
 						sum += a.asDouble();
 					}
@@ -102,7 +102,7 @@ public class SumFunction extends FunctionBase implements Function {
 
 			} else if (argArray.isIntegralNumber()) {
 				return new LongNode(argArray.asLong());
-			} else if (argArray.isFloatingPointNumber()) {
+			} else if (argArray.isFloatingPointNumber() || argArray.isDouble()) {
 				return new DoubleNode(argArray.asDouble());
 			} else {
 				throw new EvaluateRuntimeException(ERR_ARG1ARRTYPE);

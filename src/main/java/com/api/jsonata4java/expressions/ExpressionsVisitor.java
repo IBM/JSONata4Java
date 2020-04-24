@@ -161,7 +161,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	private static boolean areJsonNodesEqual(JsonNode left, JsonNode right) {
 		if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
 			return (left.asDouble() == right.asDouble());
+		} else if (left.isDouble() || right.isDouble()) {
+			return (left.asDouble() == right.asDouble());
 		} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
+			return left.asLong() == right.asLong();
+		} else if (left.isLong() && right.isLong()) {
 			return left.asLong() == right.asLong();
 		} else if (left.isNull()) {
 			return right.isNull();
@@ -1016,9 +1020,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				// now round down any non-integral indexes
 				for (JsonNode indexInContext : indexesInContext) {
 					// if it's an integral number, just add it as is
-					if (indexInContext.isIntegralNumber()) {
+					if (indexInContext.isIntegralNumber() || indexInContext.isLong()) {
 						indexesToReturn.add(indexInContext.asInt());
-					} else if (indexInContext.isFloatingPointNumber()) {
+					} else if (indexInContext.isFloatingPointNumber() || indexInContext.isDouble()) {
 						// If the number is not an integer it is rounded down to an
 						// integer according to JSONATA spec
 						indexesToReturn.add((int) Math.floor(indexInContext.asDouble()));
@@ -1331,7 +1335,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = null;
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
 				result = (left.asDouble() < right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+			} else if (left.isDouble() || right.isDouble()) {
+				result = (left.asDouble() < right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
+				result = (left.asLong() < right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+			} else if (left.isLong() && right.isLong()) {
 				result = (left.asLong() < right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
 				if (!lIsComparable || !rIsComparable) {
@@ -1354,7 +1362,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = null;
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
 				result = (left.asDouble() > right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+			} else if (left.isDouble() || right.isDouble()) {
+				result = (left.asDouble() > right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
+				result = (left.asLong() > right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+			} else if (left.isLong() && right.isLong()) {
 				result = (left.asLong() > right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
 				if (!lIsComparable || !rIsComparable) {
@@ -1377,7 +1389,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = null;
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
 				result = (left.asDouble() <= right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+			} else if (left.isDouble() || right.isDouble()) {
+				result = (left.asDouble() <= right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
+				result = (left.asLong() <= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+			} else if (left.isLong() && right.isLong()) {
 				result = (left.asLong() <= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
 				if (!lIsComparable || !rIsComparable) {
@@ -1400,7 +1416,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = null;
 			} else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
 				result = (left.asDouble() >= right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+			} else if (left.isDouble() || right.isDouble()) {
+				result = (left.asDouble() >= right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else if (left.isIntegralNumber() && right.isIntegralNumber()) {
+				result = (left.asLong() >= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+			} else if (left.isLong() && right.isLong()) {
 				result = (left.asLong() >= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 			} else {
 				if (!lIsComparable || !rIsComparable) {
@@ -1663,41 +1683,56 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitField_values(MappingExpressionParser.Field_valuesContext ctx) {
 		ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
 		ArrayNode valArray = new ArrayNode(JsonNodeFactory.instance);
-		ExprContext exprCtx = ctx.expr(); // may be null
+//		ExprContext exprCtx = ctx.expr(); // may be null
 		if (_environment.isEmptyContext()) {
 			// signal no match
 			return null;
 		}
 		JsonNode elt = _environment.peekContext();
-		if (elt == null || elt.isObject() == false) {
+		if (elt == null || (elt.isObject() || elt.isArray()) == false) {
 			// signal no match
 			return null;
 		}
-		for (Iterator<String> it = ((ObjectNode) elt).fieldNames(); it.hasNext();) {
-			JsonNode value = ((ObjectNode) elt).get(it.next());
-			if (value.isArray()) {
-				value = flatten(value, null);
-				// remove outer array
-				for (Iterator<JsonNode> it2 = ((ArrayNode) value).iterator(); it2.hasNext();) {
-					valArray.add(it2.next());
+		if (elt.isObject()) {
+			for (Iterator<String> it = ((ObjectNode) elt).fieldNames(); it.hasNext();) {
+				JsonNode value = ((ObjectNode) elt).get(it.next());
+				if (value.isArray()) {
+					value = flatten(value, null);
+					// remove outer array
+					for (Iterator<JsonNode> it2 = ((ArrayNode) value).iterator(); it2.hasNext();) {
+						valArray.add(it2.next());
+					}
+					// valArray = (ArrayNode)append(valArray, value);
+				} else {
+					valArray.add(value);
 				}
-				// valArray = (ArrayNode)append(valArray, value);
-			} else {
-				valArray.add(value);
+			}
+		} else { // isArray
+			for (Iterator<JsonNode> it = ((ArrayNode)elt).iterator();it.hasNext();) {
+				JsonNode value = it.next();
+				if (value.isArray()) {
+					value = flatten(value,null);
+					// remove outer array
+					for (Iterator<JsonNode> it2 = ((ArrayNode) value).iterator(); it2.hasNext();) {
+						valArray.add(it2.next());
+					}
+				} else {
+					valArray.add(value);
+				}
 			}
 		}
 		for (Iterator<JsonNode> it = valArray.iterator(); it.hasNext();) {
 			JsonNode value = it.next();
-			if (exprCtx == null) {
+//			if (exprCtx == null) {
 				resultArray.add(value);
-			} else {
-				_environment.pushContext(value);
-				JsonNode result = visit(exprCtx);
-				if (result != null) {
-					resultArray.add(result);
-				}
-				_environment.popContext();
-			}
+//			} else {
+//				_environment.pushContext(value);
+//				JsonNode result = visit(exprCtx);
+//				if (result != null) {
+//					resultArray.add(result); // comments due to removing ('.' expr)? in fieldValues definition in .g4
+//				}
+//				_environment.popContext();
+//			}
 		}
 		if (resultArray.size() == 0) {
 			return null;
@@ -2116,7 +2151,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		// reject path entries that are numbers or values
 		switch (lhs.getNodeType()) {
 		case NUMBER: {
-			lhs = factory.textNode(lhs.asText());
+			// leaving number as is since * can reference array values too
+			// lhs = factory.textNode(lhs.asText());
 			break;
 		}
 		case BOOLEAN:
@@ -2318,7 +2354,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 									// that engine that will be fixed)
 			} else if (operand.isFloatingPointNumber()) {
 				result = new DoubleNode(-operand.asDouble());
+			} else if (operand.isDouble()) {
+				result = new DoubleNode(-operand.asDouble());
 			} else if (operand.isIntegralNumber()) {
+				result = new LongNode(-operand.asLong());
+			} else if (operand.isLong()) {
 				result = new LongNode(-operand.asLong());
 			} else {
 				throw new EvaluateRuntimeException(ERR_NEGATE_NON_NUMERIC);

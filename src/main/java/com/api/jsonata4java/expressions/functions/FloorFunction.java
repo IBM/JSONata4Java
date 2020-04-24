@@ -83,7 +83,7 @@ public class FloorFunction extends FunctionBase implements Function {
 			}
 			// Check the type of the argument
 			if (argNumber.isNumber()) {
-				if (argNumber.isFloatingPointNumber()) {
+				if (argNumber.isFloatingPointNumber() || argNumber.isDouble()) {
 					// Math.floor only accepts a double
 					double floor = Math.floor(argNumber.doubleValue());
 

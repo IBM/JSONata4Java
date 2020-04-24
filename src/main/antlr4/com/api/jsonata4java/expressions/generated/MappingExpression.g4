@@ -39,7 +39,7 @@ grammar MappingExpression;
 
 expr:
    ID                                                     # id
- | '*' ('.' expr)?                                        # field_values
+ | '*'                                                    # field_values
  | DESCEND ('.' expr)?                                    # descendant
  | DOLLAR (('.' expr) | (ARR_OPEN expr ARR_CLOSE))?       # context_ref
  | ROOT ('.' expr)?                                       # root_path

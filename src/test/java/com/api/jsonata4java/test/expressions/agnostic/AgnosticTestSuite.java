@@ -224,10 +224,6 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 				if (SHOW_IMPORT_DETAILS) {
 					System.out.println("	" + caseName);
 				}
-				// casesRead++;
-				if (caseName.equals("case002") && groupName.equals("function-encodeUrlComponent")) {
-					System.out.println("foundit");
-				}
 				FileInputStream stream = new FileInputStream(caseFile);
 				BufferedReader in = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
 				final JsonNode caseJson = om.readTree(in);
@@ -278,9 +274,6 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 				notifier.fireTestStarted(testCase.getDescription());
 				
 				try {
-					if (testCase.getCaseName().equals("case002") && testCase.group.groupName.toString().equals("function-encodeUrlComponent")) {
-						System.out.println("found it");
-					}
 					
 					Expressions e = Expressions.parse(testCase.getExpr());
 

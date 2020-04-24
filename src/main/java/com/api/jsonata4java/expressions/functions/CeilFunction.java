@@ -90,9 +90,17 @@ public class CeilFunction extends FunctionBase implements Function {
 					// Create the node to return
 					result = new LongNode((long) ceil);
 				} else {
-					// The argument is already an integer... simply return the
-					// node
-					result = argNumber;
+					if (argNumber.isLong()) {
+						// Math.ceil only accepts a double
+						double ceil = Math.ceil(argNumber.doubleValue());
+
+						// Create the node to return
+						result = new LongNode((long) ceil);						
+					} else {
+						// The argument is already an integer... simply return the
+						// node
+						result = argNumber;
+					}
 				}
 			} else {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
