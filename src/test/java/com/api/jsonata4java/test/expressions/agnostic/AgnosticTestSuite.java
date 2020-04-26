@@ -42,31 +42,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 
 	private static final List<String> SKIP_GROUPS = Arrays.asList(new String[] {
-//			"wildcards",
-//			"function-signatures",
-//			"higher-order-functions",
-//			"hof-filter",
-//			"hof-map",
-//			"hof-reduce",
-//			"hof-zip-map",
 			"lambdas",
-//			"function-zip",
 			"regex",
 			"encoding",
 			"function-assert",
 			"function-error",
 			"function-eval",
 			"hof-single",
-//       "function-shuffle",
-//			"function-lookup",
-//			"function-keys",
-//			"function-spread",
-//			"function-sort",
-//			"function-clone",
-//			"function-each",
-//			"function-merge",
-//			"context",
-//			"closures",
 			"sorting", // we don't support the order-by operator (^) yet
 			"tail-recursion", 		// tail-recursion requires function definition support, which we don't have yet
 			"transform", // issue #47
@@ -74,15 +56,10 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			"library-joins",
 			"function-formatNumber",
 			"function-tomillis",
-//			"function-applications",
 			"partial-application", // issue #53
 			"function-signatures",
 			"parent-operator", // issue #60
 			"function-distinct" // issue #62
-//			"transforms",
-//			"blocks",
-//			"descendent-operator",	// we don't support the ** operator yet
-//			"variables" 			// we don't support arbitrary variable bindings yet (we have hard-coded $event, $state, and $instance only)
 	});
 
 	private static final ObjectMapper _objectMapper = new ObjectMapper().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);;

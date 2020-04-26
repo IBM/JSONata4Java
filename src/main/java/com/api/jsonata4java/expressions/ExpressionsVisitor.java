@@ -1599,41 +1599,41 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitDescendant(MappingExpressionParser.DescendantContext ctx) {
 		ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
 		JsonNode descendants = getDescendants();
-		ExprContext exprCtx = ctx.expr();
+//		ExprContext exprCtx = ctx.expr();
 		if (descendants == null) {
 			resultArray = null;
 		} else {
 			if (!descendants.isArray()) {
-				if (exprCtx == null) {
+//				if (exprCtx == null) {
 					resultArray.add(descendants);
-				} else {
-					JsonNode result = visit(exprCtx);
-					if (result != null) {
-						resultArray.add(result);
-					}
-				}
+//				} else {
+//					JsonNode result = visit(exprCtx);
+//					if (result != null) {
+//						resultArray.add(result);
+//					}
+//				}
 			} else {
 				for (Iterator<JsonNode> it = ((ArrayNode) descendants).iterator(); it.hasNext();) {
-					if (exprCtx == null) {
+//					if (exprCtx == null) {
 						resultArray.add(it.next());
-					} else {
-						_environment.pushContext(it.next());
-						JsonNode result = null;
-						if (exprCtx instanceof MappingExpressionParser.StringContext) {
-							CommonToken token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.ID,
-									visit(exprCtx).asText());
-							TerminalNode node = new TerminalNodeImpl(token);
-							IdContext idCtx = new MappingExpressionParser.IdContext(exprCtx);
-							idCtx.addChild(node);
-							result = visit(idCtx);
-						} else {
-							result = visit(exprCtx);
-						}
-						_environment.popContext();
-						if (result != null) {
-							resultArray.add(result);
-						}
-					}
+//					} else {
+//						_environment.pushContext(it.next());
+//						JsonNode result = null;
+//						if (exprCtx instanceof MappingExpressionParser.StringContext) {
+//							CommonToken token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.ID,
+//									visit(exprCtx).asText());
+//							TerminalNode node = new TerminalNodeImpl(token);
+//							IdContext idCtx = new MappingExpressionParser.IdContext(exprCtx);
+//							idCtx.addChild(node);
+//							result = visit(idCtx);
+//						} else {
+//							result = visit(exprCtx);
+//						}
+//						_environment.popContext();
+//						if (result != null) {
+//							resultArray.add(result);
+//						}
+//					}
 				}
 			}
 		}

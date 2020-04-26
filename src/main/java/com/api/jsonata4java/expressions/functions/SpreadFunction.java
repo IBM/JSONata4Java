@@ -73,7 +73,7 @@ public class SpreadFunction extends FunctionBase implements Function {
 				useContext = false;
 			}
 		}
-		boolean argIsArray = false;
+		boolean[] argIsArray = new boolean[] {false};
 		// Make sure that we have the right number of arguments
 		if (argCount == 1) {
 			if (!useContext) {
@@ -85,50 +85,12 @@ public class SpreadFunction extends FunctionBase implements Function {
 					}
 				}
 			}
-
-			if (argObject == null) {
-				return null;
-			}
-			if (argObject.isObject()) {
-				ObjectNode obj = (ObjectNode) argObject;
-				if (obj.size() > 0) {
-					addObject(result, obj);
-				} else {
-					return null;
-				}
-			} else if (argObject.isArray()) {
-				argIsArray = true;
-				ArrayNode objArray = (ArrayNode) argObject;
-				if (objArray.size() == 0) {
-					return null;
-				}
-				// process each object in the array
-				for (int i = 0; i < objArray.size(); i++) {
-					JsonNode node = objArray.get(i);
-					if (node.isObject()) {
-						ObjectNode obj = (ObjectNode) node;
-						addObject(result, obj);
-					} else {
-						// jsonata.js 1.8 just keeps non-objects
-						// throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS);
-						result.add(node);
-					}
-
-				}
-			} else {
-				/*
-				 * The input argument is not an object nor array of objects. Throw a suitable
-				 * exception
-				 */
-				// throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				// jsonata.js 1.8 just adds the argument
-				result.add(argObject);
-			}
+			result = (SelectorArrayNode)spread(result,argObject,argIsArray);
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
 
-		if (result != null && argIsArray == false) {
+		if (result != null && argIsArray[0] == false) {
 			JsonNode test = ExpressionsVisitor.unwrapArray(result);
 			if (test.isArray() && test instanceof SelectorArrayNode) {
 				result = (SelectorArrayNode) test;
@@ -162,5 +124,81 @@ public class SpreadFunction extends FunctionBase implements Function {
 			cell.set(key, obj.get(key));
 			result.add(cell);
 		}
+	}
+	
+	public JsonNode spread(SelectorArrayNode result, JsonNode argObject,boolean[] argIsArray) {
+		if (argObject == null) {
+			return null;
+		}
+		if (argObject.isObject()) {
+			ObjectNode obj = (ObjectNode) argObject;
+			if (obj.size() > 0) {
+				addObject(result, obj);
+			} else {
+				return null;
+			}
+		} else if (argObject.isArray()) {
+			argIsArray[0] = true;
+			ArrayNode objArray = (ArrayNode) argObject;
+			if (objArray.size() == 0) {
+				return null;
+			}
+			// process each object in the array
+			for (int i = 0; i < objArray.size(); i++) {
+				JsonNode node = objArray.get(i);
+				if (node.isObject()) {
+					ObjectNode obj = (ObjectNode) node;
+					addObject(result, obj);
+				} else if (node.isArray()) {
+					for (JsonNode elt : ((ArrayNode)node)) {
+						concat(result,spread(result,elt,argIsArray));
+					}
+				} else {
+					// jsonata.js 1.8 just keeps non-objects
+					// throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS);
+					result.add(node);
+				}
+			}
+		} else {
+			/*
+			 * The input argument is not an object nor array of objects. Throw a suitable
+			 * exception
+			 */
+			// throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+			// jsonata.js 1.8 just adds the argument
+			result.add(argObject);
+		}
+		return result;
+	}
+	
+	JsonNode append(JsonNode base, JsonNode appendage) {
+		if (base == null) {
+			return appendage;
+		}
+		if (appendage == null) {
+			return base;
+		}
+		if (base.isArray() == false) {
+			SelectorArrayNode newBase = new SelectorArrayNode(JsonNodeFactory.instance);
+			newBase.add(base);
+			base = newBase;
+		}
+		if (appendage.isArray() == false) {
+			SelectorArrayNode newAppendage = new SelectorArrayNode(JsonNodeFactory.instance);
+			newAppendage.add(appendage);
+			appendage = newAppendage;
+		}
+		return concat((ArrayNode)base,appendage);
+	}
+	
+	ArrayNode concat(ArrayNode base, JsonNode appendage) {
+		if (appendage.isArray()) {
+			for (JsonNode elt:appendage) {
+				base.add(elt);
+			}
+		} else {
+			base.add(appendage);
+		}
+		return base;
 	}
 }

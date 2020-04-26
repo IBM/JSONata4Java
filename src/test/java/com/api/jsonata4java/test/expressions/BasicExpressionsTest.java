@@ -366,9 +366,8 @@ public class BasicExpressionsTest {
 
       // issue #31
       expectArray.removeAll();
-// TODO: this is a temporary fix to allow building jar with better JSONata
-//      expectArray.add(1);
-//      simpleTest("{\"a\":[1]}.a", expectArray, jsonObj3);
+      expectArray.add(1);
+      simpleTest("{\"a\":[1]}.a", expectArray, jsonObj3);
       simpleTest("[{\"a\":[1]}].a[0]", 1, jsonObj3);
       simpleTest("{\"a\":[1]}.a[0]", 1, jsonObj3);
       
@@ -1032,7 +1031,7 @@ public class BasicExpressionsTest {
       //         }
       //      }
 
-      // TODO: fix back to "1" rather than "[1]"
+// TODO: fix back to "[1]" rather than "1" once flattening is addressed
 //    simpleTest("$spread([1])","[1]");
       simpleTest("$spread([1])","1");
 
