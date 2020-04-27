@@ -108,9 +108,9 @@ public class PadFunction extends FunctionBase implements Function {
 							useContext ? 1 : 2);
 					if (argChar != null && argChar.isTextual()) {
 						padStr = argChar.asText();
-						if (padStr.length() > 2) {
-							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
-						}
+//						if (padStr.length() > 2) {
+//							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
+//						}
 					} else {
 						throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
 					}
@@ -146,7 +146,7 @@ public class PadFunction extends FunctionBase implements Function {
 		int strLen = strData.codePointCount(0, strData.length());
 
 		String padData = Objects.requireNonNull(padStr).intern();
-		int padLen = strData.codePointCount(0, padData.length());
+		int padLen = padData.codePointCount(0, padData.length());
 
 		if (padLen == 0) {
 			padStr = " ";
@@ -174,7 +174,7 @@ public class PadFunction extends FunctionBase implements Function {
 		int strLen = strData.codePointCount(0, strData.length());
 
 		String padData = Objects.requireNonNull(padStr).intern();
-		int padLen = strData.codePointCount(0, padData.length());
+		int padLen = padData.codePointCount(0, padData.length());
 
 		if (padLen == 0) {
 			padStr = " ";
