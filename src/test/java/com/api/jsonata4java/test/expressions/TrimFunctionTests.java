@@ -61,8 +61,8 @@ import com.api.jsonata4java.expressions.utils.Constants;
  */
 @RunWith(Parameterized.class)
 public class TrimFunctionTests {
-
-	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TRIM);
+	// 1.8.2 function-trim:case002 doesn't throw an exception
+	// private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TRIM);
 	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
 			Constants.FUNCTION_TRIM);
 	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
@@ -79,7 +79,7 @@ public class TrimFunctionTests {
 
 	@Parameters(name = "{index}: {0} -> {1} ({2})")
 	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$trim()", null, ERR_BAD_CONTEXT }, //
+		return Arrays.asList(new Object[][] { { "$trim()", null, null }, // 1.8.2 not ERR_BAD_CONTEXT
 				{ "$trim({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$trim([])", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$trim({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE }, //

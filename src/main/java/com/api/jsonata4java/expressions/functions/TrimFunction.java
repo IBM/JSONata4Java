@@ -84,12 +84,17 @@ public class TrimFunction extends FunctionBase implements Function {
 				if (argString.isTextual()) {
 					final String str = argString.textValue();
 					result = new TextNode(str.trim().replaceAll("\\s+", " "));
+				} else {
+					if (useContext) {
+						throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+					}
+					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
 			}
 		} else {
 			if (argCount != 0) {
 				throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-			} // else returns null
+			}
 		}
 
 		return result;
