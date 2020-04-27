@@ -85,7 +85,7 @@ public class SplitFunction extends FunctionBase implements Function {
 		}
 
 		// Make sure that we have the right number of arguments
-		if (argCount >= 1 || argCount <= 3) {
+		if (argCount >= 1 && argCount <= 3) {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
@@ -111,7 +111,8 @@ public class SplitFunction extends FunctionBase implements Function {
 				 * TODO: Add support for regex patterns using / delimiters once the grammar has
 				 * been updated. For now, simply throw an exception.
 				 */
-				throw new EvaluateRuntimeException("The matcher function argument passed to function \""+Constants.FUNCTION_SPLIT+"\" does not return the correct object structure");
+				// throw new EvaluateRuntimeException("The matcher function argument passed to function \""+Constants.FUNCTION_SPLIT+"\" does not return the correct object structure");
+				throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 			}
 			if (argString == null) {
 				return null;
@@ -161,7 +162,7 @@ public class SplitFunction extends FunctionBase implements Function {
 				} // FOR
 			}
 		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG4BADTYPE);
+			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG4BADTYPE);
 		}
 
 		return result;
