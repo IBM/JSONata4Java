@@ -109,6 +109,11 @@ public class ReplaceFunction extends FunctionBase implements Function {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
 			if (argString == null) {
+				if (argCount < 2) {
+					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+				} else if (argCount == 2) {
+					throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+				}
 				return null; // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 			if (argCount >= 2) {
