@@ -1599,41 +1599,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitDescendant(MappingExpressionParser.DescendantContext ctx) {
 		ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
 		JsonNode descendants = getDescendants();
-//		ExprContext exprCtx = ctx.expr();
 		if (descendants == null) {
 			resultArray = null;
 		} else {
 			if (!descendants.isArray()) {
-//				if (exprCtx == null) {
-					resultArray.add(descendants);
-//				} else {
-//					JsonNode result = visit(exprCtx);
-//					if (result != null) {
-//						resultArray.add(result);
-//					}
-//				}
+				resultArray.add(descendants);
 			} else {
 				for (Iterator<JsonNode> it = ((ArrayNode) descendants).iterator(); it.hasNext();) {
-//					if (exprCtx == null) {
-						resultArray.add(it.next());
-//					} else {
-//						_environment.pushContext(it.next());
-//						JsonNode result = null;
-//						if (exprCtx instanceof MappingExpressionParser.StringContext) {
-//							CommonToken token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.ID,
-//									visit(exprCtx).asText());
-//							TerminalNode node = new TerminalNodeImpl(token);
-//							IdContext idCtx = new MappingExpressionParser.IdContext(exprCtx);
-//							idCtx.addChild(node);
-//							result = visit(idCtx);
-//						} else {
-//							result = visit(exprCtx);
-//						}
-//						_environment.popContext();
-//						if (result != null) {
-//							resultArray.add(result);
-//						}
-//					}
+					resultArray.add(it.next());
 				}
 			}
 		}
@@ -1683,7 +1656,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitField_values(MappingExpressionParser.Field_valuesContext ctx) {
 		ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
 		ArrayNode valArray = new ArrayNode(JsonNodeFactory.instance);
-//		ExprContext exprCtx = ctx.expr(); // may be null
 		if (_environment.isEmptyContext()) {
 			// signal no match
 			return null;
@@ -1723,16 +1695,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		for (Iterator<JsonNode> it = valArray.iterator(); it.hasNext();) {
 			JsonNode value = it.next();
-//			if (exprCtx == null) {
-				resultArray.add(value);
-//			} else {
-//				_environment.pushContext(value);
-//				JsonNode result = visit(exprCtx);
-//				if (result != null) {
-//					resultArray.add(result); // comments due to removing ('.' expr)? in fieldValues definition in .g4
-//				}
-//				_environment.popContext();
-//			}
+			resultArray.add(value);
 		}
 		if (resultArray.size() == 0) {
 			return null;

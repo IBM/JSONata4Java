@@ -42,24 +42,26 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 
 	private static final List<String> SKIP_GROUPS = Arrays.asList(new String[] {
-			"lambdas",
-			"regex",
-			"encoding",
-			"function-assert",
-			"function-error",
-			"function-eval",
-			"hof-single",
-			"sorting", // we don't support the order-by operator (^) yet
-			"tail-recursion", 		// tail-recursion requires function definition support, which we don't have yet
 			"transform", // issue #47
 			"transforms", // issue #47
-			"library-joins",
-			"function-formatNumber",
-			"function-tomillis",
+			"function-formatNumber", // issue #49
+			"function-tomillis", // issue #52
 			"partial-application", // issue #53
-			"function-signatures",
+			"closures", // issue #56
+			"matchers", // issue #57
+			"hof-zip-map", // issue #58
 			"parent-operator", // issue #60
-			"function-distinct" // issue #62
+			"function-distinct", // issue #63
+			"lambdas", // issue #70
+			"higher-order-functions", // issue #70
+			"regex", // issue #71
+			"function-assert", // issue #72
+			"function-eval", // issue #73
+			"sorting", // issue #74
+			"hof-single", // issue #76
+			"tail-recursion", // tail-recursion requires lambda issue #70
+			"function-signatures", // #77
+			"flattening" // #78
 	});
 
 	private static final ObjectMapper _objectMapper = new ObjectMapper().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);;
@@ -68,65 +70,60 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		// ensure we don't have scientific notation for numbers
 		_objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
 
-		// because we don't support $$
-//		SKIP_CASES("conditionals", "case000", "case001", "case002", "case003", "case004", "case005");
-
-		// because we don't support conditionals with no "else" clause (e.g. a?b)
-//		SKIP_CASES("conditionals", "case006");
-
-		// cases 3-6 are mis-categories, actually testing $toMillis (not $sift) which is
-		// why we don't ignore the whole group (despite not supporting $sift)
-//		SKIP_CASES("function-sift", "case000", "case001", "case002");
-
-		SKIP_CASES("predicates", "case003");
+		// due to  unparsable use of 'in' in the tests
 		SKIP_CASES("inclusion-operator", "case004", "case005");
-		SKIP_CASES("comments", "case003");
-		SKIP_CASES("function-length", "case004", "case005", "case016");
-		SKIP_CASES("higher-order-functions", "case000", "case001", "case002");
-//		SKIP_CASES("function-encodeUrlComponent", "case000", "case001", "case002");
-		SKIP_CASES("object-constructor", "case008", "case009", "case010", "case011", "case012", "case013", "case014",
+		// issue #43 object construction
+		SKIP_CASES("object-constructor",
+				"case008", "case009", "case010", "case011", "case012", "case013", "case014",
 				"case015", "case016", "case017", "case018", "case019", "case020", "case022", "case025");
-		SKIP_CASES("function-exists", "case006");
-		SKIP_CASES("range-operator", "case013");
-		SKIP_CASES("hof-reduce","case001","case009","case010");
-		SKIP_CASES("function-typeOf","case011");
-		SKIP_CASES("function-sift","case000","case001","case002","case004");
-		SKIP_CASES("function-sort","case010");
-		SKIP_CASES("function-each","case000");
-		SKIP_CASES("function-signatures","case000","case001","case002","case007","case008","case009","case010","case011",
-				"case012","case013","case014","case015",
-				"case016","case017","case018","case019","case020","case021","case022","case023");
-		SKIP_CASES("hof-filter","case000","case001");
-		SKIP_CASES("function-applications","case013","case014","case017","case018","case019");
-		SKIP_CASES("hof-map","case003","case004");
-		// @ references issue #48
+		// issue #48 @ references
 		SKIP_CASES("joins","employee-map-reduce-11");
+		// issue #48 @ references
 		SKIP_CASES("joins","library-joins-10");
-		// # references issue #50
+		// issue #50 # references
 		SKIP_CASES("joins","index-15");
 		// issue #52
 		SKIP_CASES("function-fromMillis","isoWeekDate-18");
-		// issue 53
+		// issue #53
 		SKIP_CASES("function-application","case016");
+		// issue #53
 		SKIP_CASES("function-applications","case012","case016","case021");
+		// issue #53
 		SKIP_CASES("hof-map","case008");
 		// issue #54 timeouts
 		SKIP_CASES("range-operator","case021","case024");
-		// issue #55 and / or standalone to get by parser
+		// issue #55 and / or stand alone to get by parser
 		SKIP_CASES("boolean-expresssions","case012","case013","case014", "case015");
 		// issue #56 closures
-		SKIP_CASES("closures","case000","case001");
 		SKIP_CASES("object-constructor","case023");
-		// issue #57
-		SKIP_CASES("matchers","case000","case001");
-		// issue #58
-		SKIP_CASES("hof-zip-map","case000","case001","case002","case003");
 		// issue $59
 		SKIP_CASES("errors","case012","case013","case014","case015","case018","case020","case022","case023");
 		// have right answer, but AgnosticTestSuite not comparing correctly
 		SKIP_CASES("literals","case006");
 		// issue #61 variable to function chain
 		SKIP_CASES("function-applications","case005","case009","case015");
+		// issue #70
+		SKIP_CASES("hof-reduce",
+				"case001", "case009","case010");
+		// issue 70
+		SKIP_CASES("function-typeOf","case011");
+	   // issue 70
+		SKIP_CASES("function-sift","case000","case001","case002","case004"); 
+	   // issue 70
+		SKIP_CASES("function-sort","case010"); 
+		// issue 70
+		SKIP_CASES("function-each","case000");
+		// issue 70
+		SKIP_CASES("hof-filter","case000","case001");
+		// issue 70
+		SKIP_CASES("function-applications","case013","case014","case017","case018","case019");
+		// issue 70
+		SKIP_CASES("hof-map","case003","case004");
+		// issue #78
+		SKIP_CASES("predicates", "case003");
+		// issues #79 and 70
+		// issues #80 flattening
+		SKIP_CASES("boolean-expresssions","case016");
 	}
 
 	private static void SKIP_CASES(String group, String... casesArray) {
@@ -248,7 +245,16 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 				notifier.fireTestIgnored(testCase.getDescription());
 			} else {
 
-				notifier.fireTestStarted(testCase.getDescription());
+				Description testDesc = testCase.getDescription();
+				try {
+				if (testDesc.isEmpty() == false) {
+					notifier.fireTestStarted(testDesc);
+				} else {
+					System.out.println(testDesc+" is empty");
+				}
+				} catch (Exception sbfe) {
+					System.out.println("Error in "+testDesc+" Error: "+sbfe.getLocalizedMessage());
+				}
 				
 				try {
 					

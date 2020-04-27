@@ -79,6 +79,9 @@ public class Base64DecodeFunction extends FunctionBase implements Function {
 		}
 
 		// Make sure that we have the right number of arguments
+		if (argCount == 0) {
+			return null;
+		}
 		if (argCount == 1) {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);

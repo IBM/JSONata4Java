@@ -14,7 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.jsonata4java</groupId>
 	<artifactId>JSONata4Java</artifactId>
-	<version>1.4.2</version>
+	<version>1.4.3</version>
 	<name>JSONata4Java</name>
 	<description>Port of jsonata.js to Java to enable rules for JSON content</description>
 	<url>https://github.com/IBM/JSONata4Java</url>
@@ -70,7 +70,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.12</version>
+			<version>4.13</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -91,9 +91,9 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 		<dependency>
-		    <groupId>com.google.code.gson</groupId>
-		    <artifactId>gson</artifactId>
-		    <version>2.8.6</version>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.6</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -193,18 +193,22 @@
 					</execution>
 				</executions>
 			</plugin>
-<!--			
+			<!-- 2.20 version of surefire throws an error -->
+<!-- -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.20</version>
+				<version>3.0.0-M4</version>
 				<configuration>
+					<testFailureIgnore>false</testFailureIgnore>
+					<reuseForks>true</reuseForks>
+					<argLine>-Xmx1024m</argLine>
 					<includes>
 						<include>${runSuite}</include>
 					</includes>
 				</configuration>
 			</plugin>
--->			
+<!-- -->
 			<!-- Plugin to compile the g4 files ahead of the java files See https://github.com/antlr/antlr4/blob/master/antlr4-maven-plugin/src/site/apt/examples/simple.apt.vm 
 				Except that the grammar does not need to contain the package declaration 
 				as stated in the documentation (I do not know why) To use this plugin, type: 
