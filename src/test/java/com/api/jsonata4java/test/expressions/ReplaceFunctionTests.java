@@ -85,6 +85,8 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class ReplaceFunctionTests {
 
+	private static final String  ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, 
+			Constants.FUNCTION_REPLACE);
 	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
 			Constants.FUNCTION_REPLACE);
 	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
@@ -171,9 +173,10 @@ public class ReplaceFunctionTests {
 				{ "$replace(' ', 10/3.0, ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
 				{ "$replace(' ', ' ', 10/3.0)", null, ERR_MSG_ARG3_BAD_TYPE }, //
 
-				{ "$replace(a.b.c)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(a.b.c, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(a.b.c, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
+				// jsontata 1.8.2 complains about argument 2 because it assumes use of context
+				{ "$replace(a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE}, // jsonata 1.8.2 ERR_MSG_ARG1_BAD_TYPE }, //
+				{ "$replace(a.b.c, ' ')", null, ERR_BAD_CONTEXT}, // jsonata 1.8.2 MSG_ARG1_BAD_TYPE }, //
+				{ "$replace(a.b.c, ' ', ' ')", null, null}, // jsonata 1.8.2 ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$replace(' ', a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE }, //
 				{ "$replace(' ', a.b.c, ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
 				{ "$replace(' ', ' ', a.b.c)", null, ERR_MSG_ARG3_BAD_TYPE }, //
