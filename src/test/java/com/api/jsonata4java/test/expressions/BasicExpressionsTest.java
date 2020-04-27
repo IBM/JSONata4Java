@@ -50,6 +50,7 @@ import com.api.jsonata4java.expressions.functions.MergeFunction;
 import com.api.jsonata4java.expressions.functions.ReplaceFunction;
 import com.api.jsonata4java.expressions.functions.ShuffleFunction;
 import com.api.jsonata4java.expressions.functions.SortFunction;
+import com.api.jsonata4java.expressions.functions.SplitFunction;
 import com.api.jsonata4java.expressions.functions.SubstringFunction;
 import com.api.jsonata4java.expressions.functions.SumFunction;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -849,6 +850,66 @@ public class BasicExpressionsTest {
          }
       }
 
+   }
+   
+   @Test
+   public void testSplitFunction() throws Exception {
+   	// issue #86
+      {
+         Expressions e = Expressions.parse("$split(' ', {})");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(SplitFunction.ERR_ARG2BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$split(' ', [])");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(SplitFunction.ERR_ARG2BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$split(' ', {\"hello\":1})");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(SplitFunction.ERR_ARG2BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$split(' ', [\"hello\", 1])");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(SplitFunction.ERR_ARG2BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$split(' ', true)");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(SplitFunction.ERR_ARG2BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$split(' ', null)");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(SplitFunction.ERR_ARG2BADTYPE, ex.getMessage());
+         }
+      }
+   	
    }
    
    @Test
