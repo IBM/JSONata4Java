@@ -104,11 +104,11 @@ public class ReplaceFunction extends FunctionBase implements Function {
 		}
 
 		// Make sure that we have the right number of arguments
-		if (argCount >= 1 || argCount <= 4) {
+		if (argCount >= 1 && argCount <= 4) {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argString == null || !argString.isTextual()) {
+			if (argString == null) {
 				return null; // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 			if (argCount >= 2) {
@@ -125,6 +125,9 @@ public class ReplaceFunction extends FunctionBase implements Function {
 								useContext ? 1 : 2);
 						// Check to see if the pattern is just a string
 						if (argReplacement != null && (argReplacement.isTextual())) {
+							if (!argString.isTextual()) {
+								throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+							}
 							final String str = argString.textValue();
 							final String pattern = argPattern.textValue();
 							final String replacement = argReplacement.textValue();
@@ -160,11 +163,18 @@ public class ReplaceFunction extends FunctionBase implements Function {
 							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
 						}
 					} else {
-						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+						if (argPattern == null || !argPattern.isTextual()) {
+							throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+						}
+						if (!argString.isTextual()) {
+							throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+						}
 					}
 				} else {
 					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
+			} else if (!argString.isTextual()) {
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE

@@ -47,6 +47,7 @@ import com.api.jsonata4java.expressions.functions.CountFunction;
 import com.api.jsonata4java.expressions.functions.ExistsFunction;
 import com.api.jsonata4java.expressions.functions.LookupFunction;
 import com.api.jsonata4java.expressions.functions.MergeFunction;
+import com.api.jsonata4java.expressions.functions.ReplaceFunction;
 import com.api.jsonata4java.expressions.functions.ShuffleFunction;
 import com.api.jsonata4java.expressions.functions.SortFunction;
 import com.api.jsonata4java.expressions.functions.SubstringFunction;
@@ -565,6 +566,291 @@ public class BasicExpressionsTest {
 
    }
 
+   @Test
+   public void testReplaceFunction() throws Exception {
+   	// issue #87
+      {
+         Expressions e = Expressions.parse("$replace()");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace({})");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace({},' ')");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace({},' ', ' ')");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace([])");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace([], ' ')");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace([], ' ', ' ')");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace({\"hello\":1})");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace({\"hello\":1}, ' ')");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace({\"hello\":1}, ' ', ' ')");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace([\"hello\", 1])");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace([\"hello\", 1], ' ')");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace([\"hello\", 1], ' ', ' ')");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(true)");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(true), ' '");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(true), ' ', ' '");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(null)");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(null), ' '");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(null), ' ', ' '");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(5)");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(5), ' '");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(5), ' ', ' '");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(-5)");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(-5), ' '");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(-5), ' ', ' '");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(10/3.0)");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(10/3.0), ' '");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(10/3.0), ' ', ' '");
+         try {
+            e.evaluate(null);
+            Assert.fail("Expected exception was not thrown");
+         } catch (EvaluateException ex) {
+            Assert.assertEquals(ReplaceFunction.ERR_ARG1BADTYPE, ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(a.b.c)");
+         try {
+            JsonNode result = e.evaluate(null);
+            Assert.assertEquals(result,null);
+         } catch (EvaluateException ex) {
+            Assert.fail(ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(a.b.c), ' '");
+         try {
+            JsonNode result = e.evaluate(null);
+            Assert.assertEquals(result,null);
+         } catch (EvaluateException ex) {
+            Assert.fail(ex.getMessage());
+         }
+      }
+      {
+         Expressions e = Expressions.parse("$replace(a.b.c), ' ', ' '");
+         try {
+            JsonNode result = e.evaluate(null);
+            Assert.assertEquals(result,null);
+         } catch (EvaluateException ex) {
+            Assert.fail(ex.getMessage());
+         }
+      }
+
+   }
+   
    @Test
    public void testStringOperators() throws Exception {
 
@@ -1141,7 +1427,7 @@ public class BasicExpressionsTest {
           */
          expression = Expressions.parse("$stat");
          JsonNode result = expression.evaluate(null);
-         assertTrue("Should not get here - exception should be thrown", result==null);
+         assertTrue("Okay, exception no longer thrown in 1.8.2", result==null);
       } catch (EvaluateException e) {
          String msg = e.getMessage();
          assertTrue(msg, false);
@@ -1157,7 +1443,7 @@ public class BasicExpressionsTest {
           */
          expression = Expressions.parse("$dddd");
          JsonNode result = expression.evaluate(null);
-         assertTrue("Should not get here - exception should be thrown", result==null);
+         assertTrue("Okay, exception no longer thrown in 1.8.2", result==null);
       } catch (EvaluateException e) {
          String msg = e.getMessage();
          assertTrue("was " + msg, msg.equals("$dddd is unknown (e.g., unassigned variable)"));
