@@ -595,14 +595,16 @@ public class JSONataUtils implements Serializable {
 		
 		String strData = Objects.requireNonNull(str).intern();
 		int strLen = strData.codePointCount(0, strData.length());
+		if (start >= strLen) {
+			return "";
+		}
 		// If start is negative, substr() uses it as a character index from the
 		// end of the string; the index of the last character is -1.
 		start = strData.offsetByCodePoints(0, start >= 0 ? start : ((strLen + start) < 0 ? 0 : strLen + start));
-		// If start is negative and abs(start) is larger than the length of the
-		// string, substr() uses 0 as the start index.
 		if (start < 0) {
 			start = 0;
-		}
+		}		// If start is negative and abs(start) is larger than the length of the
+		// string, substr() uses 0 as the start index.
 		// If length is omitted, substr() extracts characters to the end of the
 		// string.
 		if (length == null) {
@@ -610,6 +612,8 @@ public class JSONataUtils implements Serializable {
 		} else if (length < 0) {
 			// If length is 0 or negative, substr() returns an empty string.
 			return "";
+		} else if (length > strData.length()) {
+			length = strData.length();
 		}
 		
 		length = strData.offsetByCodePoints(0, length);
