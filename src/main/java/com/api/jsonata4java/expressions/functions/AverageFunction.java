@@ -66,12 +66,14 @@ public class AverageFunction extends FunctionBase implements Function {
 		// Make sure that we have the right number of arguments
 		if (argCount == 1) {
 			if (!useContext) {
-				FunctionUtils.validateArguments(ERR_ARG_TYPE, expressionVisitor, ctx, 0, getSignature());
 				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
 			if (arg == null) {
-				return null; // throw new EvaluateRuntimeException(ERR_ARG_TYPE);
-			} else if (arg.isArray()) {
+				return null;
+			} else if (useContext == false){
+				FunctionUtils.validateArguments(ERR_ARG_TYPE, expressionVisitor, ctx, 0, getSignature());
+			}
+			if (arg.isArray()) {
 				ArrayNode arr = (ArrayNode) arg;
 
 				if (arr.size() == 0) { // avoid divide by 0 errors
@@ -97,7 +99,6 @@ public class AverageFunction extends FunctionBase implements Function {
 				} else {
 				   return new DoubleNode(avg);
 				}
-
 			} else if (arg.isNumber()) {
 				if (arg.isLong()) {
 					return arg;
