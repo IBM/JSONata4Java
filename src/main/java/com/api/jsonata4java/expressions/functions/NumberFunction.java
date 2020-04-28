@@ -29,6 +29,7 @@ import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.api.jsonata4java.expressions.utils.NumberUtils;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.LongNode;
 
@@ -94,12 +95,27 @@ public class NumberFunction extends FunctionBase implements Function {
 				 */
 				result = NumberUtils.convertNumberToValueNode(argString.asText());
 			} else if (argString.isNumber()) {
-				/*
-				 * The argument is already a number... and we have already checked whether it is
-				 * within the valid range when it was parsed by the
-				 * ExpressionVisitor::visitNumber method. Simply return the argument unchanged.
-				 */
-				result = argString;
+				if (!argString.isIntegralNumber()) {
+					// Math.ceil only accepts a double
+					Double ceil = argString.doubleValue();
+					if (ceil - ceil.longValue() == 0.0d) {
+					// Create the node to return
+					result = new LongNode(ceil.longValue());
+					} else {
+						result = new DoubleNode(ceil);
+					}
+				} else {
+					if (argString.isLong()) {
+						double ceil = argString.doubleValue();
+
+						// Create the node to return
+						result = new LongNode((long) ceil);						
+					} else {
+						// The argument is already an integer... simply return the
+						// node
+						result = argString;
+					}
+				}
 			} else if (argString.isArray()) {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			} else if (argString.isBoolean()) {

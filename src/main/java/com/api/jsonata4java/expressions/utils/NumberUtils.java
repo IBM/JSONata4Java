@@ -39,10 +39,12 @@ public class NumberUtils {
 	 * and -Double.MAX_VALUE. If we did not do this we would need to implement a lot
 	 * of extra code to handle BigInteger and BigDecimal.
 	 * 
-	 * @param number The string representation of the number to convert
+	 * @param number
+	 *               The string representation of the number to convert
 	 * @return ValueNode The ValueNode representation of the number contained in the
 	 *         input string
-	 * @throws EvaluateRuntimeException If the number represented by the string is
+	 * @throws EvaluateRuntimeException
+	 *                                  If the number represented by the string is
 	 *                                  outside of the valid range or if the string
 	 *                                  does not contain a valid number.
 	 */
@@ -51,31 +53,30 @@ public class NumberUtils {
 		// Create the variable to return
 		ValueNode result = null;
 
-//		try {
-//			// First try to convert the number to a long
-//			result = new LongNode(Long.valueOf(number));
-//		} catch (NumberFormatException e) {
-			// The number is not a long... it might be floating point number
-			try {
-				// Try to conver the number to a double
-				Double doubleValue = Double.valueOf(number);
+		try {
+			// Try to convert the number to a double
+			Double doubleValue = Double.valueOf(number);
 
-				// Check to see if the converted number is within the acceptable range
-				if (!doubleValue.isInfinite() && !doubleValue.isNaN()) {
-					if (doubleValue - doubleValue.longValue() == 0.0) {
-						result = new LongNode((long)doubleValue.doubleValue());
+			// Check to see if the converted number is within the acceptable range
+			if (!doubleValue.isInfinite() && !doubleValue.isNaN()) {
+				if ((doubleValue >= 0.0d && doubleValue <= new Double(Long.MAX_VALUE))
+						|| (doubleValue < 0.0d && doubleValue >= new Double(Long.MIN_VALUE))) {
+					if (doubleValue - doubleValue.longValue() == 0.0d) {
+						result = new LongNode((long) doubleValue.doubleValue());
 					} else {
 						result = new DoubleNode(doubleValue.doubleValue());
 					}
 				} else {
-					final String msg = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE, number);
-					throw new EvaluateRuntimeException(msg);
+					result = new DoubleNode(doubleValue.doubleValue());
 				}
-			} catch (NumberFormatException e2) {
-				final String msg = String.format(Constants.ERR_MSG_UNABLE_TO_CAST_VALUE_TO_NUMBER, number);
+			} else {
+				final String msg = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE, number);
 				throw new EvaluateRuntimeException(msg);
 			}
-//		}
+		} catch (NumberFormatException e2) {
+			final String msg = String.format(Constants.ERR_MSG_UNABLE_TO_CAST_VALUE_TO_NUMBER, number);
+			throw new EvaluateRuntimeException(msg);
+		}
 
 		return result;
 	}

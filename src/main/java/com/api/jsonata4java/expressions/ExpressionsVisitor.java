@@ -553,7 +553,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			}
 			JsonNode result = visit(tree);
 			if (result != null) {
-				if (inArrayConstructor && result.isArray()) {
+				if (tree instanceof Array_constructorContext == false && inArrayConstructor && result.isArray()) {
 					output.addAll((ArrayNode) result);
 				} else {
 					output.add(result);
@@ -2320,9 +2320,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			} else if (operand.isDouble()) {
 				result = new DoubleNode(-operand.asDouble());
 			} else if (operand.isIntegralNumber()) {
-				result = new LongNode(-operand.asLong());
+				if (operand.asLong() == Long.MAX_VALUE) {
+					result = new LongNode(-operand.asLong()-1L);
+				} else {
+					result = new LongNode(-operand.asLong());
+				}
 			} else if (operand.isLong()) {
-				result = new LongNode(-operand.asLong());
+				if (operand.asLong() == Long.MAX_VALUE) {
+					result = new LongNode(-operand.asLong()-1L);
+				} else {
+					result = new LongNode(-operand.asLong());
+				}
 			} else {
 				throw new EvaluateRuntimeException(ERR_NEGATE_NON_NUMERIC);
 			}
