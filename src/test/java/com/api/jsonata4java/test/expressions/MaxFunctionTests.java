@@ -74,11 +74,11 @@ public class MaxFunctionTests {
 				{ "$max('1')", null, ERR_MSG_ARG1_ARR_TYPE }, //
 				{ "$max(true)", null, ERR_MSG_ARG1_ARR_TYPE }, //
 				{ "$max(null)", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(1)", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(-1)", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(1.0)", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(-1.0)", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max([])", null, ERR_MSG_ARG1_ARR_TYPE }, //
+				{ "$max(1)", "1", null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
+				{ "$max(-1)", "-1", null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
+				{ "$max(1.0)", "1", null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
+				{ "$max(-1.0)", "-1", null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
+				{ "$max([])", null, null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
 				{ "$max([1, {}])", null, ERR_MSG_ARG1_ARR_TYPE }, //
 				{ "$max([1, []])", null, ERR_MSG_ARG1_ARR_TYPE }, //
 				{ "$max([1, 'foo'])", null, ERR_MSG_ARG1_ARR_TYPE }, //
@@ -87,12 +87,12 @@ public class MaxFunctionTests {
 				{ "$max(a.b.c)", null, null }, //
 				{ "$max([5,1,3,7,4])", "7", null }, //
 				{ "$max([5.2 , 1.0, 3 , 7, 4])", "7", null }, //
-				{ "$max([5.2 , 1.0, 3 , 7.0, 4])", "7.0", null }, //
+				{ "$max([5.2 , 1.0, 3 , 7.0, 4])", "7", null}, // jsonata 1.8.2 "7.0", null }, //
 				{ "$max([10/3.0, 1, 3])", Double.toString(10 / 3.0), null }, //
 				{ "$max([9223372036854775807])", Long.toString(Long.MAX_VALUE), null }, // // Long.MAX_VALUE
-				{ "$max([-9223372036854775808])", Double.toString(Long.MIN_VALUE), null }, // // Long.MIN_VALUE
-				{ "$max([9223372036854775809])", Double.toString(9223372036854775809D), null }, //
-				{ "$max([9223372036854775899.5])", Double.toString(9223372036854775899.5), null }, //
+				{ "$max([-9223372036854775808])", Long.toString(Long.MIN_VALUE), null}, // jsonata 1.8.2 Double.toString(Long.MIN_VALUE), null }, // // Long.MIN_VALUE
+				{ "$max([9223372036854775809])",  Long.toString(Long.MAX_VALUE), null}, // jsonata 1.8.2Double.toString(9223372036854775809D), null }, //
+				{ "$max([9223372036854775899.5])", Long.toString(Long.MAX_VALUE), null}, // jsonata 1.8.2 Double.toString(9223372036854775899.5), null }, //
 				{ "$max([9223372036854775809123456789])", Double.toString(9223372036854775809123456789D), null }, //
 				{ "$max([9223372036854775809123456789.5])", Double.toString(9223372036854775809123456789.5), null }, //
 				{ "$max([1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890])",
