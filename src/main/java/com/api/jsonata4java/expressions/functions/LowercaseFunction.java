@@ -87,15 +87,13 @@ public class LowercaseFunction extends FunctionBase implements Function {
 			}
 		} else if (argCount == 2) {
          if (!useContext) {
-            argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+         	throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
          }
          ParseTree value = ctx.exprValues().exprList();
-         expressionVisitor.getContextStack().push(argString);
          result = expressionVisitor.visit(value);
          if (result != null && result.isTextual()) {
             result = new TextNode(result.textValue().toLowerCase());
          }
-         expressionVisitor.getContextStack().pop();
 	   }else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
