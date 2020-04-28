@@ -22,6 +22,8 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -83,6 +85,15 @@ public class UppercaseFunction extends FunctionBase implements Function {
 			} else {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
+		} else if (argCount == 2) {
+         if (!useContext) {
+         	throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+         }
+         ParseTree value = ctx.exprValues().exprList();
+         result = expressionVisitor.visit(value);
+         if (result != null && result.isTextual()) {
+            result = new TextNode(result.textValue().toUpperCase());
+         }
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
