@@ -82,6 +82,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.gson.Gson;
@@ -1482,7 +1483,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			} else {
 				return null;
 			}
-		} else if (cond instanceof BooleanNode) {
+		} else if (cond instanceof BooleanNode || cond instanceof NumericNode) {
 			ExprContext ctx1 = ctx.expr(1);
 			ExprContext ctx2 = ctx.expr(2);
 			if (ctx1 != null && ctx2 != null) {
@@ -2096,6 +2097,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		// {"a":{"b":2}}]
 		final ExprContext rhsCtx = ctx.expr(1); // e.g. `a`
 
+		if (lhsCtx instanceof NullContext || rhsCtx instanceof NullContext) {
+			throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY, "null"));
+		}
 		// treat a StringContext as an ID context
 		JsonNode lhs = null;
 		if (lhsCtx instanceof MappingExpressionParser.StringContext) {

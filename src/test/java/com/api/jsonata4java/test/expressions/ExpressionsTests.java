@@ -166,9 +166,9 @@ public class ExpressionsTests {
 			{"[{\"a\":[1,2]}, {\"a\":[3,4]}].[[[a]]]", "[[[[1,2]]],[[[3,4]]]]", null}, // // multiple brackets around path expression
 			
 			// // a has nested arrays (flattening unaffected)
-			{"[{\"a\":[[1,2]]}, {\"a\":[[3,4]]}].a", "[1,2,3,4]", null}, // 
-			{"[{\"a\":[[1,2]]}, {\"a\":[[3,4]]}].[a]", "[[1,2],[3,4]]", null}, //
-			{"[[[{\"a\":[1,2]}, {\"a\":[3,4]}]]].[a]", "[[1,2],[3,4]]", null}, //
+			{"[{\"a\":[[1,2]]}, {\"a\":[[3,4]]}].a", "[[1,2],[3,4]]",null}, // jsonata 1.8.2 "[1,2,3,4]", null}, // 
+			{"[{\"a\":[[1,2]]}, {\"a\":[[3,4]]}].[a]", "[[[1,2]],[[3,4]]]", null}, // jsonata 1.8.2 "[[1,2],[3,4]]", null}, //
+			{"[[[{\"a\":[1,2]}, {\"a\":[3,4]}]]].[a]", "[1,2,3,4]", null}, // jsonata 1.8.2 "[[1,2],[3,4]]", null}, //
 			
 			// basic array indexing
 			{"[1,2,3][0]", "1", null}, //
@@ -214,8 +214,8 @@ public class ExpressionsTests {
 			// =
 			{"1=1", "true", null}, //
 			{"1=2", "false", null}, //
-			{"noexisty=1", null, null}, //
-			{"1=noexisty", null, null}, //
+			{"noexisty=1", "false", null}, // jsonata 1.8.2 null, null}, //
+			{"1=noexisty", "false", null}, // jsonata 1.8.2 null, null}, //
 			{"noexist1=noexist2", "false", null}, //
 			
 			// <
@@ -304,9 +304,9 @@ public class ExpressionsTests {
 			{"true and {\"a\":\"b\"}", "true", null}, //
 			
 			// test null handling
-			{"noexist and true", null, null}, //
-			{"true and noexist", null, null}, //
-			{"noexist and noexist", null, null}, //
+			{"noexist and true", "false", null}, // jsonata 1.8.2 null, null}, //
+			{"true and noexist", "false", null}, // jsonata 1.8.2 null, null}, //
+			{"noexist and noexist", "false", null}, // jsonata 1.8.2 null, null}, //
 			
 			// ---------------------
 			// - or
@@ -350,9 +350,9 @@ public class ExpressionsTests {
 			{"false or {\"a\":\"b\"}", "true", null}, //
 			
 			// test null handling
-			{"noexist and true", null, null}, //
-			{"true and noexist", null, null}, //
-			{"noexist and noexist", null, null}, //
+			{"noexist and true", "false", null}, // jsonata 1.8.2 null, null}, //
+			{"true and noexist", "false", null}, // jsonata 1.8.2 null, null}, //
+			{"noexist and noexist", "false", null}, // jsonata 1.8.2 null, null}, //
 			
 			
 			
