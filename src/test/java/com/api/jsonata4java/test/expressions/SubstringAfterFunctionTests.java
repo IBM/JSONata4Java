@@ -77,7 +77,8 @@ public class SubstringAfterFunctionTests {
 
 	@Parameters(name = "{index}: {0} -> {1} ({2})")
 	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$substringAfter()", null, ERR_MSG_ARG1_BAD_TYPE }, //
+		return Arrays.asList(new Object[][] { 
+			   { "$substringAfter()", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$substringAfter({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$substringAfter({},  ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$substringAfter('', {})", null, ERR_MSG_ARG2_BAD_TYPE }, //
