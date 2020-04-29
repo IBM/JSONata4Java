@@ -80,7 +80,7 @@ public class Base64DecodeFunction extends FunctionBase implements Function {
 
 		// Make sure that we have the right number of arguments
 		if (argCount == 0) {
-			return null;
+			throw new EvaluateRuntimeException(ERR_BAD_CONTEXT); // return null;
 		}
 		if (argCount == 1) {
 			if (!useContext) {

@@ -82,7 +82,7 @@ public class Base64EncodeFunction extends FunctionBase implements Function {
 			}
 		}
 		if (argCount == 0) {
-			return null;
+			throw new EvaluateRuntimeException(ERR_BAD_CONTEXT); // return null;
 		}
 		// Make sure that we have the right number of arguments
 		if (argCount == 1) {
