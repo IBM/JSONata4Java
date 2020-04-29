@@ -52,8 +52,8 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class BooleanFunctionTests {
 
-	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
-			Constants.FUNCTION_BOOLEAN);
+	// private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
+	//		Constants.FUNCTION_BOOLEAN);
 	private static final String ERR_MSG_NUMBER_OUT_OF_RANGE = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE,
 			"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
 	private static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_BOOLEAN);
@@ -69,7 +69,7 @@ public class BooleanFunctionTests {
 
 	@Parameters(name = "{index}: {0} -> {1} ({2})")
 	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$boolean()", null, ERR_BAD_CONTEXT }, //
+		return Arrays.asList(new Object[][] { { "$boolean()", null, null}, // jsonata 1.8.2 ERR_BAD_CONTEXT }, //
 				{ "$boolean(true, false)", null, ERR_ARG2BADTYPE }, //
 				{ "$boolean(a.b.c)", null, null }, // // because a.b.c doesn't exist
 				{ "$boolean(true)", "true", null }, //
