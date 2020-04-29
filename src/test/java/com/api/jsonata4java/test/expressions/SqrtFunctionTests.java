@@ -82,10 +82,10 @@ public class SqrtFunctionTests {
 				{ "$sqrt(null)", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$sqrt(-1)", null, ERR_MSG_FUNC_CANNOT_BE_APPLIED }, //
 				{ "$sqrt(a.b.c)", null, null }, //
-				{ "$sqrt(1)", Double.toString(Math.sqrt(1)), null }, //
+				{ "$sqrt(1)", "1", null}, // jsonata 1.8.2 Double.toString(Math.sqrt(1)), null }, //
 				{ "$sqrt(2147483647)", Double.toString(Math.sqrt(2147483647)), null }, //
 				{ "$sqrt(21474836471234)", Double.toString(Math.sqrt(21474836471234D)), null }, //
-				{ "$sqrt(1.0)", Double.toString(Math.sqrt(1.0)), null }, //
+				{ "$sqrt(1.0)", "1", null}, // jsonata 1.8.2 Double.toString(Math.sqrt(1.0)), null }, //
 				{ "$sqrt(1.23456)", Double.toString(Math.sqrt(1.23456)), null }, //
 				{ "$sqrt(1.234567890123)", Double.toString(Math.sqrt(1.234567890123)), null }, //
 				{ "$sqrt(10/3.0)", Double.toString(Math.sqrt(10 / 3.0)), null }, //
