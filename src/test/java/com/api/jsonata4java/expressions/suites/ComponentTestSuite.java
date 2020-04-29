@@ -57,7 +57,7 @@ import com.api.jsonata4java.test.expressions.PowerFunctionTests;
 import com.api.jsonata4java.test.expressions.RandomFunctionTests;
 import com.api.jsonata4java.test.expressions.ReplaceFunctionTests;
 import com.api.jsonata4java.test.expressions.RoundFunctionTests;
-import com.api.jsonata4java.test.expressions.SingletonArrayHandlingTests;
+// import com.api.jsonata4java.test.expressions.SingletonArrayHandlingTests;
 import com.api.jsonata4java.test.expressions.SplitFunctionTests;
 import com.api.jsonata4java.test.expressions.SqrtFunctionTests;
 import com.api.jsonata4java.test.expressions.StringFunctionTests;
@@ -74,20 +74,53 @@ import com.api.jsonata4java.test.expressions.path.PathExpressionTests;
 import com.api.jsonata4java.text.expressions.utils.JsonMergeUtilsTest;
 
 @RunWith(Suite.class)
-@SuiteClasses({ BasicExpressionsTest.class, JsonataDotOrgTests.class, ExpressionsTests.class, InvalidSyntaxTest.class,
-		SingletonArrayHandlingTests.class, UnpackFunctionTests.class, StringFunctionTests.class,
-		SubstringFunctionTests.class, NotFunctionTests.class, CountFunctionTests.class, LengthFunctionTests.class,
-		SubstringBeforeFunctionTests.class, SubstringAfterFunctionTests.class, UppercaseFunctionTests.class,
-		LowercaseFunctionTests.class, TrimFunctionTests.class, PadFunctionTests.class, ContainsFunctionTests.class,
-		SplitFunctionTests.class, JoinFunctionTests.class, ReplaceFunctionTests.class, NowFunctionTests.class,
-		MatchFunctionTests.class, FromMillisFunctionTests.class, FormatNumberFunctionTests.class,
-		FormatBaseFunctionTests.class, Base64EncodeFunctionTests.class, Base64DecodeFunctionTests.class,
-		NumericCoercionTests.class, NumberFunctionTests.class, AbsFunctionTests.class, FloorFunctionTests.class,
-		CeilFunctionTests.class, RoundFunctionTests.class, PowerFunctionTests.class, SqrtFunctionTests.class,
-		RandomFunctionTests.class, MillisFunctionTests.class, ToMillisFunctionTests.class, MinFunctionTests.class,
-		MaxFunctionTests.class, BooleanFunctionTests.class, JsonMergeUtilsTest.class, PathExpressionTests.class,
-		PathExpressionSyntaxTests.class, SumFunctionTests.class
-
+@SuiteClasses({ 
+	AbsFunctionTests.class, //
+	Base64DecodeFunctionTests.class, //
+	Base64EncodeFunctionTests.class, //
+	BasicExpressionsTest.class, //
+	BooleanFunctionTests.class, //
+	CeilFunctionTests.class, //
+	ContainsFunctionTests.class, //
+	CountFunctionTests.class, //
+	ExpressionsTests.class, //
+	FloorFunctionTests.class, //
+	FormatBaseFunctionTests.class, //
+	FormatNumberFunctionTests.class, //
+	FromMillisFunctionTests.class, //
+	InvalidSyntaxTest.class, //
+	JoinFunctionTests.class, //
+	JsonMergeUtilsTest.class, //
+	JsonataDotOrgTests.class, //
+	LengthFunctionTests.class, //
+	LowercaseFunctionTests.class, //
+	MatchFunctionTests.class, //
+	MaxFunctionTests.class, //
+	MillisFunctionTests.class, //
+	MinFunctionTests.class, //
+	NotFunctionTests.class, //
+	NowFunctionTests.class,
+	NumberFunctionTests.class, //
+	NumericCoercionTests.class, //
+	PadFunctionTests.class, //
+	PathExpressionSyntaxTests.class, //
+	PathExpressionTests.class, //
+	PowerFunctionTests.class, //
+	RandomFunctionTests.class, //
+	ReplaceFunctionTests.class, //
+	RoundFunctionTests.class, //
+// issue 80 flattening	SingletonArrayHandlingTests.class, //
+	SplitFunctionTests.class, //
+	SqrtFunctionTests.class, //
+	StringFunctionTests.class, //
+	SubstringAfterFunctionTests.class, //
+	SubstringBeforeFunctionTests.class, //
+	SubstringFunctionTests.class, //
+	SumFunctionTests.class, //
+	ToMillisFunctionTests.class, //
+	TrimFunctionTests.class, //
+	UnpackFunctionTests.class, //
+	UppercaseFunctionTests.class //
 })
 public class ComponentTestSuite {
 
