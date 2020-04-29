@@ -69,6 +69,9 @@ public class BooleanFunction extends FunctionBase implements Function {
 				useContext = false;
 			}
 		}
+		if (argCount == 0 && arg == null) {
+			return null;
+		}
 
 		// Make sure that we have the right number of arguments
 		if (argCount == 1) {
