@@ -91,8 +91,8 @@ public class JoinFunctionTests {
 				{ "$join(1)", null, ERR_MSG_ARG1_ARR_STR }, //
 				{ "$join(1, ' ')", null, ERR_MSG_ARG1_ARR_STR }, //
 				{ "$join([], 1)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$join('1')", null, ERR_MSG_ARG1_ARR_STR }, //
-				{ "$join('1', ' ')", null, ERR_MSG_ARG1_ARR_STR }, //
+				{ "$join('1')", "\"1\"", null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_STR }, //
+				{ "$join('1', ' ')", "\"1\"", null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_STR }, //
 				{ "$join(10/3.0)", null, ERR_MSG_ARG1_ARR_STR }, //
 				{ "$join(10/3.0, ' ')", null, ERR_MSG_ARG1_ARR_STR }, //
 				{ "$join([],  10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE }, //
