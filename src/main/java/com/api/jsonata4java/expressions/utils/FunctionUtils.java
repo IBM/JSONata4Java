@@ -54,6 +54,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullCo
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Object_constructorContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.PathContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.SeqContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Unary_opContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -443,7 +444,7 @@ public class FunctionUtils {
 	 * @return the latest context variable, or a NullNode if none are available.
 	 */
 	public static JsonNode getContextVariable(ExpressionsVisitor exprVisitor) {
-		JsonNode result = JsonNodeFactory.instance.nullNode();
+		JsonNode result = null; // JsonNodeFactory.instance.nullNode();
 		if (exprVisitor.getContextStack().isEmpty() == false) {
 			result = exprVisitor.getContextStack().pop();
 			exprVisitor.getContextStack().push(result);
@@ -675,6 +676,12 @@ public class FunctionUtils {
 				if (ruleCtx instanceof Array_constructorContext) {
 					ruleCtx = ((Array_constructorContext) ruleCtx).getPayload();
 					if (ruleCtx instanceof Context_refContext) {
+						return true;
+					}
+				}
+				if (ruleCtx instanceof ExprOrSeqContext) {
+					ParseTree seqCtx = ((ExprOrSeqContext)ruleCtx).getChild(SeqContext.class, 0);
+					if (seqCtx != null) {
 						return true;
 					}
 				}
