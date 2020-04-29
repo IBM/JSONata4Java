@@ -125,7 +125,10 @@ public class StringFunction extends FunctionBase implements Function {
 				result = new TextNode(asString);
 			}
 		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+			if (argCount == 0) {
+				return null;
+			}
+			throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 		}
 		return result;
 	}

@@ -33,8 +33,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.api.jsonata4java.expressions.functions.StringFunction;
-
 /**
  * For simplicity, these tests don't rely on $state/$event/$instance access;
  * instead providing the "input" inlined with the expression itself (e.g. ["a",
@@ -72,7 +70,8 @@ public class StringFunctionTests {
 
 	@Parameters(name = "{index}: {0} -> {1} ({2})")
 	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$string()", null, StringFunction.ERR_BAD_CONTEXT }, //
+		return Arrays.asList(new Object[][] { 
+				{ "$string()", null, null}, // jsonata 1.8.2 StringFunction.ERR_BAD_CONTEXT }, //
 				{ "$string({})", "\"{}\"", null }, //
 				{ "$string([])", "\"[]\"", null }, //
 				{ "$string({\"hello\": 1})", "\"{\\\"hello\\\":1}\"", null }, //
