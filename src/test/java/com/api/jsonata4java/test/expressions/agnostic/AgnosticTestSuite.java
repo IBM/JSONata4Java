@@ -124,6 +124,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		// issues #79 and 70
 		// issues #80 flattening
 		SKIP_CASES("boolean-expresssions","case016");
+		// issue #95
+		SKIP_CASES("encoding","case001","case003");
 	}
 
 	private static void SKIP_CASES(String group, String... casesArray) {
