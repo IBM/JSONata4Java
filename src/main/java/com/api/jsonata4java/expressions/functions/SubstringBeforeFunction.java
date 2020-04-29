@@ -73,9 +73,6 @@ public class SubstringBeforeFunction extends FunctionBase implements Function {
 			if (argString != null && argString.isNull() == false) {
 				argCount++;
 			} else {
-				if (argString == null) {
-					return null;
-				}
 				useContext = false;
 			}
 		}
