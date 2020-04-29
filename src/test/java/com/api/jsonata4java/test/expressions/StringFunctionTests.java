@@ -79,7 +79,7 @@ public class StringFunctionTests {
 				{ "$string($string([\"hello\", 1]))", "\"[\\\"hello\\\",1]\"", null }, //
 				{ "$string(1)", "\"1\"", null }, //
 				{ "$string(-22.2)", "\"-22.2\"", null }, //
-				{ "$string(10/3.0)", "\"3.3333333333333335\"", null }, //
+				{ "$string(10/3.0)", "\"3.33333333333333\"", null}, // jsonata 1.8.2 "\"3.3333333333333335\"", null }, //
 				{ "$string(xxxx)", null, null }, //
 				{ "$string(null)", "\"null\"", null } //
 		});
