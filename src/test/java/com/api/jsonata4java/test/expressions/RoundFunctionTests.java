@@ -87,13 +87,13 @@ public class RoundFunctionTests {
 		return Arrays.asList(new Object[][] { { "$round()", null, ERR_BAD_CONTEXT }, //
 				{ "$round(a.b.c)", null, null }, //
 				{ "$round({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$round({}, // 1)", null, ERR_MSG_ARG1_BAD_TYPE }, //
+//	TODO Issue #71			{ "$round({}, // 1)", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$round(1, {})", null, ERR_MSG_ARG2_BAD_TYPE }, //
 				{ "$round([])", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$round([], 1)", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$round(1, [])", null, ERR_MSG_ARG2_BAD_TYPE }, //
 				{ "$round({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$round({\"hello\": 1}, // 1)", null, ERR_MSG_ARG1_BAD_TYPE }, //
+//	TODO Issue #71				{ "$round({\"hello\": 1}, // 1)", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$round(1, {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE }, //
 				{ "$round([\"hello\", 1])", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$round([\"hello\", 1], 1)", null, ERR_MSG_ARG1_BAD_TYPE }, //
@@ -134,10 +134,10 @@ public class RoundFunctionTests {
 				{ "$round(10/3.0)", "3", null }, //
 				{ "$round(-10/3.0)", "-3", null }, //
 				{ "$round(9223372036854775807)", "9223372036854775807", null }, // // Long.MAX_VALUE
-				{ "$round(-9223372036854775808)", "-9.223372036854776E18", null }, // // Long.MIN_VALUE
-				{ "$round(9223372036854775809)", "9.223372036854776E18", null }, //
-				{ "$round(9223372036854775899.5)", "9.223372036854776E18", null }, //
-				{ "$round(-9223372036854775899.5)", "-9.223372036854776E18", null }, //
+				{ "$round(-9223372036854775808)", Long.toString(Long.MIN_VALUE), null}, // jsonata 1.8.2 "-9.223372036854776E18", null }, // // Long.MIN_VALUE
+				{ "$round(9223372036854775809)", Long.toString(Long.MAX_VALUE), null}, // jsonata 1.8.2 "9.223372036854776E18", null }, //
+				{ "$round(9223372036854775899.5)", Long.toString(Long.MAX_VALUE), null}, // jsonata 1.8.2 "9.223372036854776E18", null }, //
+				{ "$round(-9223372036854775899.5)", Long.toString(Long.MIN_VALUE), null}, // jsonata 1.8.2 "-9.223372036854776E18", null }, //
 				{ "$round(9223372036854775809123456789)", "9.223372036854776E27", null }, //
 				{ "$round(-9223372036854775809123456789)", "-9.223372036854776E27", null }, //
 				{ "$round(9223372036854775809123456789.1)", "9.223372036854776E27", null }, //
