@@ -1931,7 +1931,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			result = left / right;
 		} else if (ctx.op.getType() == MappingExpressionParser.REM) {
 			if (right == 0.0d) {
-				return new DoubleNode(Double.POSITIVE_INFINITY); // null;
+				return new DoubleNode(Double.NaN); // null;
 			}
 			result = left % right;
 		} else {
