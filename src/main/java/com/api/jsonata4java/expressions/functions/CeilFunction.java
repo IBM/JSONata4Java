@@ -106,7 +106,10 @@ public class CeilFunction extends FunctionBase implements Function {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+			if (argCount == 0) {
+				return null;
+			}
+			throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 		}
 
 		return result;

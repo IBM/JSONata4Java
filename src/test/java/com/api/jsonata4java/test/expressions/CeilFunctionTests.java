@@ -56,7 +56,7 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class CeilFunctionTests {
 
-    private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_CEIL);
+    // private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_CEIL);
     private static final String ERR_MSG_ARG1_BAD_TYPE       = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_CEIL);
     private static final String ERR_MSG_ARG2_BAD_TYPE       = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_CEIL);
     private static final String ERR_MSG_NUMBER_OUT_OF_RANGE = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE, "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890.5");
@@ -74,7 +74,7 @@ public class CeilFunctionTests {
 	@Parameters(name = "{index}: {0} -> {1} ({2})")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
-			{"$ceil()",                                null,                                                              ERR_BAD_CONTEXT}, //
+			{"$ceil()",                                   null,                                                              null}, // jsonata 1.8.2 ERR_BAD_CONTEXT}, //
             {"$ceil({})",                              null,                                                              ERR_MSG_ARG1_BAD_TYPE}, //
             {"$ceil([])",                              null,                                                              ERR_MSG_ARG1_BAD_TYPE}, //
             {"$ceil('1')",                             null,                                                              ERR_MSG_ARG1_BAD_TYPE}, //
