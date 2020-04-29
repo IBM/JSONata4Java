@@ -59,8 +59,8 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class SubstringBeforeFunctionTests {
 
-	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
-			Constants.FUNCTION_SUBSTRING_BEFORE);
+//	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
+//			Constants.FUNCTION_SUBSTRING_BEFORE);
 	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
 			Constants.FUNCTION_SUBSTRING_BEFORE);
 	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
@@ -98,7 +98,7 @@ public class SubstringBeforeFunctionTests {
 				{ "$substringBefore(null)", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$substringBefore(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$substringBefore(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$substringBefore(a.b.c)", null, ERR_BAD_CONTEXT }, //
+				{ "$substringBefore(a.b.c)", null, null}, // jsonata 1.8.2 ERR_BAD_CONTEXT }, //
 				{ "$substringBefore('', a.b.c)", "\"\"", null }, //
 				{ "$substringBefore(a.b.c, ' ')", null, null }, //
 				{ "$substringBefore('',  ' ')", "\"\"", null }, //

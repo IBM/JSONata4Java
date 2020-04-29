@@ -26,7 +26,10 @@ import java.util.Objects;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -70,7 +73,7 @@ public class SubstringBeforeFunction extends FunctionBase implements Function {
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
 			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString != null && argString.isNull() == false) {
+			if (argString != null && argCount <= 1) {
 				argCount++;
 			} else {
 				useContext = false;
@@ -80,11 +83,38 @@ public class SubstringBeforeFunction extends FunctionBase implements Function {
 		// Make sure that we have the right number of arguments
 		if (argCount == 1 || argCount == 2) {
 			if (!useContext) {
+				/**
+				 * need to peek at the expression context since Function_callContext evaluates
+				 * to ""
+				 */
+				ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+				if (argString == null) {
+					if (exprCtx instanceof Function_callContext || exprCtx instanceof Function_declContext) {
+						argString = new TextNode("");
+					}
+					if (exprCtx instanceof Var_recallContext) {
+						String varName = ((Var_recallContext)exprCtx).VAR_ID().getText();
+						DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(varName);
+						if (declFct != null) {
+							argString = new TextNode("");
+						} else {
+							Function fct = expressionVisitor.getJsonataFunction(varName);
+							if (fct != null) {
+								argString = new TextNode("");
+							} else {
+								argString = null;
+							}
+						}
+					}
+				}
+			}
+			if (argString == null || (argString.isNull() && useContext)) {
+				return null;
 			}
 			if (argCount == 1) {
 				if (argString == null || argString.isTextual()) {
-					throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+					return null; // throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
 				}
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
@@ -92,9 +122,7 @@ public class SubstringBeforeFunction extends FunctionBase implements Function {
 			JsonNode argChars = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
 			// check validity of 2nd argument first
 			if (argChars == null) {
-				if (argString == null) {
-					return null;
-				} else if (argString.isTextual()) {
+				if (argString.isTextual()) {
 					// just return the string value of argString
 					return new TextNode(argString.textValue());
 				} else {
