@@ -24,6 +24,7 @@ package com.api.jsonata4java.expressions.functions;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -31,7 +32,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.FloatNode;
 import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.LongNode;
 
 /**
@@ -61,7 +61,7 @@ public class AbsFunction extends FunctionBase implements Function {
 		JsonNode result = null;
 
 		// Retrieve the number of arguments
-		JsonNode argNumber = JsonNodeFactory.instance.nullNode();
+		JsonNode argNumber = null;
 		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
 		int argCount = getArgumentCount(ctx);
 		if (useContext) {
@@ -91,7 +91,11 @@ public class AbsFunction extends FunctionBase implements Function {
 					result = new IntNode(Math.abs(number));
 				} else if (argNumber.isLong()) {
 					long number = argNumber.longValue();
-					result = new LongNode(Math.abs(number));
+					if (number == Long.MIN_VALUE) {
+						result = new LongNode(Long.MAX_VALUE);
+					} else {
+						result = new LongNode(Math.abs(number));
+					}
 				} else if (argNumber.isFloat()) {
 					float number = argNumber.floatValue();
 					result = new FloatNode(Math.abs(number));
@@ -103,6 +107,12 @@ public class AbsFunction extends FunctionBase implements Function {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
+			if (ctx.getParent() instanceof Fct_chainContext) {
+				if (argNumber == null) {
+					return null;
+				}
+				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+			}
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
 

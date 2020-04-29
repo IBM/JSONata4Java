@@ -94,8 +94,8 @@ public class AbsFunctionTests {
 				{ "$abs(-2147483640)", Long.toString(Math.abs(-2147483640)), null }, //
 				{ "$abs(21474836471234)", Long.toString((long) Math.abs(21474836471234D)), null }, //
 				{ "$abs(-21474836471234)", Long.toString((long) Math.abs(-21474836471234D)), null }, //
-				{ "$abs(1.0)", Double.toString(Math.abs(1.0)), null }, //
-				{ "$abs(-1.0)", Double.toString(Math.abs(-1.0)), null }, //
+				{ "$abs(1.0)", "1", null}, // jsonata 1.8.2 Double.toString(Math.abs(1.0)), null }, //
+				{ "$abs(-1.0)", "1", null}, // jsonata 1.8.2 Double.toString(Math.abs(-1.0)), null }, //
 				{ "$abs(1.23456)", Double.toString(Math.abs(1.23456)), null }, //
 				{ "$abs(-1.23456)", Double.toString(Math.abs(-1.23456)), null }, //
 				{ "$abs(1.234567890123)", Double.toString(Math.abs(1.234567890123)), null }, //
@@ -103,11 +103,11 @@ public class AbsFunctionTests {
 				{ "$abs(10/3.0)", Double.toString(Math.abs(10 / 3.0)), null }, //
 				{ "$abs(-10/3.0)", Double.toString(Math.abs(-10 / 3.0)), null }, //
 				{ "$abs(9223372036854775807)", Long.toString(Math.abs(Long.MAX_VALUE)), null }, //
-				{ "$abs(-9223372036854775808)", Double.toString(Math.abs(-9223372036854775808D)), null }, //
-				{ "$abs(9223372036854775809)", Double.toString(Math.abs(9223372036854775809D)), null }, //
-				{ "$abs(-9223372036854775809)", Double.toString(Math.abs(-9223372036854775809D)), null }, //
-				{ "$abs(9223372036854775899.5)", Double.toString(Math.abs(9223372036854775899.5)), null }, //
-				{ "$abs(-9223372036854775899.5)", Double.toString(Math.abs(-9223372036854775899.5)), null }, //
+				{ "$abs(-9223372036854775808)", Long.toString(Math.abs(Long.MAX_VALUE)), null }, // jsonata 1.8.2 Double.toString(Math.abs(-9223372036854775808D)), null }, //
+				{ "$abs(9223372036854775809)", Long.toString(Math.abs(Long.MAX_VALUE)), null }, // jsonata 1.8.2 Double.toString(Math.abs(9223372036854775809D)), null }, //
+				{ "$abs(-9223372036854775809)", Long.toString(Math.abs(Long.MAX_VALUE)), null }, // jsonata 1.8.2 Double.toString(Math.abs(-9223372036854775809D)), null }, //
+				{ "$abs(9223372036854775899.5)", Long.toString(Math.abs(Long.MAX_VALUE)), null }, // jsonata 1.8.2 Double.toString(Math.abs(9223372036854775899.5)), null }, //
+				{ "$abs(-9223372036854775899.5)", Long.toString(Math.abs(Long.MAX_VALUE)), null }, // jsonata 1.8.2 Double.toString(Math.abs(-9223372036854775899.5)), null }, //
 				{ "$abs(9223372036854775809123456789)", Double.toString(Math.abs(9223372036854775809123456789D)), //
 						null }, //
 				{ "$abs(-9223372036854775809123456789)", Double.toString(Math.abs(-9223372036854775809123456789D)), //
@@ -130,8 +130,8 @@ public class AbsFunctionTests {
 				{ "-2147483640~>$abs()", Long.toString(Math.abs(-2147483640)), null }, //
 				{ "21474836471234~>$abs()", Long.toString((long) Math.abs(21474836471234D)), null }, //
 				{ "-21474836471234~>$abs()", Long.toString((long) Math.abs(-21474836471234D)), null }, //
-				{ "1.0~>$abs()", Double.toString(Math.abs(1.0)), null }, //
-				{ "-1.0~>$abs()", Double.toString(Math.abs(-1.0)), null }, //
+				{ "1.0~>$abs()", "1", null }, // jsonata 1.8.2 Double.toString(Math.abs(1.0)), null }, //
+				{ "-1.0~>$abs()", "1", null }, // jsonata 1.8.2 Double.toString(Math.abs(-1.0)), null }, //
 				{ "1.23456~>$abs()", Double.toString(Math.abs(1.23456)), null }, //
 				{ "-1.23456~>$abs()", Double.toString(Math.abs(-1.23456)), null }, //
 				{ "1.234567890123~>$abs()", Double.toString(Math.abs(1.234567890123)), null }, //
@@ -139,11 +139,11 @@ public class AbsFunctionTests {
 				{ "10/3.0~>$abs()", Double.toString(Math.abs(10 / 3.0)), null }, //
 				{ "-10/3.0~>$abs()", Double.toString(Math.abs(-10 / 3.0)), null }, //
 				{ "9223372036854775807~>$abs()", Long.toString(Math.abs(Long.MAX_VALUE)), null }, //
-				{ "-9223372036854775808~>$abs()", Double.toString(Math.abs(-9223372036854775808D)), null }, //
-				{ "9223372036854775809~>$abs()", Double.toString(Math.abs(9223372036854775809D)), null }, //
-				{ "-9223372036854775809~>$abs()", Double.toString(Math.abs(-9223372036854775809D)), null }, //
-				{ "9223372036854775899.5~>$abs()", Double.toString(Math.abs(9223372036854775899.5)), null }, //
-				{ "-9223372036854775899.5~>$abs()", Double.toString(Math.abs(-9223372036854775899.5)), null }, //
+				{ "-9223372036854775808~>$abs()", Long.toString(Long.MAX_VALUE), null }, // jsonata 1.8.2 Double.toString(Math.abs(-9223372036854775808D)), null }, //
+				{ "9223372036854775809~>$abs()", Long.toString(Long.MAX_VALUE), null }, // jsonata 1.8.2 Double.toString(Math.abs(9223372036854775809D)), null }, //
+				{ "-9223372036854775809~>$abs()", Long.toString(Long.MAX_VALUE), null }, // jsonata 1.8.2 Double.toString(Math.abs(-9223372036854775809D)), null }, //
+				{ "9223372036854775899.5~>$abs()", Long.toString(Long.MAX_VALUE), null }, // jsonata 1.8.2 Double.toString(Math.abs(9223372036854775899.5)), null }, //
+				{ "-9223372036854775899.5~>$abs()", Long.toString(Long.MAX_VALUE), null }, // jsonata 1.8.2 Double.toString(Math.abs(-9223372036854775899.5)), null }, //
 				{ "9223372036854775809123456789~>$abs()", Double.toString(Math.abs(9223372036854775809123456789D)), //
 						null }, //
 				{ "-9223372036854775809123456789~>$abs()", Double.toString(Math.abs(-9223372036854775809123456789D)), //
