@@ -14,7 +14,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.jsonata4java</groupId>
 	<artifactId>JSONata4Java</artifactId>
-	<version>1.4.3</version>
+	<version>1.4.4</version>
 	<name>JSONata4Java</name>
 	<description>Port of jsonata.js to Java to enable rules for JSON content</description>
 	<url>https://github.com/IBM/JSONata4Java</url>
@@ -78,6 +78,12 @@
 			<artifactId>antlr4-runtime</artifactId>
 			<version>4.8-1</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/biz.aQute.bnd/bnd-maven-plugin -->
+		<dependency>
+		    <groupId>biz.aQute.bnd</groupId>
+		    <artifactId>bnd-maven-plugin</artifactId>
+		    <version>5.0.1</version>
+		</dependency>		
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -149,11 +155,20 @@
 			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-maven-plugin</artifactId>
+				<version>5.0.1</version>
 				<configuration>
 					<bnd>
 						<![CDATA[ 
-Export-Package: com.api.jsonata4java.expressions
+                        Export-Package: \
+                        com.api.jsonata4java, \
+                        com.api.jsonata4java.expressions, \
+                        com.api.jsonata4java.expressions.functions, \
+                        com.api.jsonata4java.expressions.generated, \
+                        com.api.jsonata4java.expressions.path, \
+                        com.api.jsonata4java.expressions.path.generated, \
+                        com.api.jsonata4java.expressions.utils
 					]]>
+					Bundle-Developers: wnm3; email=wnm3@us.ibm.com; name="Nathaniel Mills"; organization=IBM; organizationUrl=https://www.ibm.com
 					</bnd>
 				</configuration>
 				<executions>
@@ -167,6 +182,7 @@ Export-Package: com.api.jsonata4java.expressions
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
 				<configuration>
 					<archive>
 						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
