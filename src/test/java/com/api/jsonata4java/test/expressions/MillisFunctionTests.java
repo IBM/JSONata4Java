@@ -73,14 +73,14 @@ public class MillisFunctionTests {
 				{ "$millis(10/3.0)", null, ERR_ARG1BADTYPE }, //
 				{ "$millis('1')", null, ERR_ARG1BADTYPE }, //
 				{ "$millis(a.b.c)", null, ERR_ARG1BADTYPE }, //
-				{ "$millis(null)", null, ERR_ARG1BADTYPE }, //
+				{ "$millis(null)", null, ERR_ARG1BADTYPE } //
 				// TODO: Need to work out how to test the function since we cannot predict the
 				// long that is returned
 				// {"$millis()", Long.toString(Instant.now().toEpochMilli()), null}
 				// below may prove false on slower machines...
-				{ "{\"now\": $millis(), \"delay\": $sum([1..4]), \"later\": $millis()}.(later = now)", "true", null }, //
-				{ "{\"now\": $millis(), \"delay\": $sum([1..10000]), \"later\": $millis()}.(later - now < 10)", "true",
-						null } });
+// TODO timing specific				{ "{\"now\": $millis(), \"delay\": $sum([1..4]), \"later\": $millis()}.(later = now)", "true", null }, //
+// TODO timing specific				{ "{\"now\": $millis(), \"delay\": $sum([1..10000]), \"later\": $millis()}.(later - now < 10)", "true", null }
+			});
 	}
 
 	@Test
