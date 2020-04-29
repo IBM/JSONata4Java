@@ -113,8 +113,8 @@ public class PowerFunctionTests {
 				{ "$power(-1)", null, ERR_BAD_CONTEXT }, //
 				{ "$power(123.456)", null, ERR_BAD_CONTEXT }, //
 				{ "$power(123.456,2,0)", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$power(0, 2)", "0", null}, // jsonata 1.8.2 Double.toString(Math.pow(0, 2)), null }, //
-				{ "$power(0.0, 2)", "0", null}, // jsonata 1.8.2 Double.toString(Math.pow(0.0, 2)), null }, //
+				{ "$power(0, 2)", Long.toString((long)Math.pow(0, 2)), null}, // jsonata 1.8.2 Double.toString(Math.pow(0, 2)), null }, //
+				{ "$power(0.0, 2)", Long.toString((long)Math.pow(0.0, 2)), null}, // jsonata 1.8.2 Double.toString(Math.pow(0.0, 2)), null }, //
 				{ "$power(123.456, 2)", Double.toString(Math.pow(123.456, 2)), null }, //
 				{ "$power(123.456, -1)", Double.toString(Math.pow(123.456, -1)), null }, //
 				{ "$power(123.456, -2)", Double.toString(Math.pow(123.456, -2)), null }, //
@@ -123,14 +123,14 @@ public class PowerFunctionTests {
 				{ "$power(123.456, -0.2)", Double.toString(Math.pow(123.456, -0.2)), null }, //
 				{ "$power(123.456, 2.5)", Double.toString(Math.pow(123.456, 2.5)), null }, //
 				{ "$power(125, -2.5)", Double.toString(Math.pow(125, -2.5)), null }, //
-				{ "$power(2147483647, 2)", "4611686014132420608", null}, // jsonata 1.8.2 Double.toString(Math.pow(2147483647, 2)), null }, //
-				{ "$power(-2147483640, 2)", "4611685984067649536", null}, // jsonata 1.8.2 Double.toString(Math.pow(-2147483640, 2)), null }, //
+				{ "$power(2147483647, 2)", Long.toString((long)Math.pow(2147483647, 2)), null}, // jsonata 1.8.2 Double.toString(Math.pow(2147483647, 2)), null }, //
+				{ "$power(-2147483640, 2)", Long.toString((long)Math.pow(-2147483640, 2)), null}, // jsonata 1.8.2 Double.toString(Math.pow(-2147483640, 2)), null }, //
 				{ "$power(21474836471234, 2)", Double.toString(Math.pow(21474836471234D, 2)), null }, //
 				{ "$power(-21474836471234, 2)", Double.toString(Math.pow(-21474836471234D, 2)), null }, //
 				{ "$power(10/3.0, 1)", Double.toString(Math.pow(10 / 3.0, 1)), null }, //
 				{ "$power(-10/3.0, 1)", Double.toString(Math.pow(-10 / 3.0, 1)), null }, //
-				{ "$power(1, 10/3.0)", "1", null}, // jsonata 1.8.2 Double.toString(Math.pow(1, 10 / 3.0)), null }, //
-				{ "$power(1, -10/3.0)", "1", null}, // jsonata 1.8.2 Double.toString(Math.pow(1, -10 / 3.0)), null }, //
+				{ "$power(1, 10/3.0)", Long.toString((long)Math.pow(1, 10/3.0)), null}, // jsonata 1.8.2 Double.toString(Math.pow(1, 10 / 3.0)), null }, //
+				{ "$power(1, -10/3.0)", Long.toString((long)Math.pow(1, -10/3.0)), null}, // jsonata 1.8.2 Double.toString(Math.pow(1, -10 / 3.0)), null }, //
 				{ "$power(9223372036854775807, 2)", Double.toString(Math.pow(9223372036854775807D, 2)), null }, //
 				{ "$power(-9223372036854775807, 2)", Double.toString(Math.pow(-9223372036854775807D, 2)), null }, //
 				{ "$power(-9223372036854775808, 3)", Double.toString(Math.pow(-9223372036854775808D, 3)), null }, //
