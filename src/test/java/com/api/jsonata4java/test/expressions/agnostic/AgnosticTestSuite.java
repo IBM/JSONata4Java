@@ -138,7 +138,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 	}
 
 	private static final boolean SHOW_IMPORT_DETAILS = false; // true to see datasets, groups, etc.
-	private static final String SUITE_DIR = "./target/jsonata/jsonata-1.8.2/test/test-suite";
+	private static final String SUITE_DIR = "./target/jsonata/jsonata-1.8.3/test/test-suite";
 	private static final String DATASETS_DIR = SUITE_DIR + "/datasets";
 	private static final String GROUPS_DIR = SUITE_DIR + "/groups";
 

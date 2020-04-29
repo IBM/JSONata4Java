@@ -59,6 +59,9 @@ public class NotFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
+			if (arg == null) {
+				return null;
+			}
 			result = !BooleanUtils.convertJsonNodeToBoolean(arg) ? BooleanNode.TRUE : BooleanNode.FALSE;
 		} else {
 			if (argCount == 0) {
