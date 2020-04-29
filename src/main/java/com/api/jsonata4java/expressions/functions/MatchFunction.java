@@ -90,12 +90,12 @@ public class MatchFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-			if (argString == null) {
-				return null;
-			}
-			if (!argString.isTextual()) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
+//			if (argString == null) {
+//				return null;
+//			}
+//			if (!argString.isTextual()) {
+//				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+//			}
 			final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
 					useContext ? 0 : 1);
 			int limit = -1;
@@ -105,9 +105,10 @@ public class MatchFunction extends FunctionBase implements Function {
 			}
 			// Make sure that the pattern is a non-empty string
 			if (argPattern != null && argPattern.isTextual() && !(argPattern.asText().isEmpty())) {
+				final String pattern = argPattern.textValue();
+				final Pattern regexPattern = Pattern.compile(pattern);
 				// Check to see if the separator is just a string
 				final String str = argString.textValue();
-				final String pattern = argPattern.textValue();
 
 				if (argCount == 3) {
 					final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
@@ -123,7 +124,6 @@ public class MatchFunction extends FunctionBase implements Function {
 					}
 				}
 
-				final Pattern regexPattern = Pattern.compile(pattern);
 				final Matcher matcher = regexPattern.matcher(str);
 
 				// Check to see if a limit was specified
