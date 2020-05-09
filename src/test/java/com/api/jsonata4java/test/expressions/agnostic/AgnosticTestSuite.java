@@ -61,7 +61,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			"hof-single", // issue #76
 			"tail-recursion", // tail-recursion requires lambda issue #70
 			"function-signatures", // #77
-			"flattening" // #78
+//			"flattening" // #78
 	});
 
 	private static final ObjectMapper _objectMapper = new ObjectMapper().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);;
@@ -76,6 +76,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		SKIP_CASES("object-constructor",
 				"case008", "case009", "case010", "case011", "case012", "case013", "case014",
 				"case015", "case016", "case017", "case018", "case019", "case020", "case022", "case025");
+		SKIP_CASES("flattening", 
+				"case040", "case041");
 		// issue #48 @ references
 		SKIP_CASES("joins","employee-map-reduce-11");
 		// issue #48 @ references
@@ -126,6 +128,9 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		SKIP_CASES("boolean-expresssions","case016");
 		// issue #95
 		SKIP_CASES("encoding","case001","case003");
+		// issue #113
+		SKIP_CASES("flattening", 
+				"case034","case037","case038","case042","case043","case044","case045","sequence-of-arrays-3");
 	}
 
 	private static void SKIP_CASES(String group, String... casesArray) {

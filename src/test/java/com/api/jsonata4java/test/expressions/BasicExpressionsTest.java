@@ -1031,9 +1031,7 @@ public class BasicExpressionsTest {
       //         }
       //      }
 
-// TODO: fix back to "[1]" rather than "1" once flattening is addressed
-//    simpleTest("$spread([1])","[1]");
-      simpleTest("$spread([1])","1");
+    simpleTest("$spread([1])","[1]");
 
       // jsonata.js 1.8 docs only talk about objects and arrays of objects
       // but changed code to behave like jsonata.js

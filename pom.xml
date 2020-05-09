@@ -1,20 +1,33 @@
-<!-- /** * (c) Copyright 2018, 2019 IBM Corporation * 1 New Orchard Road, 
-	* Armonk, New York, 10504-1722 * United States * +1 914 499 1900 * support: 
-	Nathaniel Mills wnm3@us.ibm.com * * Licensed under the Apache License, Version 
-	2.0 (the "License"); * you may not use this file except in compliance with 
-	the License. * You may obtain a copy of the License at * * http://www.apache.org/licenses/LICENSE-2.0 
-	* * Unless required by applicable law or agreed to in writing, software * 
-	distributed under the License is distributed on an "AS IS" BASIS, * WITHOUT 
-	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. * See the 
-	License for the specific language governing permissions and * limitations 
-	under the License. * */ -->
+<!-- 
+/** 
+ * (c) Copyright 2018, 2019 IBM Corporation 
+ * 1 New Orchard Road, 
+ * Armonk, New York, 10504-1722 
+ * United States 
+ * +1 914 499 1900 
+ * support: Nathaniel Mills wnm3@us.ibm.com 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); 
+ * you may not use this file except in compliance with the License. 
+ * You may obtain a copy of the License at 
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the License is distributed on an "AS IS" BASIS, 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+ * See the License for the specific language governing permissions and 
+ * limitations under the License. 
+ * 
+ */ 
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.jsonata4java</groupId>
 	<artifactId>JSONata4Java</artifactId>
-	<version>1.4.5</version>
+	<version>1.4.6</version>
 	<name>JSONata4Java</name>
 	<description>Port of jsonata.js to Java to enable rules for JSON content</description>
 	<url>https://github.com/IBM/JSONata4Java</url>
@@ -53,7 +66,7 @@
 		<url>https://github.com/IBM/JSONata4Java</url>
 	</scm>
 	<properties>
-		<!-- --> <runSuite>**/AgnosticTestSuite.class</runSuite>  <!--  -->
+		<!-- --><runSuite>**/AgnosticTestSuite.class</runSuite> <!-- -->
 		<!-- <runSuite>**/ComponentTestSuite.class</runSuite> -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>

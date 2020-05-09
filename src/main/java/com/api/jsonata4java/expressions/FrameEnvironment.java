@@ -124,6 +124,9 @@ public class FrameEnvironment {
    public JsonNode getVariable(String varName) {
    	if ("$".equals(varName)) {
    		// get this from the stack
+   		if (getContextStack().isEmpty()) {
+   			return null;
+   		}
    		JsonNode result = getContextStack().peek();
 //   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
 //   			if (result.size() == 1) {

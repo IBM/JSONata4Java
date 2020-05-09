@@ -368,6 +368,18 @@ public interface MappingExpressionListener extends ParseTreeListener {
 	 */
 	void exitField_values(MappingExpressionParser.Field_valuesContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code object}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterObject(MappingExpressionParser.ObjectContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code object}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitObject(MappingExpressionParser.ObjectContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link MappingExpressionParser#fieldList}.
 	 * @param ctx the parse tree
 	 */

@@ -41,13 +41,14 @@ expr:
    ID                                                     # id
  | '*'                                                    # field_values
  | DESCEND                                                # descendant
- | DOLLAR (('.' expr) | (ARR_OPEN expr ARR_CLOSE))?       # context_ref
- | ROOT ('.' expr)?                                       # root_path
+ | DOLLAR                                                 # context_ref
+ | ROOT                                                   # root_path
  | ARR_OPEN exprOrSeqList? ARR_CLOSE                      # array_constructor
+ | OBJ_OPEN fieldList? OBJ_CLOSE					      # object_constructor
  | expr '.' expr                                          # path
  | expr ARR_OPEN ARR_CLOSE                                # to_array
  | expr ARR_OPEN expr ARR_CLOSE                           # array
- | OBJ_OPEN fieldList? OBJ_CLOSE					      # object_constructor
+ | expr OBJ_OPEN fieldList? OBJ_CLOSE                     # object
  | VAR_ID (emptyValues | exprValues)                      # function_call
  | FUNCTIONID varList '{' exprList? '}'                   # function_decl
  | VAR_ID ASSIGN (expr | (FUNCTIONID varList '{' exprList? '}'))                   # var_assign
@@ -111,7 +112,7 @@ NUMBER
     |   INT                 // 3, 45
     ;
 
-FUNCTIONID : 'function' ;
+FUNCTIONID : ('function' | 'λ') ;
 
 WS: [ \t\n]+ -> skip ;                // ignore whitespace
 COMMENT:  '/*' .*? '*/' -> skip;      // allow comments

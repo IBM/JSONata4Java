@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>1.4.5</version>
+  <version>1.4.6</version>
 </dependency>
 ```
 
@@ -22,7 +22,7 @@ You can also opt to clone this repository using the command line below and build
 ```
 git clone https://github.com/IBM/JSONata4Java.git
 ```
-The code was created using Java 1.8 (1.8.0_221-b11). You can import the project into Eclipse 2020-03 or newer. 
+The code was created using OpenJDK Runtime Environment (build 1.8.0_242-b08). You can import the project into Eclipse 2020-03 or newer. 
 
 ### Building the jar files
 
@@ -34,8 +34,8 @@ you can right click on the pom.xml file and select **Run as... / Maven build...*
 ![Launcher Image](images/Launcher.png)
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two:
-* **JSONata4Java-1.4.5-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-1.4.5.jar** (only the JSONata4Java code)
+* **JSONata4Java-1.4.6-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-1.4.6.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 

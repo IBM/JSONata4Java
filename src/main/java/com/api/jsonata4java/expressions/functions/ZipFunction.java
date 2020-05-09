@@ -85,9 +85,9 @@ public class ZipFunction extends FunctionBase implements Function {
 			throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 		}
 		
-		ArrayNode temp = JsonNodeFactory.instance.arrayNode();
-		temp.add(result);
-		result = temp;
+//		ArrayNode temp = JsonNodeFactory.instance.arrayNode();
+//		temp.add(result);
+//		result = temp;
 		return result;
 	}
 

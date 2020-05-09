@@ -221,6 +221,13 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitField_values(MappingExpressionParser.Field_valuesContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code object}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitObject(MappingExpressionParser.ObjectContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link MappingExpressionParser#fieldList}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

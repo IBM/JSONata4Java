@@ -376,6 +376,18 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterObject(MappingExpressionParser.ObjectContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitObject(MappingExpressionParser.ObjectContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterFieldList(MappingExpressionParser.FieldListContext ctx) { }
 	/**
 	 * {@inheritDoc}

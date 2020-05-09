@@ -59,7 +59,7 @@ public class SpreadFunction extends FunctionBase implements Function {
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 		// Create the variable to return
-		SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
+		JsonNode result = JsonNodeFactory.instance.arrayNode();
 
 		// Retrieve the number of arguments
 		JsonNode argObject = JsonNodeFactory.instance.nullNode();
@@ -85,7 +85,7 @@ public class SpreadFunction extends FunctionBase implements Function {
 					}
 				}
 			}
-			result = (SelectorArrayNode)spread(result,argObject,argIsArray);
+			result = spread((ArrayNode)result,argObject,argIsArray);
 		} else {
 			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
 		}
@@ -117,23 +117,24 @@ public class SpreadFunction extends FunctionBase implements Function {
 		return "<x-:a<o>";
 	}
 
-	public void addObject(SelectorArrayNode result, ObjectNode obj) {
+	public ArrayNode addObject(ArrayNode result, ObjectNode obj) {
 		for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
 			String key = it.next();
 			ObjectNode cell = JsonNodeFactory.instance.objectNode();
 			cell.set(key, obj.get(key));
-			result.add(cell);
+			result = (ArrayNode)append(result,cell);
 		}
+		return result;
 	}
 	
-	public JsonNode spread(SelectorArrayNode result, JsonNode argObject,boolean[] argIsArray) {
+	public JsonNode spread(ArrayNode result, JsonNode argObject,boolean[] argIsArray) {
 		if (argObject == null) {
 			return null;
 		}
 		if (argObject.isObject()) {
 			ObjectNode obj = (ObjectNode) argObject;
 			if (obj.size() > 0) {
-				addObject(result, obj);
+				result = addObject(result, obj);
 			} else {
 				return null;
 			}
@@ -148,15 +149,15 @@ public class SpreadFunction extends FunctionBase implements Function {
 				JsonNode node = objArray.get(i);
 				if (node.isObject()) {
 					ObjectNode obj = (ObjectNode) node;
-					addObject(result, obj);
+					result = addObject(result, obj);
 				} else if (node.isArray()) {
 					for (JsonNode elt : ((ArrayNode)node)) {
-						concat(result,spread(result,elt,argIsArray));
+						result = (ArrayNode)append(result,spread(result,elt,argIsArray));
 					}
 				} else {
 					// jsonata.js 1.8 just keeps non-objects
 					// throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS);
-					result.add(node);
+					result = concat(result,node);
 				}
 			}
 		} else {
@@ -166,7 +167,7 @@ public class SpreadFunction extends FunctionBase implements Function {
 			 */
 			// throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			// jsonata.js 1.8 just adds the argument
-			result.add(argObject);
+			result = concat(result,argObject);
 		}
 		return result;
 	}
@@ -184,7 +185,7 @@ public class SpreadFunction extends FunctionBase implements Function {
 			base = newBase;
 		}
 		if (appendage.isArray() == false) {
-			SelectorArrayNode newAppendage = new SelectorArrayNode(JsonNodeFactory.instance);
+			ArrayNode newAppendage = JsonNodeFactory.instance.arrayNode();
 			newAppendage.add(appendage);
 			appendage = newAppendage;
 		}
@@ -192,13 +193,17 @@ public class SpreadFunction extends FunctionBase implements Function {
 	}
 	
 	ArrayNode concat(ArrayNode base, JsonNode appendage) {
+		ArrayNode result = JsonNodeFactory.instance.arrayNode();
+		for (JsonNode elt:base) {
+			result.add(elt);
+		}
 		if (appendage.isArray()) {
 			for (JsonNode elt:appendage) {
-				base.add(elt);
+				result.add(elt);
 			}
 		} else {
-			base.add(appendage);
+			result.add(appendage);
 		}
-		return base;
+		return result;
 	}
 }
