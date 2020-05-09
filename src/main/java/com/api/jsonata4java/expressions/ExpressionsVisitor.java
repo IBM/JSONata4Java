@@ -150,7 +150,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	static private final Logger LOG = Logger.getLogger(CLASS);
 	static private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 	static private final ObjectMapper objectMapper = new ObjectMapper();
-	static private String lastVisited = "";
+	static public String lastVisited = "";
 
 	/**
 	 * This defines the behavior of the "=" and "in" operators

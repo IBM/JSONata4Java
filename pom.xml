@@ -66,8 +66,7 @@
 		<url>https://github.com/IBM/JSONata4Java</url>
 	</scm>
 	<properties>
-		<!-- --><runSuite>**/AgnosticTestSuite.class</runSuite> <!-- -->
-		<!-- <runSuite>**/ComponentTestSuite.class</runSuite> -->
+		<runSuite>**/AgnosticTestSuite.class</runSuite>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<distributionManagement>

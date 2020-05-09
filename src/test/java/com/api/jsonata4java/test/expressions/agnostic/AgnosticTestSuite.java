@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -25,9 +26,58 @@ import org.junit.runners.ParentRunner;
 import org.junit.runners.model.InitializationError;
 
 import com.api.jsonata4java.expressions.EvaluateException;
+import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
+import com.api.jsonata4java.expressions.path.PathExpression;
+import com.api.jsonata4java.expressions.utils.JsonMergeUtils;
+import com.api.jsonata4java.test.expressions.AbsFunctionTests;
+import com.api.jsonata4java.test.expressions.Base64DecodeFunctionTests;
+import com.api.jsonata4java.test.expressions.Base64EncodeFunctionTests;
+import com.api.jsonata4java.test.expressions.BasicExpressionsTest;
+import com.api.jsonata4java.test.expressions.BooleanFunctionTests;
+import com.api.jsonata4java.test.expressions.CeilFunctionTests;
+import com.api.jsonata4java.test.expressions.ContainsFunctionTests;
+import com.api.jsonata4java.test.expressions.CountFunctionTests;
+import com.api.jsonata4java.test.expressions.ExpressionsTests;
+import com.api.jsonata4java.test.expressions.FloorFunctionTests;
+import com.api.jsonata4java.test.expressions.FormatBaseFunctionTests;
+import com.api.jsonata4java.test.expressions.FormatNumberFunctionTests;
+import com.api.jsonata4java.test.expressions.FromMillisFunctionTests;
+import com.api.jsonata4java.test.expressions.InvalidSyntaxTest;
+import com.api.jsonata4java.test.expressions.JoinFunctionTests;
+import com.api.jsonata4java.test.expressions.JsonataDotOrgTests;
+import com.api.jsonata4java.test.expressions.LengthFunctionTests;
+import com.api.jsonata4java.test.expressions.LowercaseFunctionTests;
+import com.api.jsonata4java.test.expressions.MatchFunctionTests;
+import com.api.jsonata4java.test.expressions.MaxFunctionTests;
+import com.api.jsonata4java.test.expressions.MillisFunctionTests;
+import com.api.jsonata4java.test.expressions.MinFunctionTests;
+import com.api.jsonata4java.test.expressions.NotFunctionTests;
+import com.api.jsonata4java.test.expressions.NowFunctionTests;
+import com.api.jsonata4java.test.expressions.NumberFunctionTests;
+import com.api.jsonata4java.test.expressions.NumericCoercionTests;
+import com.api.jsonata4java.test.expressions.PadFunctionTests;
+import com.api.jsonata4java.test.expressions.PowerFunctionTests;
+import com.api.jsonata4java.test.expressions.RandomFunctionTests;
+import com.api.jsonata4java.test.expressions.ReplaceFunctionTests;
+import com.api.jsonata4java.test.expressions.RoundFunctionTests;
+import com.api.jsonata4java.test.expressions.SplitFunctionTests;
+import com.api.jsonata4java.test.expressions.SqrtFunctionTests;
+import com.api.jsonata4java.test.expressions.StringFunctionTests;
+import com.api.jsonata4java.test.expressions.SubstringAfterFunctionTests;
+import com.api.jsonata4java.test.expressions.SubstringBeforeFunctionTests;
+import com.api.jsonata4java.test.expressions.SubstringFunctionTests;
+import com.api.jsonata4java.test.expressions.SumFunctionTests;
+import com.api.jsonata4java.test.expressions.ToMillisFunctionTests;
+import com.api.jsonata4java.test.expressions.TrimFunctionTests;
+import com.api.jsonata4java.test.expressions.UnpackFunctionTests;
+import com.api.jsonata4java.test.expressions.UppercaseFunctionTests;
 import com.api.jsonata4java.test.expressions.agnostic.AgnosticTestSuite.TestGroup;
+import com.api.jsonata4java.test.expressions.path.PathExpressionSyntaxTests;
+import com.api.jsonata4java.test.expressions.path.PathExpressionTests;
+import com.api.jsonata4java.text.expressions.utils.JsonMergeUtilsTest;
+import com.api.jsonata4java.text.expressions.utils.Utils;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -41,8 +91,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 @RunWith(AgnosticTestSuite.class)
 public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 
-	private static final List<String> SKIP_GROUPS = Arrays.asList(new String[] {
-			"transform", // issue #47
+	private static final List<String> SKIP_GROUPS = Arrays.asList(new String[] { "transform", // issue #47
 			"transforms", // issue #47
 			"function-formatNumber", // issue #49
 			"function-tomillis", // issue #52
@@ -52,7 +101,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			"hof-zip-map", // issue #58
 			"parent-operator", // issue #60
 			"function-distinct", // issue #63
-			"lambdas", // issue #70
+//			"lambdas", // issue #70
 			"higher-order-functions", // issue #70
 			"regex", // issue #71
 			"function-assert", // issue #72
@@ -64,73 +113,75 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 //			"flattening" // #78
 	});
 
-	private static final ObjectMapper _objectMapper = new ObjectMapper().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);;
+	private static final ObjectMapper _objectMapper = new ObjectMapper()
+			.configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);;
 	private static final Map<String, List<String>> SKIP_CASES = new HashMap<>();
 	static {
 		// ensure we don't have scientific notation for numbers
 		_objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
 
-		// due to  unparsable use of 'in' in the tests
+		// due to unparsable use of 'in' in the tests
 		SKIP_CASES("inclusion-operator", "case004", "case005");
 		// issue #43 object construction
-		SKIP_CASES("object-constructor",
-				"case008", "case009", "case010", "case011", "case012", "case013", "case014",
+		SKIP_CASES("object-constructor", "case008", "case009", "case010", "case011", "case012", "case013", "case014",
 				"case015", "case016", "case017", "case018", "case019", "case020", "case022", "case025");
-		SKIP_CASES("flattening", 
-				"case040", "case041");
+		SKIP_CASES("flattening", "case040", "case041");
 		// issue #48 @ references
-		SKIP_CASES("joins","employee-map-reduce-11");
+		SKIP_CASES("joins", "employee-map-reduce-11");
 		// issue #48 @ references
-		SKIP_CASES("joins","library-joins-10");
+		SKIP_CASES("joins", "library-joins-10");
 		// issue #50 # references
-		SKIP_CASES("joins","index-15");
+		SKIP_CASES("joins", "index-15");
 		// issue #52
-		SKIP_CASES("function-fromMillis","isoWeekDate-18");
+		SKIP_CASES("function-fromMillis", "isoWeekDate-18");
 		// issue #53
-		SKIP_CASES("function-application","case016");
+		SKIP_CASES("function-application", "case016");
 		// issue #53
-		SKIP_CASES("function-applications","case012","case016","case021");
+		SKIP_CASES("function-applications", "case012", "case016", "case021");
 		// issue #53
-		SKIP_CASES("hof-map","case008");
+		SKIP_CASES("hof-map", "case008");
+		// issue #53
+		SKIP_CASES("hof-reduce", "case010");
 		// issue #54 timeouts
-		SKIP_CASES("range-operator","case021","case024");
+		SKIP_CASES("range-operator", "case021", "case024");
 		// issue #55 and / or stand alone to get by parser
-		SKIP_CASES("boolean-expresssions","case012","case013","case014", "case015");
+		SKIP_CASES("boolean-expresssions", "case012", "case013", "case014", "case015");
 		// issue #56 closures
-		SKIP_CASES("object-constructor","case023");
+		SKIP_CASES("object-constructor", "case023");
 		// issue $59
-		SKIP_CASES("errors","case012","case013","case014","case015","case018","case020","case022","case023");
+		SKIP_CASES("errors", "case012", "case013", "case014", "case015", "case018", "case020", "case022", "case023");
 		// have right answer, but AgnosticTestSuite not comparing correctly
-		SKIP_CASES("literals","case006");
+		SKIP_CASES("literals", "case006");
 		// issue #61 variable to function chain
-		SKIP_CASES("function-applications","case005","case009","case015");
-		// issue #70
-		SKIP_CASES("hof-reduce",
-				"case001", "case009","case010");
+		SKIP_CASES("function-applications", "case005", "case009", "case015");
 		// issue 70
-		SKIP_CASES("function-typeOf","case011");
-	   // issue 70
-		SKIP_CASES("function-sift","case000","case001","case002","case004"); 
-	   // issue 70
-		SKIP_CASES("function-sort","case010"); 
+		SKIP_CASES("function-typeOf", "case011");
 		// issue 70
-		SKIP_CASES("function-each","case000");
+		SKIP_CASES("function-sift", "case000", "case001", "case002", "case004");
 		// issue 70
-		SKIP_CASES("hof-filter","case000","case001");
+		SKIP_CASES("function-sort", "case010");
 		// issue 70
-		SKIP_CASES("function-applications","case013","case014","case017","case018","case019");
+		SKIP_CASES("function-each", "case000");
 		// issue 70
-		SKIP_CASES("hof-map","case003","case004");
+		SKIP_CASES("hof-filter", "case000", "case001");
+		// issue 70
+		SKIP_CASES("function-applications", "case013", "case014", "case017", "case018", "case019");
+		// issue 70
+		SKIP_CASES("hof-map", "case003", "case004");
+		// issue 70
+		SKIP_CASES("lambdas", "case004", "case009", "case010", "case012");
 		// issue #78
 		SKIP_CASES("predicates", "case003");
 		// issues #79 and 70
 		// issues #80 flattening
-		SKIP_CASES("boolean-expresssions","case016");
+		SKIP_CASES("boolean-expresssions", "case016");
 		// issue #95
-		SKIP_CASES("encoding","case001","case003");
+		SKIP_CASES("encoding", "case001", "case003");
 		// issue #113
-		SKIP_CASES("flattening", 
-				"case034","case037","case038","case042","case043","case044","case045","sequence-of-arrays-3");
+		SKIP_CASES("flattening", "case034", "case037", "case038", "case042", "case043", "case044", "case045",
+				"sequence-of-arrays-3");
+		// issue #114
+		SKIP_CASES("hof-reduce", "case001");
 	}
 
 	private static void SKIP_CASES(String group, String... casesArray) {
@@ -163,7 +214,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 	}
 
 	private void init() throws Exception {
-		final ObjectMapper om = new ObjectMapper().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);;
+		final ObjectMapper om = new ObjectMapper().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
+		;
 
 		// load and parse all the dataset json files into memory
 		printHeader("Loading datasets");
@@ -215,7 +267,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 					int subTestIndex = 0;
 					ArrayNode testCases = (ArrayNode) caseJson;
 					for (JsonNode testCaseJson : testCases) {
-						testCase = new TestCase(group, caseName+"-"+(subTestIndex++), testCaseJson);
+						testCase = new TestCase(group, caseName + "-" + (subTestIndex++), testCaseJson);
 					}
 				} else {
 					throw new RuntimeException("[" + group.getGroupName() + "." + caseName + "] Not a JSON object or array");
@@ -226,6 +278,224 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		}
 		System.out.println("Read " + groupsRead + " groups from " + GROUPS_DIR);
 		printFooter();
+
+		runComponentTest(AbsFunctionTests.data());
+		runComponentTest(Base64DecodeFunctionTests.data());
+		runComponentTest(Base64EncodeFunctionTests.data());
+		// runComponentTest(BasicExpressionsTest.data());
+		runComponentTest(BooleanFunctionTests.data());
+		runComponentTest(CeilFunctionTests.data());
+		runComponentTest(ContainsFunctionTests.data());
+		runComponentTest(CountFunctionTests.data());
+		runComponentTest(ExpressionsTests.data());
+		runComponentTest(FloorFunctionTests.data());
+		runComponentTest(FormatBaseFunctionTests.data());
+		runComponentTest(FormatNumberFunctionTests.data());
+		runComponentTest(FromMillisFunctionTests.data());
+		runComponentTest(JoinFunctionTests.data());
+		runComponentTest(LengthFunctionTests.data());
+		runComponentTest(LowercaseFunctionTests.data());
+		runComponentTest(MatchFunctionTests.data());
+		runComponentTest(MaxFunctionTests.data());
+		runComponentTest(MillisFunctionTests.data());
+		runComponentTest(MinFunctionTests.data());
+		runComponentTest(NotFunctionTests.data());
+		runComponentTest(NowFunctionTests.data());
+		runComponentTest(NumberFunctionTests.data());
+		runComponentTest(NumericCoercionTests.data());
+		runComponentTest(PadFunctionTests.data());
+		runComponentTest(PowerFunctionTests.data());
+		runComponentTest(RandomFunctionTests.data());
+		runComponentTest(ReplaceFunctionTests.data());
+		runComponentTest(RoundFunctionTests.data());
+		// issue 80
+		// runComponentTest(flatteningrunComponentTest(SingletonArrayHandlingTests.data());
+		runComponentTest(SplitFunctionTests.data());
+		runComponentTest(SqrtFunctionTests.data());
+		runComponentTest(StringFunctionTests.data());
+		runComponentTest(SubstringAfterFunctionTests.data());
+		runComponentTest(SubstringBeforeFunctionTests.data());
+		runComponentTest(SubstringFunctionTests.data());
+		runComponentTest(SumFunctionTests.data());
+		runComponentTest(ToMillisFunctionTests.data());
+		runComponentTest(TrimFunctionTests.data());
+		runComponentTest(UppercaseFunctionTests.data());
+
+		runUnpackTest(UnpackFunctionTests.data());
+
+		runExecutionTest(InvalidSyntaxTest.data());
+
+		runPathExpressionSyntaxTest(PathExpressionSyntaxTests.data());
+
+		runPathExpressionTest(PathExpressionTests.data());
+
+		runJsonCompareTest(JsonMergeUtilsTest.data());
+
+		runJsonataTest(JsonataDotOrgTests.data());
+
+		BasicExpressionsTest bet = new BasicExpressionsTest();
+		bet.testNewStuff();
+		bet.testNullNode();
+		bet.testCustomerScenario();
+		bet.testArrayToString();
+		bet.testStrings();
+		bet.testLiterals();
+		bet.testNegation();
+		bet.testArithmeticOperators();
+		bet.testStringOperators();
+		bet.eventAccessNoQuotes();
+		bet.eventAccessWithQuotes();
+		bet.appAccessNoQuotes();
+		bet.appAccessWithQuotes();
+		bet.testArrays();
+		bet.testVariableAssignment();
+		bet.testFunctionDecl();
+		bet.testObjectFunctions();
+		bet.testArrayFlattening();
+		bet.exceptions();
+		bet.testBooleanOperators();
+		bet.testCompOperators();
+		bet.testConditionalLazyEval();
+		bet.testNullEquality();
+		bet.testNullComparison();
+		bet.testExistsFunction();
+		bet.testArrayConstructor();
+		bet.testArraySeqConstructor();
+		bet.testAppendFunction();
+		bet.testCountFunction();
+		bet.testObjectConstructors();
+		bet.testSumFunction();
+		bet.testAverageFunction();
+		bet.testBasicSelection();
+		bet.testComplexSelection();
+
+	}
+
+	protected void runPathExpressionTest(Collection<Object[]> data) throws Exception {
+		for (Object[] test : data) {
+
+			JsonNode inputJson = test[1] == null ? null
+					: test[1].toString() == null ? null
+							: (new ObjectMapper()).readTree(test[1] == null ? null : test[1].toString());
+			JsonNode expectedOutputJson = test[5] == null ? null
+					: test[5].toString() == null ? null
+							: (new ObjectMapper()).readTree(test[5] == null ? null : test[5].toString());
+			JsonNode valueToAssignJson = test[4] == null ? null
+					: test[4].toString() == null ? null
+							: (new ObjectMapper()).readTree(test[4] == null ? null : test[4].toString());
+
+			PathExpression e = PathExpression.parse(test[0] == null ? null : test[0].toString());
+
+			JsonNode setterReturn = null;
+			// test the setter
+			try {
+				setterReturn = e.set(inputJson, test[2] == null ? null : (Integer) test[2], valueToAssignJson);
+				if ((test[6] == null ? null : test[6].toString()) != null) {
+					Assert.fail("set() - Expected runtime exception with message '" + test[6] == null ? null
+							: test[6].toString() + "' was not thrown");
+				}
+				Assert.assertEquals(expectedOutputJson, inputJson);
+			} catch (EvaluateRuntimeException ex) {
+				if (test[6] == null ? null : test[6].toString() == null) {
+					throw ex;
+				} else {
+					Assert.assertEquals(test[6] == null ? null : test[6].toString(), ex.getMessage());
+				}
+			}
+
+			// NOTE: setterReturn might be different to valueToAssign due to type coercion
+
+			// test the getter
+			try {
+				JsonNode getterReturn = e.get(inputJson, test[2] == null ? null : (Integer) test[2]);
+				if ((test[6] == null ? null : test[6].toString()) != null) {
+					Assert.fail("get() - Expected runtime exception with message '" + test[6] == null ? null
+							: test[6].toString() + "' was not thrown");
+				}
+				Assert.assertEquals(expectedOutputJson, inputJson);
+
+				// the output of the getter should be equal to the (possibly coerced) value
+				// assigned by the setter
+				Assert.assertEquals(setterReturn, getterReturn);
+			} catch (EvaluateRuntimeException ex) {
+				if (test[6] == null ? null : test[6].toString() == null) {
+					throw ex;
+				} else {
+					Assert.assertEquals(test[6] == null ? null : test[6].toString(), ex.getMessage());
+				}
+			}
+		}
+
+	}
+
+	protected void runUnpackTest(Collection<Object[]> data) throws Exception {
+		for (Object[] test : data) {
+			Utils.test(test[0] == null ? null : test[0].toString(), test[1] == null ? null : (JsonNode) test[1],
+					test[2] == null ? null : test[2].toString(), null);
+		}
+	}
+
+	protected void runJsonCompareTest(Collection<Object[]> data) throws Exception {
+		for (Object[] test : data) {
+			final JsonNode actual = JsonMergeUtils.merge(test[0] == null ? null : (JsonNode) test[0],
+					test[1] == null ? null : (JsonNode) test[1]);
+			Assert.assertEquals(test[2] == null ? null : (JsonNode) test[2], actual);
+
+		}
+	}
+
+	protected void runPathExpressionSyntaxTest(Collection<Object[]> data) throws Exception {
+		for (Object[] test : data) {
+			try {
+				PathExpression.parse(test[0] == null ? null : test[0].toString());
+				if (!(test[1] == null ? null : (Boolean) test[1])) {
+					Assert.fail(
+							"Expected a ParseException to be thrown when attempting to parse expression '" + test[0] == null
+									? null
+									: test[0].toString() + "', but it was not");
+				}
+			} catch (ParseException ex) {
+				if ((test[1] == null ? null : (Boolean) test[1])) {
+					Assert.fail("Expected expression '" + test[0] == null ? null
+							: test[0].toString() + "' to parse successfully, but it did not");
+				}
+			}
+		}
+	}
+
+	protected void runExecutionTest(Collection<Object[]> data) throws Exception {
+		for (Object[] test : data) {
+			try {
+				System.err.println("* " + test[0] == null ? null : test[0].toString());
+				Expressions.parse(test[0] == null ? null : test[0].toString());
+				if (!(test[1] == null ? null : (Boolean) test[1])) {
+					Assert.fail(
+							"Expected a ParseException to be thrown when attempting to parse expression '" + test[0] == null
+									? null
+									: test[0].toString() + "', but it was not");
+				}
+			} catch (ParseException ex) {
+				if ((test[1] == null ? null : (Boolean) test[1])) {
+					ex.printStackTrace();
+					Assert.fail("Expected expression '" + test[0] == null ? null
+							: test[0].toString() + "' to parse successfully, but it did not");
+				}
+			}
+		}
+	}
+
+	protected void runComponentTest(Collection<Object[]> data) throws Exception {
+		for (Object[] test : data) {
+			Utils.test(test[0] == null ? null : test[0].toString(), test[1] == null ? null : test[1].toString(),
+					test[2] == null ? null : test[2].toString(), null);
+		}
+	}
+
+	protected void runJsonataTest(Collection<Object[]> data) throws Exception {
+		for (Object[] test : data) {
+			Utils.test(test[1] == null ? null : test[1].toString(), test[2] == null ? null : test[2].toString(), null,
+					test[0] == null ? null : test[0].toString());
+		}
 	}
 
 	@Override
@@ -254,17 +524,17 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 
 				Description testDesc = testCase.getDescription();
 				try {
-				if (testDesc.isEmpty() == false) {
-					notifier.fireTestStarted(testDesc);
-				} else {
-					System.out.println(testDesc+" is empty");
-				}
+					if (testDesc.isEmpty() == false) {
+						notifier.fireTestStarted(testDesc);
+					} else {
+						System.out.println(testDesc + " is empty");
+					}
 				} catch (Exception sbfe) {
-					System.out.println("Error in "+testDesc+" Error: "+sbfe.getLocalizedMessage());
+					System.out.println("Error in " + testDesc + " Error: " + sbfe.getLocalizedMessage());
 				}
-				
+
 				try {
-					
+
 					Expressions e = Expressions.parse(testCase.getExpr());
 
 					// introduce bindings if available
@@ -288,7 +558,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 							Assert.assertEquals(testCase.expectedResult, actualResult);
 							notifier.fireTestFinished(testCase.getDescription());
 						} catch (AssertionError ex1) {
-							notifier.fireTestFailure(new Failure(testCase.getDescription(), ex1));							
+							notifier.fireTestFailure(new Failure(testCase.getDescription(), ex1));
 						}
 					}
 				} catch (Throwable ex) {
@@ -466,8 +736,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 						this.expectedResult = new LongNode(this.expectedResult.asLong());
 					} else {
 						// below produced to high precision and is slower
-						//	BigDecimal bd = new BigDecimal(d);
-						//	this.expectedResult = new TextNode(bd.toPlainString());
+						// BigDecimal bd = new BigDecimal(d);
+						// this.expectedResult = new TextNode(bd.toPlainString());
 					}
 				}
 			} else {
@@ -547,16 +817,16 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			for (char c : expr.toCharArray()) {
 				if (c > 0x00FF) {
 					String hexChars = Integer.toHexString(c).toUpperCase();
-					hexChars = "0000".substring(0,4-hexChars.length())+hexChars;
-					String unicode = "\\u"+hexChars;
+					hexChars = "0000".substring(0, 4 - hexChars.length()) + hexChars;
+					String unicode = "\\u" + hexChars;
 					sb.append(unicode);
 				} else {
-					sb.append((char)c);
+					sb.append((char) c);
 				}
 			}
 			this.expr = sb.toString();
 		}
-		
+
 		private boolean shouldSkip() {
 			return this.group.shouldSkip() || (SKIP_CASES.containsKey(group.getGroupName())
 					&& SKIP_CASES.get(group.getGroupName()).contains(this.getCaseName()));

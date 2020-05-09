@@ -73,6 +73,8 @@ import com.api.jsonata4java.test.expressions.path.PathExpressionSyntaxTests;
 import com.api.jsonata4java.test.expressions.path.PathExpressionTests;
 import com.api.jsonata4java.text.expressions.utils.JsonMergeUtilsTest;
 
+/* @deprecated these tests have been incorporated in the AgnosticTestSuit */
+
 @RunWith(Suite.class)
 @SuiteClasses({ 
 	AbsFunctionTests.class, //
@@ -99,7 +101,7 @@ import com.api.jsonata4java.text.expressions.utils.JsonMergeUtilsTest;
 	MillisFunctionTests.class, //
 	MinFunctionTests.class, //
 	NotFunctionTests.class, //
-	NowFunctionTests.class,
+	NowFunctionTests.class, //
 	NumberFunctionTests.class, //
 	NumericCoercionTests.class, //
 	PadFunctionTests.class, //
@@ -122,6 +124,6 @@ import com.api.jsonata4java.text.expressions.utils.JsonMergeUtilsTest;
 	UnpackFunctionTests.class, //
 	UppercaseFunctionTests.class //
 })
-public class ComponentTestSuite {
 
+public class ComponentTestSuite {
 }

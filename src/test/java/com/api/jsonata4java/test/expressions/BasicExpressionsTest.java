@@ -1345,8 +1345,11 @@ public class BasicExpressionsTest {
       // now test that when we eval to false, that we explode...
       event.set("t", new FloatNode(42));
 
-      exception.expect(EvaluateException.class);
-      expression.evaluate(event);
+		try {
+			expression.evaluate(event);
+		} catch (EvaluateException e) {
+			; // expected this exception
+		}
    }
 
    // Regression test for 184798: No support or handling for null JSON data type
