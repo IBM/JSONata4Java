@@ -959,22 +959,13 @@ public class FunctionUtils {
 			return true;
 		}
 
-		String saveSig = signature;
-		int optional = 0;
-		int optionIndex = signature.indexOf("?");
-		while (optionIndex != -1) {
-			optional++;
-			signature = signature.substring(optionIndex+1);
-			optionIndex = signature.indexOf("?");
-			
-		}
-		signature = saveSig;
+		int optional = getOptionalArgCount(signature);
 
 		int min = fct.getMinArgs();
 		int max = fct.getMaxArgs();
 		// check when no optional arguments presented
 		if (min == max) {
-			return argCount != min;
+			return argCount < min;
 		}
 		
 		if (argCount < max-optional) {
@@ -987,5 +978,17 @@ public class FunctionUtils {
 		}
 		
 		return false;		
+	}
+	
+	public static int getOptionalArgCount(String signature) {
+		int optional = 0;
+		int optionIndex = signature.indexOf("?");
+		while (optionIndex != -1) {
+			optional++;
+			signature = signature.substring(optionIndex+1);
+			optionIndex = signature.indexOf("?");
+			
+		}
+		return optional;
 	}
 }

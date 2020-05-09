@@ -145,7 +145,7 @@ public class StringFunction extends FunctionBase implements Function {
 
 	@Override
 	public String getSignature() {
-		// accepts any value or context, returns a string
+		// accepts any value or context, an optional boolean, and returns a string
 		return "<x-b?:s>";
 	}
 }

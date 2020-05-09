@@ -153,14 +153,24 @@ public class FilterFunction extends FunctionBase implements Function {
 	         } else {
 		         Function function = expressionVisitor.getJsonataFunction(varid.getText());
 		         if (function != null) {
+						int optionalArgs = FunctionUtils.getOptionalArgCount(function.getSignature());
+						int maxArgs = function.getMaxArgs()-optionalArgs;
 		            for (int i = 0; i < mapArray.size(); i++) {
 		               Function_callContext callCtx = new Function_callContext(ctx);
 		               // note: callCtx.children should be empty unless carrying an
 		               // exception
 		               JsonNode element = mapArray.get(i);
-			            JsonNode fctResult = FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, element);
+		               
+			            JsonNode fctResult = null;
+			            if (maxArgs <= 1) {
+			            	fctResult = FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, element);
+			            } else if (maxArgs == 2) {
+			            	fctResult = FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, element, JsonNodeFactory.instance.numberNode(i));
+			            } else { // if (maxArgs >= 3) {
+			            	fctResult = FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, element, JsonNodeFactory.instance.numberNode(i),mapArray);
+			            }
 			            if (fctResult != null && fctResult.asBoolean()) {
-			               resultArray.addAsSelectionGroup(element);
+		            		resultArray.addAsSelectionGroup(element);
 			            }
 		            }
 		         } else {
