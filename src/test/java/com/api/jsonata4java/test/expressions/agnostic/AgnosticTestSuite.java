@@ -62,6 +62,7 @@ import com.api.jsonata4java.test.expressions.PowerFunctionTests;
 import com.api.jsonata4java.test.expressions.RandomFunctionTests;
 import com.api.jsonata4java.test.expressions.ReplaceFunctionTests;
 import com.api.jsonata4java.test.expressions.RoundFunctionTests;
+import com.api.jsonata4java.test.expressions.SingletonArrayHandlingTests;
 import com.api.jsonata4java.test.expressions.SplitFunctionTests;
 import com.api.jsonata4java.test.expressions.SqrtFunctionTests;
 import com.api.jsonata4java.test.expressions.StringFunctionTests;
@@ -309,7 +310,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		runComponentTest(ReplaceFunctionTests.data());
 		runComponentTest(RoundFunctionTests.data());
 		// issue 80
-		// runComponentTest(flatteningrunComponentTest(SingletonArrayHandlingTests.data());
+		runComponentTest(SingletonArrayHandlingTests.data());
 		runComponentTest(SplitFunctionTests.data());
 		runComponentTest(SqrtFunctionTests.data());
 		runComponentTest(StringFunctionTests.data());
