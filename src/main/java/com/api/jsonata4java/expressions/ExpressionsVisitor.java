@@ -25,11 +25,12 @@ package com.api.jsonata4java.expressions;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.text.DecimalFormat;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -423,7 +424,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	private JsonNodeFactory factory = JsonNodeFactory.instance;
 	private boolean firstStep = false;
 	private boolean firstStepCons = false;
-	private Stack<Boolean> inArrayConstructStack = new Stack<Boolean>();
+	private Deque<Boolean> inArrayConstructStack = new ArrayDeque<Boolean>();
 	private boolean keepArray = false;
 	private boolean lastStep = false;
 	private boolean lastStepCons = false;
@@ -487,7 +488,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		checkRunaway();
 	}
 
-	public Stack<JsonNode> getContextStack() {
+	public Deque<JsonNode> getContextStack() {
 		return _environment.getContextStack();
 	}
 
@@ -2302,7 +2303,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 //		final ExprContext lhsCtx = ctx.expr(); // e.g. $$.a.b.c
 		// reset the stack
 		int stackSize = _environment.sizeContext();
-		Stack<JsonNode> tmpStack = new Stack<JsonNode>();
+		Deque<JsonNode> tmpStack = new ArrayDeque<JsonNode>();
 		for (; stackSize > 1; stackSize--) {
 			tmpStack.push(_environment.popContext());
 		}
