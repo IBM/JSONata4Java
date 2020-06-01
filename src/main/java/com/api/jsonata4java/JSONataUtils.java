@@ -37,6 +37,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -83,8 +84,6 @@ public class JSONataUtils implements Serializable {
 	static public Random SEED_RANDOM = new Random();
 
 	static public SecureRandom SEED_SECURE_RANDOM = null;
-
-	static final public Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
 	static {
 		try {
@@ -179,7 +178,7 @@ public class JSONataUtils implements Serializable {
 			throw new InvalidParameterException(
 					"An odd number of bytes was passed in the input string.  Must be an even number.");
 		}
-		byte[] inBytes = strHex.toUpperCase().getBytes(UTF8_CHARSET);
+		byte[] inBytes = strHex.toUpperCase().getBytes(StandardCharsets.UTF_8);
 
 		byte[] baRC = new byte[iLength / 2];
 		int iHighOffset = -1;
