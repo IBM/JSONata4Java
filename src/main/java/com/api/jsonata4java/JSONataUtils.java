@@ -317,7 +317,9 @@ public class JSONataUtils implements Serializable {
 			throw new IOException("Can not write file \"" + jsonFileName + "\"", e);
 		} finally {
 			try {
-				br.close();
+				if (br != null) {
+					br.close();
+				}
 			} catch (IOException e) {
 				// error trying to close writer ...
 			}
