@@ -22,9 +22,9 @@
 
 package com.api.jsonata4java.expressions;
 
-import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
@@ -52,7 +52,7 @@ public class FrameEnvironment {
     * nested inside other predicates, e.g. [{"x":2}, {"x":3}] [x=(["a":101, "b":2},
     * {"a":102, "b":3}][a=101]).b] -> {"x":2}
     */
-   private Deque<JsonNode> _stack = new ArrayDeque<JsonNode>();
+   private Deque<JsonNode> _stack = new LinkedList<JsonNode>();
    private JS4JDate _timestamp = null;
    private Map<String, JsonNode> _variableMap = new HashMap<String, JsonNode>();
 
@@ -142,7 +142,7 @@ public class FrameEnvironment {
    		if (stack.isEmpty()) {
    			return null;
    		}
-   		JsonNode result = getContextStack().peekFirst();
+   		JsonNode result = getContextStack().peekLast();
 //   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
 //   			if (result.size() == 1) {
 //   				result = ((ArrayNode)result).get(0);
