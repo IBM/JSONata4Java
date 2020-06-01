@@ -47,7 +47,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -151,10 +150,9 @@ public class JSONataUtils implements Serializable {
 			return hexEncode(byteID);
 		}
 		// otherwise, use a less sophisticated generator.
-		Date date = new Date();
 		StringBuffer sb = new StringBuffer();
 		sb.append("X"); // distinguish from s_sr generated.
-		sb.append(Long.toHexString(date.getTime()));
+		sb.append(Long.toHexString(System.currentTimeMillis()));
 		sb.append(Long.toHexString(SEED_RANDOM.nextLong()));
 		return sb.toString();
 	}

@@ -27,7 +27,6 @@ import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
@@ -430,7 +429,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	private boolean lastStepCons = false;
 	private int maxDepth = -1;
 	private long maxTime = 0L;
-	private long startTime = new Date().getTime();
+	private long startTime = System.currentTimeMillis();
 	private List<ParseTree> steps = new ArrayList<ParseTree>();
 	private ParseTreeProperty<Integer> values = new ParseTreeProperty<Integer>();
 
@@ -473,7 +472,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						"Stack overflow error: Check for non-terminating recursive function. Consider rewriting as tail-recursive.");
 			}
 		}
-		if (maxTime != 0 && (new Date().getTime() - startTime > maxTime)) {
+		if (maxTime != 0 && (System.currentTimeMillis() - startTime > maxTime)) {
 			throw new EvaluateRuntimeException("Expression evaluation timeout: Check for infinite loop");
 		}
 	}
