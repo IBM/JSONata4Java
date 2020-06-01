@@ -282,7 +282,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			try {
 				if (prettify) {
 					JsonElement jsonElt = JsonParser
-							.parseString(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
+							.parseString(objectMapper.writeValueAsString(node));
 					return gson.toJson(jsonElt);
 
 				} else {
