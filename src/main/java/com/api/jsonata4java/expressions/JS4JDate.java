@@ -42,91 +42,91 @@ public class JS4JDate extends Date implements Cloneable {
    /**
     * Format for parsing the create date string: 2004/08/04-07:23:15.987(-0400)
     */
-   static public String CREATE_DATE_FORMAT = "yyyy/MM/dd-HH:mm:ss.SSS(Z)";
+   static public final String CREATE_DATE_FORMAT = "yyyy/MM/dd-HH:mm:ss.SSS(Z)";
 
    /**
     * Format for parsing the create date string: 2004/08/04-07:23:15.987 which
     * is assumed to be 0000 (Greenwich Mean Time).
     */
-   static public String CREATE_DATE_FORMAT_0 = "yyyy/MM/dd-HH:mm:ss.SSS";
+   static public final String CREATE_DATE_FORMAT_0 = "yyyy/MM/dd-HH:mm:ss.SSS";
 
    /**
     * Format for parsing the create date string: 2004/08/04-07:23:15 which is
     * assumed to be 0000 (Greenwich Mean Time) with 0 milliseconds.
     */
-   static public String CREATE_DATE_FORMAT_1 = "yyyy/MM/dd-HH:mm:ss";
+   static public final String CREATE_DATE_FORMAT_1 = "yyyy/MM/dd-HH:mm:ss";
 
    /**
     * Format for parsing the create date string: 2004/08/04 07:23:15.987123
     * which is assumed to be 0000 (Greenwich Mean Time).
     */
-   static public String CREATE_DATE_FORMAT_10 = "yyyy/MM/dd HH:mm:ss.SSSSSS";
+   static public final String CREATE_DATE_FORMAT_10 = "yyyy/MM/dd HH:mm:ss.SSSSSS";
 
    /**
     * Format for parsing the create date string: Monday, 22 Sep 1959 08:12:34
     * which is assumed to be UTC (GMT)
     */
-   static public String CREATE_DATE_FORMAT_11 = "E, dd MMM yyyy HH:mm:ss";
+   static public final String CREATE_DATE_FORMAT_11 = "E, dd MMM yyyy HH:mm:ss";
 
    /**
     * Format for parsing the create date string: January 05 2018 00:44:45 
     * which is assumed to be UTC (GMT) 
     */
-   static public String CREATE_DATE_FORMAT_12 = "MMMM dd yyyy HH:mm:ss";
+   static public final String CREATE_DATE_FORMAT_12 = "MMMM dd yyyy HH:mm:ss";
    /**
     * Format for parsing the create date string: 2004/08/04-07:23 which is
     * assumed to be 0000 (Greenwich Mean Time) with 0 seconds and milliseconds.
     */
-   static public String CREATE_DATE_FORMAT_2 = "yyyy/MM/dd-HH:mm";
+   static public final String CREATE_DATE_FORMAT_2 = "yyyy/MM/dd-HH:mm";
 
    /**
     * Format for parsing the create date string: 2004/08/04-07 which is assumed
     * to be 0000 (Greenwich Mean Time) with 0 minutes, seconds and milliseconds.
     */
-   static public String CREATE_DATE_FORMAT_3 = "yyyy/MM/dd-HH";
+   static public final String CREATE_DATE_FORMAT_3 = "yyyy/MM/dd-HH";
 
    /**
     * Format for parsing the create date string: 2004/08/04 which is assumed to
     * be 0000 (Greenwich Mean Time) at midnight.
     */
-   static public String CREATE_DATE_FORMAT_4 = "yyyy/MM/dd";
+   static public final String CREATE_DATE_FORMAT_4 = "yyyy/MM/dd";
 
    /**
     * Format for parsing the create date string: 2004/08/04-07:23:15(-0400)
     * which is assumed to be -0400 (Eastern Daylight Time) with 0 milliseconds.
     */
-   static public String CREATE_DATE_FORMAT_5 = "yyyy/MM/dd-HH:mm:ss(Z)";
+   static public final String CREATE_DATE_FORMAT_5 = "yyyy/MM/dd-HH:mm:ss(Z)";
 
    /**
     * Format for parsing the create date string: 2004/08/04-07:23(-0400) which
     * is assumed to be -0400 (Eastern Daylight Time) with 0 seconds and
     * milliseconds.
     */
-   static public String CREATE_DATE_FORMAT_6 = "yyyy/MM/dd-HH:mm(Z)";
+   static public final String CREATE_DATE_FORMAT_6 = "yyyy/MM/dd-HH:mm(Z)";
 
    /**
     * Format for parsing the create date string: 2004/08/04-07(-0400) which is
     * assumed to be -0400 (Eastern Daylight Time) with 0 minutes, seconds and
     * milliseconds.
     */
-   static public String CREATE_DATE_FORMAT_7 = "yyyy/MM/dd-HH(Z)";
+   static public final String CREATE_DATE_FORMAT_7 = "yyyy/MM/dd-HH(Z)";
 
    /**
     * Format for parsing the create date string: 2004/08/04(-0400) which is
     * assumed to be -0400 (Eastern Daylight Time) at midnight.
     */
-   static public String CREATE_DATE_FORMAT_8 = "yyyy/MM/dd(Z)";
+   static public final String CREATE_DATE_FORMAT_8 = "yyyy/MM/dd(Z)";
 
    /**
     * Format for parsing the create date string: 2004/08/04T07Z which is assumed
     * to be 07:00:00.000 Zulu (UTC) Time.
     */
-   static public String CREATE_DATE_FORMAT_9 = "yyyy/MM/ddTHH";
+   static public final String CREATE_DATE_FORMAT_9 = "yyyy/MM/ddTHH";
 
    // --------
    // statics
    // --------
-   static public String m_strClassName = JS4JDate.class.getSimpleName();
+   static public final String m_strClassName = JS4JDate.class.getSimpleName();
 
    static private final long serialVersionUID = -1235455818943814022L;
 
