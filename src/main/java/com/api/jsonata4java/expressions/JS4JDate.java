@@ -153,7 +153,7 @@ public class JS4JDate extends Date implements Cloneable {
     * but that may lead to warnings, if not errors, when loading data (and may
     * complicate other things, as well).
     */
-   static public final String UNDEFINED_Aiden_DB2_Date_String = new JS4JDate(
+   static public final String UNDEFINED_MDfromHTML_DB2_Date_String = new JS4JDate(
       UNDEFINED_JS4JDate).toStringDBTimestamp();
 
    /**
@@ -260,12 +260,12 @@ public class JS4JDate extends Date implements Cloneable {
     * default values if they are unspecified.
     * 
     * @param strDate
-    *           String containing the date information in one of theAiden date
+    *           String containing the date information in one of theMDfromHTML date
     *           formats
     * @return date object initialized to the date specified in the passed
     *         string.
     * @throws Exception
-    *            if the passed string doesn't match one of theAiden date formats
+    *            if the passed string doesn't match one of theMDfromHTML date formats
     * @throws Exception
     * @see #CREATE_DATE_FORMAT
     * @see #CREATE_DATE_FORMAT_0
@@ -659,17 +659,17 @@ public class JS4JDate extends Date implements Cloneable {
    }
 
    /**
-    * Create a formatted string showing the date in theAiden date format for 0000
+    * Create a formatted string showing the date in theMDfromHTML date format for 0000
     * (Greenwich Mean Time).
     * 
     * @param date
     *           the date to be transformed into the string.
     * @param strFormat
     *           the date format to be returned. If the format is illdefined, the
-    *           standardAiden Date format is used (CREATE_DATE_FORMAT).
+    *           standardMDfromHTML Date format is used (CREATE_DATE_FORMAT).
     * @param strTimeZone
     *           the format of the timezone using +/-hhmm
-    * @return a formatted string showing the local date in theAiden date format
+    * @return a formatted string showing the local date in theMDfromHTML date format
     * @see #CREATE_DATE_FORMAT
     */
    static synchronized public String makeFormattedDate(Date date,
@@ -688,11 +688,11 @@ public class JS4JDate extends Date implements Cloneable {
    }
 
    /**
-    * Create a formatted string showing the local date in theAiden date format
+    * Create a formatted string showing the local date in theMDfromHTML date format
     * 
     * @param date
     *           the date to be transformed into the string.
-    * @return a formatted string showing the local date in theAiden date format
+    * @return a formatted string showing the local date in theMDfromHTML date format
     * @see #CREATE_DATE_FORMAT
     */
    static synchronized public String makeFormattedLocalDate(Date date) {
@@ -705,7 +705,7 @@ public class JS4JDate extends Date implements Cloneable {
    }
 
    /**
-    * @return the largest date that matches theAiden Date Format for any
+    * @return the largest date that matches theMDfromHTML Date Format for any
     *         timezone. The value is the date "9999/12/30-23:59:59.999(+0000)"
     *         -- the extra day allows for any timezone to be added and still
     *         have a 4 digit year.
@@ -716,7 +716,7 @@ public class JS4JDate extends Date implements Cloneable {
    }
 
    /**
-    * @return the earliest date that matches theAiden Date Format for any
+    * @return the earliest date that matches theMDfromHTML Date Format for any
     *         timezone. The value is the date of the epoch
     *         "1970/01/01-00:00:00.000(+0000)"
     */
@@ -945,10 +945,10 @@ public class JS4JDate extends Date implements Cloneable {
    }
 
    /**
-    * Create anJS4JDate object from theAiden formatted date string
+    * Create anJS4JDate object from theMDfromHTML formatted date string
     * 
     * @param strDate
-    *           theAiden formatted date string to be transformed into theJS4JDate
+    *           theMDfromHTML formatted date string to be transformed into theJS4JDate
     *           object.
     * @see #CREATE_DATE_FORMAT
     * @see #CREATE_DATE_FORMAT_0
@@ -982,13 +982,13 @@ public class JS4JDate extends Date implements Cloneable {
     * less than the supplied date, 0 if equal, or 1 if greater than the supplied
     * date.
     * 
-    * @param aaiDate
+    * @param date
     *           the date to compare against this date
     * @return -1 if this date is less than the supplied date, 0 if equal, or 1
     *         if greater than the supplied date.
     */
-   public int compareTo(JS4JDate aaiDate) {
-      return super.compareTo(aaiDate);
+   public int compareTo(JS4JDate date) {
+      return super.compareTo(date);
    }
 
    // /*
@@ -1298,7 +1298,7 @@ public class JS4JDate extends Date implements Cloneable {
     * 
     * @param strFormat
     *           the desired date format to be returned. If the format is
-    *           invalid, the standardAiden Date format is used
+    *           invalid, the standardMDfromHTML Date format is used
     *           (CREATE_DATE_FORMAT).
     * @param strTimeZone
     *           the ID for a TimeZone, either an abbreviation such as "PST", a
