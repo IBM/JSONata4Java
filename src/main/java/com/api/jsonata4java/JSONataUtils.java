@@ -36,7 +36,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -47,7 +47,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -84,8 +83,6 @@ public class JSONataUtils implements Serializable {
 	static public Random SEED_RANDOM = new Random();
 
 	static public SecureRandom SEED_SECURE_RANDOM = null;
-
-	static final public Charset UTF8_CHARSET = Charset.forName("UTF-8");
 
 	static {
 		try {
@@ -151,10 +148,9 @@ public class JSONataUtils implements Serializable {
 			return hexEncode(byteID);
 		}
 		// otherwise, use a less sophisticated generator.
-		Date date = new Date();
 		StringBuffer sb = new StringBuffer();
 		sb.append("X"); // distinguish from s_sr generated.
-		sb.append(Long.toHexString(date.getTime()));
+		sb.append(Long.toHexString(System.currentTimeMillis()));
 		sb.append(Long.toHexString(SEED_RANDOM.nextLong()));
 		return sb.toString();
 	}
@@ -181,7 +177,7 @@ public class JSONataUtils implements Serializable {
 			throw new InvalidParameterException(
 					"An odd number of bytes was passed in the input string.  Must be an even number.");
 		}
-		byte[] inBytes = strHex.toUpperCase().getBytes(UTF8_CHARSET);
+		byte[] inBytes = strHex.toUpperCase().getBytes(StandardCharsets.UTF_8);
 
 		byte[] baRC = new byte[iLength / 2];
 		int iHighOffset = -1;
@@ -319,7 +315,9 @@ public class JSONataUtils implements Serializable {
 			throw new IOException("Can not write file \"" + jsonFileName + "\"", e);
 		} finally {
 			try {
-				br.close();
+				if (br != null) {
+					br.close();
+				}
 			} catch (IOException e) {
 				// error trying to close writer ...
 			}

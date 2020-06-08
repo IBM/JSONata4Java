@@ -27,10 +27,10 @@ import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -150,7 +150,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	static private final Logger LOG = Logger.getLogger(CLASS);
 	static private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 	static private final ObjectMapper objectMapper = new ObjectMapper();
-	static public String lastVisited = "";
 
 	/**
 	 * This defines the behavior of the "=" and "in" operators
@@ -283,7 +282,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			try {
 				if (prettify) {
 					JsonElement jsonElt = JsonParser
-							.parseString(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node));
+							.parseString(objectMapper.writeValueAsString(node));
 					return gson.toJson(jsonElt);
 
 				} else {
@@ -424,15 +423,16 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	private JsonNodeFactory factory = JsonNodeFactory.instance;
 	private boolean firstStep = false;
 	private boolean firstStepCons = false;
-	private Stack<Boolean> inArrayConstructStack = new Stack<Boolean>();
+	private Deque<Boolean> inArrayConstructStack = new LinkedList<Boolean>();
 	private boolean keepArray = false;
 	private boolean lastStep = false;
 	private boolean lastStepCons = false;
 	private int maxDepth = -1;
 	private long maxTime = 0L;
-	private long startTime = new Date().getTime();
+	private long startTime = System.currentTimeMillis();
 	private List<ParseTree> steps = new ArrayList<ParseTree>();
 	private ParseTreeProperty<Integer> values = new ParseTreeProperty<Integer>();
+	private String lastVisited = "";
 
 	public ExpressionsVisitor() {
 		setEnvironment(null);
@@ -473,7 +473,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						"Stack overflow error: Check for non-terminating recursive function. Consider rewriting as tail-recursive.");
 			}
 		}
-		if (maxTime != 0 && (new Date().getTime() - startTime > maxTime)) {
+		if (maxTime != 0 && (System.currentTimeMillis() - startTime > maxTime)) {
 			throw new EvaluateRuntimeException("Expression evaluation timeout: Check for infinite loop");
 		}
 	}
@@ -488,7 +488,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		checkRunaway();
 	}
 
-	public Stack<JsonNode> getContextStack() {
+	public Deque<JsonNode> getContextStack() {
 		return _environment.getContextStack();
 	}
 
@@ -2303,7 +2303,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 //		final ExprContext lhsCtx = ctx.expr(); // e.g. $$.a.b.c
 		// reset the stack
 		int stackSize = _environment.sizeContext();
-		Stack<JsonNode> tmpStack = new Stack<JsonNode>();
+		Deque<JsonNode> tmpStack = new LinkedList<JsonNode>();
 		for (; stackSize > 1; stackSize--) {
 			tmpStack.push(_environment.popContext());
 		}

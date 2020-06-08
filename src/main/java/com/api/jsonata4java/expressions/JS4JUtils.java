@@ -22,13 +22,10 @@
 
 package com.api.jsonata4java.expressions;
 
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 public class JS4JUtils {
    
-   static final public Charset UTF8_CHARSET = Charset.forName("UTF-8");
-
    static public final int s_iDayMilliseconds = 86400000;
 
    static public final int s_iHourMilliseconds = 3600000;

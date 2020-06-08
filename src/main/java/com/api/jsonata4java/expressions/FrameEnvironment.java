@@ -22,9 +22,10 @@
 
 package com.api.jsonata4java.expressions;
 
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
-import java.util.Stack;
 
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.functions.Function;
@@ -51,7 +52,7 @@ public class FrameEnvironment {
     * nested inside other predicates, e.g. [{"x":2}, {"x":3}] [x=(["a":101, "b":2},
     * {"a":102, "b":3}][a=101]).b] -> {"x":2}
     */
-   private Stack<JsonNode> _stack = new Stack<JsonNode>();
+   private Deque<JsonNode> _stack = new LinkedList<JsonNode>();
    private JS4JDate _timestamp = null;
    private Map<String, JsonNode> _variableMap = new HashMap<String, JsonNode>();
 
@@ -77,14 +78,14 @@ public class FrameEnvironment {
 
    public void clearContext() {
    	if (_enclosingFrame != null) {
-   		Stack<JsonNode> stack = _enclosingFrame.getContextStack();
+   		Deque<JsonNode> stack = _enclosingFrame.getContextStack();
    		stack.clear();
    		return;
    	}
    	_stack.clear();
    }
 
-   public Stack<JsonNode> getContextStack() {
+   public Deque<JsonNode> getContextStack() {
    	// jump back to original environment to get the "real" stack
    	while(_enclosingFrame != null) {
    		return _enclosingFrame.getContextStack();
@@ -137,11 +138,11 @@ public class FrameEnvironment {
    	}
    	
    	if ("$$".equals(varName)) {
-   		Stack<JsonNode>stack = getContextStack();
+   		Deque<JsonNode>stack = getContextStack();
    		if (stack.isEmpty()) {
    			return null;
    		}
-   		JsonNode result = getContextStack().get(0);
+   		JsonNode result = getContextStack().peekLast();
 //   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
 //   			if (result.size() == 1) {
 //   				result = ((ArrayNode)result).get(0);
@@ -210,7 +211,8 @@ public class FrameEnvironment {
    	while(_enclosingFrame != null) {
    		return _enclosingFrame.pushContext(context);
    	}
-   	return _stack.push(context);
+   	_stack.push(context);
+   	return context;
    }
    
    public void setAsync(boolean isAsync) {
