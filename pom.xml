@@ -91,12 +91,6 @@
 			<artifactId>antlr4-runtime</artifactId>
 			<version>4.8-1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/biz.aQute.bnd/bnd-maven-plugin -->
-		<dependency>
-		    <groupId>biz.aQute.bnd</groupId>
-		    <artifactId>bnd-maven-plugin</artifactId>
-		    <version>5.0.1</version>
-		</dependency>		
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
