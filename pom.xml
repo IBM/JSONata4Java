@@ -27,7 +27,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.jsonata4java</groupId>
 	<artifactId>JSONata4Java</artifactId>
-	<version>1.4.6</version>
+	<version>1.4.7</version>
 	<name>JSONata4Java</name>
 	<description>Port of jsonata.js to Java to enable rules for JSON content</description>
 	<url>https://github.com/IBM/JSONata4Java</url>
@@ -119,6 +119,12 @@
 					<include>**/*.json</include>
 				</includes>
 			</resource>
+			<resource>
+				<directory>.</directory>
+				<includes>
+					<include>**/*.MF</include>
+				</includes>
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>
@@ -155,33 +161,6 @@
 						<id>attach-sources</id>
 						<goals>
 							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>biz.aQute.bnd</groupId>
-				<artifactId>bnd-maven-plugin</artifactId>
-				<version>5.0.1</version>
-				<configuration>
-					<bnd>
-						<![CDATA[ 
-                        Export-Package: \
-                        com.api.jsonata4java, \
-                        com.api.jsonata4java.expressions, \
-                        com.api.jsonata4java.expressions.functions, \
-                        com.api.jsonata4java.expressions.generated, \
-                        com.api.jsonata4java.expressions.path, \
-                        com.api.jsonata4java.expressions.path.generated, \
-                        com.api.jsonata4java.expressions.utils
-					]]>
-					Bundle-Developers: wnm3; email=wnm3@us.ibm.com; name="Nathaniel Mills"; organization=IBM; organizationUrl=https://www.ibm.com
-					</bnd>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>bnd-process</goal>
 						</goals>
 					</execution>
 				</executions>
