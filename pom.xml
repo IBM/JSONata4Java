@@ -280,6 +280,33 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
+				<version>5.0.1</version>
+				<configuration>
+					<bnd>
+						<![CDATA[ 
+                        Export-Package: \
+                        com.api.jsonata4java, \
+                        com.api.jsonata4java.expressions, \
+                        com.api.jsonata4java.expressions.functions, \
+                        com.api.jsonata4java.expressions.generated, \
+                        com.api.jsonata4java.expressions.path, \
+                        com.api.jsonata4java.expressions.path.generated, \
+                        com.api.jsonata4java.expressions.utils
+					]]>
+						Bundle-Developers: wnm3; email=wnm3@us.ibm.com; name="Nathaniel Mills"; organization=IBM; organizationUrl=https://www.ibm.com
+					</bnd>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>bnd-process</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
