@@ -1149,7 +1149,7 @@ public class BasicExpressionsTest {
       try {
          expression = Expressions.parse("$error(\"Custom Exception\")");
          JsonNode result = expression.evaluate(null);
-         assertTrue("Okay, exception no longer thrown in 1.8.2", result==null);
+         assertTrue("Should not get here - exception should be thrown", false);
       } catch (EvaluateException e) {
          String msg = e.getMessage();
          assertTrue("was " + msg, msg.equals("Custom Exception"));
