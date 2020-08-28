@@ -204,7 +204,10 @@ public class FrameEnvironment {
    	while(_enclosingFrame != null) {
    		return _enclosingFrame.popContext();
    	}
-   	return _stack.pop();
+   	if (!_stack.isEmpty()) {
+   	   return _stack.pop();
+   	}
+   	return null;
    }
    
    public JsonNode pushContext(JsonNode context) {

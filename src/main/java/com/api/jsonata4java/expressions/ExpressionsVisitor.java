@@ -1139,7 +1139,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				}
 			}
 		}
-		inArrayConstructStack.pop();
+		if (!inArrayConstructStack.isEmpty()) {
+		   inArrayConstructStack.pop();
+		}
 		result = output;
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
@@ -2304,8 +2306,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		// reset the stack
 		int stackSize = _environment.sizeContext();
 		Deque<JsonNode> tmpStack = new LinkedList<JsonNode>();
+		JsonNode tmpNode = null;
 		for (; stackSize > 1; stackSize--) {
-			tmpStack.push(_environment.popContext());
+		   tmpNode = _environment.popContext();
+		   if (tmpNode != null) {
+		      tmpStack.push(tmpNode);
+		   }
 		}
 		try {
 //		if (lhsCtx == null) {
