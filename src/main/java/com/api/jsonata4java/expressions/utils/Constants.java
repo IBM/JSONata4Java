@@ -26,7 +26,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import com.api.jsonata4java.expressions.functions.AbsFunction;
 import com.api.jsonata4java.expressions.functions.AppendFunction;
 import com.api.jsonata4java.expressions.functions.AverageFunction;
@@ -37,6 +36,7 @@ import com.api.jsonata4java.expressions.functions.CeilFunction;
 import com.api.jsonata4java.expressions.functions.ContainsFunction;
 import com.api.jsonata4java.expressions.functions.CountFunction;
 import com.api.jsonata4java.expressions.functions.EachFunction;
+import com.api.jsonata4java.expressions.functions.ErrorFunction;
 import com.api.jsonata4java.expressions.functions.ExistsFunction;
 import com.api.jsonata4java.expressions.functions.FilterFunction;
 import com.api.jsonata4java.expressions.functions.FloorFunction;
@@ -115,6 +115,7 @@ public class Constants {
    public static final String FUNCTION_URL_DECODE = "$decodeUrl";
    public static final String FUNCTION_URL_DECODE_COMPONENT = "$decodeUrlComponent";
    public static final String FUNCTION_TYPE = "$type";
+   public static final String FUNCTION_ERROR = "$error";
    
 
    // JSONata numeric functions
@@ -230,6 +231,7 @@ public class Constants {
       FUNCTIONS.put(FUNCTION_URL_DECODE_COMPONENT, new URLDecodeComponentFunction());
       FUNCTIONS.put(FUNCTION_URL_ENCODE_COMPONENT, new URLEncodeComponentFunction());
       FUNCTIONS.put(FUNCTION_TYPE, new TypeFunction());
+      FUNCTIONS.put(FUNCTION_ERROR, new ErrorFunction());
       
       // Initialize the default decimal format symbols
       DEFAULT_DECIMAL_FORMAT_SYMBOLS.setExponentSeparator("e");

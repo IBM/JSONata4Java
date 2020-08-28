@@ -1144,6 +1144,16 @@ public class BasicExpressionsTest {
          String msg = e.getMessage();
          assertTrue(msg, false);
       }
+      
+      // test $error call
+      try {
+         expression = Expressions.parse("$error(\"Custom Exception\")");
+         JsonNode result = expression.evaluate(null);
+         assertTrue("Okay, exception no longer thrown in 1.8.2", result==null);
+      } catch (EvaluateException e) {
+         String msg = e.getMessage();
+         assertTrue("was " + msg, msg.equals("Custom Exception"));
+      }
 
       // variable references that do not start with $state or $event are an
       // error
