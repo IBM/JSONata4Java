@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.runner.Description;
@@ -24,7 +23,6 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.ParentRunner;
 import org.junit.runners.model.InitializationError;
-
 import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.Expressions;
@@ -79,7 +77,7 @@ import com.api.jsonata4java.test.expressions.path.PathExpressionSyntaxTests;
 import com.api.jsonata4java.test.expressions.path.PathExpressionTests;
 import com.api.jsonata4java.text.expressions.utils.JsonMergeUtilsTest;
 import com.api.jsonata4java.text.expressions.utils.Utils;
-import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -114,10 +112,11 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 //			"flattening" // #78
 	});
 
-	private static final ObjectMapper _objectMapper = new ObjectMapper()
-			.configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);;
+	private static final ObjectMapper _objectMapper = new ObjectMapper();
 	private static final Map<String, List<String>> SKIP_CASES = new HashMap<>();
 	static {
+	   // address characters > 127 to be escaped
+	   _objectMapper.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(),true);
 		// ensure we don't have scientific notation for numbers
 		_objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
 
@@ -215,8 +214,9 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 	}
 
 	private void init() throws Exception {
-		final ObjectMapper om = new ObjectMapper().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
-		;
+		final ObjectMapper om = new ObjectMapper();
+		om.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
+		
 
 		// load and parse all the dataset json files into memory
 		printHeader("Loading datasets");

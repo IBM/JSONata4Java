@@ -104,7 +104,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	 */
 	public static class SelectorArrayNode extends ArrayNode {
 
-		private List<JsonNode> selectionGroups = new ArrayList<>();
+      private static final long serialVersionUID = -641395411309729158L;
+
+      private List<JsonNode> selectionGroups = new ArrayList<>();
 
 		public SelectorArrayNode(JsonNodeFactory nc) {
 			super(nc);

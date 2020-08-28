@@ -1148,7 +1148,7 @@ public class BasicExpressionsTest {
       // test $error call
       try {
          expression = Expressions.parse("$error(\"Custom Exception\")");
-         JsonNode result = expression.evaluate(null);
+         expression.evaluate(null);
          assertTrue("Should not get here - exception should be thrown", false);
       } catch (EvaluateException e) {
          String msg = e.getMessage();

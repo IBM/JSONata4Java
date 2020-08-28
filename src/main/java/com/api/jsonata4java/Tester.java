@@ -24,13 +24,12 @@ package com.api.jsonata4java;
 
 import java.io.File;
 import java.io.IOException;
-
 import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.TextNode;
@@ -118,7 +117,8 @@ public class Tester {
 	 * @param args a fully qualified path and filename for test JSON could be provided
 	 */
 	public static void main(String[] args) {
-		ObjectMapper mapper = new ObjectMapper().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);;
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
 		JsonNode jsonObj = null;
 		try {
 			jsonObj = mapper.readTree(json);
