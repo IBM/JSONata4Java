@@ -1209,6 +1209,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode left = visit(ctx.expr(0)); // get value of left subexpression
 		JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
 
+		
 		// in all cases, if both are *no match*, JSONata returns false
 		if (left == null && right == null) {
 			return BooleanNode.FALSE;
@@ -1224,9 +1225,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 
 		if (ctx.op.getType() == MappingExpressionParser.EQ) {
-			if (left == null && right != null) {
+			if ((left == null || left.isNull()) && (right != null && right.isNull() == false)) {
 				result = BooleanNode.FALSE;
-			} else if (left != null && right == null) {
+			} else if ((left != null && left.isNull() == false) && (right == null || right.isNull())) {
 				result = BooleanNode.FALSE;
 			} else if (left.getNodeType() == right.getNodeType()) {
 				result = (areJsonNodesEqual(left, right) ? BooleanNode.TRUE : BooleanNode.FALSE);
@@ -1238,9 +1239,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = BooleanNode.FALSE;
 			}
 		} else if (ctx.op.getType() == MappingExpressionParser.NOT_EQ) {
-			if (left == null && right != null) {
+			if ((left == null || left.isNull()) && (right != null && right.isNull() == false)) {
 				result = BooleanNode.TRUE;
-			} else if (left != null && right == null) {
+			} else if ((left != null && left.isNull() == false) && (right == null || right.isNull())) {
 				result = BooleanNode.TRUE;
 			} else if (left.getNodeType() == right.getNodeType()) {
 				result = (areJsonNodesEqual(left, right) ? BooleanNode.FALSE : BooleanNode.TRUE);
@@ -1432,7 +1433,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			} else {
 				result = null;
 			}
-		} else if (cond instanceof BooleanNode || cond instanceof NumericNode) {
+		} else if (cond instanceof BooleanNode || cond instanceof NumericNode || cond instanceof TextNode) {
 			ExprContext ctx1 = ctx.expr(1);
 			ExprContext ctx2 = ctx.expr(2);
 			if (ctx1 != null && ctx2 != null) {

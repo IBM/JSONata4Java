@@ -107,11 +107,10 @@ public class MapFunction extends FunctionBase implements Function {
 			// expect something that evaluates to an object and either a variable
 			// pointing to a function, or a function declaration
 
-			if (arrNode == null || !arrNode.isArray()) {
+			if (arrNode == null || !(arrNode.isArray() || arrNode.isObject())) {
 				throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MAP));
 			}
-			ArrayNode mapArray = (ArrayNode) arrNode;
-
+			
 			ExprContext varid = exprList.expr((useContext ? 0 : 1));
 			if (varid instanceof Var_recallContext) {
 				TerminalNode VAR_ID = ((Var_recallContext) varid).VAR_ID();
@@ -125,52 +124,101 @@ public class MapFunction extends FunctionBase implements Function {
 						// only send variables function can consume
 						varCount = fctVarCount;
 					}
-					for (int i = 0; i < mapArray.size(); i++) {
-						JsonNode element = mapArray.get(i);
-						ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-						switch (varCount) {
-						case 1: {
-							// just pass the mapArray variable
-							evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
-							break;
-						}
-						case 2: {
-							// pass the mapArray variable and index
-							evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
-							evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-							break;
-						}
-						case 3: {
-							// pass the mapArray variable, index, and array
-							evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
-							evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-							evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
-							break;
-						}
-						}
-						resultArray.add(fct.invoke(expressionVisitor, evc));
-					}
+			       if (arrNode.isArray()) {
+			          ArrayNode mapArray = (ArrayNode) arrNode;
+
+   					for (int i = 0; i < mapArray.size(); i++) {
+   						JsonNode element = mapArray.get(i);
+   						ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
+   						switch (varCount) {
+      						case 1: {
+      							// just pass the mapArray variable
+      							evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+      							break;
+      						}
+      						case 2: {
+      							// pass the mapArray variable and index
+      							evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+      							evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+      							break;
+      						}
+      						case 3: {
+      							// pass the mapArray variable, index, and array
+      							evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+      							evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+      							evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
+      							break;
+      						}
+   						}
+   						resultArray.add(fct.invoke(expressionVisitor, evc));
+   					} 
+			      } else {
+                  JsonNode element = (JsonNode) arrNode;
+                 int i=0;
+                 ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
+                 switch (varCount) {
+                    case 1: {
+                       // just pass the mapArray variable
+                       evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+                       break;
+                    }
+                    case 2: {
+                       // pass the mapArray variable and index
+                       evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+                       evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+                       break;
+                    }
+                    case 3: {
+                       // pass the mapArray variable, index, and array
+                       evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+                       evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+                       evc = FunctionUtils.addObjectExprVarContext(ctx, evc, (ObjectNode)arrNode);
+                       break;
+                    }
+                 }
+                 resultArray.add(fct.invoke(expressionVisitor, evc));
+			      }
 				} else {
 					Function function = expressionVisitor.getJsonataFunction(varid.getText());
 					if (function != null) {
 						int optionalArgs = FunctionUtils.getOptionalArgCount(function.getSignature());
 						int maxArgs = function.getMaxArgs()-optionalArgs;
-						for (int i = 0; i < mapArray.size(); i++) {
-							Function_callContext callCtx = new Function_callContext(ctx);
-							// note: callCtx.children should be empty unless carrying an
-							// exception
-							JsonNode element = mapArray.get(i);
-							if (maxArgs <= 1) {
-								resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID,
-										callCtx, element));
-							} else if (maxArgs == 2) {
-								resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID,
-										callCtx, element,JsonNodeFactory.instance.numberNode(i)));
-							} else { // if (maxArgs >= 3) {
-								resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID,
-										callCtx, element,JsonNodeFactory.instance.numberNode(i),mapArray));								
-							}
-						}
+	                if (arrNode.isArray()) {
+	                   ArrayNode mapArray = (ArrayNode) arrNode;
+
+   						for (int i = 0; i < mapArray.size(); i++) {
+   							Function_callContext callCtx = new Function_callContext(ctx);
+   							// note: callCtx.children should be empty unless carrying an
+   							// exception
+   							JsonNode element = mapArray.get(i);
+   							if (maxArgs <= 1) {
+   								resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID,
+   										callCtx, element));
+   							} else if (maxArgs == 2) {
+   								resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID,
+   										callCtx, element,JsonNodeFactory.instance.numberNode(i)));
+   							} else { // if (maxArgs >= 3) {
+   								resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID,
+   										callCtx, element,JsonNodeFactory.instance.numberNode(i),mapArray));								
+   							}
+   						}
+	                } else {
+	                   JsonNode element = (JsonNode) arrNode;
+	                   int i=0;
+                     Function_callContext callCtx = new Function_callContext(ctx);
+                     // note: callCtx.children should be empty unless carrying an
+                     // exception
+                     if (maxArgs <= 1) {
+                        resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID,
+                              callCtx, element));
+                     } else if (maxArgs == 2) {
+                        resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID,
+                              callCtx, element,JsonNodeFactory.instance.numberNode(i)));
+                     } else { // if (maxArgs >= 3) {
+                        resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID,
+                              callCtx, element,JsonNodeFactory.instance.numberNode(i),(ObjectNode)element));                       
+                     }
+	                }
 					} else {
 						throw new EvaluateRuntimeException("Expected function variable reference " + varID
 								+ " to resolve to a declared nor Jsonata function.");
@@ -189,34 +237,65 @@ public class MapFunction extends FunctionBase implements Function {
 					// only send variables function can consume
 					varCount = fctVarCount;
 				}
-				for (int i = 0; i < mapArray.size(); i++) {
-					JsonNode element = mapArray.get(i);
-					ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-					switch (varCount) {
-					case 1: {
-						// just pass the mapArray variable
-						evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
-						break;
-					}
-					case 2: {
-						// pass the mapArray variable and index
-						evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
-						evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-						break;
-					}
-					case 3: {
-						// pass the mapArray variable, index, and array
-						evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
-						evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
-						evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
-						break;
-					}
-					}
-					JsonNode fctResult = fct.invoke(expressionVisitor, evc);
-					if (fctResult != null) {
-						resultArray.add(fctResult);
-					}
-				}
+            if (arrNode.isArray()) {
+               ArrayNode mapArray = (ArrayNode) arrNode;
+   				for (int i = 0; i < mapArray.size(); i++) {
+   					JsonNode element = mapArray.get(i);
+   					ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
+   					switch (varCount) {
+   					case 1: {
+   						// just pass the mapArray variable
+   						evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+   						break;
+   					}
+   					case 2: {
+   						// pass the mapArray variable and index
+   						evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+   						evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+   						break;
+   					}
+   					case 3: {
+   						// pass the mapArray variable, index, and array
+   						evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+   						evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+   						evc = FunctionUtils.addArrayExprVarContext(ctx, evc, mapArray);
+   						break;
+   					}
+   					}
+   					JsonNode fctResult = fct.invoke(expressionVisitor, evc);
+   					if (fctResult != null) {
+   						resultArray.add(fctResult);
+   					}
+   				}
+            } else {
+               JsonNode element = (JsonNode) arrNode;
+               int i=0;
+               ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
+               switch (varCount) {
+               case 1: {
+                  // just pass the mapArray variable
+                  evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+                  break;
+               }
+               case 2: {
+                  // pass the mapArray variable and index
+                  evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+                  evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+                  break;
+               }
+               case 3: {
+                  // pass the mapArray variable, index, and array
+                  evc = FunctionUtils.fillExprVarContext(varCount, ctx, element);
+                  evc = FunctionUtils.addIndexExprVarContext(ctx, evc, i);
+                  evc = FunctionUtils.addObjectExprVarContext(ctx, evc, (ObjectNode)element);
+                  break;
+               }
+               }
+               JsonNode fctResult = fct.invoke(expressionVisitor, evc);
+               if (fctResult != null) {
+                  resultArray.add(fctResult);
+               }
+            }
 			}
 		} else {
 			throw new EvaluateRuntimeException(argCount <= 1 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);

@@ -1,0 +1,10 @@
+[
+  {
+    "key": "value1",
+    "include": true
+  },
+  {
+    "key": "value2",
+    "include": false
+  }
+]
