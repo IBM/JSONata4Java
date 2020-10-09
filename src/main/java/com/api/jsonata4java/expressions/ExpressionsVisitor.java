@@ -446,6 +446,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		setRootContext(rootContext);
 	}
 
+	public FrameEnvironment setNewEnvironment() {
+	     // generate a new frameEnvironment for life of this block
+      FrameEnvironment oldEnvironment = _environment;
+      _environment = new FrameEnvironment(_environment);
+      return oldEnvironment;
+	}
+	
+	public void resetOldEnvironment(FrameEnvironment oldEnvironment) {
+	   _environment = oldEnvironment;
+	}
+	
 	JsonNode append(JsonNode arg1, JsonNode arg2) {
 		// disregard undefined args
 		if (arg1 == null) {
@@ -1229,6 +1240,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = BooleanNode.FALSE;
 			} else if ((left != null && left.isNull() == false) && (right == null || right.isNull())) {
 				result = BooleanNode.FALSE;
+			} else if ((left == null || left.isNull()) && (right == null || right.isNull())) {
+            result = BooleanNode.TRUE;
 			} else if (left.getNodeType() == right.getNodeType()) {
 				result = (areJsonNodesEqual(left, right) ? BooleanNode.TRUE : BooleanNode.FALSE);
 			} else if (!lIsComparable || !rIsComparable) {
@@ -1243,7 +1256,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = BooleanNode.TRUE;
 			} else if ((left != null && left.isNull() == false) && (right == null || right.isNull())) {
 				result = BooleanNode.TRUE;
-			} else if (left.getNodeType() == right.getNodeType()) {
+			} else if ((left == null || left.isNull()) && (right == null || right.isNull())) {
+            result = BooleanNode.FALSE;
+         } else if (left.getNodeType() == right.getNodeType()) {
 				result = (areJsonNodesEqual(left, right) ? BooleanNode.FALSE : BooleanNode.TRUE);
 			} else if (!lIsComparable || !rIsComparable) {
 				// signal expression
@@ -2142,8 +2157,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode result = null;
 
 		// generate a new frameEnvironment for life of this block
-		FrameEnvironment oldEnvironment = _environment;
-		_environment = new FrameEnvironment(_environment);
+		FrameEnvironment oldEnvironment = setNewEnvironment();
 		List<ExprContext> expressions = ctx.expr();
 		try {
 		for (int i = 0; i < expressions.size(); i++) {
@@ -2163,7 +2177,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			result = newResult;
 		}
 
-		_environment = oldEnvironment;
+		resetOldEnvironment(oldEnvironment);
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
 			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));

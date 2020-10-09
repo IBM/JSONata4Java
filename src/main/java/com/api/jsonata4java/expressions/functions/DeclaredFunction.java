@@ -30,6 +30,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.FrameEnvironment;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
@@ -81,7 +82,10 @@ public class DeclaredFunction {
 	}
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, ParserRuleContext ruleValues) {
-		JsonNode result = null;
+      // generate a new frameEnvironment for life of this block
+      FrameEnvironment oldEnvironment = expressionVisitor.setNewEnvironment();
+
+      JsonNode result = null;
 		ExprValuesContext exprValues = null;
 		Function_callContext fctCallValues = null;
 		if (ruleValues instanceof ExprValuesContext) {
@@ -96,13 +100,14 @@ public class DeclaredFunction {
    		// ensure a direct mapping is possible
    		if (varListCount != exprListCount) {
 //   			throw new EvaluateRuntimeException(
-//   					"Expected equal counts for varibles (" + varListCount + ") and values (" + exprListCount + ")");
+//   					"Expected equal counts for variables (" + varListCount + ") and values (" + exprListCount + ")");
    		}
    		for (int i = 0; i < varListCount; i++) {
    			String varID = varListCtx.get(i).getText();
    			JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
    			expressionVisitor.setVariable(varID, value);
    		}
+   		result = expressionVisitor.visit(_exprList);
 		} else if (ruleValues instanceof Function_callContext) {
 		   fctCallValues = (Function_callContext)ruleValues;
          List<TerminalNode> varListCtx = _varList.VAR_ID();
@@ -123,6 +128,7 @@ public class DeclaredFunction {
             JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
             expressionVisitor.setVariable(varID, value);
          }
+         result = expressionVisitor.visit(_exprList);
 		} else if (ruleValues instanceof Var_recallContext) {
 			String fctName = ((Var_recallContext) ruleValues).VAR_ID().getText();
 			// assume this is a variable pointing to a function
@@ -145,8 +151,10 @@ public class DeclaredFunction {
 	         }
 				result = expressionVisitor.visit(declFct._exprList);
 			}
-		}// else EmptyValuesContext
-      result = expressionVisitor.visit(_exprList);
+		} else {
+		   result = expressionVisitor.visit(_exprList);
+		}
+      expressionVisitor.resetOldEnvironment(oldEnvironment);
 		return result;
 	}
 }
