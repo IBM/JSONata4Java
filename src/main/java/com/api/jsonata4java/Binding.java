@@ -83,6 +83,11 @@ public class Binding {
             _expr = expr;
             _type = BindingType.VARIABLE;
             _varname = varName;
+         } else if (tree instanceof MappingExpressionParser.IdContext) {
+         	_expr = (ExprContext)new MappingExpressionParser.StringContext(new ExprContext());
+         	_expr.addChild((TerminalNode)tree.getChild(0));
+         	_type = BindingType.VARIABLE;
+         	_varname = varName;
          } else {
             _expr = (ExprContext) tree;
             _type = BindingType.VARIABLE;
