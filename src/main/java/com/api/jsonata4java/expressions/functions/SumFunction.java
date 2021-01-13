@@ -30,6 +30,7 @@ import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.LongNode;
 
@@ -101,6 +102,9 @@ public class SumFunction extends FunctionBase implements Function {
 				}
 
 			} else if (argArray.isIntegralNumber()) {
+				if (argArray.isInt()) {
+					return new IntNode(argArray.asInt());
+				}
 				return new LongNode(argArray.asLong());
 			} else if (argArray.isFloatingPointNumber() || argArray.isDouble()) {
 				return new DoubleNode(argArray.asDouble());

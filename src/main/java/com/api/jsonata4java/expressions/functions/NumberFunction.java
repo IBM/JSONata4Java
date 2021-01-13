@@ -30,6 +30,7 @@ import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.api.jsonata4java.expressions.utils.NumberUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
+import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.LongNode;
 
@@ -99,8 +100,13 @@ public class NumberFunction extends FunctionBase implements Function {
 					// Math.ceil only accepts a double
 					Double ceil = argString.doubleValue();
 					if (ceil - ceil.longValue() == 0.0d) {
-					// Create the node to return
-					result = new LongNode(ceil.longValue());
+						Long lceil = ceil.longValue();
+						if (lceil == (long)lceil.intValue()) {
+							result = new IntNode(lceil.intValue());
+						} else {
+							// Create the node to return
+							result = new LongNode(ceil.longValue());
+						}
 					} else {
 						result = new DoubleNode(ceil);
 					}
