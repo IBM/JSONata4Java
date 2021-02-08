@@ -88,7 +88,7 @@ public class JSONataUtils implements Serializable {
 	static {
 		try {
 			SEED_SECURE_RANDOM = SecureRandom.getInstance("SHA1PRNG");
-			SEED_SECURE_RANDOM.setSeed(new UUID.randomUUID().toString().getBytes());
+			SEED_SECURE_RANDOM.setSeed(UUID.randomUUID().toString().getBytes());
 		} catch (NoSuchAlgorithmException nsae) {
 			System.out.println("Unable to retrieve algorithm SHA1PRNG for unique id generation.");
 		}
