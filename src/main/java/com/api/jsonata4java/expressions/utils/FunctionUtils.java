@@ -556,7 +556,7 @@ public class FunctionUtils {
 			}
 			}
 		}
-		if (flc.children.size() > 0) {
+		if (flc.children != null && flc.children.size() > 0) {
 			children.add(flc);
 		}
 		children.add(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.OBJ_CLOSE, "}")));
