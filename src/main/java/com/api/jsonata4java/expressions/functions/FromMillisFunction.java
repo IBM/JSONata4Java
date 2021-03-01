@@ -22,12 +22,11 @@
 
 package com.api.jsonata4java.expressions.functions;
 
-import java.time.Instant;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
+import com.api.jsonata4java.expressions.utils.DateTimeUtils;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -72,22 +71,37 @@ public class FromMillisFunction extends FunctionBase implements Function {
 		}
 
 		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
+		if (argCount >= 1 && argCount <= 3) {
 			if (!useContext) {
 				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+			}
+			JsonNode picture = JsonNodeFactory.instance.nullNode();
+			if (argCount >= 2) {
+				picture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
+			}
+			JsonNode timezone = JsonNodeFactory.instance.nullNode();
+			if (argCount == 3) {
+				timezone = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 2);
 			}
 			if (argNumber == null) {
 				return null;
 			}
 			if (argNumber.isNumber()) {
 				final Long millis = argNumber.asLong();
-				Instant instant = Instant.ofEpochMilli(millis);
-				result = new TextNode(instant.toString());
+				String pictureStr = null;
+				if (picture != null && picture.isNull() == false) {
+					pictureStr = picture.asText();
+				}
+				String timezoneStr = null;
+				if (timezone != null && timezone.isNull() == false) {
+					timezoneStr = timezone.asText();
+				}
+				result = new TextNode(DateTimeUtils.formatDateTime(millis, pictureStr, timezoneStr));
 			} else {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+			throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
 		}
 
 		return result;
