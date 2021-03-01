@@ -33,6 +33,8 @@ import java.util.TimeZone;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
+import com.api.jsonata4java.expressions.EvaluateRuntimeException;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -342,7 +344,7 @@ public class DateTimeUtils {
                 }
                 break;
             case SEQUENCE:
-                //TODO throw exception
+                throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_SEQUENCE_UNSUPPORTED, format.token));
         }
         if (negative) {
             formattedInteger = "-" + formattedInteger;
@@ -408,7 +410,7 @@ public class DateTimeUtils {
                             if (zeroCode == null) {
                                 zeroCode = group;
                             } else if (group != zeroCode) {
-                                //TODO throw error here
+                                throw new EvaluateRuntimeException(Constants.ERR_MSG_DIFF_DECIMAL_GROUP);
                             }
                         }
                         break;
@@ -554,7 +556,7 @@ public class DateTimeUtils {
                 start = pos;
                 pos = picture.indexOf("]", start);
                 if(pos == -1) {
-                    //TODO error - no closing bracket
+                    throw new EvaluateRuntimeException(Constants.ERR_MSG_NO_CLOSING_BRACKET);
                 }
                 String marker = picture.substring(start+1, pos);
                 marker = String.join("", marker.split("\\s+"));
@@ -593,7 +595,7 @@ public class DateTimeUtils {
                     def.presentation1 = defaultPresentationModifiers.get(def.component);
                 }
                 if (def.presentation1 == null) {
-                    //TODO throw exception
+                    throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_UNKNOWN_COMPONENT_SPECIFIER, def.component));
                 }
                 if (def.presentation1.charAt(0) == 'n') {
                     def.names = tcase.LOWER;
@@ -703,7 +705,7 @@ public class DateTimeUtils {
                 } else if (markerSpec.component == 'F') {
                     componentValue = days[Integer.parseInt(componentValue)];
                 } else {
-                    //TODO throw Exception
+                    throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_NAME_MODIFIER, markerSpec.component));
                 }
                 if(markerSpec.names == tcase.UPPER) {
                     componentValue = componentValue.toUpperCase();
@@ -732,7 +734,7 @@ public class DateTimeUtils {
                 } else if (numDigits == 3 || numDigits == 4) {
                     componentValue = formatInteger(offset, markerSpec.integerFormat);
                 } else {
-                    throw new Error();
+                    throw new EvaluateRuntimeException(Constants.ERR_MSG_TIMEZONE_FORMAT);
                 }
             }
             if (offset >= 0) {

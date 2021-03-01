@@ -109,7 +109,7 @@ public class FromMillisFunctionTests {
 				{ "$fromMillis(1204405500000, \"[Y]-[M01]-[D01]T[H01]:[m]:[s].[f001][Z0101t]\", \"+0530\")","\"2008-03-02T02:35:00.000+0530\"",null},
 				{ "$fromMillis(1230757500000, \"[Y]-[M01]-[D01]T[H01]:[m]:[s].[f001][Z0101t]\", \"+0530\")","\"2009-01-01T02:35:00.000+0530\"",null},
 				//TODO need to handle error better
-				// { "$fromMillis(1230757500000, \"[Y]-[M01]-[D01]T[H01]:[m]:[s].[f001][Z010101t]\", \"+0530\")",null,""},
+				{ "$fromMillis(1230757500000, \"[Y]-[M01]-[D01]T[H01]:[m]:[s].[f001][Z010101t]\", \"+0530\")",null,Constants.ERR_MSG_TIMEZONE_FORMAT},
 				{ "$fromMillis(1521801216617, \"[D#1,2]/[M1,2]/[Y,2]\")","\"23/03/18\"",null},
 				{ "$fromMillis(1521801216617, \"[D#1,2]/[M1,2]/[Y0001,2]\")","\"23/03/2018\"",null},
 				{ "$fromMillis(1521801216617, \"[D#1,2]/[M1,2]/[Y##01,2-2]\")","\"23/03/18\"",null},
@@ -142,6 +142,8 @@ public class FromMillisFunctionTests {
 				{ "$fromMillis(1451304000000, \"Week: [W]\")","\"Week: 53\"",null},
 				{ "$fromMillis(1451563200000, \"Week: [W]\")","\"Week: 53\"",null},
 				{ "$fromMillis(1451736000000, \"Week: [W]\")","\"Week: 53\"",null},
+				{ "$fromMillis(1419940800000, \"[YN]-[M]-[D]\")", null, String.format(Constants.ERR_MSG_INVALID_NAME_MODIFIER, "Y")},
+				{ "$fromMillis(1419940800000, \"[YN]-[M\")", null, Constants.ERR_MSG_NO_CLOSING_BRACKET},
 
 				//TODO need to consider the undocumented xX values from jsonata
 				// { "$fromMillis(1359460800000, \"Week: [w] of [xNn]\")","\"Week: 5 of January\"",null},
