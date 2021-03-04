@@ -22,15 +22,20 @@
 package com.api.jsonata4java.expressions.utils;
 
 import java.math.BigInteger;
-import java.sql.Date;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
@@ -123,6 +128,7 @@ public class DateTimeUtils {
             values[i] = wordValues.get(parts[i]);
         }
         Stack<Integer> segs = new Stack<>();
+        segs.push(0);
         for (Integer value : values) {
             if (value < 100) {
                 Integer top = segs.pop();
@@ -820,4 +826,323 @@ public class DateTimeUtils {
         }
         return componentValue;
     }
+
+    public static long parseDateTime(String timestamp, String picture) {
+        PictureFormat formatSpec = analyseDateTimePicture(picture);
+        PictureMatcher matchSpec = generateRegex(formatSpec);
+        String fullRegex = "^";
+        for (MatcherPart part : matchSpec.parts) {
+            fullRegex += "(" + part.regex + ")";
+        }
+        fullRegex += "$";
+        Pattern pattern = Pattern.compile(fullRegex, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(timestamp);
+        if (matcher.find()) {
+            int dmA = 161;
+            int dmB = 130;
+            int dmC = 84;
+            int dmD = 72;
+            int tmA = 23;
+            int tmB = 47;
+
+            Map<Character, Integer> components = new HashMap<>();
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                MatcherPart mpart = matchSpec.parts.get(i-1);
+                try {
+                    components.put(mpart.component, mpart.parse(matcher.group(i)));
+                } catch (UnsupportedOperationException e) {
+                    //do nothing
+                }
+            }
+
+            if (components.size() == 0) {
+                // nothing specified
+                //TODO work out what to return here
+                return 0;
+            }
+
+            int mask = 0;
+
+            for (char part : "YXMxWwdD".toCharArray()) {
+                mask <<= 1;
+                if(components.get(part) != null) {
+                    mask += 1;
+                }
+            }
+            boolean dateA = isType(dmA, mask);
+            boolean dateB = !dateA && isType(dmB, mask);
+            boolean dateC = isType(dmC, mask);
+            boolean dateD = !dateC && isType(dmD, mask);
+
+            mask = 0;
+            for (char part : "PHhmsf".toCharArray()) {
+                mask <<= 1;
+                if(components.get(part) != null) {
+                    mask += 1;
+                };
+            }
+
+            boolean timeA = isType(tmA, mask);
+            boolean timeB = !timeA && isType(tmB, mask);
+
+            String dateComps = dateB ? "YB" : dateC ? "XxwF" : dateD ? "XWF" : "YMD";
+            String timeComps = timeB ? "Phmsf" : "Hmsf";
+            String comps = dateComps + timeComps;
+
+            Date now = new Date();
+
+            boolean startSpecified = false;
+            boolean endSpecified = false;
+            for(char part : comps.toCharArray()) {
+                if (components.get(part) == null) {
+                    if (startSpecified) {
+                        components.put(part, "MDd".indexOf(part) != -1 ? 1 : 0);
+                        endSpecified = true;
+                    } else {
+                        components.put(part, Integer.parseInt(getDateTimeFragment(now, part)));
+                    }
+                } else {
+                    startSpecified = true;
+                    if(endSpecified) {
+                        //TODO add message to Constants.java
+                        throw new EvaluateRuntimeException("D3136");
+                    }
+                }
+            }
+            if(components.get('M') != null && components.get('M') > 0) {
+                components.put('M', components.get('M') - 1);
+            } else {
+                components.put('M', 0);
+            }
+            if (dateB) {
+                Calendar firstJan = Calendar.getInstance();
+                firstJan.setTimeZone(TimeZone.getTimeZone("UTC"));
+                firstJan.set(components.get('Y'), 0, 1, 0, 0);
+                firstJan.set(Calendar.DAY_OF_YEAR, components.get('d'));
+                components.put('M', firstJan.get(Calendar.MONTH));
+                components.put('D', firstJan.get(Calendar.DATE));
+            }
+            if (dateC) {
+                //TODO implement this
+                //parsing this format not currently supported
+                throw new EvaluateRuntimeException("D3136"); //TODO add proper message into Constants.java
+            }
+            if (dateD) {
+                //TODO implement this
+                // parsing this format (ISO week date) not currently supported
+                throw new EvaluateRuntimeException("D3136"); //TODO add proper message into Constants.java
+            }
+            if (timeB) {
+                components.put('H', components.get('h') == 12 ? 0 : components.get('h'));
+                if (components.get('P') == 1) {
+                    components.put('H', components.get('H') + 12);
+                }
+            }
+            Calendar cal = Calendar.getInstance();
+            cal.set(components.get('Y'), components.get('M'), components.get('D'), components.get('H'), components.get('m'), components.get('s'));
+            cal.set(Calendar.MILLISECOND, components.get('f'));
+            cal.setTimeZone(TimeZone.getTimeZone("UTC"));
+            long millis = cal.getTimeInMillis();
+            if (components.get('Z') != null || components.get('z') != null) {
+                int offset = components.get('Z');
+                if (offset == 0) {
+                    offset = components.get('z');
+                }
+                millis -= offset * 60 * 1000;
+            }
+            return millis;
+        }
+        //TODO need to do something here to indicate error
+        return 0;
+    }
+
+    private static boolean isType(int type, int mask) {
+        return ((~type & mask) == 0) && (type & mask) != 0;
+    }
+
+    private static PictureMatcher generateRegex(PictureFormat formatSpec) {
+        PictureMatcher matcher = new PictureMatcher();
+        for (final SpecPart part : formatSpec.parts) {
+            MatcherPart res;
+            if (part.type.equals("literal")){
+                Pattern p = Pattern.compile("[.*+?^${}()|\\[\\]\\\\]");
+                Matcher m = p.matcher(part.value);
+                
+                String regex = m.replaceAll("\\\\$0");
+                res = new MatcherPart(regex) {
+                    public int parse(String value) {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+            } else if (part.component == 'Z' || part.component == 'z') {
+                final boolean separator = part.integerFormat.groupingSeparators.size() == 1 && part.integerFormat.regular;
+                String regex = "";
+                if (part.component == 'z') {
+                    regex = "GMT";
+                }
+                regex += "[-+][0-9]+";
+                if (separator) {
+                    regex += part.integerFormat.groupingSeparators.get(0).character + "[0-9]+";
+                }
+                res = new MatcherPart(regex) {
+                    public int parse(String value) {
+                        if (part.component == 'z') {
+                            value = value.substring(3);
+                        }
+                        int offsetHours = 0, offsetMinutes = 0;
+                        if (separator) {
+                            offsetHours = Integer.parseInt(value.substring(0, value.indexOf(part.integerFormat.groupingSeparators.get(0).character)));
+                            offsetMinutes = Integer.parseInt(value.substring(value.indexOf(part.integerFormat.groupingSeparators.get(0).character)));
+                        } else {
+                            int numdigits = value.length() - 1;
+                            if (numdigits <= 2) {
+                                offsetHours = Integer.parseInt(value);
+                            } else {
+                                offsetHours = Integer.parseInt(value.substring(0, 3));
+                                offsetHours = Integer.parseInt(value.substring(3));
+                            }
+                        }
+                        return offsetHours * 60 + offsetMinutes;
+                    }
+                };
+            } else if (part.integerFormat != null) {
+                res = generateRegex(part.integerFormat);
+            } else {
+                String regex = "[a-zA-Z]+";
+                final Map<String, Integer> lookup = new HashMap<>();
+                if (part.component == 'M' || part.component == 'x') {
+                    for (int i = 0; i < months.length; i++) {
+                        if (part.width != null && part.width.getRight() != null) {
+                            lookup.put(months[i].substring(0, part.width.getRight()), i+1);
+                        } else {
+                            lookup.put(months[i], i+1);
+                        }
+                    }
+                } else if (part.component == 'F') {
+                    for (int i=1; i< days.length; i++) {
+                        if (part.width != null && part.width.getRight() != null) {
+                            lookup.put(days[i].substring(0, part.width.getRight()), i);
+                        } else {
+                            lookup.put(days[i], i);
+                        }
+                    }
+                } else if (part.component == 'P') {
+                    lookup.put("am", 0);
+                    lookup.put("AM", 0);
+                    lookup.put("pm", 1);
+                    lookup.put("PM", 1);
+                } else {
+                    //TODO put message in Constants.java
+                    throw new EvaluateRuntimeException("D3133");
+                }
+                res = new MatcherPart(regex) {
+                    public int parse(String value) {
+                        return lookup.get(value);
+                    }
+                };
+            }
+            res.component = part.component;
+            matcher.parts.add(res);
+        }
+        return matcher;
+    }
+
+    private static MatcherPart generateRegex(Format formatSpec) {
+        MatcherPart matcher;
+        final boolean isUpper = formatSpec.case_type == tcase.UPPER;
+        switch (formatSpec.primary) {
+            case LETTERS: {
+                String regex = isUpper ? "[A-Z]+" : "[a-z]+";
+                matcher = new MatcherPart(regex) {
+                    public int parse(String value) {
+                        return lettersToDecimal(value, isUpper ? 'A' : 'a');
+                    }
+                };
+                break;
+            }
+            case ROMAN: {
+                String regex = isUpper ? "[MDCLXVI]+" : "[mdclxvi]+";
+                matcher = new MatcherPart(regex) {
+                    public int parse(String value) {
+                        return romanToDecimal(isUpper ? value : value.toUpperCase());
+                    }
+                };
+                break;
+            }
+            case WORDS:{
+                Set<String> words = new HashSet<>();
+                words.addAll(wordValues.keySet());
+                words.add("and");
+                words.add("[\\-, ]");
+                String regex = "(?:" + String.join("|", words.toArray(new String[words.size()])) + ")+";
+                matcher = new MatcherPart(regex) {
+                    public int parse(String value) {
+                        return wordsToNumber(value.toLowerCase());
+                    }
+                };
+                break;
+            }
+            case DECIMAL: {
+                String regex = "[0-9]+";
+                if (formatSpec.ordinal) {
+                    regex += "(?:th|st|nd|rd)";
+                }
+                matcher = new MatcherPart(regex) {
+                    public int parse(String value) {
+                        String digits = value;
+                        if (formatSpec.ordinal) {
+                            digits = value.substring(0, value.length() - 2);
+                        }
+                        if (formatSpec.regular) {
+                            digits = String.join("", digits.split(","));
+                        } else {
+                            for(GroupingSeparator sep : formatSpec.groupingSeparators) {
+                                digits = String.join("", digits.split(sep.character));
+                            }
+                        }
+                        if (formatSpec.zeroCode != 0x30) {
+                            char[] chars = digits.toCharArray();
+                            for (int i=0; i < chars.length ; i++) {
+                                chars[i] = (char)(chars[i] - formatSpec.zeroCode + 0x30);
+                            }
+                            digits = new String(chars);
+                        }
+                        return Integer.parseInt(digits);
+                    }
+                };
+                break;
+            }
+            case SEQUENCE:
+            default: {
+                //TODO Add error message to Constants.java
+                throw new EvaluateRuntimeException("D3130");
+            }
+        }
+        return matcher;
+    }
+
+    private static int lettersToDecimal(String letters, char aChar) {
+        int decimal = 0;
+        char[] chars = letters.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            decimal += (chars[chars.length - i - 1] - aChar + 1) * Math.pow(26, i);
+        }
+        return decimal;
+    }
+
+    private static class PictureMatcher {
+        Vector<MatcherPart> parts = new Vector<>();
+    }
+
+    private static abstract class MatcherPart {
+        String regex;
+        char component;
+        public abstract int parse(String value);
+
+        public MatcherPart(String regex) {
+            this.regex = regex;
+        }
+    }
+
+
 }
