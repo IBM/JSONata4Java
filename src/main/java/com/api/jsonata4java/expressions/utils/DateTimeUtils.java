@@ -35,7 +35,6 @@ import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
@@ -43,7 +42,6 @@ import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class DateTimeUtils {
@@ -659,8 +657,7 @@ public class DateTimeUtils {
 
     private static String[] days = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     private static String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-    private static int millisInADay = 1000 * 60 * 60 * 24;
-
+    
     private static PictureFormat iso8601Spec = null;
 
     public static String formatDateTime(long millis, String picture, String timezone) {
@@ -904,8 +901,7 @@ public class DateTimeUtils {
                 } else {
                     startSpecified = true;
                     if(endSpecified) {
-                        //TODO add message to Constants.java
-                        throw new EvaluateRuntimeException("D3136");
+                        throw new EvaluateRuntimeException(Constants.ERR_MSG_MISSING_FORMAT);
                     }
                 }
             }
@@ -925,12 +921,12 @@ public class DateTimeUtils {
             if (dateC) {
                 //TODO implement this
                 //parsing this format not currently supported
-                throw new EvaluateRuntimeException("D3136"); //TODO add proper message into Constants.java
+                throw new EvaluateRuntimeException(Constants.ERR_MSG_MISSING_FORMAT);
             }
             if (dateD) {
                 //TODO implement this
                 // parsing this format (ISO week date) not currently supported
-                throw new EvaluateRuntimeException("D3136"); //TODO add proper message into Constants.java
+                throw new EvaluateRuntimeException(Constants.ERR_MSG_MISSING_FORMAT);
             }
             if (timeB) {
                 components.put('H', components.get('h') == 12 ? 0 : components.get('h'));
@@ -1032,8 +1028,7 @@ public class DateTimeUtils {
                     lookup.put("pm", 1);
                     lookup.put("PM", 1);
                 } else {
-                    //TODO put message in Constants.java
-                    throw new EvaluateRuntimeException("D3133");
+                    throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_NAME_MODIFIER, part.component));
                 }
                 res = new MatcherPart(regex) {
                     public int parse(String value) {
@@ -1114,8 +1109,7 @@ public class DateTimeUtils {
             }
             case SEQUENCE:
             default: {
-                //TODO Add error message to Constants.java
-                throw new EvaluateRuntimeException("D3130");
+                throw new EvaluateRuntimeException(Constants.ERR_MSG_SEQUENCE_UNSUPPORTED);
             }
         }
         return matcher;

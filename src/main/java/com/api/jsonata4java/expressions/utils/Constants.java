@@ -340,4 +340,5 @@ public class Constants {
    public static final String ERR_MSG_UNKNOWN_COMPONENT_SPECIFIER = "Unknown component specifier %s in date/time picture string";
    public static final String ERR_MSG_INVALID_NAME_MODIFIER = "The 'name' modifier can only be applied to months and days in the date/time picture string, not %s";
    public static final String ERR_MSG_TIMEZONE_FORMAT = "The timezone integer format specifier cannot have more than four digits";
+   public static final String ERR_MSG_MISSING_FORMAT = "The date/time picture string is missing specifiers required to parse the timestamp";
 }
