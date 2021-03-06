@@ -118,6 +118,18 @@ public class ToMillisFunctionTests {
 				{ "$toMillis('Mon, Twelfth November 2018', '[FNn,*-3], [DWwo] [MNn] [Y]') ~> $fromMillis()","\"2018-11-12T00:00:00.000Z\"",null},
 				{ "$toMillis('2018--180', '[Y]--[d]') ~> $fromMillis()","\"2018-06-29T00:00:00.000Z\"",null},
 				{ "$toMillis('three hundred and sixty-fifth day of 2018', '[dwo] day of [Y]') ~> $fromMillis()","\"2018-12-31T00:00:00.000Z\"",null},
+				{"$toMillis('irrelevent string', '[Y]-[M]-[D]')",null ,null},
+				{"$toMillis('2018-05-22', '[Y]-[M]-[q]')",null,String.format(Constants.ERR_MSG_UNKNOWN_COMPONENT_SPECIFIER, 'q')},
+				{"$toMillis('2018-05-22', '[YN]-[M]-[D]')",null,String.format(Constants.ERR_MSG_INVALID_NAME_MODIFIER, 'Y')},
+				{"$toMillis('2018-22', '[Y]-[D]')",null,Constants.ERR_MSG_MISSING_FORMAT},
+				{"$toMillis('5-22 23:59', '[M]-[D] [m]:[s]')",null, Constants.ERR_MSG_MISSING_FORMAT},
+				{"$toMillis('2018-3-2-5', '[X]-[x]-[w]-[F1]')",null, Constants.ERR_MSG_MISSING_FORMAT},
+				{"$toMillis('2018-32-5', '[X]-[W]-[F1]')",null, Constants.ERR_MSG_MISSING_FORMAT},
+				{"$toMillis('2020-09-09 08:00:00 +02:00', '[Y0001]-[M01]-[D01] [H01]:[m01]:[s01] [Z]') ~> $fromMillis()" ,"\"2020-09-09T06:00:00.000Z\"",null},
+				{"$toMillis('2020-09-09 08:00:00 GMT-05:00', '[Y0001]-[M01]-[D01] [H01]:[m01]:[s01] [z]') ~> $fromMillis()" ,"\"2020-09-09T13:00:00.000Z\"",null},
+				{"$toMillis('2020-09-09 12:00:00 +05:30', '[Y0001]-[M01]-[D01] [H01]:[m01]:[s01] [Z]') ~> $fromMillis()" ,"\"2020-09-09T06:30:00.000Z\"",null},
+				{"$toMillis('2020-09-09 12:00:00 GMT-5', '[Y0001]-[M01]-[D01] [H01]:[m01]:[s01] [z01]') ~> $fromMillis()" ,"\"2020-09-09T17:00:00.000Z\"",null},
+				{"$toMillis('2020-09-09 12:00:00 +0530', '[Y0001]-[M01]-[D01] [H01]:[m01]:[s01] [Z0001]') ~> $fromMillis()" ,"\"2020-09-09T06:30:00.000Z\"",null},
 			});
 	}
 

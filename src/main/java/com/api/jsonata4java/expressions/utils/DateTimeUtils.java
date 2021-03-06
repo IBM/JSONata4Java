@@ -824,7 +824,7 @@ public class DateTimeUtils {
         return componentValue;
     }
 
-    public static long parseDateTime(String timestamp, String picture) {
+    public static Long parseDateTime(String timestamp, String picture) {
         PictureFormat formatSpec = analyseDateTimePicture(picture);
         PictureMatcher matchSpec = generateRegex(formatSpec);
         String fullRegex = "^";
@@ -854,8 +854,7 @@ public class DateTimeUtils {
 
             if (components.size() == 0) {
                 // nothing specified
-                //TODO work out what to return here
-                return 0;
+                return null;
             }
 
             int mask = 0;
@@ -939,17 +938,14 @@ public class DateTimeUtils {
             cal.set(Calendar.MILLISECOND, components.get('f'));
             cal.setTimeZone(TimeZone.getTimeZone("UTC"));
             long millis = cal.getTimeInMillis();
-            if (components.get('Z') != null || components.get('z') != null) {
-                int offset = components.get('Z');
-                if (offset == 0) {
-                    offset = components.get('z');
-                }
-                millis -= offset * 60 * 1000;
+            if (components.get('Z') != null) {
+                millis -= components.get('Z') * 60 * 1000;
+            } else if (components.get('z') != null) {
+                millis -= components.get('z') * 60 * 1000;
             }
             return millis;
         }
-        //TODO need to do something here to indicate error
-        return 0;
+        return null;
     }
 
     private static boolean isType(int type, int mask) {
@@ -988,14 +984,14 @@ public class DateTimeUtils {
                         int offsetHours = 0, offsetMinutes = 0;
                         if (separator) {
                             offsetHours = Integer.parseInt(value.substring(0, value.indexOf(part.integerFormat.groupingSeparators.get(0).character)));
-                            offsetMinutes = Integer.parseInt(value.substring(value.indexOf(part.integerFormat.groupingSeparators.get(0).character)));
+                            offsetMinutes = Integer.parseInt(value.substring(value.indexOf(part.integerFormat.groupingSeparators.get(0).character)+1));
                         } else {
                             int numdigits = value.length() - 1;
                             if (numdigits <= 2) {
                                 offsetHours = Integer.parseInt(value);
                             } else {
                                 offsetHours = Integer.parseInt(value.substring(0, 3));
-                                offsetHours = Integer.parseInt(value.substring(3));
+                                offsetMinutes = Integer.parseInt(value.substring(3));
                             }
                         }
                         return offsetHours * 60 + offsetMinutes;

@@ -102,7 +102,11 @@ public class ToMillisFunction extends FunctionBase implements Function {
 					} else {
 						millis = OffsetDateTime.parse(argTimestamp.asText()).toInstant().toEpochMilli();
 					}
-					result = new LongNode(millis);
+					if (millis == null) {
+						result = null;
+					} else {
+						result = new LongNode(millis);
+					}
 				} catch (DateTimeParseException e) {
 					/*
 					 * The string argument does not contain a valid ISO 8601 format datetime string.
