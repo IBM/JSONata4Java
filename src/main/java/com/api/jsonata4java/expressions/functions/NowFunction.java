@@ -24,11 +24,13 @@ package com.api.jsonata4java.expressions.functions;
 
 import java.time.Instant;
 
-import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
+import com.api.jsonata4java.expressions.utils.DateTimeUtils;
+import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
@@ -56,20 +58,30 @@ public class NowFunction extends FunctionBase implements Function {
 		// Retrieve the number of arguments
 		int argCount = getArgumentCount(ctx);
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 0) {
-			Instant instant = Instant.now();
-			result = new TextNode(instant.toString());
-		} else {
-			throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+		JsonNode picture = JsonNodeFactory.instance.nullNode();
+		if (argCount >= 1) {
+			picture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 		}
+		JsonNode timezone = JsonNodeFactory.instance.nullNode();
+		if (argCount == 2) {
+			timezone = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
+		}
+		String pictureStr = null;
+		if (picture != null && picture.isNull() == false) {
+			pictureStr = picture.asText();
+		}
+		String timezoneStr = null;
+		if (timezone != null && timezone.isNull() == false) {
+			timezoneStr = timezone.asText();
+		}
+		result = new TextNode(DateTimeUtils.formatDateTime(Instant.now().toEpochMilli(), pictureStr, timezoneStr));
 
 		return result;
 	}
 
 	@Override
 	public int getMaxArgs() {
-		return 0;
+		return 2;
 	}
 	@Override
 	public int getMinArgs() {
@@ -79,6 +91,6 @@ public class NowFunction extends FunctionBase implements Function {
 	@Override
 	public String getSignature() {
 		// accepts a number (or context variable), returns a number
-		return "<:s>";
+		return "<s?s?:s>";
 	}
 }
