@@ -22,16 +22,19 @@
 package com.api.jsonata4java.expressions.utils;
 
 import java.math.BigInteger;
-import java.util.Calendar;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneOffset;
+import java.time.temporal.IsoFields;
+import java.time.temporal.WeekFields;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -680,7 +683,7 @@ public class DateTimeUtils {
         }
 
         int offsetMillis = (60 * offsetHours + offsetMinutes) * 60 * 1000;
-        Date dateTime = new Date(millis + offsetMillis);
+        LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(millis + offsetMillis), ZoneOffset.UTC);
         String result = "";
         for (SpecPart part : formatSpec.parts) {
             if (part.type.equals("literal")) {
@@ -693,7 +696,7 @@ public class DateTimeUtils {
         return result;
     }
 
-    private static String formatComponent(Date date, SpecPart markerSpec, int offsetHours, int offsetMinutes) {
+    private static String formatComponent(LocalDateTime date, SpecPart markerSpec, int offsetHours, int offsetMinutes) {
         String componentValue = getDateTimeFragment(date, markerSpec.component);
 
         if ("YMDdFWwXxHhms".indexOf(markerSpec.component) != -1) {
@@ -753,36 +756,29 @@ public class DateTimeUtils {
         return componentValue;
     }
 
-    private static String getDateTimeFragment(Date date, Character component) {
+    private static String getDateTimeFragment(LocalDateTime date, Character component) {
         String componentValue = "";
-        Calendar cal = Calendar.getInstance();
-        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-        cal.setTime(date);
         switch(component) {
             case 'Y': // year
-                componentValue = "" + cal.get(Calendar.YEAR);
+                componentValue = "" + date.getYear();
                 break;
             case 'M': // month in year
-                componentValue = "" + (cal.get(Calendar.MONTH) + 1);
+                componentValue = "" + date.getMonthValue();
                 break;
             case 'D': // day in month
-                componentValue = "" + cal.get(Calendar.DAY_OF_MONTH);
+                componentValue = "" + date.getDayOfMonth();
                 break;
             case 'd': // day in year
-                componentValue = "" + cal.get(Calendar.DAY_OF_YEAR);
+                componentValue = "" + date.getDayOfYear();
                 break;
             case 'F': // day of week
-                int day = cal.get(Calendar.DAY_OF_WEEK) - 1;
-                if (day == 0) {
-                    day = 7;
-                }
-                componentValue = "" + day;
+                componentValue = "" + date.getDayOfWeek().getValue();
                 break;
             case 'W': // week in year
-                componentValue = "" + cal.get(Calendar.WEEK_OF_YEAR);
+                componentValue = "" + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
                 break;
             case 'w': // week in month
-                componentValue = "" + cal.get(Calendar.WEEK_OF_MONTH);
+                componentValue = "" + date.get(WeekFields.ISO.weekOfMonth());
                 break;
             case 'X':
                 //TODO work these out once others verified
@@ -790,26 +786,28 @@ public class DateTimeUtils {
                 componentValue = "" + -1;
                 break;
             case 'H': // hour in day (24 hours)
-                componentValue = "" + cal.get(Calendar.HOUR_OF_DAY);
+                componentValue = "" + date.getHour();
                 break;
             case 'h': //hour in day (12 hours)
-                int hour = cal.get(Calendar.HOUR);
-                if (hour == 0) {
+                int hour = date.getHour();
+                if (hour > 12) {
+                    hour -= 12;
+                } else if (hour == 0) {
                     hour = 12;
                 }
                 componentValue = "" + hour;
                 break;
             case 'P':
-                componentValue = cal.get(Calendar.AM_PM) == Calendar.AM ? "am" : "pm";
+                componentValue = date.getHour() < 12 ? "am" : "pm";
                 break;
             case 'm':
-                componentValue = "" + cal.get(Calendar.MINUTE);
+                componentValue = "" + date.getMinute();
                 break;
             case 's':
-                componentValue = "" + cal.get(Calendar.SECOND);
+                componentValue = "" + date.getSecond();
                 break;
             case 'f':
-                componentValue = "" + cal.get(Calendar.MILLISECOND);
+                componentValue = "" + (date.getNano() / 1000000);
                 break;
             case 'Z':
             case 'z':
@@ -885,7 +883,7 @@ public class DateTimeUtils {
             String timeComps = timeB ? "Phmsf" : "Hmsf";
             String comps = dateComps + timeComps;
 
-            Date now = new Date();
+            LocalDateTime now = LocalDateTime.now();
 
             boolean startSpecified = false;
             boolean endSpecified = false;
@@ -910,12 +908,10 @@ public class DateTimeUtils {
                 components.put('M', 0);
             }
             if (dateB) {
-                Calendar firstJan = Calendar.getInstance();
-                firstJan.setTimeZone(TimeZone.getTimeZone("UTC"));
-                firstJan.set(components.get('Y'), 0, 1, 0, 0);
-                firstJan.set(Calendar.DAY_OF_YEAR, components.get('d'));
-                components.put('M', firstJan.get(Calendar.MONTH));
-                components.put('D', firstJan.get(Calendar.DATE));
+                LocalDateTime firstJan = LocalDateTime.of(components.get('Y'), Month.JANUARY, 1, 0, 0);
+                firstJan = firstJan.withDayOfYear(components.get('d'));
+                components.put('M', firstJan.getMonthValue()-1);
+                components.put('D', firstJan.getDayOfMonth());
             }
             if (dateC) {
                 //TODO implement this
@@ -933,11 +929,8 @@ public class DateTimeUtils {
                     components.put('H', components.get('H') + 12);
                 }
             }
-            Calendar cal = Calendar.getInstance();
-            cal.set(components.get('Y'), components.get('M'), components.get('D'), components.get('H'), components.get('m'), components.get('s'));
-            cal.set(Calendar.MILLISECOND, components.get('f'));
-            cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-            long millis = cal.getTimeInMillis();
+            LocalDateTime cal = LocalDateTime.of(components.get('Y'), components.get('M')+1, components.get('D'), components.get('H'), components.get('m'), components.get('s'), components.get('f')*1000000);
+            long millis = cal.toInstant(ZoneOffset.UTC).toEpochMilli();
             if (components.get('Z') != null) {
                 millis -= components.get('Z') * 60 * 1000;
             } else if (components.get('z') != null) {
