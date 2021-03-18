@@ -55,6 +55,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprCo
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprOrSeqContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.FieldListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
 // import com.api.jsonata4java.expressions.generated.MappingExpressionParser.FieldListContext;
@@ -104,9 +105,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	 */
 	public static class SelectorArrayNode extends ArrayNode {
 
-      private static final long serialVersionUID = -641395411309729158L;
+		private static final long serialVersionUID = -641395411309729158L;
 
-      private List<JsonNode> selectionGroups = new ArrayList<>();
+		private List<JsonNode> selectionGroups = new ArrayList<>();
 
 		public SelectorArrayNode(JsonNodeFactory nc) {
 			super(nc);
@@ -220,80 +221,79 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 
 		switch (node.getNodeType()) {
-		case STRING: {
-			return node.textValue();
-		}
-		case NUMBER: {
-			if (node.isDouble()) {
-				Double dValue = node.asDouble();
-				if (Double.isInfinite(dValue) || Double.isNaN(dValue)) {
-					throw new EvaluateRuntimeException("Attempting to invoke string function on Infinity or NaN");
-				}
-				String test = dValue.toString();
-				// try to determine precision
-				String strVal = "";
-				int index = test.indexOf("E");
-				String expStr = ".e+";
-				if (index >= 0) {
-					int minusSize = dValue < 0.0d ? 1 : 0;
-					int exp = new Integer(test.substring(index + 1));
-					if (exp < 0) {
-						expStr = ".e";
+			case STRING: {
+				return node.textValue();
+			}
+			case NUMBER: {
+				if (node.isDouble()) {
+					Double dValue = node.asDouble();
+					if (Double.isInfinite(dValue) || Double.isNaN(dValue)) {
+						throw new EvaluateRuntimeException("Attempting to invoke string function on Infinity or NaN");
 					}
-					// how many digits before E?
-					int len = test.indexOf(".");
-					if (len - minusSize + Math.abs(exp) <= 21) {
-						if (exp > 0) {
-							strVal = _decimalFormat.format(dValue);
-							return strVal;
+					String test = dValue.toString();
+					// try to determine precision
+					String strVal = "";
+					int index = test.indexOf("E");
+					String expStr = ".e+";
+					if (index >= 0) {
+						int minusSize = dValue < 0.0d ? 1 : 0;
+						int exp = new Integer(test.substring(index + 1));
+						if (exp < 0) {
+							expStr = ".e";
 						}
-						if (exp > -7) {
+						// how many digits before E?
+						int len = test.indexOf(".");
+						if (len - minusSize + Math.abs(exp) <= 21) {
+							if (exp > 0) {
+								strVal = _decimalFormat.format(dValue);
+								return strVal;
+							}
+							if (exp > -7) {
+								strVal = new BigDecimal(dValue, new MathContext(15)).toString().toLowerCase();
+								if (strVal.indexOf(".") >= 0) {
+									while (strVal.endsWith("0") && strVal.length() > 0) {
+										strVal = strVal.substring(0, strVal.length() - 1);
+									}
+								}
+								return strVal;
+							}
+						}
+						// need to check for ".0E" to make it the whole number e+exp
+						if (test.indexOf(".0E") > 0) {
+							strVal = test.substring(0, len) + expStr.substring(1) + test.substring(index + 1);
+						} else {
+							strVal = test.substring(0, index) + expStr + test.substring(index + 1);
+						}
+					} else {
+						if (prettify) {
+							strVal = _decimalFormat.format(dValue);
+						} else {
 							strVal = new BigDecimal(dValue, new MathContext(15)).toString().toLowerCase();
 							if (strVal.indexOf(".") >= 0) {
 								while (strVal.endsWith("0") && strVal.length() > 0) {
 									strVal = strVal.substring(0, strVal.length() - 1);
 								}
 							}
-							return strVal;
 						}
 					}
-					// need to check for ".0E" to make it the whole number e+exp
-					if (test.indexOf(".0E") > 0) {
-						strVal = test.substring(0, len) + expStr.substring(1) + test.substring(index + 1);
-					} else {
-						strVal = test.substring(0, index) + expStr + test.substring(index + 1);
-					}
-				} else {
+					return strVal;
+				}
+			}
+
+			default:
+				// arrays and objects
+				try {
 					if (prettify) {
-						strVal = _decimalFormat.format(dValue);
+						JsonElement jsonElt = JsonParser.parseString(objectMapper.writeValueAsString(node));
+						return gson.toJson(jsonElt);
+
 					} else {
-						strVal = new BigDecimal(dValue, new MathContext(15)).toString().toLowerCase();
-						if (strVal.indexOf(".") >= 0) {
-							while (strVal.endsWith("0") && strVal.length() > 0) {
-								strVal = strVal.substring(0, strVal.length() - 1);
-							}
-						}
+						return objectMapper.writeValueAsString(node);
 					}
+				} catch (JsonProcessingException e) {
+					throw new EvaluateRuntimeException(
+							"Failed to cast value " + node + " to a string. Reason: " + e.getMessage());
 				}
-				return strVal;
-			}
-		}
-
-		default:
-			// arrays and objects
-			try {
-				if (prettify) {
-					JsonElement jsonElt = JsonParser
-							.parseString(objectMapper.writeValueAsString(node));
-					return gson.toJson(jsonElt);
-
-				} else {
-					return objectMapper.writeValueAsString(node);
-				}
-			} catch (JsonProcessingException e) {
-				throw new EvaluateRuntimeException(
-						"Failed to cast value " + node + " to a string. Reason: " + e.getMessage());
-			}
 		}
 
 	}
@@ -330,9 +330,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				return (SelectorArrayNode) input;
 			} else {
 				SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
-				for (Object elt:(ArrayNode)input) {
+				for (Object elt : (ArrayNode) input) {
 					if (elt != null) {
-						result.addAsSelectionGroup((JsonNode)elt);
+						result.addAsSelectionGroup((JsonNode) elt);
 					}
 				}
 				return result;
@@ -447,16 +447,16 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	}
 
 	public FrameEnvironment setNewEnvironment() {
-	     // generate a new frameEnvironment for life of this block
-      FrameEnvironment oldEnvironment = _environment;
-      _environment = new FrameEnvironment(_environment);
-      return oldEnvironment;
+		// generate a new frameEnvironment for life of this block
+		FrameEnvironment oldEnvironment = _environment;
+		_environment = new FrameEnvironment(_environment);
+		return oldEnvironment;
 	}
-	
+
 	public void resetOldEnvironment(FrameEnvironment oldEnvironment) {
-	   _environment = oldEnvironment;
+		_environment = oldEnvironment;
 	}
-	
+
 	JsonNode append(JsonNode arg1, JsonNode arg2) {
 		// disregard undefined args
 		if (arg1 == null) {
@@ -601,17 +601,15 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						output.add(result);
 					} else {
 						result = ensureArray(result);
-						output.addAll((ArrayNode)result);
+						output.addAll((ArrayNode) result);
 					}
-					
-					
-					
-					
-	//				if (/* tree instanceof Array_constructorContext == false && */ inArrayConstructStack.isEmpty() && result.isArray()) {
-	//					output.addAll((ArrayNode) result);
-	//				} else {
-	//					output.add(result);
-	//				}
+
+					// if (/* tree instanceof Array_constructorContext == false && */
+					// inArrayConstructStack.isEmpty() && result.isArray()) {
+					// output.addAll((ArrayNode) result);
+					// } else {
+					// output.add(result);
+					// }
 				}
 			}
 		}
@@ -790,16 +788,16 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	@Override
 	public JsonNode visit(ParseTree tree) {
 		JsonNode result = null;
-		
+
 		if (checkRuntime) {
 			evaluateEntry();
 		}
 		if (steps.size() > 0 && tree.equals(steps.get(steps.size() - 1))) {
 			lastStep = true;
 		}
-		
+
 		result = super.visit(tree);
-		
+
 		if (!keepArray) {
 			if (result != null && result instanceof SelectorArrayNode) {
 //					&& ((SelectorArrayNode) result).getSelectionGroups().size() == 1) {
@@ -828,17 +826,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		// in all cases, if either are *no match*, JSONata returns *no match*
 		if (leftNode != null && rightNode != null) {
-	
+
 			if (!leftNode.isNumber() || !rightNode.isNumber()) {
 				throw new EvaluateRuntimeException(ctx.op.getText() + " expects two numeric arguments");
 			}
-	
+
 			// treat both inputs as doubles when performing arithmetic operations
 			double left = leftNode.asDouble();
 			double right = rightNode.asDouble();
-	
+
 			final double dResult;
-	
+
 			if (ctx.op.getType() == MappingExpressionParser.ADD) {
 				dResult = left + right;
 			} else if (ctx.op.getType() == MappingExpressionParser.SUB) {
@@ -848,7 +846,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				// first place)
 				throw new EvaluateRuntimeException("Unrecognised token " + ctx.op.getText());
 			}
-	
+
 			// coerce the result to a long iff the result is exactly .0
 			if (isWholeNumber(dResult)) {
 				result = new LongNode((long) dResult);
@@ -858,7 +856,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -887,24 +885,24 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		if (sourceArray != null) {
 			// Expression inside [] (e.g. [1])
 			ExprContext indexContext = ctx.expr(1);
-	
+
 			// this will contain a list of indexes that should be pulled out of the
 			// source array
 			// any non-integral array indexes will rounded down in this list
 			// may contain negative values (these will be normalized later)
 			final List<Integer> indexesToReturn = new ArrayList<>();
-	
+
 			ArrayNode output = JsonNodeFactory.instance.arrayNode();
 			boolean isPredicate = false;
-	
+
 			boolean haveResult = false;
 			for (int i = 0; ((haveResult == false) && (i < sourceArray.size())); i++) {
 				JsonNode e = sourceArray.get(i);
-	
+
 				if (LOG.isLoggable(Level.FINEST))
 					LOG.logp(Level.FINEST, CLASS, METHOD, "Evaluating array index expression '" + indexContext.getText()
 							+ "' against element at index " + i + " ('" + e + "') of source array");
-	
+
 				// this will cause any expressions to be evaluated with this element of
 				// the array as context
 				// in particular, path expressions will resolve relative to the element
@@ -913,14 +911,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				// we need a stack because predicates can be used inside predicates,
 				// e.g. [{"x":2}, {"x":3}] [x=(["a":101, "b":2}, {"a":102,
 				// "b":3}][a=101]).b] -> {"x":2}
-	
+
 				// check for predicate
 				_environment.pushContext(e);
 				JsonNode indexesInContext = factory.arrayNode();
 				// below will resolve if the proposed indexContext applies to the current group
 				indexesInContext = visit(indexContext);
 				_environment.popContext();
-				if (indexesInContext == null) {	
+				if (indexesInContext == null) {
 					// this means that the index is a predicate, but one or more of the
 					// path expressions used in it
 					// do not match anything in the current context - e.g.
@@ -931,7 +929,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					// if, in context the index evaluates to a boolean node, we know to
 					// treat this index as a predicate statement
 					isPredicate = true;
-	
+
 					// if it's true then the predicate matches this element, so include
 					// it
 					if (indexesInContext == BooleanNode.TRUE) {
@@ -940,10 +938,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				} else {
 					// if it resolves to any other type of node, we know that the index
 					// cannot be a predicate statement
-	
+
 					// wrap it in an array (if it's not already an array)
 					indexesInContext = ensureArray(indexesInContext);
-	
+
 					// now round down any non-integral indexes
 					for (JsonNode indexInContext : indexesInContext) {
 						// if it's an integral number, just add it as is
@@ -1001,7 +999,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 							}
 						}
 					}
-	
+
 					// because we know it's not a predicate we also know it cannot have
 					// any path references in it
 					// this means that it's value is independent of context
@@ -1009,10 +1007,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					break;
 				}
 			}
-	
+
 			if (!haveResult) {
 				// now construct the return value based on the indexes computed above
-		
+
 				// Is this a (non-predicate) index into the result of a selection? If so,
 				// the semantics are slightly different to
 				// an ordinary array index:
@@ -1029,7 +1027,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				// n=[0,1] -> [1,2,4,5,6]
 				// n=[0,1,2] -> [1,2,3,4,5,6]
 				// n=[1,2] -> [2,3,5]
-		
+
 				// some groups may not be arrays, e.g. [{"a":1}, {"a":2},{"a":[3,4]}].a[n] ->
 				// [1,2,[1,2]]
 				// n=0 -> [1,2,3]
@@ -1038,25 +1036,25 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				if (!isPredicate && sourceArray instanceof SelectorArrayNode) {
 					// ^ when predicates are used on selector results, normal array index
 					// semantics are applied
-		
+
 					SelectorArrayNode sourceArraySel = (SelectorArrayNode) sourceArray;
-		
+
 					// we need to stay in "selector" mode so that subsequent array index
 					// references are also treated specially
 					// e.g. [{"a":1}, {"a":2}}].a[0][0] -> returns [1,2]
 					SelectorArrayNode resultAsSel = new SelectorArrayNode(factory);
 					output = resultAsSel;
-		
+
 					for (JsonNode group : sourceArraySel.getSelectionGroups()) {
 						// System.out.println(" group: "+group);
-		
+
 						// resolve negative indexes (they should start from the end of this
 						// selection group)
 						group = ensureArray(group);
 						List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, group.size());
-		
+
 						for (int index : resolvedIndexes) {
-		
+
 							// System.out.println(" index: "+index);
 							if (group.isArray()) {
 								JsonNode atIndex = group.get(index);
@@ -1074,14 +1072,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 							}
 						}
 					}
-		
+
 				} else {
 					output = factory.arrayNode();
-		
+
 					// resolve negative indexes (they should start from the end of the
 					// source array)
 					List<Integer> resolvedIndexes = resolveIndexes(indexesToReturn, sourceArray.size());
-		
+
 					// otherwise we just select from the array as normal
 					for (int index : resolvedIndexes) {
 						// ignore out-of-bounds indexes
@@ -1106,7 +1104,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1118,7 +1116,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
-		
+
 		inArrayConstructStack.push(true);
 		// System.out.println("========");
 		// for(ParseTree child : ctx.children) {
@@ -1153,12 +1151,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			}
 		}
 		if (!inArrayConstructStack.isEmpty()) {
-		   inArrayConstructStack.pop();
+			inArrayConstructStack.pop();
 		}
 		result = output;
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1177,7 +1175,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1212,15 +1210,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitComp_op(MappingExpressionParser.Comp_opContext ctx) {
 		final String METHOD = "visitComp_op";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0)==null? "null":ctx.expr(0).getText()),
-					(ctx.expr(1) == null ? "null": ctx.expr(1).getText()), ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
+					(ctx.expr(1) == null ? "null" : ctx.expr(1).getText()), ctx.depth() });
 		}
 		JsonNode result = null;
 
 		JsonNode left = visit(ctx.expr(0)); // get value of left subexpression
 		JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
 
-		
 		// in all cases, if both are *no match*, JSONata returns false
 		if (left == null && right == null) {
 			return BooleanNode.FALSE;
@@ -1241,7 +1238,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			} else if ((left != null && left.isNull() == false) && (right == null || right.isNull())) {
 				result = BooleanNode.FALSE;
 			} else if ((left == null || left.isNull()) && (right == null || right.isNull())) {
-            result = BooleanNode.TRUE;
+				result = BooleanNode.TRUE;
 			} else if (left.getNodeType() == right.getNodeType()) {
 				result = (areJsonNodesEqual(left, right) ? BooleanNode.TRUE : BooleanNode.FALSE);
 			} else if (!lIsComparable || !rIsComparable) {
@@ -1257,8 +1254,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			} else if ((left != null && left.isNull() == false) && (right == null || right.isNull())) {
 				result = BooleanNode.TRUE;
 			} else if ((left == null || left.isNull()) && (right == null || right.isNull())) {
-            result = BooleanNode.FALSE;
-         } else if (left.getNodeType() == right.getNodeType()) {
+				result = BooleanNode.FALSE;
+			} else if (left.getNodeType() == right.getNodeType()) {
 				result = (areJsonNodesEqual(left, right) ? BooleanNode.FALSE : BooleanNode.TRUE);
 			} else if (!lIsComparable || !rIsComparable) {
 				// signal expression
@@ -1378,7 +1375,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1387,8 +1384,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitConcat_op(MappingExpressionParser.Concat_opContext ctx) {
 		final String METHOD = "visitConcat_op";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0)==null? "null":ctx.expr(0).getText()),
-					(ctx.expr(1) == null ? "null": ctx.expr(1).getText()), ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
+					(ctx.expr(1) == null ? "null" : ctx.expr(1).getText()), ctx.depth() });
 		}
 		JsonNode result = null;
 
@@ -1422,7 +1419,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1431,10 +1428,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitConditional(MappingExpressionParser.ConditionalContext ctx) {
 		final String METHOD = "visitConditional";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0)==null? "null":ctx.expr(0).getText()),
-					(ctx.expr(1) == null ? "null": ctx.expr(1).getText()),
-					(ctx.expr(2) == null ? "null": ctx.expr(2).getText()),
-					ctx.depth() });
+			LOG.entering(CLASS, METHOD,
+					new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
+							(ctx.expr(1) == null ? "null" : ctx.expr(1).getText()),
+							(ctx.expr(2) == null ? "null" : ctx.expr(2).getText()), ctx.depth() });
 		}
 		JsonNode result = null;
 
@@ -1471,7 +1468,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1480,8 +1477,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitContext_ref(MappingExpressionParser.Context_refContext ctx) {
 		final String METHOD = "visitContext_ref";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(),
-					ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
 		if (ctx.getChildCount() > 0) {
@@ -1503,66 +1499,66 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 							CommonToken token = null;
 							ExprContext expr = null;
 							switch (context.getNodeType()) {
-							case BINARY:
-							case POJO: {
-								break;
-							}
-							case ARRAY: {
-								child0 = FunctionUtils.getArrayConstructorContext(ctx, (ArrayNode) context);
-								expr = new MappingExpressionParser.ArrayContext(ctx);
-								for (int i = 0; i < ctx.children.size(); i++) {
-									expr.children.add(ctx.children.get(i));
+								case BINARY:
+								case POJO: {
+									break;
 								}
-								expr.children.set(0, child0);
-								result = visit(expr);
-								break;
-							}
-							case BOOLEAN: {
-								token = (context.asBoolean()
-										? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, context.asText())
-										: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, context.asText()));
-								TerminalNodeImpl tn = new TerminalNodeImpl(token);
-								BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
-								bc.children.set(0, tn);
-								result = visit(bc);
-								break;
-							}
-							case MISSING:
-							case NULL: {
-								token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NULL, null);
-								TerminalNodeImpl tn = new TerminalNodeImpl(token);
-								NullContext nc = new MappingExpressionParser.NullContext(ctx);
-								nc.children.set(0, tn);
-								result = visit(nc);
-								break;
-							}
-							case NUMBER: {
-								token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER, context.asText());
-								TerminalNodeImpl tn = new TerminalNodeImpl(token);
-								NumberContext nc = new NumberContext(ctx);
-								nc.children.set(0, tn);
-								result = visit(nc);
-								break;
-							}
-							case OBJECT: {
-								child0 = FunctionUtils.getObjectConstructorContext(ctx, (ObjectNode) context);
-								expr = new MappingExpressionParser.PathContext(ctx);
-								for (int i = 0; i < ctx.children.size(); i++) {
-									expr.children.add(ctx.children.get(i));
+								case ARRAY: {
+									child0 = FunctionUtils.getArrayConstructorContext(ctx, (ArrayNode) context);
+									expr = new MappingExpressionParser.ArrayContext(ctx);
+									for (int i = 0; i < ctx.children.size(); i++) {
+										expr.children.add(ctx.children.get(i));
+									}
+									expr.children.set(0, child0);
+									result = visit(expr);
+									break;
 								}
-								expr.children.set(0, child0);
-								result = visit(expr);
-								break;
-							}
-							case STRING:
-							default: {
-								token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, context.asText());
-								TerminalNodeImpl tn = new TerminalNodeImpl(token);
-								StringContext sc = new StringContext(ctx);
-								sc.children.set(0, tn);
-								result = visit(sc);
-								break;
-							}
+								case BOOLEAN: {
+									token = (context.asBoolean()
+											? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, context.asText())
+											: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, context.asText()));
+									TerminalNodeImpl tn = new TerminalNodeImpl(token);
+									BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
+									bc.children.set(0, tn);
+									result = visit(bc);
+									break;
+								}
+								case MISSING:
+								case NULL: {
+									token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NULL, null);
+									TerminalNodeImpl tn = new TerminalNodeImpl(token);
+									NullContext nc = new MappingExpressionParser.NullContext(ctx);
+									nc.children.set(0, tn);
+									result = visit(nc);
+									break;
+								}
+								case NUMBER: {
+									token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER, context.asText());
+									TerminalNodeImpl tn = new TerminalNodeImpl(token);
+									NumberContext nc = new NumberContext(ctx);
+									nc.children.set(0, tn);
+									result = visit(nc);
+									break;
+								}
+								case OBJECT: {
+									child0 = FunctionUtils.getObjectConstructorContext(ctx, (ObjectNode) context);
+									expr = new MappingExpressionParser.PathContext(ctx);
+									for (int i = 0; i < ctx.children.size(); i++) {
+										expr.children.add(ctx.children.get(i));
+									}
+									expr.children.set(0, child0);
+									result = visit(expr);
+									break;
+								}
+								case STRING:
+								default: {
+									token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, context.asText());
+									TerminalNodeImpl tn = new TerminalNodeImpl(token);
+									StringContext sc = new StringContext(ctx);
+									sc.children.set(0, tn);
+									result = visit(sc);
+									break;
+								}
 							} // end switch
 						}
 					} else {
@@ -1575,7 +1571,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1584,8 +1580,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitDescendant(MappingExpressionParser.DescendantContext ctx) {
 		final String METHOD = "visitDescendant";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(),
-					ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
 		ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
@@ -1608,7 +1603,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1617,8 +1612,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitFct_chain(Fct_chainContext ctx) {
 		final String METHOD = "visitFct_chain";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(),
-					ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
 		Object exprObj = ctx.expr(1);
@@ -1649,7 +1643,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1658,8 +1652,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitField_values(MappingExpressionParser.Field_valuesContext ctx) {
 		final String METHOD = "visitField_values";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(),
-					ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
 		ArrayNode resultArray = new ArrayNode(JsonNodeFactory.instance);
@@ -1685,10 +1678,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						}
 					}
 				} else { // isArray
-					for (Iterator<JsonNode> it = ((ArrayNode)elt).iterator();it.hasNext();) {
+					for (Iterator<JsonNode> it = ((ArrayNode) elt).iterator(); it.hasNext();) {
 						JsonNode value = it.next();
 						if (value.isArray()) {
-							value = flatten(value,null);
+							value = flatten(value, null);
 							// remove outer array
 							for (Iterator<JsonNode> it2 = ((ArrayNode) value).iterator(); it2.hasNext();) {
 								valArray.add(it2.next());
@@ -1711,7 +1704,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1720,8 +1713,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitFieldList(MappingExpressionParser.FieldListContext ctx) {
 		final String METHOD = "visitFieldList";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(),
-					ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
 		ObjectNode resultObject = new ObjectNode(JsonNodeFactory.instance);
@@ -1745,7 +1737,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1754,8 +1746,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitFunction_call(MappingExpressionParser.Function_callContext ctx) {
 		final String METHOD = "visitFunction_call";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(),
-					ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
 		String functionName = ctx.VAR_ID().getText();
@@ -1776,7 +1767,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1785,8 +1776,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitFunction_decl(MappingExpressionParser.Function_declContext ctx) {
 		final String METHOD = "visitFunction_decl";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(),
-					ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
 
@@ -1809,7 +1799,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1818,8 +1808,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitFunction_exec(MappingExpressionParser.Function_execContext ctx) {
 		final String METHOD = "visitFunction_exec";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(),
-					ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
 		// "function($l, $w, $h){ $l * $w * $h }(10, 10, 5)"
@@ -1846,7 +1835,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		result = visit(exprListCtx);
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1855,20 +1844,19 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitId(IdContext ctx) {
 		final String METHOD = "visitId";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(),
-					ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
 
 		JsonNode context;
 		if (_environment.isEmptyContext() == false) {
 			context = _environment.peekContext();
-	
+
 			final String id = sanitise(ctx.ID().getText());
 			if (LOG.isLoggable(Level.FINEST)) {
 				LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), id, "(stack: " + context + ")" });
 			}
-	
+
 			if (context == null) {
 				result = null;
 			} else {
@@ -1877,7 +1865,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1888,8 +1876,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitLogand(MappingExpressionParser.LogandContext ctx) {
 		final String METHOD = "visitLogand";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0)==null? "null":ctx.expr(0).getText()),
-					(ctx.expr(1) == null ? "null": ctx.expr(1).getText()), ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
+					(ctx.expr(1) == null ? "null" : ctx.expr(1).getText()), ctx.depth() });
 		}
 		JsonNode result = null;
 
@@ -1902,7 +1890,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1911,8 +1899,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitLogor(MappingExpressionParser.LogorContext ctx) {
 		final String METHOD = "visitLogor";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0)==null? "null":ctx.expr(0).getText()),
-					(ctx.expr(1) == null ? "null": ctx.expr(1).getText()), ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
+					(ctx.expr(1) == null ? "null" : ctx.expr(1).getText()), ctx.depth() });
 		}
 		JsonNode result = null;
 
@@ -1925,7 +1913,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1934,8 +1922,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitMembership(MappingExpressionParser.MembershipContext ctx) {
 		final String METHOD = "visitMembership";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0)==null? "null":ctx.expr(0).getText()),
-					(ctx.expr(1) == null ? "null": ctx.expr(1).getText()), ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
+					(ctx.expr(1) == null ? "null" : ctx.expr(1).getText()), ctx.depth() });
 		}
 		JsonNode result = null;
 
@@ -1943,13 +1931,13 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
 
 		if (left != null && right != null) {
-	
+
 			// If the RHS is a single value, then it is treated as a singleton array.
 			right = ensureArray(right);
-	
+
 			// unwrap left if singleton
 			left = unwrapArray(left);
-	
+
 			result = BooleanNode.FALSE;
 			Iterator<JsonNode> elements = right.elements();
 			while (elements.hasNext()) {
@@ -1959,10 +1947,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					break;
 				}
 			}
-		}	
+		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -1971,8 +1959,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitMuldiv_op(MappingExpressionParser.Muldiv_opContext ctx) {
 		final String METHOD = "visitMuldiv_op";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0)==null? "null":ctx.expr(0).getText()),
-					(ctx.expr(1) == null ? "null": ctx.expr(1).getText()), ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
+					(ctx.expr(1) == null ? "null" : ctx.expr(1).getText()), ctx.depth() });
 		}
 		JsonNode result = null;
 
@@ -1982,17 +1970,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		// in all cases, if either are *no match*, JSONata returns *no match*
 		if (leftNode != null && rightNode != null) {
-	
+
 			if (!leftNode.isNumber() || !rightNode.isNumber()) {
 				throw new EvaluateRuntimeException(ctx.op.getText() + " expects two numeric arguments");
 			}
-	
+
 			// treat both inputs as doubles when performing arithmetic operations
 			double left = leftNode.asDouble();
 			double right = rightNode.asDouble();
-	
+
 			Double dresult = 0.0d;
-	
+
 			if (ctx.op.getType() == MappingExpressionParser.MUL) {
 				dresult = left * right;
 			} else if (ctx.op.getType() == MappingExpressionParser.DIV) {
@@ -2012,7 +2000,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				// first place)
 				throw new EvaluateRuntimeException("Unrecognised token " + ctx.op.getText());
 			}
-	
+
 			if (result == null) {
 				// check for Infinity and Nan
 				if (dresult.isInfinite() || dresult.isNaN()) {
@@ -2028,7 +2016,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2042,7 +2030,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode result = NullNode.getInstance();
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2065,7 +2053,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2086,9 +2074,79 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			// empty object: {}
 			result = object;
 		} else {
-			List<TerminalNode> keyNodes = ctx.fieldList().STRING();
-			List<ExprContext> valueNodes = ctx.fieldList().expr();
-			if (keyNodes.size() != valueNodes.size()) {
+			// List<TerminalNode> keyNodes = new ArrayList<TerminalNode>(); //
+			// ctx.fieldList().STRING();
+			List<String> keys = new ArrayList<String>();
+			List<ExprContext> valueNodes = new ArrayList<ExprContext>(); // ctx.fieldList().expr();
+			// run through the ctx.fieldList() processing pairs of key/value separated by
+			// colon
+			FieldListContext fieldList = ctx.fieldList();
+			// pattern is expr or String, colon, expr or String, comma
+			ParseTree keyField;
+			ParseTree colon;
+			ParseTree valueField;
+			ParseTree comma;
+			for (int f = 0; f < fieldList.getChildCount(); f++) {
+				switch (f % 4) {
+					case 0: {
+						keyField = fieldList.getChild(f);
+						// determine if this is already a string or attempt to evaluate to a String
+						if (keyField instanceof TerminalNode) {
+							keys.add(((TerminalNode) keyField).getText());
+						} else {
+							// attempt to resolve to a String
+							JsonNode key = visit(keyField);
+							if (key == null) {
+								throw new EvaluateRuntimeException("Key in object structure must evaluate to a string; got: undefined");
+							}
+							if (key.isNull()) {
+								throw new EvaluateRuntimeException("Key in object structure must evaluate to a string; got: null");
+							}
+							if (key.isTextual()) {
+								keys.add(key.asText());
+							} else {
+								throw new EvaluateRuntimeException("Key in object structure must evaluate to a string; got: "+key.toPrettyString());
+							}
+						}
+						break;
+					}
+					case 1: {
+						colon = fieldList.getChild(f);
+						if (colon instanceof TerminalNode) {
+							if (":".equals(colon.getText())) {
+								break;
+							}
+						}
+						throw new EvaluateRuntimeException("Expected \":\" got \"" + colon.getText() + "\"");
+					}
+					case 2: {
+						valueField = fieldList.getChild(f);
+						if (valueField instanceof ExprContext) {
+							valueNodes.add((ExprContext) valueField);
+						} else if (valueField instanceof TerminalNode) {
+							valueNodes.add((ExprContext) valueField);
+						} else if (valueField instanceof Function_declContext) {
+							valueNodes.add((ExprContext) valueField);
+						} else if (valueField instanceof Var_recallContext) {
+							valueNodes.add((ExprContext) valueField);
+						} else {
+							// ignore this entirely from our object
+							keys.remove(keys.size() - 1);
+						}
+						break;
+					}
+					case 3: {
+						comma = fieldList.getChild(f);
+						if (comma instanceof TerminalNode) {
+							if (",".equals(comma.getText())) {
+								break;
+							}
+						}
+						throw new EvaluateRuntimeException("Expected \"}\" got \"" + comma.getText() + "\"");
+					}
+				}
+			}
+			if (keys.size() != valueNodes.size()) {
 				// this shouldn't have parsed in the first place
 				throw new EvaluateRuntimeException("Object key/value count mismatch!");
 			}
@@ -2096,8 +2154,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			JsonNode value = null;
 			String fctName = null;
 			String key = "";
-			for (int i = 0; i < keyNodes.size(); i++) {
-				key = keyNodes.get(i).getText();
+			for (int i = 0; i < /* keyNodes */keys.size(); i++) {
+				key = /* keyNodes */keys.get(i); // .getText();
 				key = sanitise(key);
 				// try to get the value for the corresponding expression
 				valueNode = valueNodes.get(i);
@@ -2143,7 +2201,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2160,16 +2218,16 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		FrameEnvironment oldEnvironment = setNewEnvironment();
 		List<ExprContext> expressions = ctx.expr();
 		try {
-		for (int i = 0; i < expressions.size(); i++) {
-			result = visit(ctx.expr(i));
-		}
+			for (int i = 0; i < expressions.size(); i++) {
+				result = visit(ctx.expr(i));
+			}
 		} catch (Exception e) {
 			_environment = oldEnvironment;
 			throw e;
 		}
 
 		// we need to drop out of selection mode if the params wrap a selection
-		// statement this is so that e.g. ([{"a":1}, {"a":2}].a)[0] returns 1 
+		// statement this is so that e.g. ([{"a":1}, {"a":2}].a)[0] returns 1
 		// (not [1,2] as would be returned without the parenthesis)
 		if (result instanceof SelectorArrayNode) {
 			ArrayNode newResult = factory.arrayNode();
@@ -2180,7 +2238,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		resetOldEnvironment(oldEnvironment);
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2189,8 +2247,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitPath(PathContext ctx) {
 		final String METHOD = "visitPath";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0)==null? "null":ctx.expr(0).getText()),
-					(ctx.expr(1) == null ? "null": ctx.expr(1).getText()), ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
+					(ctx.expr(1) == null ? "null" : ctx.expr(1).getText()), ctx.depth() });
 		}
 		JsonNode result = null;
 
@@ -2216,18 +2274,18 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		if (lhs != null && lhs.isNull() == false) {
 			// reject path entries that are numbers or values
 			switch (lhs.getNodeType()) {
-			case NUMBER: {
-				// leaving number as is since * can reference array values too
-				// lhs = factory.textNode(lhs.asText());
-				break;
-			}
-			case BOOLEAN:
-			case NULL: {
-				throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY, lhs.toString()));
-			}
-			default: {
-				break;
-			}
+				case NUMBER: {
+					// leaving number as is since * can reference array values too
+					// lhs = factory.textNode(lhs.asText());
+					break;
+				}
+				case BOOLEAN:
+				case NULL: {
+					throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY, lhs.toString()));
+				}
+				default: {
+					break;
+				}
 			}
 			if (rhsCtx == null) {
 				result = lhs;
@@ -2235,7 +2293,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				JsonNode rhs = null;
 				// treat a StringContext as an ID Context
 				if (rhsCtx instanceof MappingExpressionParser.StringContext) {
-					CommonToken token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.ID, visit(rhsCtx).asText());
+					CommonToken token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.ID,
+							visit(rhsCtx).asText());
 					TerminalNode node = new TerminalNodeImpl(token);
 					IdContext idCtx = new MappingExpressionParser.IdContext(rhsCtx);
 					idCtx.addChild(node);
@@ -2275,7 +2334,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 								if (cell.isArray() == false || "visitArray_constructor".equals(lastVisited)) {
 									((ArrayNode) result).add(cell);
 								} else {
-									for (JsonNode elt:cell) {
+									for (JsonNode elt : cell) {
 										((ArrayNode) result).add(elt);
 									}
 								}
@@ -2288,7 +2347,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 							firstStepCons = false;
 						} else {
 							if (keepArray) {
-							result = rhs;
+								result = rhs;
 							} else {
 								if (rhs.size() == 1) {
 									result = rhs.get(0);
@@ -2305,7 +2364,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2325,10 +2384,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		Deque<JsonNode> tmpStack = new LinkedList<JsonNode>();
 		JsonNode tmpNode = null;
 		for (; stackSize > 1; stackSize--) {
-		   tmpNode = _environment.popContext();
-		   if (tmpNode != null) {
-		      tmpStack.push(tmpNode);
-		   }
+			tmpNode = _environment.popContext();
+			if (tmpNode != null) {
+				tmpStack.push(tmpNode);
+			}
 		}
 		try {
 //		if (lhsCtx == null) {
@@ -2345,7 +2404,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2354,8 +2413,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	public JsonNode visitSeq(SeqContext ctx) {
 		final String METHOD = "visitSeq";
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0)==null? "null":ctx.expr(0).getText()),
-					(ctx.expr(1) == null ? "null": ctx.expr(1).getText()), ctx.depth() });
+			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
+					(ctx.expr(1) == null ? "null" : ctx.expr(1).getText()), ctx.depth() });
 		}
 		JsonNode result = null;
 		JsonNode start = visit(ctx.expr(0));
@@ -2379,13 +2438,13 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				throw new EvaluateRuntimeException(ERR_TOO_BIG + count + ".");
 			}
 			for (int i = start.asInt(); i <= end.asInt(); i++) {
-				((ArrayNode)result).add(new LongNode(i)); // use longs to align with the output of
+				((ArrayNode) result).add(new LongNode(i)); // use longs to align with the output of
 				// visitNumber
 			}
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2406,7 +2465,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		result = TextNode.valueOf(val);
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2435,7 +2494,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		keepArray = false;
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2452,7 +2511,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		// test for laststep array construction child[n-1] instanceof
 		// Array_constructorContext
-		ParseTree lastStep = tree.getChild(treeSize-1);
+		ParseTree lastStep = tree.getChild(treeSize - 1);
 		if (lastStep instanceof Array_constructorContext) {
 			lastStepCons = true;
 		}
@@ -2491,13 +2550,13 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				result = new DoubleNode(-operand.asDouble());
 			} else if (operand.isIntegralNumber()) {
 				if (operand.asLong() == Long.MAX_VALUE) {
-					result = new LongNode(-operand.asLong()-1L);
+					result = new LongNode(-operand.asLong() - 1L);
 				} else {
 					result = new LongNode(-operand.asLong());
 				}
 			} else if (operand.isLong()) {
 				if (operand.asLong() == Long.MAX_VALUE) {
-					result = new LongNode(-operand.asLong()-1L);
+					result = new LongNode(-operand.asLong() - 1L);
 				} else {
 					result = new LongNode(-operand.asLong());
 				}
@@ -2511,7 +2570,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2552,7 +2611,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			}
 
 			result = visit(expr);
-			setVariable(varName,result);
+			setVariable(varName, result);
 		} else if (expr instanceof Fct_chainContext) {
 			/**
 			 * 
@@ -2592,7 +2651,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}
@@ -2607,7 +2666,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 		JsonNode result = getVariable(varName);
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
-			LOG.exiting(CLASS, METHOD, (result == null ? "null": result.toString()));
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
 		return result;
 	}

@@ -490,12 +490,12 @@ public class FunctionUtils {
 		TerminalNode tn = null;
 		for (Iterator<Entry<String, JsonNode>> it = object.fields(); it.hasNext();) {
 			Entry<String, JsonNode> field = it.next();
+			count++;
 			if (count > 1) {
 				token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__2, ",");
 				tn = new TerminalNodeImpl(token);
 				flc.addAnyChild(tn);
 			}
-			count++;
 			token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, field.getKey());
 			tn = new TerminalNodeImpl(token);
 			flc.addAnyChild(tn);
