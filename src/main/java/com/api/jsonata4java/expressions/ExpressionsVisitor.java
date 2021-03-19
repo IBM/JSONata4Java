@@ -2264,6 +2264,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 						object.set(key, value);
 					}
 				}
+				_environment.popContext();
 			}
 
 			result = object;
