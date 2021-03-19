@@ -62,6 +62,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.IdContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ObjectContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Object_constructorContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.PathContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Root_pathContext;
@@ -1722,9 +1723,21 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			if (elt != null && elt.isObject() != false) {
 				String key = "";
 				JsonNode value = null;
+				ParseTree keyChild;
+				JsonNode keyNode;
 				for (int i = 0; i < ctx.getChildCount(); i += 4) {
 					// expect name ':' expr ,
-					key = sanitise(((TerminalNodeImpl) ctx.getChild(i)).getText());
+					keyChild = ctx.getChild(i);
+					if (keyChild instanceof TerminalNode) {
+						key = sanitise(((TerminalNodeImpl) ctx.getChild(i)).getText());
+					} else {
+						keyNode = visit(keyChild);
+						if (keyNode != null) {
+							key = sanitise(keyNode.asText());
+						} else {
+							throw new EvaluateRuntimeException("key resolved to null");
+						}
+					}
 					value = visit(ctx.getChild(i + 2));
 					if (value != null) {
 						resultObject.set(key, value);
@@ -2059,6 +2072,211 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 	}
 
 	@Override
+	public JsonNode visitExprList(MappingExpressionParser.ExprListContext ctx) {
+		return visitChildren(ctx);
+	}
+
+	@Override
+	public JsonNode visitObject(ObjectContext ctx) {
+		final String METHOD = "visitObject";
+		if (LOG.isLoggable(Level.FINEST)) {
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
+		}
+		JsonNode result = null;
+
+		ObjectNode object = factory.objectNode();
+		if (ctx.fieldList() == null) {
+			// empty object: {}
+			result = object;
+		} else {
+			JsonNode context = null;
+			// check to see if there is a referenced variable use that as the context
+			ParseTree firstChild = ctx.getChild(0);
+			if (firstChild instanceof Var_recallContext) {
+				context = visit(firstChild);
+			} else if (_environment.isEmptyContext() == false) {
+				context = _environment.peekContext();
+				final String id = sanitise(ctx.getChild(0).getText());
+				if (LOG.isLoggable(Level.FINEST)) {
+					LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), id, "(stack: " + context + ")" });
+				}
+				context = lookup(context, id);
+			}
+			if (context != null && !context.isNull()) {
+				_environment.pushContext(context);
+				FieldListContext fieldList = ctx.fieldList();
+				List<String> keys = new ArrayList<String>();
+				// run through the ctx.fieldList() processing pairs of key/value separated by
+				// colon
+				// pattern is expr or String, colon, expr or String, comma
+				ParseTree keyField;
+				ParseTree colon;
+				ParseTree valueField;
+				ParseTree comma;
+				ArrayNode keyArray;
+				JsonNode keyNode;
+				ArrayNode valueArray = factory.arrayNode();
+				int keysProcessed = 1;
+				for (int f = 0; f < fieldList.getChildCount(); f++) {
+					switch (f % 4) {
+						case 0: {
+							keyField = fieldList.getChild(f);
+							// determine if this is already a string or attempt to evaluate to a String
+							if (keyField instanceof TerminalNode) {
+								keys.add(((TerminalNode) keyField).getText());
+							} else {
+								// attempt to resolve to a String
+								JsonNode key = visit(keyField);
+								if (key == null) {
+									throw new EvaluateRuntimeException(
+											"Key in object structure must evaluate to a string; got: undefined");
+								}
+								if (key.isNull()) {
+									throw new EvaluateRuntimeException(
+											"Key in object structure must evaluate to a string; got: null");
+								}
+								if (key.isTextual()) {
+									keys.add(key.asText());
+								}
+								if (key.isArray()) {
+									// add each key to the keys in the order they are encountered
+									keyArray = (ArrayNode) key;
+									keysProcessed = keyArray.size();
+									for (int j = 0; j < keyArray.size(); j++) {
+										keyNode = keyArray.get(j);
+										if (keyNode == null) {
+											throw new EvaluateRuntimeException(
+													"Key in object structure must evaluate to a string; got: undefined");
+										}
+										if (keyNode.isNull()) {
+											throw new EvaluateRuntimeException(
+													"Key in object structure must evaluate to a string; got: null");
+										}
+										if (keyNode.isTextual()) {
+											keys.add(keyNode.asText());
+										} else {
+											throw new EvaluateRuntimeException(
+													"Key in object structure must evaluate to a string; got: "
+															+ key.toPrettyString());
+										}
+									}
+								} else {
+									throw new EvaluateRuntimeException(
+											"Key in object structure must evaluate to a string; got: " + key.toPrettyString());
+								}
+							}
+							break;
+						}
+						case 1: {
+							colon = fieldList.getChild(f);
+							if (colon instanceof TerminalNode) {
+								if (":".equals(colon.getText())) {
+									break;
+								}
+							}
+							throw new EvaluateRuntimeException("Expected \":\" got \"" + colon.getText() + "\"");
+						}
+						case 2: {
+							valueField = fieldList.getChild(f);
+							if (keysProcessed > 1) {
+								// process the valueField to put its results in the valueArray
+								JsonNode value = visit(valueField);
+								ArrayNode values = (ArrayNode) value;
+								if (values.size() == keysProcessed) {
+									for (int k = 0; k < keysProcessed; k++) {
+										valueArray.add(values.get(k));
+									}
+								} else {
+									// Not sure how to match up what is missing
+									throw new EvaluateRuntimeException("Object key/value count mismatch!");
+								}
+							} else if ((valueField instanceof ExprContext) || (valueField instanceof TerminalNode)
+									|| (valueField instanceof Function_declContext)
+									|| (valueField instanceof Var_recallContext)) {
+								// process the valueField
+								JsonNode value = null;
+								String fctName = null;
+								if (valueField instanceof Function_declContext) {
+									visit(valueField);
+									fctName = ((Function_declContext) valueField).FUNCTIONID().getText();
+									if (getDeclaredFunction(fctName) != null) {
+										value = new TextNode("");
+									}
+									valueArray.add(value);
+								} else if (valueField instanceof Var_recallContext) {
+									value = visit(valueField);
+									if (value == null) {
+										String varName = ((Var_recallContext) valueField).VAR_ID().getText();
+										DeclaredFunction declFct = getDeclaredFunction(varName);
+										if (declFct != null) {
+											value = new TextNode("");
+										} else {
+											Function fct = getJsonataFunction(varName);
+											if (fct != null) {
+												value = new TextNode("");
+											} else {
+												value = null;
+											}
+										}
+									}
+									valueArray.add(value);
+								} else {
+									value = visit(valueField);
+									// check for double infinity
+									if (value != null && value.isDouble()) {
+										Double d = value.asDouble();
+										if (Double.isNaN(d) || Double.isInfinite(d)) {
+											throw new EvaluateRuntimeException("Number out of range: null");
+										}
+									}
+									valueArray.add(value);
+								}
+							} else {
+								// ignore this entirely from our object
+								for (int k = 1; k <= keysProcessed; k++) {
+									keys.remove(keys.size() - 1);
+								}
+							}
+							keysProcessed = 1;
+							break;
+						}
+						case 3: {
+							comma = fieldList.getChild(f);
+							if (comma instanceof TerminalNode) {
+								if (",".equals(comma.getText())) {
+									break;
+								}
+							}
+							throw new EvaluateRuntimeException("Expected \"}\" got \"" + comma.getText() + "\"");
+						}
+					}
+				}
+				if (keys.size() != valueArray.size()) {
+					// this shouldn't have parsed in the first place
+					throw new EvaluateRuntimeException("Object key/value count mismatch!");
+				}
+				String key = "";
+				for (int i = 0; i < keys.size(); i++) {
+					key = keys.get(i);
+					key = sanitise(key);
+					JsonNode value = valueArray.get(i);
+					if (value != null) {
+						object.set(key, value);
+					}
+				}
+			}
+
+			result = object;
+		}
+
+		lastVisited = METHOD;
+		if (LOG.isLoggable(Level.FINEST)) {
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
+		}
+		return result;
+	}
+
+	@Override
 	public JsonNode visitObject_constructor(Object_constructorContext ctx) {
 		final String METHOD = "visitObject_constructor";
 		if (LOG.isLoggable(Level.FINEST)) {
@@ -2097,15 +2315,18 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 							// attempt to resolve to a String
 							JsonNode key = visit(keyField);
 							if (key == null) {
-								throw new EvaluateRuntimeException("Key in object structure must evaluate to a string; got: undefined");
+								throw new EvaluateRuntimeException(
+										"Key in object structure must evaluate to a string; got: undefined");
 							}
 							if (key.isNull()) {
-								throw new EvaluateRuntimeException("Key in object structure must evaluate to a string; got: null");
+								throw new EvaluateRuntimeException(
+										"Key in object structure must evaluate to a string; got: null");
 							}
 							if (key.isTextual()) {
 								keys.add(key.asText());
 							} else {
-								throw new EvaluateRuntimeException("Key in object structure must evaluate to a string; got: "+key.toPrettyString());
+								throw new EvaluateRuntimeException(
+										"Key in object structure must evaluate to a string; got: " + key.toPrettyString());
 							}
 						}
 						break;

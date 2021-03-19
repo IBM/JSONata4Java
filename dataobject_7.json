@@ -1,0 +1,18 @@
+{
+  "result": [
+    {
+      "title" : "ACT-A",
+      "details" : {
+        "description" : "it is act A description",
+        "date" : "24-02-2021"
+      }
+    },
+    {
+      "title" : "ACT-B",
+      "details" : {
+        "description" : "it is act B description",
+        "date" : "24-02-2021"
+      }
+    }
+  ]
+}
