@@ -2094,6 +2094,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			ParseTree firstChild = ctx.getChild(0);
 			if (firstChild instanceof Var_recallContext) {
 				context = visit(firstChild);
+				//special case for binding
+				String key = firstChild.getText().substring(1);
+				context = lookup(context, key);
 			} else if (_environment.isEmptyContext() == false) {
 				context = _environment.peekContext();
 				final String id = sanitise(ctx.getChild(0).getText());
@@ -2293,6 +2296,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			// empty object: {}
 			result = object;
 		} else {
+			JsonNode context = null;
+			// check to see if there is a referenced variable use that as the context
+			ParseTree firstChild = ctx.getChild(0);
+			if (firstChild instanceof Var_recallContext) {
+				context = visit(firstChild);
+			} else if (_environment.isEmptyContext() == false) {
+				context = _environment.peekContext();
+			}
 			// List<TerminalNode> keyNodes = new ArrayList<TerminalNode>(); //
 			// ctx.fieldList().STRING();
 			List<String> keys = new ArrayList<String>();
@@ -2417,7 +2428,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 					object.set(key, value);
 				}
 			}
-
 			result = object;
 		}
 
