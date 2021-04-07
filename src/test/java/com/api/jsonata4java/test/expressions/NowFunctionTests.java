@@ -33,8 +33,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
-import com.api.jsonata4java.expressions.utils.Constants;
-
 /**
  * For simplicity, these tests don't rely on $state/$event/$instance access; instead
  * providing the "input" inlined with the expression itself (e.g. ["a", "b"][0]=="a").
@@ -55,9 +53,6 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class NowFunctionTests {
 
-   private static String ERR_ARG1BADTYPE = String
-            .format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_NOW);
-
 	@Parameter(0)
 	public String expression;
 	
@@ -70,15 +65,7 @@ public class NowFunctionTests {
 	@Parameters(name = "{index}: {0} -> {1} ({2})")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
-            {"$now({})",     null, ERR_ARG1BADTYPE}, //
-            {"$now([])",     null, ERR_ARG1BADTYPE}, //
-            {"$now(1)",      null, ERR_ARG1BADTYPE}, //
-            {"$now(-1)",     null, ERR_ARG1BADTYPE}, //
-            {"$now(10/3.0)", null, ERR_ARG1BADTYPE}, //
-            {"$now('1')",    null, ERR_ARG1BADTYPE}, //
-            {"$now(a.b.c)",  null, ERR_ARG1BADTYPE}, //
-			{ "$now(null)", null, ERR_ARG1BADTYPE } //
-            // TODO: {"$now(\"[Y0000]\")", "2019", null}
+            {"$now(\"[Y0000]\")", "\"2021\"", null}
             // TODO: Need to work out how to test the function since we cannot predict the string that is returned
             // {"$now()",    null, null}
 		});
