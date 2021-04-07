@@ -29,6 +29,7 @@ import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
+import com.api.jsonata4java.expressions.utils.DateTimeUtils;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -72,9 +73,14 @@ public class ToMillisFunction extends FunctionBase implements Function {
 		}
 
 		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
+		if (argCount >= 1 && argCount <= 2) {
 			if (!useContext) {
 				argTimestamp = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+			}
+
+			JsonNode picture = JsonNodeFactory.instance.nullNode();
+			if (argCount == 2) {
+				picture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
 			}
 			// if arg is an array, return its length. Any other type of
 			// input returns 1.
@@ -90,8 +96,17 @@ public class ToMillisFunction extends FunctionBase implements Function {
 					 * DateTimeParseException when attempting to parse these strings. We need to use
 					 * the java.time.OffsetDateTime class instead.
 					 */
-					Long millis = OffsetDateTime.parse(argTimestamp.asText()).toInstant().toEpochMilli();
-					result = new LongNode(millis);
+					Long millis;
+					if (picture != null && !picture.isNull()) {
+						millis = DateTimeUtils.parseDateTime(argTimestamp.asText(), picture.asText());
+					} else {
+						millis = OffsetDateTime.parse(argTimestamp.asText()).toInstant().toEpochMilli();
+					}
+					if (millis == null) {
+						result = null;
+					} else {
+						result = new LongNode(millis);
+					}
 				} catch (DateTimeParseException e) {
 					/*
 					 * The string argument does not contain a valid ISO 8601 format datetime string.
@@ -107,7 +122,7 @@ public class ToMillisFunction extends FunctionBase implements Function {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+			throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
 		}
 
 		return result;

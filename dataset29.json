@@ -1,0 +1,39 @@
+{
+  "data": {
+    "type": "Horror",
+    "title": "ABCD",
+    "cast": [
+      {
+        "fullName": "SOMENAME",
+        "role" : "Hero",
+        "birthDetails": {
+          "address": {},
+          "date": "1990-02-14",
+          "country": "ES"
+        }
+      },
+      {
+        "fullName": "SOMENAME",
+        "role" : "Heroine",
+        "birthDetails": {
+          "address": {},
+          "date": "1993-02-14",
+          "country": "ES"
+        }
+      },
+      {
+        "fullName": "SOMENAME",
+        "role" : "Director",
+        "birthDetails": {
+          "address": {
+            "stree1" : "234B, LHS",
+            "street2" : "knh street",
+            "pincode" : "JH15 7IY"
+          },
+          "date": "1990-02-14",
+          "country": "ES"
+        }
+      }
+    ]
+  }
+}

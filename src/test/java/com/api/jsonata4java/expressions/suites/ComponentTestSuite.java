@@ -66,6 +66,7 @@ import com.api.jsonata4java.test.expressions.SubstringAfterFunctionTests;
 import com.api.jsonata4java.test.expressions.SubstringBeforeFunctionTests;
 import com.api.jsonata4java.test.expressions.SubstringFunctionTests;
 import com.api.jsonata4java.test.expressions.SumFunctionTests;
+import com.api.jsonata4java.test.expressions.TestBindingReference;
 import com.api.jsonata4java.test.expressions.ToMillisFunctionTests;
 import com.api.jsonata4java.test.expressions.TrimFunctionTests;
 import com.api.jsonata4java.test.expressions.UnpackFunctionTests;
@@ -123,7 +124,8 @@ import com.api.jsonata4java.text.expressions.utils.JsonMergeUtilsTest;
 	ToMillisFunctionTests.class, //
 	TrimFunctionTests.class, //
 	UnpackFunctionTests.class, //
-	UppercaseFunctionTests.class //
+	UppercaseFunctionTests.class, //
+	TestBindingReference.class //
 })
 
 public class ComponentTestSuite {

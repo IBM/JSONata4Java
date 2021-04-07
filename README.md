@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>1.4.9</version>
+  <version>1.5.2</version>
 </dependency>
 ```
 
@@ -34,8 +34,8 @@ you can right click on the pom.xml file and select **Run as... / Maven build...*
 ![Launcher Image](images/Launcher.png)
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two:
-* **JSONata4Java-1.4.9-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-1.4.9.jar** (only the JSONata4Java code)
+* **JSONata4Java-1.5.2-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-1.5.2.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
@@ -157,10 +157,5 @@ From: https://docs.jsonata.org/string-functions
 From: https://docs.jsonata.org/numeric-functions we did not implement:
 * $formatInteger()
 * $parseInteger()
-
-From: https://docs.jsonata.org/date-time
-    $fromMillis() only accepts a number, not the format picture, nor timezone
-    $now() does not accept the picture string (e.g., $now("[Y0000]") reports an arg1 error
-
 
 

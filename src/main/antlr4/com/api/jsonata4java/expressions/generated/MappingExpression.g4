@@ -71,7 +71,7 @@ expr:
  | 'null'                                                 # null
  ;
 
-fieldList : STRING ':' expr (',' STRING ':' expr)*;
+fieldList : (STRING | expr) ':' expr (',' (STRING | expr) ':' expr)*;
 exprList : expr (',' expr)* ;
 varList : '('  (VAR_ID (',' VAR_ID)*)* ')' ;
 exprValues : '(' exprList ')' ((',' exprOrSeq)* ')')?;
