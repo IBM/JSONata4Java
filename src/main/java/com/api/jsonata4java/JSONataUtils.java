@@ -41,7 +41,8 @@ import java.nio.file.DirectoryIteratorException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.rmi.dgc.VMID;
+//import java.rmi.dgc.VMID;
+import java.util.UUID;
 import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -87,7 +88,7 @@ public class JSONataUtils implements Serializable {
 	static {
 		try {
 			SEED_SECURE_RANDOM = SecureRandom.getInstance("SHA1PRNG");
-			SEED_SECURE_RANDOM.setSeed(new VMID().toString().getBytes());
+			SEED_SECURE_RANDOM.setSeed(UUID.randomUUID().toString().getBytes());
 		} catch (NoSuchAlgorithmException nsae) {
 			System.out.println("Unable to retrieve algorithm SHA1PRNG for unique id generation.");
 		}
