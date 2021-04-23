@@ -261,6 +261,7 @@ public class DateTimeUtils {
     }
 
     private static class Format {
+        @SuppressWarnings("unused")
         public String type = "integer";
         public formats primary = formats.DECIMAL;
         public tcase case_type = tcase.LOWER;
@@ -362,7 +363,8 @@ public class DateTimeUtils {
 
     private static int[] decimalGroups = {0x30, 0x0660, 0x06F0, 0x07C0, 0x0966, 0x09E6, 0x0A66, 0x0AE6, 0x0B66, 0x0BE6, 0x0C66, 0x0CE6, 0x0D66, 0x0DE6, 0x0E50, 0x0ED0, 0x0F20, 0x1040, 0x1090, 0x17E0, 0x1810, 0x1946, 0x19D0, 0x1A80, 0x1A90, 0x1B50, 0x1BB0, 0x1C40, 0x1C50, 0xA620, 0xA8D0, 0xA900, 0xA9D0, 0xA9F0, 0xAA50, 0xABF0, 0xFF10};
 
-    private static Format analyseIntegerPicture(String picture) {
+    @SuppressWarnings("unused")
+	private static Format analyseIntegerPicture(String picture) {
         Format format = new Format();
         String primaryFormat, formatModifier;
         int semicolon = picture.lastIndexOf(";");
@@ -506,13 +508,14 @@ public class DateTimeUtils {
     }
 
     private static class PictureFormat {
-        String type;
+        @SuppressWarnings("unused")
+		String type;
         Vector<SpecPart> parts = new Vector<>();
 
         public PictureFormat(String type) {
             this.type = type;
         }
-
+        
         public void addLiteral(String picture, int start, int end) {
             if (end > start) {
                 String literal = picture.substring(start, end);

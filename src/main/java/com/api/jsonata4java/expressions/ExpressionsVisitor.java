@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -2109,14 +2111,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			}
 			if (context != null && !context.isNull()) {
 				if (context.isArray()) {
+					final Map<String, ArrayNode> grouping = new LinkedHashMap<>();
 					for (JsonNode element : context) {
 						_environment.pushContext(element);
 						final JsonNode fieldList = visit(ctx.fieldList());
-						if (fieldList != null && fieldList.isObject()) {
-							object.setAll((ObjectNode) fieldList);
-						}
+						fieldList.fields().forEachRemaining(e -> grouping.computeIfAbsent(e.getKey(), ignore -> factory.arrayNode()).add(e.getValue()));
 						_environment.popContext();
 					}
+					grouping.forEach((k, v) -> object.set(k, unwrapArray(v)));
 				} else {
 					_environment.pushContext(context);
 					final JsonNode fieldList = visit(ctx.fieldList());

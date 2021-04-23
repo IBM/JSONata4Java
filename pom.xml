@@ -27,7 +27,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.jsonata4java</groupId>
 	<artifactId>JSONata4Java</artifactId>
-	<version>1.5.3</version>
+	<version>1.5.4</version>
 	<name>JSONata4Java</name>
 	<description>Port of jsonata.js to Java to enable rules for JSON content</description>
 	<url>https://github.com/IBM/JSONata4Java</url>
@@ -214,10 +214,14 @@
 							<goal>wget</goal>
 						</goals>
 						<configuration>
-							<url>https://github.com/jsonata-js/jsonata/archive/v1.8.3.zip</url>
+							<url>https://github.com/jsonata-js/jsonata/archive/v1.8.4.zip</url>
 							<unpack>true</unpack>
 							<outputDirectory>${project.build.directory}/jsonata</outputDirectory>
-							<md5>3db67b7aec88d9b542d42e88547a1e26</md5>
+							<md5>c8f057d10e659c27a5aa79f11d961947</md5> 
+							<!--
+							<url>https://github.com/jsonata-js/jsonata/archive/v1.8.3.zip</url> 
+							<md5>3db67b7aec88d9b542d42e88547a1e26</md5>  
+							-->
 						</configuration>
 					</execution>
 				</executions>

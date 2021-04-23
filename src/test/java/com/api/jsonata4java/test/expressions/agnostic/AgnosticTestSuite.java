@@ -123,8 +123,14 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 		// due to unparsable use of 'in' in the tests
 		SKIP_CASES("inclusion-operator", "case004", "case005");
 		// issue #43 object construction
-		SKIP_CASES("object-constructor", "case008", "case009", "case010", "case011", "case012", "case013", "case014",
-				"case015", "case016", "case017", "case018", "case019", "case020", "case022", "case025");
+		SKIP_CASES("object-constructor", /* "case008", "case009", "case010", */ 
+				"case011", 
+				/* "case012", */
+				"case013", 
+				/* "case014", "case015", "case016", */
+				"case017", 
+				/* "case018", "case019", "case020", */
+				"case022", "case025");
 		SKIP_CASES("flattening", "case040", "case041");
 		// issue #48 @ references
 		SKIP_CASES("joins", "employee-map-reduce-11");
@@ -194,7 +200,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 	}
 
 	private static final boolean SHOW_IMPORT_DETAILS = false; // true to see datasets, groups, etc.
-	private static final String SUITE_DIR = "./target/jsonata/jsonata-1.8.3/test/test-suite";
+	private static final String SUITE_DIR = "./target/jsonata/jsonata-1.8.4/test/test-suite"; // "./target/jsonata/jsonata-1.8.3/test/test-suite";
 	private static final String DATASETS_DIR = SUITE_DIR + "/datasets";
 	private static final String GROUPS_DIR = SUITE_DIR + "/groups";
 
