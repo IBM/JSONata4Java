@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.8
+// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.9.2
 package com.api.jsonata4java.expressions.path.generated;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -39,14 +39,4 @@ public interface PathExpressionParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArray_index(PathExpressionParser.Array_indexContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link PathExpressionParser#function_path}.
-	 * @param ctx the parse tree
-	 */
-	void enterFunction_path(PathExpressionParser.Function_pathContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link PathExpressionParser#function_path}.
-	 * @param ctx the parse tree
-	 */
-	void exitFunction_path(PathExpressionParser.Function_pathContext ctx);
 }

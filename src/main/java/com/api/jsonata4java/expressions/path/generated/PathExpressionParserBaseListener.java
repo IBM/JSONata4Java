@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.8
+// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.9.2
 package com.api.jsonata4java.expressions.path.generated;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -47,18 +47,6 @@ public class PathExpressionParserBaseListener implements PathExpressionParserLis
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArray_index(PathExpressionParser.Array_indexContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFunction_path(PathExpressionParser.Function_pathContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFunction_path(PathExpressionParser.Function_pathContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

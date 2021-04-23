@@ -21,7 +21,7 @@
  */
 
 /* Antlr grammar defining the mapping expression language */
-
+ 
 grammar MappingExpression;
 
 //options {

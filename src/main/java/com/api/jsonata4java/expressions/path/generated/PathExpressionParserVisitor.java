@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.8
+// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.9.2
 package com.api.jsonata4java.expressions.path.generated;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -29,10 +29,4 @@ public interface PathExpressionParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArray_index(PathExpressionParser.Array_indexContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link PathExpressionParser#function_path}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunction_path(PathExpressionParser.Function_pathContext ctx);
 }

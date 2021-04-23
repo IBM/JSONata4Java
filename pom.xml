@@ -27,7 +27,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.jsonata4java</groupId>
 	<artifactId>JSONata4Java</artifactId>
-	<version>1.5.2</version>
+	<version>1.5.3</version>
 	<name>JSONata4Java</name>
 	<description>Port of jsonata.js to Java to enable rules for JSON content</description>
 	<url>https://github.com/IBM/JSONata4Java</url>
@@ -246,7 +246,7 @@
 			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>4.8-1</version>
+				<version>4.9.2</version>
 				<configuration>
 					<sourceDirectory>src/main/antlr4</sourceDirectory>
 					<outputDirectory>src/main/java</outputDirectory>

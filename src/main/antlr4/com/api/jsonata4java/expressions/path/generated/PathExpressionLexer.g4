@@ -19,7 +19,7 @@
  * limitations under the License.
  *
  */
-
+ 
 /* Grammar defining the subset of JSONata we support on the LHS of mapping expressions */
 
 lexer grammar PathExpressionLexer;

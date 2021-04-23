@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.8
+// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.9.2
 package com.api.jsonata4java.expressions.generated;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 

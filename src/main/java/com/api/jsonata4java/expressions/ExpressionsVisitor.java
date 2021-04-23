@@ -2097,177 +2097,34 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 				//special case for binding
 				String key = firstChild.getText().substring(1);
 				context = lookup(context, key);
+			} else if (firstChild instanceof PathContext)  {
+				context = visit(firstChild);
 			} else if (_environment.isEmptyContext() == false) {
 				context = _environment.peekContext();
 				final String id = sanitise(ctx.getChild(0).getText());
 				if (LOG.isLoggable(Level.FINEST)) {
 					LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), id, "(stack: " + context + ")" });
 				}
-				context = lookup(context, id);
+				context = ctx.getChild(0).accept(this);
 			}
 			if (context != null && !context.isNull()) {
-				_environment.pushContext(context);
-				FieldListContext fieldList = ctx.fieldList();
-				List<String> keys = new ArrayList<String>();
-				// run through the ctx.fieldList() processing pairs of key/value separated by
-				// colon
-				// pattern is expr or String, colon, expr or String, comma
-				ParseTree keyField;
-				ParseTree colon;
-				ParseTree valueField;
-				ParseTree comma;
-				ArrayNode keyArray;
-				JsonNode keyNode;
-				ArrayNode valueArray = factory.arrayNode();
-				int keysProcessed = 1;
-				for (int f = 0; f < fieldList.getChildCount(); f++) {
-					switch (f % 4) {
-						case 0: {
-							keyField = fieldList.getChild(f);
-							// determine if this is already a string or attempt to evaluate to a String
-							if (keyField instanceof TerminalNode) {
-								keys.add(((TerminalNode) keyField).getText());
-							} else {
-								// attempt to resolve to a String
-								JsonNode key = visit(keyField);
-								if (key == null) {
-									throw new EvaluateRuntimeException(
-											"Key in object structure must evaluate to a string; got: undefined");
-								}
-								if (key.isNull()) {
-									throw new EvaluateRuntimeException(
-											"Key in object structure must evaluate to a string; got: null");
-								}
-								if (key.isTextual()) {
-									keys.add(key.asText());
-								}
-								if (key.isArray()) {
-									// add each key to the keys in the order they are encountered
-									keyArray = (ArrayNode) key;
-									keysProcessed = keyArray.size();
-									for (int j = 0; j < keyArray.size(); j++) {
-										keyNode = keyArray.get(j);
-										if (keyNode == null) {
-											throw new EvaluateRuntimeException(
-													"Key in object structure must evaluate to a string; got: undefined");
-										}
-										if (keyNode.isNull()) {
-											throw new EvaluateRuntimeException(
-													"Key in object structure must evaluate to a string; got: null");
-										}
-										if (keyNode.isTextual()) {
-											keys.add(keyNode.asText());
-										} else {
-											throw new EvaluateRuntimeException(
-													"Key in object structure must evaluate to a string; got: "
-															+ key.toPrettyString());
-										}
-									}
-								} else {
-									throw new EvaluateRuntimeException(
-											"Key in object structure must evaluate to a string; got: " + key.toPrettyString());
-								}
-							}
-							break;
+				if (context.isArray()) {
+					for (JsonNode element : context) {
+						_environment.pushContext(element);
+						final JsonNode fieldList = visit(ctx.fieldList());
+						if (fieldList != null && fieldList.isObject()) {
+							object.setAll((ObjectNode) fieldList);
 						}
-						case 1: {
-							colon = fieldList.getChild(f);
-							if (colon instanceof TerminalNode) {
-								if (":".equals(colon.getText())) {
-									break;
-								}
-							}
-							throw new EvaluateRuntimeException("Expected \":\" got \"" + colon.getText() + "\"");
-						}
-						case 2: {
-							valueField = fieldList.getChild(f);
-							if (keysProcessed > 1) {
-								// process the valueField to put its results in the valueArray
-								JsonNode value = visit(valueField);
-								ArrayNode values = (ArrayNode) value;
-								if (values.size() == keysProcessed) {
-									for (int k = 0; k < keysProcessed; k++) {
-										valueArray.add(values.get(k));
-									}
-								} else {
-									// Not sure how to match up what is missing
-									throw new EvaluateRuntimeException("Object key/value count mismatch!");
-								}
-							} else if ((valueField instanceof ExprContext) || (valueField instanceof TerminalNode)
-									|| (valueField instanceof Function_declContext)
-									|| (valueField instanceof Var_recallContext)) {
-								// process the valueField
-								JsonNode value = null;
-								String fctName = null;
-								if (valueField instanceof Function_declContext) {
-									visit(valueField);
-									fctName = ((Function_declContext) valueField).FUNCTIONID().getText();
-									if (getDeclaredFunction(fctName) != null) {
-										value = new TextNode("");
-									}
-									valueArray.add(value);
-								} else if (valueField instanceof Var_recallContext) {
-									value = visit(valueField);
-									if (value == null) {
-										String varName = ((Var_recallContext) valueField).VAR_ID().getText();
-										DeclaredFunction declFct = getDeclaredFunction(varName);
-										if (declFct != null) {
-											value = new TextNode("");
-										} else {
-											Function fct = getJsonataFunction(varName);
-											if (fct != null) {
-												value = new TextNode("");
-											} else {
-												value = null;
-											}
-										}
-									}
-									valueArray.add(value);
-								} else {
-									value = visit(valueField);
-									// check for double infinity
-									if (value != null && value.isDouble()) {
-										Double d = value.asDouble();
-										if (Double.isNaN(d) || Double.isInfinite(d)) {
-											throw new EvaluateRuntimeException("Number out of range: null");
-										}
-									}
-									valueArray.add(value);
-								}
-							} else {
-								// ignore this entirely from our object
-								for (int k = 1; k <= keysProcessed; k++) {
-									keys.remove(keys.size() - 1);
-								}
-							}
-							keysProcessed = 1;
-							break;
-						}
-						case 3: {
-							comma = fieldList.getChild(f);
-							if (comma instanceof TerminalNode) {
-								if (",".equals(comma.getText())) {
-									break;
-								}
-							}
-							throw new EvaluateRuntimeException("Expected \"}\" got \"" + comma.getText() + "\"");
-						}
+						_environment.popContext();
 					}
-				}
-				if (keys.size() != valueArray.size()) {
-					// this shouldn't have parsed in the first place
-					throw new EvaluateRuntimeException("Object key/value count mismatch!");
-				}
-				String key = "";
-				for (int i = 0; i < keys.size(); i++) {
-					key = keys.get(i);
-					key = sanitise(key);
-					JsonNode value = valueArray.get(i);
-					if (value != null) {
-						object.set(key, value);
+				} else {
+					_environment.pushContext(context);
+					final JsonNode fieldList = visit(ctx.fieldList());
+					if (fieldList != null && fieldList.isObject()) {
+						object.setAll((ObjectNode) fieldList);
 					}
+					_environment.popContext();
 				}
-				_environment.popContext();
 			}
 
 			result = object;
@@ -2296,14 +2153,15 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
 			// empty object: {}
 			result = object;
 		} else {
-			JsonNode context = null;
-			// check to see if there is a referenced variable use that as the context
-			ParseTree firstChild = ctx.getChild(0);
-			if (firstChild instanceof Var_recallContext) {
-				context = visit(firstChild);
-			} else if (_environment.isEmptyContext() == false) {
-				context = _environment.peekContext();
-			}
+			// no longer required after patch applied
+			//			JsonNode context = null;
+			//			// check to see if there is a referenced variable use that as the context
+			//			ParseTree firstChild = ctx.getChild(0);
+			//			if (firstChild instanceof Var_recallContext) {
+			//				context = visit(firstChild);
+			//			} else if (_environment.isEmptyContext() == false) {
+			//				context = _environment.peekContext();
+			//			}
 			// List<TerminalNode> keyNodes = new ArrayList<TerminalNode>(); //
 			// ctx.fieldList().STRING();
 			List<String> keys = new ArrayList<String>();

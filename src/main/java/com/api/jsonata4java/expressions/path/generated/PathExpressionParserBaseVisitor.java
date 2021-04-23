@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.8
+// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.9.2
 package com.api.jsonata4java.expressions.path.generated;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -32,11 +32,4 @@ public class PathExpressionParserBaseVisitor<T> extends AbstractParseTreeVisitor
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitArray_index(PathExpressionParser.Array_indexContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitFunction_path(PathExpressionParser.Function_pathContext ctx) { return visitChildren(ctx); }
 }

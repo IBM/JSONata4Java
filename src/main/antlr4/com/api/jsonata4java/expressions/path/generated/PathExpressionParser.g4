@@ -21,7 +21,7 @@
  */
 
 /* Grammar defining the subset of JSONata we support on the LHS of mapping expressions */
-
+ 
 parser grammar PathExpressionParser;
 
 options {tokenVocab = PathExpressionLexer;}
