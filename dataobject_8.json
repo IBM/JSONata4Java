@@ -1,0 +1,43 @@
+{
+    "var1": "val1",
+    "var2": {
+        "firstName": "John",
+        "lastName": "doe",
+        "age": 26,
+        "address": {
+            "streetAddress": "naist street",
+            "city": "Nara",
+            "postalCode": "630-0192"
+        },
+        "phoneNumbers": [
+            {
+                "type": "iPhone",
+                "number": "0123-4567-8888"
+            },
+            {
+                "type": "home",
+                "number": "0123-4567-8910"
+            }
+        ]
+    },
+    "var3": {
+        "firstName": "Paul",
+        "lastName": "Smith",
+        "age": 32,
+        "address": {
+            "streetAddress": "main avenue",
+            "city": "Smart City",
+            "postalCode": "234-234"
+        },
+        "phoneNumbers": [
+            {
+                "type": "Android",
+                "number": "0123-4567-9999"
+            },
+            {
+                "type": "office",
+                "number": "0123-4567-2222"
+            }
+        ]
+    }
+}
