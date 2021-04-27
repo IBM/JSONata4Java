@@ -26,6 +26,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+
 import com.api.jsonata4java.expressions.functions.AbsFunction;
 import com.api.jsonata4java.expressions.functions.AppendFunction;
 import com.api.jsonata4java.expressions.functions.AverageFunction;
@@ -35,6 +36,7 @@ import com.api.jsonata4java.expressions.functions.BooleanFunction;
 import com.api.jsonata4java.expressions.functions.CeilFunction;
 import com.api.jsonata4java.expressions.functions.ContainsFunction;
 import com.api.jsonata4java.expressions.functions.CountFunction;
+import com.api.jsonata4java.expressions.functions.DistinctFunction;
 import com.api.jsonata4java.expressions.functions.EachFunction;
 import com.api.jsonata4java.expressions.functions.ErrorFunction;
 import com.api.jsonata4java.expressions.functions.ExistsFunction;
@@ -148,6 +150,7 @@ public class Constants {
    public static final String FUNCTION_ZIP = "$zip";
    public static final String FUNCTION_SORT = "$sort";
    public static final String FUNCTION_INDEX_OF = "$indexOf";
+   public static final String FUNCTION_DISTINCT = "$distinct";
 
    // JSONata object functions
    public static final String FUNCTION_KEYS = "$keys";
@@ -232,6 +235,7 @@ public class Constants {
       FUNCTIONS.put(FUNCTION_URL_ENCODE_COMPONENT, new URLEncodeComponentFunction());
       FUNCTIONS.put(FUNCTION_TYPE, new TypeFunction());
       FUNCTIONS.put(FUNCTION_ERROR, new ErrorFunction());
+      FUNCTIONS.put(FUNCTION_DISTINCT, new DistinctFunction());
       
       // Initialize the default decimal format symbols
       DEFAULT_DECIMAL_FORMAT_SYMBOLS.setExponentSeparator("e");

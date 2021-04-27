@@ -99,7 +99,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 			"matchers", // issue #57
 			"hof-zip-map", // issue #58
 			"parent-operator", // issue #60
-			"function-distinct", // issue #63
+//			"function-distinct", // issue #63
 //			"lambdas", // issue #70
 			"higher-order-functions", // issue #70
 			"regex", // issue #71
