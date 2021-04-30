@@ -4,6 +4,7 @@
 package com.api.jsonata4java;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -25,7 +26,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 /**
  * Class to provide embedding and extending JSONata features
  */
-public class Expression {
+public class Expression implements Serializable {
+
+	private static final long serialVersionUID = -292660522621832862L;
 
 	/**
 	 * Genearte a new Expression based on evaluating the supplied expression

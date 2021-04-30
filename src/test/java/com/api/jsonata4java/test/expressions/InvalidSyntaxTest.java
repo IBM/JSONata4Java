@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.test.expressions;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -39,7 +40,10 @@ import com.api.jsonata4java.expressions.ParseException;
  * Check that we correctly reject invalid uses of JSONata syntax
  */
 @RunWith(Parameterized.class)
-public class InvalidSyntaxTest {
+public class InvalidSyntaxTest implements Serializable {
+
+	private static final long serialVersionUID = 126753089439983629L;
+
 	@Parameter(0)
 	public String expression;
 

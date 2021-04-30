@@ -49,6 +49,8 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class NowFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = 5607559377364554518L;
+
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_NOW);
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {

@@ -34,6 +34,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class NotFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = -5381498407253835525L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_NOT);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_NOT);
 

@@ -34,6 +34,8 @@ import com.fasterxml.jackson.databind.node.LongNode;
 
 public class IndexOfFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = 1821794638528005180L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_INDEX_OF);
 	public static final String ERR_ARG1_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY,
 			Constants.FUNCTION_INDEX_OF);

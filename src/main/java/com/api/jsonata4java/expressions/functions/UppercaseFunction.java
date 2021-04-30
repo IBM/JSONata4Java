@@ -50,6 +50,8 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class UppercaseFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = 409516922389239227L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_UPPERCASE);
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_UPPERCASE);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_UPPERCASE);

@@ -26,9 +26,6 @@ import java.lang.RuntimeException;
 
 public class EvaluateRuntimeException extends RuntimeException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -6563289553854213645L;
 
 	public EvaluateRuntimeException(String message) {

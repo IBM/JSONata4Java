@@ -75,6 +75,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class MapFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = -3360326497787380873L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MAP);
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MAP);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_MAP);

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.runner.Description;
@@ -23,6 +25,7 @@ import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.ParentRunner;
 import org.junit.runners.model.InitializationError;
+
 import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.Expressions;
@@ -88,7 +91,9 @@ import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @RunWith(AgnosticTestSuite.class)
-public class AgnosticTestSuite extends ParentRunner<TestGroup> {
+public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serializable {
+
+	private static final long serialVersionUID = -971059278554482900L;
 
 	private static final List<String> SKIP_GROUPS = Arrays.asList(new String[] { "transform", // issue #47
 			"transforms", // issue #47

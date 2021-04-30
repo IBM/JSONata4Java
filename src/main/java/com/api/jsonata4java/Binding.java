@@ -4,6 +4,7 @@
 package com.api.jsonata4java;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,9 @@ import com.fasterxml.jackson.databind.JsonNode;
  * Class mapping a variable name to a variable or function declaration
  * expression
  */
-public class Binding {
+public class Binding implements Serializable {
+	private static final long serialVersionUID = -7183986949584334476L;
+
 	String _varname = null;
 	ExprContext _expr = null;
 	DeclaredFunction _fct = null;

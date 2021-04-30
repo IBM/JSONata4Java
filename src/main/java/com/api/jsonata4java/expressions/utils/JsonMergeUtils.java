@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.expressions.utils;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -34,7 +35,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * A utility for merging arbitrary JSON trees. Used during default state
  * generation to combine explicit and implicit default values where necessary.
  */
-public class JsonMergeUtils {
+public class JsonMergeUtils implements Serializable {
+
+	private static final long serialVersionUID = 6579954130589053721L;
 
 	/**
 	 * Returns x "merged into" y

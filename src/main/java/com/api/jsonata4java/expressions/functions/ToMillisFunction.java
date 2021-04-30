@@ -51,6 +51,8 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class ToMillisFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = 4484749083861634204L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TO_MILLIS);
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_TO_MILLIS);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_TO_MILLIS);

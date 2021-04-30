@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -54,7 +55,9 @@ import com.api.jsonata4java.expressions.utils.Constants;
  *
  */
 @RunWith(Parameterized.class)
-public class FromMillisFunctionTests {
+public class FromMillisFunctionTests implements Serializable {
+
+	private static final long serialVersionUID = 1715600213181460445L;
 
 	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
 			Constants.FUNCTION_FROM_MILLIS);

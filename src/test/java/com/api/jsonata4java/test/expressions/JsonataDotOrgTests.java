@@ -24,8 +24,10 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -40,7 +42,9 @@ import org.junit.runners.Parameterized.Parameters;
  * 
  */
 @RunWith(Parameterized.class)
-public class JsonataDotOrgTests {
+public class JsonataDotOrgTests implements Serializable {
+
+	private static final long serialVersionUID = -6055514340828059658L;
 
 	private static final String PERSON = "{\n" // 
 			+ "  \"FirstName\": \"Fred\",\n" // 

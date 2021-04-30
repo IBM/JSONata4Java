@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -42,7 +43,9 @@ import com.api.jsonata4java.expressions.functions.SumFunction;
  * expected.
  */
 @RunWith(Parameterized.class)
-public class SumFunctionTests {
+public class SumFunctionTests implements Serializable {
+
+	private static final long serialVersionUID = 4166650479729882882L;
 
 	@Parameter(0)
 	public String expression;

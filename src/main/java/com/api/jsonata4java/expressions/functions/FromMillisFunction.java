@@ -47,6 +47,8 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class FromMillisFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = -8678149963930460618L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_FROM_MILLIS);
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
 			Constants.FUNCTION_FROM_MILLIS);

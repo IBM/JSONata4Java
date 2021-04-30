@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -40,7 +41,9 @@ import org.junit.runners.Parameterized.Parameters;
  * expected.
  */
 @RunWith(Parameterized.class)
-public class SingletonArrayHandlingTests {
+public class SingletonArrayHandlingTests implements Serializable {
+
+	private static final long serialVersionUID = 6300599105862480981L;
 
 	@Parameter(0)
 	public String expression;

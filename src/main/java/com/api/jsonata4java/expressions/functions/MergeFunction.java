@@ -49,6 +49,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class MergeFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = -99966498930256770L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MERGE);
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MERGE);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_MERGE);

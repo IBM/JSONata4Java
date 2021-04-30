@@ -22,6 +22,8 @@
 
 package com.api.jsonata4java.expressions.utils;
 
+import java.io.Serializable;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -30,7 +32,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 
-public class ArrayUtils {
+public class ArrayUtils implements Serializable {
+
+	private static final long serialVersionUID = -6185850803487454927L;
 
 	/**
 	 * Determines if the supplied array contains all numeric values

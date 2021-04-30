@@ -47,6 +47,8 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class MillisFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = 8331126644236032696L;
+
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MILLIS);
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {

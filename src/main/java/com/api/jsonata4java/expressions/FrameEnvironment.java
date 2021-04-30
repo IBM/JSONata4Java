@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.expressions;
 
+import java.io.Serializable;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -36,8 +37,10 @@ import com.fasterxml.jackson.databind.JsonNode;
  * Object to manage access to variable and function maps used in the
  * {@link ExpressionsVisitor} to manage the current block's environment.
  */
-public class FrameEnvironment {
-   private Map<String, DeclaredFunction> _declFunctionMap = new HashMap<String, DeclaredFunction>();
+public class FrameEnvironment implements Serializable {
+	private static final long serialVersionUID = 8451009715230117298L;
+
+	private Map<String, DeclaredFunction> _declFunctionMap = new HashMap<String, DeclaredFunction>();
    FrameEnvironment _enclosingFrame = null;
    private boolean _isAsync = false;
    private Map<String, Function> _jsonataFunctionMap = new HashMap<String, Function>();

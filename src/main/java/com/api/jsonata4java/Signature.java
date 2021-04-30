@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -41,7 +42,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 /**
  * Manages signature related functions
  */
-public class Signature {
+public class Signature implements Serializable {
+
+	private static final long serialVersionUID = -450755246855587271L;
 
 	// A mapping between the function signature symbols and the full plural of the
 	// type

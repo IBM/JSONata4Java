@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,9 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_re
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class DeclaredFunction {
+public class DeclaredFunction implements Serializable {
+
+	private static final long serialVersionUID = -7984628726118649985L;
 
 	VarListContext _varList;
 	ExprListContext _exprList;

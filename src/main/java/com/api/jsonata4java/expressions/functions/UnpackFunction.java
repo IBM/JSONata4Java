@@ -39,6 +39,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 @SuppressWarnings("unused")
 public class UnpackFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = 1415132777843221239L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_UNPACK);
 	public static String ERR_ARG1BADTYPE = "Argument 1 of function $unpack does not match function signature";
 	public static String ERR_ARG2BADTYPE = "Argument 2 of function $unpack does not match function signature";

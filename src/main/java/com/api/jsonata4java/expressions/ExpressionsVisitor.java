@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.expressions;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.text.DecimalFormat;
@@ -93,7 +94,9 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
-public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> {
+public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> implements Serializable {
+
+	private static final long serialVersionUID = -9182723073149137352L;
 
 	/**
 	 * This is how we indicate to upstream operators that we are currently inside a

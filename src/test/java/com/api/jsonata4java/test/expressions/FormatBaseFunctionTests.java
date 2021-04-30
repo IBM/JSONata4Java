@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -52,7 +53,9 @@ import com.api.jsonata4java.expressions.utils.Constants;
  * 
  */
 @RunWith(Parameterized.class)
-public class FormatBaseFunctionTests {
+public class FormatBaseFunctionTests implements Serializable {
+
+	private static final long serialVersionUID = 2635621643258378128L;
 
 	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
 			Constants.FUNCTION_FORMAT_BASE);

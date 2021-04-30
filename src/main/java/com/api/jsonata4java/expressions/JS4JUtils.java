@@ -22,11 +22,14 @@
 
 package com.api.jsonata4java.expressions;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class JS4JUtils {
+public class JS4JUtils implements Serializable {
    
-   static public final int s_iDayMilliseconds = 86400000;
+	private static final long serialVersionUID = -1767445323606716680L;
+
+	static public final int s_iDayMilliseconds = 86400000;
 
    static public final int s_iHourMilliseconds = 3600000;
 

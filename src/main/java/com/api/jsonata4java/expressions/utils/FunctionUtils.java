@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.expressions.utils;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -63,7 +64,9 @@ import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class FunctionUtils {
+public class FunctionUtils implements Serializable {
+
+	private static final long serialVersionUID = -3388958465533493227L;
 
 	/**
 	 * Extends a supplied {@link ExprValuesContext} using the supplied context and

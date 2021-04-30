@@ -22,10 +22,14 @@
 
 package com.api.jsonata4java.expressions.utils;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class BooleanUtils {
+public class BooleanUtils implements Serializable {
+
+	private static final long serialVersionUID = -5460123458186653599L;
 
 	/**
 	 * See http://docs.jsonata.org/boolean-functions.html#booleanarg

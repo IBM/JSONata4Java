@@ -54,6 +54,8 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class SubstringAfterFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = 2374800721189099530L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
 			Constants.FUNCTION_SUBSTRING_AFTER);
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,

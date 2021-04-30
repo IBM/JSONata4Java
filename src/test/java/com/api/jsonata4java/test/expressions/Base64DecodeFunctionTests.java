@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -55,7 +56,9 @@ import com.api.jsonata4java.expressions.utils.Constants;
  *
  */
 @RunWith(Parameterized.class)
-public class Base64DecodeFunctionTests {
+public class Base64DecodeFunctionTests implements Serializable {
+
+	private static final long serialVersionUID = 6628815407081075490L;
 
 	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
 			Constants.FUNCTION_BASE64_DECODE);

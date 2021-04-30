@@ -22,12 +22,16 @@
 
 package com.api.jsonata4java.expressions.utils;
 
+import java.io.Serializable;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ValueNode;
 
-public class NumberUtils {
+public class NumberUtils implements Serializable {
+
+	private static final long serialVersionUID = 1471647554518125118L;
 
 	/**
 	 * The convertNumberToValueNode method converts the string passed in to a

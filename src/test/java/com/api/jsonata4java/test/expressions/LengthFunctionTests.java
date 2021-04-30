@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -55,10 +56,10 @@ import com.api.jsonata4java.expressions.utils.Constants;
  *
  */
 @RunWith(Parameterized.class)
-public class LengthFunctionTests {
+public class LengthFunctionTests implements Serializable {
 
-//	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
-//			Constants.FUNCTION_LENGTH);
+	private static final long serialVersionUID = -170444975332410511L;
+
 	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
 			Constants.FUNCTION_LENGTH);;
 	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,

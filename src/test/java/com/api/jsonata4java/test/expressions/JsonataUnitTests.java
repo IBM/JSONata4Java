@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -39,7 +40,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Verify behavior when access special $state, $event and $instance variables.
  */
 @RunWith(Parameterized.class)
-public class JsonataUnitTests {
+public class JsonataUnitTests implements Serializable {
+
+	private static final long serialVersionUID = -862598258330086928L;
 
 	public static String testdata1 = "    \"foo\": {\n" + "        \"bar\": 42,\n"
 			+ "        \"blah\": [{\"baz\": {\"fud\": \"hello\"}}, // {\"baz\": {\"fud\": \"world\"}}, // {\"bazz\": \"gotcha\"}],\n"

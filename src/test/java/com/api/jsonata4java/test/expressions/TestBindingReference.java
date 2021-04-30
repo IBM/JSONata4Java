@@ -1,4 +1,6 @@
 package com.api.jsonata4java.test.expressions;
+import java.io.Serializable;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,8 +10,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class TestBindingReference {
+public class TestBindingReference implements Serializable {
 	
+	private static final long serialVersionUID = -7721819254928734600L;
+
 	static ObjectMapper JACKSON = new ObjectMapper();
 
 	static     public void supportsContextualizedConstructionX() throws Exception {

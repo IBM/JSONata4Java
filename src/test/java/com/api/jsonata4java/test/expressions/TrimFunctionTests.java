@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -60,9 +61,10 @@ import com.api.jsonata4java.expressions.utils.Constants;
  *
  */
 @RunWith(Parameterized.class)
-public class TrimFunctionTests {
-	// 1.8.2 function-trim:case002 doesn't throw an exception
-	// private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TRIM);
+public class TrimFunctionTests implements Serializable {
+
+	private static final long serialVersionUID = -5903069783676478079L;
+
 	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
 			Constants.FUNCTION_TRIM);
 	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,

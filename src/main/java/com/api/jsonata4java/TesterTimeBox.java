@@ -24,6 +24,7 @@ package com.api.jsonata4java;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
@@ -36,8 +37,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Expression evaluation test utility
  */
-public class TesterTimeBox {
-
+public class TesterTimeBox implements Serializable {
+	private static final long serialVersionUID = -6162778154105939338L;
+	
 	static String json = "{\n" + //
 			"  \"Account\": {\n" + //
 			"    \"Account Name\": \"Firefly\",\n" + //

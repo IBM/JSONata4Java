@@ -34,6 +34,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class ZipFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = -7312331981757002031L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_ZIP);
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_ZIP);
 

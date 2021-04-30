@@ -23,6 +23,7 @@
 package com.api.jsonata4java.text.expressions.utils;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,7 +42,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Runs the test cases defined in src/test/resources/JsonMergeUtilsTest.json
  */
 @RunWith(Parameterized.class)
-public class JsonMergeUtilsTest {
+public class JsonMergeUtilsTest implements Serializable {
+
+	private static final long serialVersionUID = -9110750617460131902L;
 
 	public static String TESTCASES_JSON_PATH = "./src/test/resources/JsonMergeUtilsTest.json";
 	static ObjectMapper OM = new ObjectMapper();

@@ -23,6 +23,7 @@
 package com.api.jsonata4java.text.expressions.utils;
 
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -37,7 +38,9 @@ import java.util.logging.LogRecord;
  * Concept from java.util.logging.SimpleFormatter
  */
 
-public class TestLogFormatter extends Formatter {
+public class TestLogFormatter extends Formatter implements Serializable {
+
+	private static final long serialVersionUID = -8273377732120306686L;
 
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	// private final DateFormat WLP_DATE_FORMATTER = new SimpleDateFormat("MM/dd/yy

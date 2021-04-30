@@ -24,8 +24,10 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -60,7 +62,9 @@ import com.api.jsonata4java.expressions.utils.Constants;
  * 
  */
 @RunWith(Parameterized.class)
-public class JoinFunctionTests {
+public class JoinFunctionTests implements Serializable {
+
+	private static final long serialVersionUID = 80095363933224585L;
 
 	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_JOIN);
 	private static final String ERR_MSG_ARG1_ARR_STR = String.format(Constants.ERR_MSG_ARG1_ARR_STR,

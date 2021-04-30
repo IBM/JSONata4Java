@@ -26,9 +26,6 @@ import java.lang.Exception;
 
 public class ParseException extends Exception {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 2683449090362342981L;
 
 	public ParseException(String message) {

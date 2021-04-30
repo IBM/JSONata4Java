@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -29,7 +30,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class Sequence {
+public class Sequence implements Serializable {
+	private static final long serialVersionUID = 9212862402936258721L;
+	
 	ArrayNode _array = JsonNodeFactory.instance.arrayNode();
 	boolean _sequence = true;
 	boolean _keepSingleton = false;

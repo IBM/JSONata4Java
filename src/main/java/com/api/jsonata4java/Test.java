@@ -1,6 +1,7 @@
 package com.api.jsonata4java;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
@@ -10,7 +11,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class Test {
+public class Test implements Serializable {
+
+	private static final long serialVersionUID = -7874581033151372290L;
 
 	public static void main(String[] args) {
 		Expressions expr = null;

@@ -25,6 +25,7 @@ package com.api.jsonata4java.expressions;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,7 +44,9 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class Expressions {
+public class Expressions implements Serializable {
+	private static final long serialVersionUID = -2995139816481454905L;
+	
 	ParseTree tree = null;
 	String expression = null;
 	ExpressionsVisitor _eval = new ExpressionsVisitor(null,new FrameEnvironment(null));

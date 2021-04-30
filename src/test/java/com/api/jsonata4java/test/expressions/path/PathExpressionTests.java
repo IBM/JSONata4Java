@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.test.expressions.path;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Assert;
@@ -39,8 +40,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @RunWith(Parameterized.class)
-public class PathExpressionTests {
+public class PathExpressionTests implements Serializable {
 	
+	private static final long serialVersionUID = 3154348884576425315L;
+
 	// just some shorthands to make our inlined schema defs a bit shorter
 	private final static String P = "\"properties\"";
 	private final static String T = "\"type\"";

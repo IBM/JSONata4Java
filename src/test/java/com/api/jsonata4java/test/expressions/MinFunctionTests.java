@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -49,7 +50,9 @@ import com.api.jsonata4java.expressions.utils.Constants;
  * 
  */
 @RunWith(Parameterized.class)
-public class MinFunctionTests {
+public class MinFunctionTests implements Serializable {
+
+	private static final long serialVersionUID = 5451466065355353086L;
 
 	private static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MIN);
 	private static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_MIN);

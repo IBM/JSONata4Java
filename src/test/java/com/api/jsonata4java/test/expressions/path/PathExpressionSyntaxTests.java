@@ -22,8 +22,10 @@
 
 package com.api.jsonata4java.test.expressions.path;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,10 +38,11 @@ import com.api.jsonata4java.expressions.path.PathExpression;
 
 
 @RunWith(Parameterized.class)
-public class PathExpressionSyntaxTests {
+public class PathExpressionSyntaxTests implements Serializable {
 	
+	private static final long serialVersionUID = -4531191957074603742L;
 
-    @Parameter(0)
+	@Parameter(0)
     public String expression;
 
     @Parameter(1)

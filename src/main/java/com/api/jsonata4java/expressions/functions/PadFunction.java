@@ -54,6 +54,8 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class PadFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = 5849324073360601941L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_PAD);
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_PAD);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_PAD);

@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -53,7 +54,9 @@ import com.api.jsonata4java.expressions.utils.Constants;
  * 
  */
 @RunWith(Parameterized.class)
-public class SqrtFunctionTests {
+public class SqrtFunctionTests implements Serializable {
+
+	private static final long serialVersionUID = -5513416069993702347L;
 
 	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SQRT);
 	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,

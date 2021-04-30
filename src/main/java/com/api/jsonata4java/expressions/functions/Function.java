@@ -22,11 +22,13 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.io.Serializable;
+
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public interface Function {
+public interface Function extends Serializable {
 	
 	public int getMaxArgs();
 

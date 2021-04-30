@@ -62,6 +62,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class MatchFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = 1917070534153592299L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MATCH);
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MATCH);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_MATCH);

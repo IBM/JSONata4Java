@@ -57,6 +57,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class JoinFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = 2812768105036850665L;
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_JOIN);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_JOIN);
 	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_JOIN);

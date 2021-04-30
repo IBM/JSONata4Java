@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -57,7 +58,9 @@ import org.junit.runners.Parameterized.Parameters;
  * $string(5)=="5" [1..5].$string()==["1", "2", "3", "4", "5"]
  */
 @RunWith(Parameterized.class)
-public class StringFunctionTests {
+public class StringFunctionTests implements Serializable {
+
+	private static final long serialVersionUID = -312249015654495365L;
 
 	@Parameter(0)
 	public String expression;

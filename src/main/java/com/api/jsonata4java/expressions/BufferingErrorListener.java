@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.expressions;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,8 +35,9 @@ import org.antlr.v4.runtime.Recognizer;
  * Buffers error messages as they are produced and allows them to be retrieved
  * later via getErrorsAsString().
  */
-public class BufferingErrorListener extends BaseErrorListener {
-
+public class BufferingErrorListener extends BaseErrorListener implements Serializable {
+	private static final long serialVersionUID = -7132728543942685913L;
+	
 	private List<String> errors = new ArrayList<>();
 
 	@Override

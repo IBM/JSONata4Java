@@ -24,6 +24,7 @@ package com.api.jsonata4java.text.expressions.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -44,7 +45,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class Utils {
+public class Utils implements Serializable {
+
+	private static final long serialVersionUID = -143332860982622898L;
 
 	private static final char[] symbols;
 

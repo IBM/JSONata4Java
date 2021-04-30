@@ -50,6 +50,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class KeysFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = -6908272736871289545L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_KEYS);
 	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_KEYS);
 	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_KEYS);

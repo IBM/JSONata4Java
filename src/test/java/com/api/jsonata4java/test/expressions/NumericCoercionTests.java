@@ -24,8 +24,10 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -39,7 +41,9 @@ import org.junit.runners.Parameterized.Parameters;
  * expected.
  */
 @RunWith(Parameterized.class)
-public class NumericCoercionTests {
+public class NumericCoercionTests implements Serializable {
+
+	private static final long serialVersionUID = -9152353250593798501L;
 
 	@Parameter(0)
 	public String expression;

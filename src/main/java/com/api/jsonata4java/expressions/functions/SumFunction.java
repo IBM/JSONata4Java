@@ -35,6 +35,8 @@ import com.fasterxml.jackson.databind.node.LongNode;
 
 public class SumFunction extends FunctionBase implements Function {
 
+	private static final long serialVersionUID = -4281182554968881670L;
+
 	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SUM);
 	public static final String ERR_ARG1ARRTYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
 			Constants.FUNCTION_SUM);

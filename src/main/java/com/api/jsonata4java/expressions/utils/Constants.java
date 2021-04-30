@@ -22,6 +22,7 @@
 
 package com.api.jsonata4java.expressions.utils;
 
+import java.io.Serializable;
 import java.text.DecimalFormatSymbols;
 import java.util.HashMap;
 import java.util.Locale;
@@ -89,9 +90,11 @@ import com.api.jsonata4java.expressions.functions.UnpackFunction;
 import com.api.jsonata4java.expressions.functions.UppercaseFunction;
 import com.api.jsonata4java.expressions.functions.ZipFunction;
 
-public class Constants {
+public class Constants implements Serializable {
 
-   // JSONata string functions
+	private static final long serialVersionUID = 439299157239217206L;
+
+	// JSONata string functions
    public static final String FUNCTION_STRING = "$string";
    public static final String FUNCTION_SUBSTRING = "$substring";
    public static final String FUNCTION_LENGTH = "$length";

@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -50,9 +51,11 @@ import com.api.jsonata4java.expressions.utils.Constants;
  *
  */
 @RunWith(Parameterized.class)
-public class RandomFunctionTests {
+public class RandomFunctionTests implements Serializable {
 
-   private static String ERR_ARG1BADTYPE = String
+	private static final long serialVersionUID = 5173172444319908151L;
+
+	private static String ERR_ARG1BADTYPE = String
             .format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_RANDOM);
 
 	@Parameter(0)

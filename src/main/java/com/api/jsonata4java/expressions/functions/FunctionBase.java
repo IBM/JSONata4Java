@@ -22,9 +22,13 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.io.Serializable;
+
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 
-public abstract class FunctionBase {
+public abstract class FunctionBase implements Serializable {
+
+	private static final long serialVersionUID = -2198474650471622735L;
 
 	/**
 	 * The getFunctionName method retrieves the name of the function from the

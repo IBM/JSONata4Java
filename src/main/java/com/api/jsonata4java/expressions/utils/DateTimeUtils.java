@@ -21,6 +21,7 @@
  */
 package com.api.jsonata4java.expressions.utils;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -40,16 +41,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.api.jsonata4java.expressions.EvaluateRuntimeException;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class DateTimeUtils {
+import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 
-    private static String[] few = {"Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+public class DateTimeUtils implements Serializable {
+
+	private static final long serialVersionUID = 365963860104380193L;
+
+	private static String[] few = {"Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
     "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
     private static String[] ordinals = {"Zeroth", "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth", "Tenth",
     "Eleventh", "Twelfth", "Thirteenth", "Fourteenth", "Fifteenth", "Sixteenth", "Seventeenth", "Eighteenth", "Nineteenth"};

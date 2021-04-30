@@ -29,6 +29,7 @@ import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -70,7 +71,10 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * class. Retained because we might as well keep them (they execute in seconds).
  */
 @SuppressWarnings("deprecation")
-public class BasicExpressionsTest {
+public class BasicExpressionsTest implements Serializable {
+
+	private static final long serialVersionUID = -2403728781442037506L;
+
 	static String json = "{\n" + //
 			"  \"Account\": {\n" + //
 			"    \"Account Name\": \"Firefly\",\n" + //

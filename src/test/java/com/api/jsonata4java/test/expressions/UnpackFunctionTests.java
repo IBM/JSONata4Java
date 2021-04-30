@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import org.junit.Test;
@@ -43,7 +44,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  * expected.
  */
 @RunWith(Parameterized.class)
-public class UnpackFunctionTests {
+public class UnpackFunctionTests implements Serializable {
+
+	private static final long serialVersionUID = 1984254969713743695L;
 
 	@Parameter(0)
 	public String expression;

@@ -24,6 +24,7 @@ package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -54,9 +55,11 @@ import com.api.jsonata4java.expressions.utils.Constants;
  *  
  */
 @RunWith(Parameterized.class)
-public class CeilFunctionTests {
+public class CeilFunctionTests implements Serializable {
 
-    // private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_CEIL);
+	private static final long serialVersionUID = 2780892287570157399L;
+
+	// private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_CEIL);
     private static final String ERR_MSG_ARG1_BAD_TYPE       = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_CEIL);
     private static final String ERR_MSG_ARG2_BAD_TYPE       = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_CEIL);
     private static final String ERR_MSG_NUMBER_OUT_OF_RANGE = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE, "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890.5");
