@@ -25,7 +25,9 @@ package com.api.jsonata4java.test.expressions;
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 
 import org.junit.Test;
@@ -68,8 +70,7 @@ public class NowFunctionTests implements Serializable {
 	@Parameters(name = "{index}: {0} -> {1} ({2})")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
-            {"$now(\"[Y0000]\")", "\"2021\"", null}
-            // TODO: Need to work out how to test the function since we cannot predict the string that is returned
+            {"$now(\"[Y0000]\")", new SimpleDateFormat("\"yyyy\"").format(Calendar.getInstance().getTime()), null}
             // {"$now()",    null, null}
 		});
 	}
