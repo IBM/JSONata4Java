@@ -28,67 +28,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import com.api.jsonata4java.expressions.functions.AbsFunction;
-import com.api.jsonata4java.expressions.functions.AppendFunction;
-import com.api.jsonata4java.expressions.functions.AverageFunction;
-import com.api.jsonata4java.expressions.functions.Base64DecodeFunction;
-import com.api.jsonata4java.expressions.functions.Base64EncodeFunction;
-import com.api.jsonata4java.expressions.functions.BooleanFunction;
-import com.api.jsonata4java.expressions.functions.CeilFunction;
-import com.api.jsonata4java.expressions.functions.ContainsFunction;
-import com.api.jsonata4java.expressions.functions.CountFunction;
-import com.api.jsonata4java.expressions.functions.DistinctFunction;
-import com.api.jsonata4java.expressions.functions.EachFunction;
-import com.api.jsonata4java.expressions.functions.ErrorFunction;
-import com.api.jsonata4java.expressions.functions.ExistsFunction;
-import com.api.jsonata4java.expressions.functions.FilterFunction;
-import com.api.jsonata4java.expressions.functions.FloorFunction;
-import com.api.jsonata4java.expressions.functions.FormatBaseFunction;
-import com.api.jsonata4java.expressions.functions.FormatNumberFunction;
-import com.api.jsonata4java.expressions.functions.FromMillisFunction;
-import com.api.jsonata4java.expressions.functions.Function;
-import com.api.jsonata4java.expressions.functions.JoinFunction;
-import com.api.jsonata4java.expressions.functions.KeysFunction;
-import com.api.jsonata4java.expressions.functions.LengthFunction;
-import com.api.jsonata4java.expressions.functions.LookupFunction;
-import com.api.jsonata4java.expressions.functions.LowercaseFunction;
-import com.api.jsonata4java.expressions.functions.MapFunction;
-import com.api.jsonata4java.expressions.functions.MatchFunction;
-import com.api.jsonata4java.expressions.functions.MaxFunction;
-import com.api.jsonata4java.expressions.functions.MergeFunction;
-import com.api.jsonata4java.expressions.functions.MillisFunction;
-import com.api.jsonata4java.expressions.functions.MinFunction;
-import com.api.jsonata4java.expressions.functions.NotFunction;
-import com.api.jsonata4java.expressions.functions.NowFunction;
-import com.api.jsonata4java.expressions.functions.NumberFunction;
-import com.api.jsonata4java.expressions.functions.PadFunction;
-import com.api.jsonata4java.expressions.functions.PowerFunction;
-import com.api.jsonata4java.expressions.functions.RandomFunction;
-import com.api.jsonata4java.expressions.functions.ReduceFunction;
-import com.api.jsonata4java.expressions.functions.ReplaceFunction;
-import com.api.jsonata4java.expressions.functions.ReverseFunction;
-import com.api.jsonata4java.expressions.functions.RoundFunction;
-import com.api.jsonata4java.expressions.functions.ShuffleFunction;
-import com.api.jsonata4java.expressions.functions.SiftFunction;
-import com.api.jsonata4java.expressions.functions.SortFunction;
-import com.api.jsonata4java.expressions.functions.SplitFunction;
-import com.api.jsonata4java.expressions.functions.SpreadFunction;
-import com.api.jsonata4java.expressions.functions.SqrtFunction;
-import com.api.jsonata4java.expressions.functions.StringFunction;
-import com.api.jsonata4java.expressions.functions.SubstringAfterFunction;
-import com.api.jsonata4java.expressions.functions.SubstringBeforeFunction;
-import com.api.jsonata4java.expressions.functions.SubstringFunction;
-import com.api.jsonata4java.expressions.functions.SumFunction;
-import com.api.jsonata4java.expressions.functions.ToMillisFunction;
-import com.api.jsonata4java.expressions.functions.TrimFunction;
-import com.api.jsonata4java.expressions.functions.TypeFunction;
-import com.api.jsonata4java.expressions.functions.URLDecodeComponentFunction;
-import com.api.jsonata4java.expressions.functions.URLDecodeFunction;
-import com.api.jsonata4java.expressions.functions.URLEncodeComponentFunction;
-import com.api.jsonata4java.expressions.functions.URLEncodeFunction;
-import com.api.jsonata4java.expressions.functions.UnpackFunction;
-import com.api.jsonata4java.expressions.functions.UppercaseFunction;
-import com.api.jsonata4java.expressions.functions.ZipFunction;
+import com.api.jsonata4java.expressions.functions.*;
 
 public class Constants implements Serializable {
 
@@ -96,6 +36,7 @@ public class Constants implements Serializable {
 
 	// JSONata string functions
    public static final String FUNCTION_STRING = "$string";
+   public static final String FUNCTION_EVAL = "$eval";
    public static final String FUNCTION_SUBSTRING = "$substring";
    public static final String FUNCTION_LENGTH = "$length";
    public static final String FUNCTION_SUBSTRING_BEFORE = "$substringBefore";
@@ -178,6 +119,7 @@ public class Constants implements Serializable {
    static {
       // Populate the functions collection
       FUNCTIONS.put(FUNCTION_SUBSTRING, new SubstringFunction());
+      FUNCTIONS.put(FUNCTION_EVAL, new EvalFunction());
       FUNCTIONS.put(FUNCTION_STRING, new StringFunction());
       FUNCTIONS.put(FUNCTION_LENGTH, new LengthFunction());
       FUNCTIONS.put(FUNCTION_SUBSTRING_BEFORE, new SubstringBeforeFunction());
@@ -322,6 +264,7 @@ public class Constants implements Serializable {
    public static final String ERR_MSG_ARG4_BAD_TYPE = "Argument 4 of function %s does not match function signature";
    public static final String ERR_MSG_ARG5_BAD_TYPE = "Argument 5 of function %s does not match function signature";
    public static final String ERR_MSG_ARG1_ARR_STR = "Argument 1 of function %s must be an array of strings";
+   public static final String ERR_MSG_ARG1_STR_OR_EXPR = "Argument 1 of function %s must be a json string or a jsonata expression";
    public static final String ERR_MSG_ARG2_EMPTY_STR = "Second argument of function %s cannot be an empty string";
    public static final String ERR_MSG_INVALID_RADIX = "The radix of the $formatBase function must be between 2 and 36";
    public static final String ERR_MSG_RUNTIME_ERROR = "A runtime error occurred when invoking funtion %s";
