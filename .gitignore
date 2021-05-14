@@ -5,3 +5,6 @@
 /Flattenning.trace
 /ObjectArrayRetrieval.trace
 /Study.txt
+/.idea/*
+!/.idea/workspace.xml
+/JSONata4Java.iml
