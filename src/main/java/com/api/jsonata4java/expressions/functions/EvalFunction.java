@@ -76,7 +76,7 @@ public class EvalFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
 				JsonNode arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-				if (arg.isTextual()) {
+				if (arg != null && arg.isTextual()) {
 					expression = arg.asText();
 				}
 			}
