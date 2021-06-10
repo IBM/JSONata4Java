@@ -27,7 +27,6 @@ import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ParseException;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -74,7 +73,6 @@ public class EvalFunction extends FunctionBase implements Function {
 		String expression = "{}";
 		if (argCount >= 1 && argCount <= 2) {
 			if (!useContext) {
-				ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
 				JsonNode arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 				if (arg != null && arg.isTextual()) {
 					expression = arg.asText();
