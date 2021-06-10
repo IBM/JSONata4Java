@@ -275,7 +275,7 @@ public class Constants implements Serializable {
    public static final String ERR_MSG_NUMBER_OUT_OF_RANGE = "Number out of range: \"%s\"";
    public static final String ERR_MSG_POWER_FUNC_RESULT_NOT_NUMBER = "The power function has resulted in a value that cannot be represented as a number: base=\"%s\", exponent=\"%s\"";
    public static final String ERR_MSG_FUNC_CANNOT_BE_APPLIED_NEG_NUM = "The %s function cannot be applied to a negative number: %s";
-   public static final String ERR_MSG_TO_MILLIS_ISO_8601_FORMAT = "The argument for the $toMillis function must be an ISO 8601 format datetime string: \"foo\"";
+   public static final String ERR_MSG_TO_MILLIS_ISO_8601_FORMAT = "The argument for the $toMillis function must be an ISO 8601 format datetime string: \"%s\"";
    public static final String ERR_MSG_ARG1_MUST_BE_ARRAY = "Argument 1 of function \"%s\" must be an an array";
    public static final String ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER = "Argument 1 of function \"%s\" must be an array of \"number\"";
    public static final String ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS = "Argument 1 of function \"%s\" must be an object or an array of objects.";
