@@ -27,6 +27,7 @@ import java.time.format.DateTimeParseException;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.JS4JDate;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.DateTimeUtils;
@@ -114,9 +115,16 @@ public class ToMillisFunction extends FunctionBase implements Function {
 					 * The string argument does not contain a valid ISO 8601 format datetime string.
 					 * Throw a suitable exception.
 					 */
-					final String msg = String.format(Constants.ERR_MSG_TO_MILLIS_ISO_8601_FORMAT,
-							argTimestamp.asText());
-					throw new EvaluateRuntimeException(msg);
+					JS4JDate testDate = new JS4JDate();
+					try {
+						testDate = new JS4JDate(argTimestamp.asText());
+					} catch (Exception e1) {
+						final String msg = String.format(Constants.ERR_MSG_TO_MILLIS_ISO_8601_FORMAT,
+								argTimestamp.asText());
+						throw new EvaluateRuntimeException(msg);							
+					}
+					Long millis = testDate.getTime();
+					result = new LongNode(millis);
 				}
 			} else {
 				// The argument is a neither a number or a string. Throw a suitable
