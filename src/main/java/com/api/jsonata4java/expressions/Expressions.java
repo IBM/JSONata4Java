@@ -41,6 +41,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.api.jsonata4java.expressions.generated.MappingExpressionLexer;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Expr_to_eofContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -92,7 +94,7 @@ public class Expressions implements Serializable {
 		CommonTokenStream tokens = new CommonTokenStream(lexer);
 		MappingExpressionParser parser = new MappingExpressionParser(tokens);
 		ParseTree tree = null;
-
+		ExprContext newTree = null;
 		BufferingErrorListener errorListener = new BufferingErrorListener();
 
 		try {
@@ -105,7 +107,7 @@ public class Expressions implements Serializable {
 			parser.addErrorListener(errorListener);
 			lexer.addErrorListener(errorListener);
 
-			tree = parser.expr(); // _to_eof();
+			tree = parser.expr_to_eof(); // _to_eof();
 			if (errorListener.heardErrors()) {
 				if (tree != null && tree.getChildCount() > 0) {
 					ParseTree error = tree.getChild(0);
@@ -118,11 +120,13 @@ public class Expressions implements Serializable {
 				}
 				throw new ParseException(errorListener.getErrorsAsString());
 			}
+			newTree = ((Expr_to_eofContext)tree).expr();
+			// edit the tree's children to remove the last TerminalNodeImpl containing the Token.EOF
 		} catch (RecognitionException e) {
 			throw new ParseException(e.getMessage());
 		}
 
-		return new Expressions(tree, mappingExpression);
+		return new Expressions(newTree, mappingExpression);
 	}
 	
    /**

@@ -16,6 +16,18 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpr_to_eof(MappingExpressionParser.Expr_to_eofContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpr_to_eof(MappingExpressionParser.Expr_to_eofContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterParens(MappingExpressionParser.ParensContext ctx) { }
 	/**
 	 * {@inheritDoc}

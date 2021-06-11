@@ -11,6 +11,12 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	/**
+	 * Visit a parse tree produced by {@link MappingExpressionParser#expr_to_eof}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpr_to_eof(MappingExpressionParser.Expr_to_eofContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code parens}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
 	 * @param ctx the parse tree

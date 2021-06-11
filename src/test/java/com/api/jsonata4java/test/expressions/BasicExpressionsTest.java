@@ -1095,17 +1095,11 @@ public class BasicExpressionsTest implements Serializable {
 		// A parsing exception
 		try {
 			expression = Expressions.parse(" 3 + ");
-			// This parses because ANTLR doesn't expect a follow on expression
-			// even though it is defined as expr op=('+'|'-') expr for addsub
-			// Nothing we can do to throw an exception so changed assert for
-			// the expected return value 3
-			JsonNode result = expression.evaluate(null);
-			assertTrue("Should get 3", result.asInt() == 3);
 		} catch (Exception e) {
 			// Above no longer throws Parse nor Evaluate Exceptions
 			System.out.println(e.getMessage());
-			assertTrue(e.getMessage().equals(
-					"line 1:5 at [@2,5:4='<EOF>',<-1>,1:5]: mismatched input '<EOF>' expecting {'(', 'true', 'false', STRING, 'null', '[', '{', '$', '$$', '**', NUMBER, 'function', '*', '-', VAR_ID, ID}\n"));
+			assertTrue(e.getMessage().startsWith(
+					"line 1:5 at [@2,5:4='<EOF>',<-1>,1:5]: mismatched input '<EOF>'")); // expecting {'(', 'true', 'false', STRING, 'null', '[', '{', '$', '$$', '**', NUMBER, FUNCTIONID, '*', '-', VAR_ID, ID}"));
 		}
 
 		try {

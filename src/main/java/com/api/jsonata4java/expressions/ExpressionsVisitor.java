@@ -40,8 +40,10 @@ import java.util.logging.Logger;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.CommonTokenFactory;
 import org.antlr.v4.runtime.RuleContext;
+// import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
+// import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.commons.text.StringEscapeUtils;
@@ -605,6 +607,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 				if (result != null) {
 					if ("visitArray_constructor".equals(lastVisited)) {
 						output.add(result);
+//					} else if ("visitId".equals(lastVisited)) {
+//						output.add(result);
+//					} else if ("visitPath".equals(lastVisited)) {
+//								output.add(result);
 					} else {
 						result = ensureArray(result);
 						output.addAll((ArrayNode) result);
@@ -2075,6 +2081,36 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		}
 		return result;
 	}
+	
+//	/**
+//	 * Don't process the <EOF> token as it returns null and overwrites the result
+//	 */
+//	@Override
+//	public JsonNode visitChildren(RuleNode node) {
+//		JsonNode result = defaultResult();
+//		int n = node.getChildCount();
+//		for (int i=0; i<n; i++) {
+//			if (!shouldVisitNextChild(node, result)) {
+//				break;
+//			}
+//
+//			ParseTree c = node.getChild(i);
+//			// don't change result if we've reached EOF
+//			if (c instanceof TerminalNodeImpl) {
+//				TerminalNodeImpl tni = (TerminalNodeImpl)c;
+//				if (tni.symbol.getType() != Token.EOF) {
+//					JsonNode childResult = c.accept(this);
+//					result = aggregateResult(result, childResult);
+//				}
+//			} else {
+//				JsonNode childResult = c.accept(this);
+//				result = aggregateResult(result, childResult);				
+//			}
+//		}
+//
+//		return result;
+//	}
+//
 
 	@Override
 	public JsonNode visitExprList(MappingExpressionParser.ExprListContext ctx) {

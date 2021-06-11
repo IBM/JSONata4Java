@@ -55,13 +55,13 @@ public class InvalidSyntaxTest implements Serializable {
 		return Arrays.asList(new Object[][] {
 
 				// sequence used outside of square brackets
-				{ "1..2", true }, // // TODO: should be false wnm3
-				{ "$count(1..2)", false }, //
+				{ "1..2", false },
+				{ "$count(1..2)", false }, // fixed #156
 
 				// valid variable, note: evaluation will fail
 				{ "$notavar", true }, //
 
-// TODO Issue #64				{ "$0", false }, // // (vars/functions cannot start with a number - lexer error)
+				{ "$0", false }, // fixed #156 // (vars/functions cannot start with a number - lexer error)
 
 				// Rule Parsing
 				{ "$exists(payload.entities)", true }, //
@@ -81,7 +81,8 @@ public class InvalidSyntaxTest implements Serializable {
 						true }, //
 				{ "payload.context.flight_route and payload.context.airport and payload.context.airportCoordinates.latitude and payload.context.airportCoordinates.longitude", //
 						true }, //
-				{ "\"actions\":[\"getFlightRouteReference\",\"getCoordinatesForAirportICAO\"]", true }, //
+				{ "\"actions\":[\"getFlightRouteReference\",\"getCoordinatesForAirportICAO\"]", false }, // added wnm3 #156
+				{ "{\"actions\":[\"getFlightRouteReference\",\"getCoordinatesForAirportICAO\"]}", true }, //
 				{ "payload.entities[entity=\"flight_route\"].value", true } //
 		});
 	}

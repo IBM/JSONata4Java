@@ -8,6 +8,16 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface MappingExpressionListener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by {@link MappingExpressionParser#expr_to_eof}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpr_to_eof(MappingExpressionParser.Expr_to_eofContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MappingExpressionParser#expr_to_eof}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpr_to_eof(MappingExpressionParser.Expr_to_eofContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code parens}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
 	 * @param ctx the parse tree

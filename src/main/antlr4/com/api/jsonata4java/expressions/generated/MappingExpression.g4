@@ -37,6 +37,8 @@ grammar MappingExpression;
 // = PARSER RULES
 // =======================
 
+expr_to_eof : expr EOF ;
+
 expr:
    ID                                                     # id
  | '*'                                                    # field_values
@@ -57,10 +59,10 @@ expr:
  | op='-' expr                                            # unary_op
  | expr op=('*'|'/'|'%') expr                             # muldiv_op
  | expr op=('+'|'-') expr                                 # addsub_op
- | expr '&' expr                                          # concat_op
+ | expr op='&' expr                                       # concat_op
  | expr op=('<'|'<='|'>'|'>='|'!='|'=') expr              # comp_op
  | expr 'in' expr                                         # membership
- | expr 'and' expr                                        # logand
+ | expr 'and' expr                                        #logand
  | expr 'or' expr                                         # logor
  | expr '?' expr (':' expr)?                              # conditional
  | expr CHAIN expr                                        # fct_chain
@@ -114,7 +116,8 @@ NUMBER
 
 FUNCTIONID : ('function' | 'λ') ;
 
-WS: [ \t\n]+ -> skip ;                // ignore whitespace
+WS : [ \t\r\n]+ -> skip;              // ignore whitespace
+// WS: [ \t\n]+ -> skip ;                // ignore whitespace
 COMMENT:  '/*' .*? '*/' -> skip;      // allow comments
 
 // Assign token names used in above grammar
@@ -132,6 +135,8 @@ LE  : '<=' ;
 GT  : '>' ;
 GE  : '>=' ;
 CONCAT : '&';
+AND : 'and';
+OR : 'or';
 
 VAR_ID : '$' ID ;
 
