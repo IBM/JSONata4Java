@@ -109,8 +109,8 @@ public class MapFunction extends FunctionBase implements Function {
 			// expect something that evaluates to an object and either a variable
 			// pointing to a function, or a function declaration
 
-			if (arrNode == null || !(arrNode.isArray() || arrNode.isObject())) {
-				throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MAP));
+			if (arrNode == null) {
+				return null;
 			}
 			
 			ExprContext varid = exprList.expr((useContext ? 0 : 1));
