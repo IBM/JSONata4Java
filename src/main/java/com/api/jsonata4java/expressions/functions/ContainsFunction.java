@@ -102,7 +102,7 @@ public class ContainsFunction extends FunctionBase implements Function {
 			if (!argString.isTextual()) {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
-			final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
+			final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, (useContext ? 0:1));
 
 			if (!argString.isTextual()) {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
