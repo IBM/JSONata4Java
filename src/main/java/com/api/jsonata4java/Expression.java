@@ -151,7 +151,6 @@ public class Expression implements Serializable {
 	 *                    expression
 	 * @return the result from executing the Expression's parsed expression and
 	 *         variable assignments or registered functions
-	 * @throws EvaluateException
 	 * @throws ParseException
 	 */
 	public JsonNode evaluate(JsonNode rootContext) throws ParseException {
@@ -183,7 +182,6 @@ public class Expression implements Serializable {
 	 * @return the result from executing the Expression's parsed expression and
 	 *         variable assignments or registered functions specified in the list of
 	 *         bindings
-	 * @throws EvaluateException
 	 * @throws ParseException
 	 */
 	public JsonNode evaluate(JsonNode rootContext, List<Binding> bindings) throws ParseException {
@@ -209,7 +207,6 @@ public class Expression implements Serializable {
 	 * @return the result from executing the Expression's parsed expression and
 	 *         variable assignments or registered functions specified in the
 	 *         bindings object
-	 * @throws EvaluateException
 	 * @throws ParseException
 	 * @throws IOException
 	 */
