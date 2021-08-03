@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
@@ -88,8 +87,6 @@ public class Expression implements Serializable {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (EvaluateException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -157,7 +154,7 @@ public class Expression implements Serializable {
 	 * @throws EvaluateException
 	 * @throws ParseException
 	 */
-	public JsonNode evaluate(JsonNode rootContext) throws EvaluateException, ParseException {
+	public JsonNode evaluate(JsonNode rootContext) throws ParseException {
 		ExpressionsVisitor eval = new ExpressionsVisitor(rootContext, new FrameEnvironment(null));
 		// process any stored bindings
 		for (Iterator<String> it = _variableMap.keySet().iterator(); it.hasNext();) {
@@ -189,7 +186,7 @@ public class Expression implements Serializable {
 	 * @throws EvaluateException
 	 * @throws ParseException
 	 */
-	public JsonNode evaluate(JsonNode rootContext, List<Binding> bindings) throws EvaluateException, ParseException {
+	public JsonNode evaluate(JsonNode rootContext, List<Binding> bindings) throws ParseException {
 		JsonNode result = null;
 		// first do variables
 		for (Binding binding : bindings) {
@@ -217,7 +214,7 @@ public class Expression implements Serializable {
 	 * @throws IOException
 	 */
 	public JsonNode evaluate(JsonNode rootContext, JsonNode bindingObj)
-			throws EvaluateException, ParseException, IOException {
+			throws ParseException, IOException {
 		List<Binding> bindings = new ArrayList<Binding>();
 		for (Iterator<String> it = bindingObj.fieldNames(); it.hasNext();) {
 			String key = it.next();
