@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import com.api.jsonata4java.Expression;
-import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ParseException;
@@ -84,7 +83,7 @@ public class EvalFunction extends FunctionBase implements Function {
 			try {
 				Expression expr = Expression.jsonata(expression);
 				result = expr.evaluate(context);
-			} catch (EvaluateException | ParseException | IOException e) {
+			} catch (ParseException | IOException e) {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 		} else {
