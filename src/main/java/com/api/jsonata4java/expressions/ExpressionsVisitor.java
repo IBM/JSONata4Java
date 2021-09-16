@@ -2135,9 +2135,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 			ParseTree firstChild = ctx.getChild(0);
 			if (firstChild instanceof Var_recallContext) {
 				context = visit(firstChild);
-				//special case for binding
-				String key = firstChild.getText().substring(1);
-				context = lookup(context, key);
 			} else if (firstChild instanceof PathContext)  {
 				context = visit(firstChild);
 			} else if (_environment.isEmptyContext() == false) {
@@ -2637,19 +2634,24 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		for (int i = 0; i < treeSize; i++) {
 			steps.add(tree.getChild(i));
 		}
-		if (tree.getChild(0) instanceof Array_constructorContext) {
-			firstStepCons = true;
-		}
-		// test for laststep array construction child[n-1] instanceof
-		// Array_constructorContext
-		ParseTree lastStep = tree.getChild(treeSize - 1);
-		if (lastStep instanceof Array_constructorContext) {
-			lastStepCons = true;
-		}
-		if (tree.equals(steps.get(0))) {
-			firstStep = true;
-		} else {
-			firstStep = false;
+		firstStepCons = false;
+		lastStepCons = false;
+		firstStep = false;
+		if (tree.getChildCount() > 0) {
+			if (tree.getChild(0) instanceof Array_constructorContext) {
+				firstStepCons = true;
+			}
+			// test for laststep array construction child[n-1] instanceof
+			// Array_constructorContext
+			ParseTree lastStep = tree.getChild(treeSize - 1);
+			if (lastStep instanceof Array_constructorContext) {
+				lastStepCons = true;
+			}
+			if (tree.equals(steps.get(0))) {
+				firstStep = true;
+			} else {
+				firstStep = false;
+			}
 		}
 		lastVisited = "";
 		result = visit(tree);

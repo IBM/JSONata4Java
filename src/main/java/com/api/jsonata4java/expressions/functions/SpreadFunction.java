@@ -77,14 +77,12 @@ public class SpreadFunction extends FunctionBase implements Function {
 		}
 		boolean[] argIsArray = new boolean[] {false};
 		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-				if (argObject == null) {
-					ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
-					if (exprCtx instanceof Function_declContext) {
-						argObject = new TextNode("");
-					}
+		if (argCount <= 2) {
+			argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+			if (argObject == null) {
+				ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
+				if (exprCtx instanceof Function_declContext) {
+					argObject = new TextNode("");
 				}
 			}
 			result = spread((ArrayNode)result,argObject,argIsArray);

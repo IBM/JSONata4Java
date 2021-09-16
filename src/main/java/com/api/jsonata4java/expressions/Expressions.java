@@ -49,9 +49,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class Expressions implements Serializable {
 	private static final long serialVersionUID = -2995139816481454905L;
 	
-	ParseTree tree = null;
-	String expression = null;
-	ExpressionsVisitor _eval = new ExpressionsVisitor(null,new FrameEnvironment(null));
+	ParseTree _tree = null;
+	String _expression = null;
+	ExpressionsVisitor _eval = null;
 
 	/**
 	 * Returns a list of $something references in the given expression, using the
@@ -76,8 +76,9 @@ public class Expressions implements Serializable {
 	}
 
 	public Expressions(ParseTree aTree, String anExpression) {
-		tree = aTree;
-		expression = anExpression;
+		_eval = new ExpressionsVisitor(null,new FrameEnvironment(null));
+		_tree = aTree;
+		_expression = anExpression;
 	}
 
 	// Convert a mapping expression string into a pre-processed expression ready
@@ -157,7 +158,7 @@ public class Expressions implements Serializable {
       _eval.timeboxExpression(timeoutMS, maxDepth);
       
       try {
-         result = _eval.visit(tree); // was eval.visit();
+         result = _eval.visitTree(_tree); // was eval.visit();
       } catch (EvaluateRuntimeException e) {
          throw new EvaluateException(e.getMessage(), e);
       }
@@ -189,7 +190,7 @@ public class Expressions implements Serializable {
 		_eval.setRootContext(rootContext);
 
 		try {
-			result = _eval.visitTree(tree); // was eval.visit();
+			result = _eval.visitTree(_tree); // was eval.visit();
 		} catch (EvaluateRuntimeException e) {
 			throw new EvaluateException(e.getMessage(), e);
 		}
@@ -216,11 +217,11 @@ public class Expressions implements Serializable {
 	}
 	
 	public ParseTree getTree() {
-	   return tree;
+	   return _tree;
 	}
 	
 	public void setTree(ParseTree parsetree) {
-	   tree = parsetree;
+	   _tree = parsetree;
 	}
 	
    public void timeboxExpression(long timeoutMS, int maxDepth) {
@@ -228,7 +229,7 @@ public class Expressions implements Serializable {
    }
    
 	public String toString() {
-		return expression;
+		return _expression;
 	}
 
 }
