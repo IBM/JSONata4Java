@@ -1845,14 +1845,18 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		int varListCount = varListCtx.size();
 		int exprListCount = exprValuesCtx.size();
 		// ensure a direct mapping is possible
-		if (varListCount != exprListCount) {
+		if (varListCount < exprListCount) {
 			throw new EvaluateRuntimeException(
 					"Expected equal counts for varibles (" + varListCount + ") and values (" + exprListCount + ")");
 		}
 		for (int i = 0; i < varListCount; i++) {
 			String varID = varListCtx.get(i).getText();
-			JsonNode value = visit(exprValuesCtx.get(i));
-			setVariable(varID, value);
+			if (i < exprListCount) {
+				JsonNode value = visit(exprValuesCtx.get(i));
+				setVariable(varID, value);
+			} else {
+				setVariable(varID, null);
+			}
 		}
 		ExprListContext exprListCtx = ctx.exprList();
 

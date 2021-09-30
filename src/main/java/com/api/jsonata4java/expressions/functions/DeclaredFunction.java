@@ -121,15 +121,19 @@ public class DeclaredFunction implements Serializable {
          }
          int varListCount = varListCtx.size();
          int exprListCount = exprValuesCtx.size();
-         // ensure a direct mapping is possible
-         if (varListCount != exprListCount) {
+         // ensure a direct mapping is possible filling with nulls where needed
+         if (varListCount < exprListCount) {
             throw new EvaluateRuntimeException(
                   "Expected equal counts for varibles (" + varListCount + ") and values (" + exprListCount + ")");
          }
          for (int i = 0; i < varListCount; i++) {
             String varID = varListCtx.get(i).getText();
-            JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
-            expressionVisitor.setVariable(varID, value);
+            if (i < exprListCount) {
+            	JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
+            	expressionVisitor.setVariable(varID, value);
+            } else {
+            	expressionVisitor.setVariable(varID, null);
+            }
          }
          result = expressionVisitor.visit(_exprList);
 		} else if (ruleValues instanceof Var_recallContext) {
