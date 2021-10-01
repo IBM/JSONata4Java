@@ -33,6 +33,8 @@ you can right click on the pom.xml file and select **Run as... / Maven build...*
 
 ![Launcher Image](images/Launcher.png)
 
+Alternatively, you can run from the command line in the JSONata4Java directory: **mvn clean install -Dgpg.skip**
+
 Once you have run the launcher, you can find the jar files in the /target directory. There are two:
 * **JSONata4Java-1.5.8-jar-with-dependencies.jar** (thinks includes dependent jar files)
 * **JSONata4Java-1.5.8.jar** (only the JSONata4Java code)
