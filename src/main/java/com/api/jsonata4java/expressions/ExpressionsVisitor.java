@@ -1910,12 +1910,15 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		JsonNode result = null;
 
 		JsonNode left = visit(ctx.expr(0)); // get value of left subexpression
-		JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
-
-		result = BooleanUtils.convertJsonNodeToBoolean(left) && BooleanUtils.convertJsonNodeToBoolean(right)
-				? BooleanNode.TRUE
-				: BooleanNode.FALSE;
-
+		if (BooleanUtils.convertJsonNodeToBoolean(left)) { 
+			JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
+	
+			result = BooleanUtils.convertJsonNodeToBoolean(left) && BooleanUtils.convertJsonNodeToBoolean(right)
+					? BooleanNode.TRUE
+					: BooleanNode.FALSE;
+		} else {
+			result = BooleanNode.FALSE;
+		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
 			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
@@ -1933,12 +1936,15 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		JsonNode result = null;
 
 		JsonNode left = visit(ctx.expr(0)); // get value of left subexpression
-		JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
-
-		result = BooleanUtils.convertJsonNodeToBoolean(left) || BooleanUtils.convertJsonNodeToBoolean(right)
-				? BooleanNode.TRUE
-				: BooleanNode.FALSE;
-
+		if (BooleanUtils.convertJsonNodeToBoolean(left) == false) {
+			JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
+	
+			result = BooleanUtils.convertJsonNodeToBoolean(left) || BooleanUtils.convertJsonNodeToBoolean(right)
+					? BooleanNode.TRUE
+					: BooleanNode.FALSE;
+		} else {
+			result = BooleanNode.TRUE;
+		}
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
 			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
