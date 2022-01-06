@@ -2787,6 +2787,25 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 						result = null;
 					}
 				}
+			} else if (exprCtx instanceof Function_callContext) {
+				Function_callContext fctCallCtx = (Function_callContext) exprCtx;
+
+				String functionName = fctCallCtx.VAR_ID().getText();
+
+				DeclaredFunction declFct = getDeclaredFunction(functionName);
+				if (declFct == null) {
+					Function function = getJsonataFunction(functionName);
+					if (function != null) {
+						setJsonataFunction(varName, function);
+						// result = function.invoke(this, ctx);
+					} else {
+						throw new EvaluateRuntimeException("Unknown function: " + functionName);
+					}
+				} else {
+					setDeclaredFunction(varName, declFct);
+				}
+
+				result = visit(expr);				
 			}
 		} else {
 			result = visit(expr);

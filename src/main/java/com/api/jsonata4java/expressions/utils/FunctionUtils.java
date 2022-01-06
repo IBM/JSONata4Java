@@ -958,8 +958,15 @@ public class FunctionUtils implements Serializable {
 
 		ParserRuleContext prc = ctx.getParent();
 		if (prc != null && prc instanceof Fct_chainContext) {
-			// you are called from a chain so use current context
-			return true;
+			// you are called from a chain so if you are not the first child use context
+			for (int i=0;i<prc.children.size();i++) {
+				if (prc.getChild(i) == ctx) {
+					if (i > 0) {
+						return true; 
+					}
+					break;
+				}
+			}
 		}
 
 		int optional = getOptionalArgCount(signature);
@@ -975,6 +982,7 @@ public class FunctionUtils implements Serializable {
 			// should have required argument in context
 			return true;
 		}
+
 		// does the signature permit use of the context as a argument
 		if (signature.indexOf("-") >= 0 && prc != null && prc instanceof PathContext) {
 			return true;

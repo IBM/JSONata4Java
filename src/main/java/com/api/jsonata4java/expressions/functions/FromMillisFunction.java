@@ -79,11 +79,11 @@ public class FromMillisFunction extends FunctionBase implements Function {
 			}
 			JsonNode picture = JsonNodeFactory.instance.nullNode();
 			if (argCount >= 2) {
-				picture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
+				picture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
 			}
 			JsonNode timezone = JsonNodeFactory.instance.nullNode();
 			if (argCount == 3) {
-				timezone = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 2);
+				timezone = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 1 : 2);
 			}
 			if (argNumber == null) {
 				return null;
