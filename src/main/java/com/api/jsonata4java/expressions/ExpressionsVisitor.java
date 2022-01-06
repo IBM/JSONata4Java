@@ -2805,7 +2805,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 					setDeclaredFunction(varName, declFct);
 				}
 
-				result = visit(expr);				
+				result = visit(expr);
+				setVariable(varName, result);
 			}
 		} else {
 			result = visit(expr);
