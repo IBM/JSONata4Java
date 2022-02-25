@@ -42,6 +42,35 @@ public class Expression implements Serializable {
 	public static Expression jsonata(String expression) throws ParseException, IOException {
 		return new Expression(expression);
 	}
+	
+	/**
+	 * Establish a list of bindings for the given json object
+	 * 
+	 *  @param bindingObj the json to calculate the bindings for
+	 */
+	public static List<Binding> createBindings(JsonNode bindingObj){
+		List<Binding> bindings = new ArrayList<Binding>();
+		for (Iterator<String> it = bindingObj.fieldNames(); it.hasNext();) {
+			String key = it.next();
+			JsonNode testObj = bindingObj.get(key);
+			String expression = "";
+			try {
+				if (testObj.isTextual() == false) {
+					expression = testObj.toString();
+					Binding binding = new Binding(key, expression);
+					bindings.add(binding);
+				} else {
+					Binding binding = new Binding(key, testObj);
+					bindings.add(binding);
+
+				}
+			} catch (Exception e) {
+				Binding binding = new Binding(key, testObj);
+				bindings.add(binding);
+			}
+		}
+		return bindings;
+	}
 
 	/**
 	 * Testing the various methods based on
@@ -94,7 +123,6 @@ public class Expression implements Serializable {
 
 	ExpressionsVisitor _eval = null;
 	Expressions _expr = null;
-	FrameEnvironment _environment = new FrameEnvironment(null);
 	Map<String, DeclaredFunction> _declaredFunctionMap = new HashMap<String, DeclaredFunction>();
 	Map<String, ExprContext> _variableMap = new HashMap<String, ExprContext>();
 
@@ -125,6 +153,15 @@ public class Expression implements Serializable {
 		}
 	}
 
+	/**
+	 * Remove all bindings
+	 * 
+	 */
+	public void clear() {
+		_variableMap.clear();
+		_declaredFunctionMap.clear();
+	}
+	
 	/**
 	 * Assign the expression (variable or function declaration) to the variable name
 	 * supplied
@@ -212,27 +249,7 @@ public class Expression implements Serializable {
 	 */
 	public JsonNode evaluate(JsonNode rootContext, JsonNode bindingObj)
 			throws ParseException, IOException {
-		List<Binding> bindings = new ArrayList<Binding>();
-		for (Iterator<String> it = bindingObj.fieldNames(); it.hasNext();) {
-			String key = it.next();
-			JsonNode testObj = bindingObj.get(key);
-			String expression = "";
-			try {
-				if (testObj.isTextual() == false) {
-					expression = testObj.toString();
-					Binding binding = new Binding(key, expression);
-					bindings.add(binding);
-				} else {
-					Binding binding = new Binding(key, testObj);
-					bindings.add(binding);
-
-				}
-			} catch (Exception e) {
-				Binding binding = new Binding(key, testObj);
-				bindings.add(binding);
-			}
-		}
-		return evaluate(rootContext, bindings);
+		return evaluate(rootContext, createBindings(bindingObj));
 	}
 
 	/**
