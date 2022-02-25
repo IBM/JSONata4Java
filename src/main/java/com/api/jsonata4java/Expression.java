@@ -47,6 +47,7 @@ public class Expression implements Serializable {
 	 * Establish a list of bindings for the given json object
 	 * 
 	 *  @param bindingObj the json to calculate the bindings for
+	 *  @return the list of bindings for the provided json
 	 */
 	public static List<Binding> createBindings(JsonNode bindingObj){
 		List<Binding> bindings = new ArrayList<Binding>();
@@ -155,7 +156,6 @@ public class Expression implements Serializable {
 
 	/**
 	 * Remove all bindings
-	 * 
 	 */
 	public void clear() {
 		_variableMap.clear();
