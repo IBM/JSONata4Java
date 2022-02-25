@@ -19,6 +19,10 @@ public class TreeUtils {
     /**
      * Pretty print out a whole tree. {@link #getNodeText} is used on the node payloads to get the text
      * for the nodes. (Derived from Trees.toStringTree(....))
+     * 
+     * @param t
+     * @param ruleNames
+     * @return
      */
     public static String toPrettyTree(final Tree t, final List<String> ruleNames) {
         level = 0;
