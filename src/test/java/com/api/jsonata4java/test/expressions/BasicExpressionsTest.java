@@ -1097,7 +1097,7 @@ public class BasicExpressionsTest implements Serializable {
 			expression = Expressions.parse(" 3 + ");
 		} catch (Exception e) {
 			// Above no longer throws Parse nor Evaluate Exceptions
-			System.out.println(e.getMessage());
+			// System.out.println(e.getMessage());
 			assertTrue(e.getMessage().startsWith(
 					"line 1:5 at [@2,5:4='<EOF>',<-1>,1:5]: mismatched input '<EOF>'")); // expecting {'(', 'true', 'false', STRING, 'null', '[', '{', '$', '$$', '**', NUMBER, FUNCTIONID, '*', '-', VAR_ID, ID}"));
 		}

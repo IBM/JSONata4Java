@@ -152,7 +152,7 @@ public class TesterTimeBox implements Serializable {
 		   while (true) {
    		   test = JSONataUtils.prompt("Enter the maximum call depth ("+maxDepth+"):");
    		   try {
-   		      int val = new Integer(test);
+   		      int val = Integer.parseInt(test);
    		      if (val > 0) {
    		         maxDepth = val;
    		         break;
@@ -165,7 +165,7 @@ public class TesterTimeBox implements Serializable {
          while (true) {
             test = JSONataUtils.prompt("Enter the maximum milliseconds to allow to run ("+timeoutMS+"):");
             try {
-               long val = new Long(test);
+               long val = Long.parseLong(test);
                if (val > 0L) {
                   timeoutMS = val;
                   break;
