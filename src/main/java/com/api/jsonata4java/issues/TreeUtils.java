@@ -17,8 +17,7 @@ public class TreeUtils {
     private TreeUtils() {}
 
     /**
-     * Pretty print out a whole tree. {@link #getNodeText} is used on the node payloads to get the text
-     * for the nodes. (Derived from Trees.toStringTree(....))
+     * Pretty print out a whole tree.
      * 
      * @param t tree to be formatted
      * @param ruleNames names of the rules
