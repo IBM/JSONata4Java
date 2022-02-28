@@ -135,7 +135,7 @@
 			<plugin>
 				<groupId>org.sonatype.plugins</groupId>
 				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.12</version>
+				<version>1.6.8</version>
 				<extensions>true</extensions>
 				<configuration>
 					<serverId>ossrh</serverId>
@@ -174,11 +174,13 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.2.0</version>
+				<!--
 				<configuration>
 					<archive>
 						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
 					</archive>
 				</configuration>
+				-->
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -275,6 +277,9 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+					<excludes>
+						<exclude>src/test/resources/*</exclude>
+					</excludes>					
 				</configuration>
 				<executions>
 					<execution>
@@ -286,6 +291,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-->
 			<plugin>
 				<groupId>biz.aQute.bnd</groupId>
 				<artifactId>bnd-maven-plugin</artifactId>
@@ -313,6 +319,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 		<pluginManagement>
 			<plugins>
