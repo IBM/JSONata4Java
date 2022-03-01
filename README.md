@@ -22,7 +22,7 @@ You can also opt to clone this repository using the command line below and build
 ```
 git clone https://github.com/IBM/JSONata4Java.git
 ```
-The code was created using OpenJDK Runtime Environment (build 1.8.0_311-b11). You can import the project into Eclipse 2021-12 or newer. 
+The code was created using IBM Semeru Runtime Open Edition (build 1.8.0_322-b06). You can import the project into Eclipse 2021-12 or newer. 
 
 ### Building the jar files
 
