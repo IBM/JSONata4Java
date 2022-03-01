@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Built-By: wnm3
-Build-Jdk: 1.8.0_242-b08
+Build-Jdk: 1.8.0_322-b06
 Created-By: Nathaniel Mills
 Main-Class: com.api.jsonata4java.Tester
 Archiver-Version: Plexus Archiver
