@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * From http://docs.jsonata.org/higher-order-functions#filter
+ * From http://docs.jsonata.org/higher-order-functions#map
  * 
  * Signature: $map(array, function)
  *
