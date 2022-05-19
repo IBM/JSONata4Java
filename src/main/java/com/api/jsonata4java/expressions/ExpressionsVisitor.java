@@ -815,7 +815,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 //					&& ((SelectorArrayNode) result).getSelectionGroups().size() == 1) {
 //				result = ((SelectorArrayNode) result).getSelectionGroups().get(0);
 				SelectorArrayNode san = (SelectorArrayNode)result;
-				if (san.size() == 1) {
+				if (san.size() == 1 && san.selectionGroups.size() == 1) {
 					JsonNode test = san.selectionGroups.get(0);
 					if (test instanceof SelectorArrayNode) {
 						result = result.get(0);

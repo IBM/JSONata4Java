@@ -498,8 +498,13 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 
 	protected void runComponentTest(Collection<Object[]> data) throws Exception {
 		for (Object[] test : data) {
-			Utils.test(test[0] == null ? null : test[0].toString(), test[1] == null ? null : test[1].toString(),
-					test[2] == null ? null : test[2].toString(), null);
+			if (test.length > 0) {
+				Utils.test(test[0] == null ? null : test[0].toString(), test[1] == null ? null : test[1].toString(),
+						test[2] == null ? null : test[2].toString(), null);
+			} else {
+				System.out.println("Received an empty test: "+test);
+				System.out.println("for data: "+data);
+			}
 		}
 	}
 
