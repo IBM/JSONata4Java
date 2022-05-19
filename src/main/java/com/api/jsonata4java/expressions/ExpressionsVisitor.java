@@ -814,7 +814,15 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 			if (result != null && result instanceof SelectorArrayNode) {
 //					&& ((SelectorArrayNode) result).getSelectionGroups().size() == 1) {
 //				result = ((SelectorArrayNode) result).getSelectionGroups().get(0);
-				if (result.size() == 1) {
+				SelectorArrayNode san = (SelectorArrayNode)result;
+				if (san.size() == 1) {
+					JsonNode test = san.selectionGroups.get(0);
+					if (test instanceof SelectorArrayNode) {
+						result = result.get(0);
+					} else {
+						result = test;
+					}
+				} else if (result.size() == 1) {
 					result = result.get(0);
 				}
 			}
@@ -2484,15 +2492,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 							}
 							firstStepCons = false;
 						} else {
-							if (keepArray) {
 								result = rhs;
-							} else {
-								if (rhs.size() == 1) {
-									result = rhs.get(0);
-								} else {
-									result = rhs;
-								}
-							}
+
+//							if (keepArray) {
+//								result = rhs;
+//							} else {
+//								if (rhs.size() == 1) {
+//									result = rhs.get(0);
+//								} else {
+//									result = rhs;
+//								}
+//							}
 						}
 					}
 				} else {
