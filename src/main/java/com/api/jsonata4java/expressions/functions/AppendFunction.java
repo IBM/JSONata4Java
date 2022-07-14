@@ -26,7 +26,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
-import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
+// import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.ArrayUtils;
@@ -47,7 +47,8 @@ public class AppendFunction extends FunctionBase implements Function {
 
 	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 
-		SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
+		// SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
+		ArrayNode result = JsonNodeFactory.instance.arrayNode();
 
 		// Retrieve the number of arguments
 		JsonNode argArray = JsonNodeFactory.instance.nullNode();
