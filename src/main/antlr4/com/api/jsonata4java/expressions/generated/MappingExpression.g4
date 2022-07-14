@@ -141,7 +141,7 @@ OR : 'or';
 VAR_ID : '$' ID ;
 
 ID
-	: [a-zA-Z] [a-zA-Z0-9_]*
+	: [\p{L}] [\p{L}0-9_]*
 	| BACK_QUOTE ~[`]* BACK_QUOTE;
 
 
