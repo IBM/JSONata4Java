@@ -8,7 +8,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
@@ -120,20 +123,20 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 	private static final ObjectMapper _objectMapper = new ObjectMapper();
 	private static final Map<String, List<String>> SKIP_CASES = new HashMap<>();
 	static {
-	   // address characters > 127 to be escaped
-	   _objectMapper.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(),true);
+		// address characters > 127 to be escaped
+		_objectMapper.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
 		// ensure we don't have scientific notation for numbers
 		_objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
 
 		// due to unparsable use of 'in' in the tests
 		SKIP_CASES("inclusion-operator", "case004", "case005");
 		// issue #43 object construction
-		SKIP_CASES("object-constructor", /* "case008", "case009", "case010", */ 
-				"case011", 
+		SKIP_CASES("object-constructor", /* "case008", "case009", "case010", */
+				"case011",
 				/* "case012", */
-				"case013", 
+				"case013",
 				/* "case014", "case015", "case016", */
-				"case017", 
+				"case017",
 				/* "case018", "case019", "case020", */
 				"case022", "case025");
 		SKIP_CASES("flattening", "case040", "case041");
@@ -224,10 +227,20 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 
 	}
 
+	// added for issue 203
+	private static String readUtf8TextFile(Path path) {
+		StringBuilder sb = new StringBuilder();
+		try (Stream<String> stream = Files.lines(path, StandardCharsets.UTF_8)) {
+			stream.forEach(s -> sb.append(s).append("\n"));
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+		return sb.toString();
+	}
+
 	private void init() throws Exception {
 		final ObjectMapper om = new ObjectMapper();
 		om.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
-		
 
 		// load and parse all the dataset json files into memory
 		printHeader("Loading datasets");
@@ -502,8 +515,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 				Utils.test(test[0] == null ? null : test[0].toString(), test[1] == null ? null : test[1].toString(),
 						test[2] == null ? null : test[2].toString(), null);
 			} else {
-				System.out.println("Received an empty test: "+test);
-				System.out.println("for data: "+data);
+				System.out.println("Received an empty test: " + test);
+				System.out.println("for data: " + data);
 			}
 		}
 	}
@@ -701,7 +714,10 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 					String expressionFileName = expressionFileNode.asText();
 					try {
 						File expressionFile = new File(GROUPS_DIR + "/" + group.getGroupName() + "/" + expressionFileName);
-						this.expr = new String(Files.readAllBytes(expressionFile.getCanonicalFile().toPath()));
+						// below issue #203
+						this.expr = readUtf8TextFile(expressionFile.getCanonicalFile().toPath());
+						// this.expr = new
+						// String(Files.readAllBytes(expressionFile.getCanonicalFile().toPath()));
 					} catch (IOException e) {
 						throw new RuntimeException(
 								"[" + group.getGroupName() + "." + caseName + "] Unable to read .jsonata file", e);
