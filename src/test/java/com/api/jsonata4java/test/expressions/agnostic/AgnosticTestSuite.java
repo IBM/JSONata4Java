@@ -155,7 +155,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 		// issue #53
 		SKIP_CASES("hof-map", "case008");
 		// issue #53
-		SKIP_CASES("hof-reduce", "case010"); // add for windows pending investigation // , "case009");
+		SKIP_CASES("hof-reduce", "case010");
 		// issue #54 timeouts
 		SKIP_CASES("range-operator", "case021", "case024");
 		// issue #55 and / or stand alone to get by parser
