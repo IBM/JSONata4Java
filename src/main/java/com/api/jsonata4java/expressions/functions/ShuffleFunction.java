@@ -77,7 +77,7 @@ public class ShuffleFunction extends FunctionBase implements Function {
 					result.add(0); // simulating initializing in JavaScript
 				}
 				for (int i = 0; i < array.size(); i++) {
-					int j = new Double(Math.floor(Math.random() * (i + 1))).intValue();
+					int j = Double.valueOf(Math.floor(Math.random() * (i + 1))).intValue();
 					if (i != j) {
 						result.set(i, result.get(j));
 					}

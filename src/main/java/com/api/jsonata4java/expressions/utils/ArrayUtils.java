@@ -102,7 +102,7 @@ public class ArrayUtils implements Serializable {
 		} else {
 			ValueNode a = NumberUtils.convertNumberToValueNode(left.asText());
 			ValueNode b = NumberUtils.convertNumberToValueNode(right.asText());
-			result = new Double(a.doubleValue()).compareTo(new Double(b.doubleValue())) > 0;
+			result = Double.valueOf(a.doubleValue()).compareTo(Double.valueOf(b.doubleValue())) > 0;
 		}
 		return result;
 	}
