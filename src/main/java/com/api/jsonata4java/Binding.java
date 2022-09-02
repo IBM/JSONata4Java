@@ -16,14 +16,14 @@ import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.BooleanContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.ExprContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.ExprListContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.NullContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.NumberContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.StringContext;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.BooleanContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**

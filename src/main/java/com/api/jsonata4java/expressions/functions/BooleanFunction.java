@@ -24,9 +24,9 @@ package com.api.jsonata4java.expressions.functions;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.ExprContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.Function_declContext;
 import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;

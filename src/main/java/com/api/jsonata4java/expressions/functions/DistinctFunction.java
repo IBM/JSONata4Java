@@ -26,9 +26,9 @@ import java.util.Iterator;
 
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.ExprListContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.ExprValuesContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;

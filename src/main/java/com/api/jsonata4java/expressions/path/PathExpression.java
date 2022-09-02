@@ -29,8 +29,8 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import com.api.jsonata4java.expressions.BufferingErrorListener;
 import com.api.jsonata4java.expressions.ParseException;
-import com.api.jsonata4java.expressions.path.generated.PathExpressionLexer;
-import com.api.jsonata4java.expressions.path.generated.PathExpressionParser;
+import com.api.jsonata4java.expressions.path.antlr.PathExpressionLexer;
+import com.api.jsonata4java.expressions.path.antlr.PathExpressionParser;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @SuppressWarnings("deprecation")

@@ -39,10 +39,10 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ErrorNodeImpl;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import com.api.jsonata4java.expressions.generated.MappingExpressionLexer;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Expr_to_eofContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionLexer;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.ExprContext;
+import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.Expr_to_eofContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 
