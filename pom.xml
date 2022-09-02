@@ -257,8 +257,6 @@
 				<artifactId>antlr4-maven-plugin</artifactId>
 				<version>4.9.2</version>
 				<configuration>
-					<sourceDirectory>src/main/antlr4</sourceDirectory>
-					<outputDirectory>src/main/java</outputDirectory>
 					<visitor>true</visitor>
 				</configuration>
 				<executions>
