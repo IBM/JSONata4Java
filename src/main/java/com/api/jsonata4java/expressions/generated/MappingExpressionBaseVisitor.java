@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.9.2
+// Generated from com\api\jsonata4java\expressions\generated\MappingExpression.g4 by ANTLR 4.9.2
 package com.api.jsonata4java.expressions.generated;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -39,6 +39,13 @@ public class MappingExpressionBaseVisitor<T> extends AbstractParseTreeVisitor<T>
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitLogor(MappingExpressionParser.LogorContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitRegular_expression(MappingExpressionParser.Regular_expressionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -291,4 +298,18 @@ public class MappingExpressionBaseVisitor<T> extends AbstractParseTreeVisitor<T>
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitExprOrSeqList(MappingExpressionParser.ExprOrSeqListContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitRegularExpression(MappingExpressionParser.RegularExpressionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitRegexPattern(MappingExpressionParser.RegexPatternContext ctx) { return visitChildren(ctx); }
 }

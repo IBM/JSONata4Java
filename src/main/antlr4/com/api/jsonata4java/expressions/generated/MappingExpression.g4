@@ -66,6 +66,7 @@ expr:
  | expr 'or' expr                                         # logor
  | expr '?' expr (':' expr)?                              # conditional
  | expr CHAIN expr                                        # fct_chain
+ | regularExpression                                      # regular_expression
  | '(' (expr (';' (expr)?)*)? ')'                         # parens
  | VAR_ID                                                 # var_recall
  | NUMBER                                                 # number
@@ -82,6 +83,9 @@ seq : expr '..' expr ;
 
 exprOrSeq : seq | expr ;
 exprOrSeqList : exprOrSeq (',' exprOrSeq)* ;
+
+regularExpression : '/' regexPattern '/';
+regexPattern : ~DIV*;
 
 // =======================
 // = LEXER RULES

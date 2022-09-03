@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.POJONode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -116,11 +117,11 @@ public class ContainsFunction extends FunctionBase implements Function {
 
 					// Do a simple String::contains
 					result = str.contains(pattern) ? BooleanNode.TRUE : BooleanNode.FALSE;
+				} else if (argPattern instanceof POJONode) {
+					final String str = argString.textValue();
+					final String pattern = argPattern.asText();				
+					result = str.matches(pattern) ? BooleanNode.TRUE : BooleanNode.FALSE;
 				} else {
-					/*
-					 * TODO: Add support for regex patterns once the grammar has been updated. For
-					 * now, simply throw an exception.
-					 */
 					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
 			} else {

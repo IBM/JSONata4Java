@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.9.2
+// Generated from com\api\jsonata4java\expressions\generated\MappingExpression.g4 by ANTLR 4.9.2
 package com.api.jsonata4java.expressions.generated;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -59,6 +59,18 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLogor(MappingExpressionParser.LogorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegular_expression(MappingExpressionParser.Regular_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegular_expression(MappingExpressionParser.Regular_expressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -491,6 +503,30 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExprOrSeqList(MappingExpressionParser.ExprOrSeqListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegularExpression(MappingExpressionParser.RegularExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegularExpression(MappingExpressionParser.RegularExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegexPattern(MappingExpressionParser.RegexPatternContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegexPattern(MappingExpressionParser.RegexPatternContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

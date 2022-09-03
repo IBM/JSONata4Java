@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.9.2
+// Generated from com\api\jsonata4java\expressions\generated\MappingExpression.g4 by ANTLR 4.9.2
 package com.api.jsonata4java.expressions.generated;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -37,6 +37,13 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLogor(MappingExpressionParser.LogorContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code regular_expression}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegular_expression(MappingExpressionParser.Regular_expressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code string}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
@@ -281,4 +288,16 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExprOrSeqList(MappingExpressionParser.ExprOrSeqListContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MappingExpressionParser#regularExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegularExpression(MappingExpressionParser.RegularExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MappingExpressionParser#regexPattern}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegexPattern(MappingExpressionParser.RegexPatternContext ctx);
 }
