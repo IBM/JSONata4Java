@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.9.2
+// Generated from com\api\jsonata4java\expressions\path\generated\PathExpressionParser.g4 by ANTLR 4.10.1
 package com.api.jsonata4java.expressions.path.generated;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class PathExpressionParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.10.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -311,15 +311,26 @@ public class PathExpressionParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\13\37\4\2\t\2\4\3"+
-		"\t\3\4\4\t\4\3\2\3\2\7\2\13\n\2\f\2\16\2\16\13\2\3\2\3\2\3\2\5\2\23\n"+
-		"\2\3\3\3\3\3\3\3\3\5\3\31\n\3\3\4\3\4\3\4\3\4\3\4\2\2\5\2\4\6\2\2\2\36"+
-		"\2\b\3\2\2\2\4\30\3\2\2\2\6\32\3\2\2\2\b\f\5\4\3\2\t\13\5\6\4\2\n\t\3"+
-		"\2\2\2\13\16\3\2\2\2\f\n\3\2\2\2\f\r\3\2\2\2\r\22\3\2\2\2\16\f\3\2\2\2"+
-		"\17\20\7\b\2\2\20\23\5\2\2\2\21\23\7\2\2\3\22\17\3\2\2\2\22\21\3\2\2\2"+
-		"\23\3\3\2\2\2\24\25\7\5\2\2\25\26\7\n\2\2\26\31\7\13\2\2\27\31\7\4\2\2"+
-		"\30\24\3\2\2\2\30\27\3\2\2\2\31\5\3\2\2\2\32\33\7\6\2\2\33\34\7\t\2\2"+
-		"\34\35\7\7\2\2\35\7\3\2\2\2\5\f\22\30";
+		"\u0004\u0001\t\u001d\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0002\u0007\u0002\u0001\u0000\u0001\u0000\u0005\u0000\t\b\u0000\n\u0000"+
+		"\f\u0000\f\t\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0003\u0000\u0011"+
+		"\b\u0000\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0003\u0001\u0017"+
+		"\b\u0001\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0001\u0002\u0000"+
+		"\u0000\u0003\u0000\u0002\u0004\u0000\u0000\u001c\u0000\u0006\u0001\u0000"+
+		"\u0000\u0000\u0002\u0016\u0001\u0000\u0000\u0000\u0004\u0018\u0001\u0000"+
+		"\u0000\u0000\u0006\n\u0003\u0002\u0001\u0000\u0007\t\u0003\u0004\u0002"+
+		"\u0000\b\u0007\u0001\u0000\u0000\u0000\t\f\u0001\u0000\u0000\u0000\n\b"+
+		"\u0001\u0000\u0000\u0000\n\u000b\u0001\u0000\u0000\u0000\u000b\u0010\u0001"+
+		"\u0000\u0000\u0000\f\n\u0001\u0000\u0000\u0000\r\u000e\u0005\u0006\u0000"+
+		"\u0000\u000e\u0011\u0003\u0000\u0000\u0000\u000f\u0011\u0005\u0000\u0000"+
+		"\u0001\u0010\r\u0001\u0000\u0000\u0000\u0010\u000f\u0001\u0000\u0000\u0000"+
+		"\u0011\u0001\u0001\u0000\u0000\u0000\u0012\u0013\u0005\u0003\u0000\u0000"+
+		"\u0013\u0014\u0005\b\u0000\u0000\u0014\u0017\u0005\t\u0000\u0000\u0015"+
+		"\u0017\u0005\u0002\u0000\u0000\u0016\u0012\u0001\u0000\u0000\u0000\u0016"+
+		"\u0015\u0001\u0000\u0000\u0000\u0017\u0003\u0001\u0000\u0000\u0000\u0018"+
+		"\u0019\u0005\u0004\u0000\u0000\u0019\u001a\u0005\u0007\u0000\u0000\u001a"+
+		"\u001b\u0005\u0005\u0000\u0000\u001b\u0005\u0001\u0000\u0000\u0000\u0003"+
+		"\n\u0010\u0016";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

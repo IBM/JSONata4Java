@@ -69,7 +69,7 @@
 		<runSuite>**/AgnosticTestSuite.class</runSuite>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<gpg.skip>true</gpg.skip><!-- by default skip gpg -->
-    <antlr4.version>4.9.2</antlr4.version>
+    <antlr4.version>4.10.1</antlr4.version>
   </properties>
 	<distributionManagement>
 		<snapshotRepository>
