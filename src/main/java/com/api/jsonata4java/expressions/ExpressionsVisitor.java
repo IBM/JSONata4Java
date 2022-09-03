@@ -406,7 +406,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		return str;
 	}
 
-// TODO implement this 
 	private static String sanitiseRegularExpression(String str) {
 
 		// strip surrounding slashes
@@ -1219,31 +1218,31 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		return result;
 	}
 
-	@Override
-	public JsonNode visitExpr_to_eof(MappingExpressionParser.Expr_to_eofContext ctx) {
-		ParseTree tree = ctx.expr();
-		int treeSize = tree.getChildCount();
-		steps.clear();
-		for (int i = 0; i < treeSize; i++) {
-			steps.add(tree.getChild(i));
-		}
-		if (tree.getChild(0) instanceof Array_constructorContext) {
-			firstStepCons = true;
-		}
-		// test for laststep array construction child[n-1] instanceof
-		// Array_constructorContext
-		if (tree.getChild(treeSize - 1) instanceof Array_constructorContext) {
-			lastStepCons = true;
-		}
-		if (tree.equals(steps.get(0))) {
-			firstStep = true;
-		} else {
-			firstStep = false;
-		}
-
-		JsonNode result = visit(tree);
-		return result;
-	}
+//	@Override
+//	public JsonNode visitExpr_to_eof(MappingExpressionParser.Expr_to_eofContext ctx) {
+//		ParseTree tree = ctx.expr();
+//		int treeSize = tree.getChildCount();
+//		steps.clear();
+//		for (int i = 0; i < treeSize; i++) {
+//			steps.add(tree.getChild(i));
+//		}
+//		if (tree.getChild(0) instanceof Array_constructorContext) {
+//			firstStepCons = true;
+//		}
+//		// test for laststep array construction child[n-1] instanceof
+//		// Array_constructorContext
+//		if (tree.getChild(treeSize - 1) instanceof Array_constructorContext) {
+//			lastStepCons = true;
+//		}
+//		if (tree.equals(steps.get(0))) {
+//			firstStep = true;
+//		} else {
+//			firstStep = false;
+//		}
+//
+//		JsonNode result = visit(tree);
+//		return result;
+//	}
 
 	@Override
 	public JsonNode visitComp_op(MappingExpressionParser.Comp_opContext ctx) {
