@@ -1,0 +1,55 @@
+package com.api.jsonata4java.expressions;
+
+import java.util.regex.Pattern;
+
+public class RegularExpression {
+
+	public enum Type {
+		NORMAL, CASEINSENSITIVE, MULTILINE
+	};
+
+	private final Pattern pattern;
+
+	public RegularExpression(String string) {
+		this(Type.NORMAL, string);
+	}
+
+	public RegularExpression(final Type type, final String regex) {
+		String regexPattern;
+		switch (type) {
+		case CASEINSENSITIVE:
+		case MULTILINE:
+			regexPattern = regex.substring(1, regex.length() - 2);
+			break;
+		default:
+			regexPattern = regex.substring(1, regex.length() - 1);
+			break;
+		}
+		if (!(regexPattern.startsWith("^") || regexPattern.startsWith("\\A"))) {
+			regexPattern = ".*" + regexPattern;
+		}
+		if (!(regexPattern.endsWith("$") || regexPattern.endsWith("\\z") || regexPattern.endsWith("\\Z"))) {
+			regexPattern = regexPattern + ".*";
+		}
+		switch (type) {
+		case CASEINSENSITIVE:
+			this.pattern = Pattern.compile(regexPattern, Pattern.CASE_INSENSITIVE);
+			break;
+		case MULTILINE:
+			this.pattern = Pattern.compile(regexPattern, Pattern.MULTILINE);
+			break;
+		default:
+			this.pattern = Pattern.compile(regexPattern);
+			break;
+		}
+	}
+
+	public boolean matches(final String string) {
+		return this.pattern.matcher(string).matches();
+	}
+
+	@Override
+	public String toString() {
+		return this.pattern.toString();
+	}
+}

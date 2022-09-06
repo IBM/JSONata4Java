@@ -268,6 +268,30 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterRegular_expression_multiline(MappingExpressionParser.Regular_expression_multilineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegular_expression_multiline(MappingExpressionParser.Regular_expression_multilineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegular_expression_caseinsensitive(MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegular_expression_caseinsensitive(MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterArray_constructor(MappingExpressionParser.Array_constructorContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -503,6 +527,30 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExprOrSeqList(MappingExpressionParser.ExprOrSeqListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegularExpressionCaseInsensitive(MappingExpressionParser.RegularExpressionCaseInsensitiveContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegularExpressionCaseInsensitive(MappingExpressionParser.RegularExpressionCaseInsensitiveContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegularExpressionMultiline(MappingExpressionParser.RegularExpressionMultilineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegularExpressionMultiline(MappingExpressionParser.RegularExpressionMultilineContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

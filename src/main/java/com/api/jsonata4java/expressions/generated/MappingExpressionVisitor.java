@@ -157,6 +157,20 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitContext_ref(MappingExpressionParser.Context_refContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code regular_expression_multiline}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegular_expression_multiline(MappingExpressionParser.Regular_expression_multilineContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code regular_expression_caseinsensitive}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegular_expression_caseinsensitive(MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code array_constructor}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -288,6 +302,18 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExprOrSeqList(MappingExpressionParser.ExprOrSeqListContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MappingExpressionParser#regularExpressionCaseInsensitive}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegularExpressionCaseInsensitive(MappingExpressionParser.RegularExpressionCaseInsensitiveContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MappingExpressionParser#regularExpressionMultiline}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegularExpressionMultiline(MappingExpressionParser.RegularExpressionMultilineContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link MappingExpressionParser#regularExpression}.
 	 * @param ctx the parse tree

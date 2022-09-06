@@ -24,6 +24,7 @@ package com.api.jsonata4java.expressions.functions;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -108,19 +109,17 @@ public class ContainsFunction extends FunctionBase implements Function {
 			if (!argString.isTextual()) {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
+			final String str = argString.textValue();
 			// Make sure argPattern is not null
 			if (argPattern != null) {
 				// Check to see if the pattern is just a string
 				if (argPattern.isTextual()) {
-					final String str = argString.textValue();
 					final String pattern = argPattern.textValue();
-
 					// Do a simple String::contains
 					result = str.contains(pattern) ? BooleanNode.TRUE : BooleanNode.FALSE;
 				} else if (argPattern instanceof POJONode) {
-					final String str = argString.textValue();
-					final String pattern = argPattern.asText();				
-					result = str.matches(pattern) ? BooleanNode.TRUE : BooleanNode.FALSE;
+					final RegularExpression regex = (RegularExpression) ((POJONode) argPattern).getPojo();
+					result = regex.matches(str) ? BooleanNode.TRUE : BooleanNode.FALSE;
 				} else {
 					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}

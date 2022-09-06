@@ -258,6 +258,30 @@ public interface MappingExpressionListener extends ParseTreeListener {
 	 */
 	void exitContext_ref(MappingExpressionParser.Context_refContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code regular_expression_multiline}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterRegular_expression_multiline(MappingExpressionParser.Regular_expression_multilineContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code regular_expression_multiline}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitRegular_expression_multiline(MappingExpressionParser.Regular_expression_multilineContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code regular_expression_caseinsensitive}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterRegular_expression_caseinsensitive(MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code regular_expression_caseinsensitive}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitRegular_expression_caseinsensitive(MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code array_constructor}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
 	 * @param ctx the parse tree
@@ -481,6 +505,26 @@ public interface MappingExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExprOrSeqList(MappingExpressionParser.ExprOrSeqListContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MappingExpressionParser#regularExpressionCaseInsensitive}.
+	 * @param ctx the parse tree
+	 */
+	void enterRegularExpressionCaseInsensitive(MappingExpressionParser.RegularExpressionCaseInsensitiveContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MappingExpressionParser#regularExpressionCaseInsensitive}.
+	 * @param ctx the parse tree
+	 */
+	void exitRegularExpressionCaseInsensitive(MappingExpressionParser.RegularExpressionCaseInsensitiveContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link MappingExpressionParser#regularExpressionMultiline}.
+	 * @param ctx the parse tree
+	 */
+	void enterRegularExpressionMultiline(MappingExpressionParser.RegularExpressionMultilineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link MappingExpressionParser#regularExpressionMultiline}.
+	 * @param ctx the parse tree
+	 */
+	void exitRegularExpressionMultiline(MappingExpressionParser.RegularExpressionMultilineContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link MappingExpressionParser#regularExpression}.
 	 * @param ctx the parse tree

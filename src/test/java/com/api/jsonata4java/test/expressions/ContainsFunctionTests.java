@@ -128,7 +128,8 @@ public class ContainsFunctionTests implements Serializable {
 				{ "$contains(\"abracadabra\", /.*bra.*/)", "true", null },
 				{ "$contains(\"abracadabra\", /bra/)", "true", null },
 				{ "$contains(\"abracadabra\", /[abcdr]*/)", "true", null },
-				{ "($compute := function($val1, $val2) { $val1 + $val2}; $contains($string($compute(120000 / 3 / 2, 10000)), /30+/))", "true", null }
+				{ "($compute := function($val1, $val2) { $val1 + $val2}; $contains($string($compute(120000 / 3 / 2, 10000)), /30+/))", "true", null },
+				{ "$contains(\"Hello World\", /wo/i)", "true", null },
 		});
 	}
 

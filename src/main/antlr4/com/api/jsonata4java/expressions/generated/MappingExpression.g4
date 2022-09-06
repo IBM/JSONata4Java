@@ -67,6 +67,8 @@ expr:
  | expr '?' expr (':' expr)?                              # conditional
  | expr CHAIN expr                                        # fct_chain
  | regularExpression                                      # regular_expression
+ | regularExpressionCaseInsensitive                       # regular_expression_caseinsensitive
+ | regularExpressionMultiline                             # regular_expression_multiline
  | '(' (expr (';' (expr)?)*)? ')'                         # parens
  | VAR_ID                                                 # var_recall
  | NUMBER                                                 # number
@@ -84,6 +86,8 @@ seq : expr '..' expr ;
 exprOrSeq : seq | expr ;
 exprOrSeqList : exprOrSeq (',' exprOrSeq)* ;
 
+regularExpressionCaseInsensitive : '/' regexPattern '/i';
+regularExpressionMultiline : '/' regexPattern '/m';
 regularExpression : '/' regexPattern '/';
 regexPattern : ~DIV*;
 
