@@ -89,7 +89,7 @@ exprOrSeqList : exprOrSeq (',' exprOrSeq)* ;
 regularExpressionCaseInsensitive : '/' regexPattern '/i';
 regularExpressionMultiline : '/' regexPattern '/m';
 regularExpression : '/' regexPattern '/';
-regexPattern : (~(DIV))*;
+regexPattern : (~DIV | '\\' DIV)*;
 
 // =======================
 // = LEXER RULES
