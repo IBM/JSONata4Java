@@ -89,7 +89,7 @@ exprOrSeqList : exprOrSeq (',' exprOrSeq)* ;
 regularExpressionCaseInsensitive : '/' regexPattern '/i';
 regularExpressionMultiline : '/' regexPattern '/m';
 regularExpression : '/' regexPattern '/';
-regexPattern : ~DIV*;
+regexPattern : (~(DIV))*;
 
 // =======================
 // = LEXER RULES
@@ -143,6 +143,7 @@ LE  : '<=' ;
 GT  : '>' ;
 GE  : '>=' ;
 CONCAT : '&';
+CIRCUMFLEX : '^';
 AND : 'and';
 OR : 'or';
 

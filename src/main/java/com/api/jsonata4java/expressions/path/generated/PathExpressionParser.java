@@ -1,4 +1,4 @@
-// Generated from com\api\jsonata4java\expressions\path\generated\PathExpressionParser.g4 by ANTLR 4.10.1
+// Generated from java-escape by ANTLR 4.11.1
 package com.api.jsonata4java.expressions.path.generated;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class PathExpressionParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.10.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -75,7 +75,7 @@ public class PathExpressionParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "PathExpressionParser.g4"; }
+	public String getGrammarFileName() { return "java-escape"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -91,6 +91,7 @@ public class PathExpressionParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ExprContext extends ParserRuleContext {
 		public ExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -102,6 +103,7 @@ public class PathExpressionParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class PathContext extends ExprContext {
 		public ExprContext rhs;
 		public IdContext id() {
@@ -193,6 +195,7 @@ public class PathExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class IdContext extends ParserRuleContext {
 		public Token txt;
 		public TerminalNode BACK_QUOTED_ID() { return getToken(PathExpressionParser.BACK_QUOTED_ID, 0); }
@@ -260,6 +263,7 @@ public class PathExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class Array_indexContext extends ParserRuleContext {
 		public TerminalNode ARR_OPEN() { return getToken(PathExpressionParser.ARR_OPEN, 0); }
 		public TerminalNode ARR_CLOSE() { return getToken(PathExpressionParser.ARR_CLOSE, 0); }

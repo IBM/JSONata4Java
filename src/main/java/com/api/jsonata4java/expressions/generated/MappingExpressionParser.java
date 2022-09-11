@@ -1,4 +1,4 @@
-// Generated from com\api\jsonata4java\expressions\generated\MappingExpression.g4 by ANTLR 4.10.1
+// Generated from java-escape by ANTLR 4.11.1
 package com.api.jsonata4java.expressions.generated;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
+@SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class MappingExpressionParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.10.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -22,7 +22,7 @@ public class MappingExpressionParser extends Parser {
 		ARR_CLOSE=17, OBJ_OPEN=18, OBJ_CLOSE=19, DOLLAR=20, ROOT=21, DESCEND=22, 
 		NUMBER=23, FUNCTIONID=24, WS=25, COMMENT=26, CHAIN=27, ASSIGN=28, MUL=29, 
 		DIV=30, ADD=31, SUB=32, REM=33, EQ=34, NOT_EQ=35, LT=36, LE=37, GT=38, 
-		GE=39, CONCAT=40, AND=41, OR=42, VAR_ID=43, ID=44;
+		GE=39, CONCAT=40, CIRCUMFLEX=41, AND=42, OR=43, VAR_ID=44, ID=45;
 	public static final int
 		RULE_expr_to_eof = 0, RULE_expr = 1, RULE_fieldList = 2, RULE_exprList = 3, 
 		RULE_varList = 4, RULE_exprValues = 5, RULE_emptyValues = 6, RULE_seq = 7, 
@@ -43,7 +43,7 @@ public class MappingExpressionParser extends Parser {
 			"'/i'", "'/m'", "'true'", "'false'", null, "'null'", "'['", "']'", "'{'", 
 			"'}'", "'$'", "'$$'", "'**'", null, null, null, null, "'~>'", "':='", 
 			"'*'", "'/'", "'+'", "'-'", "'%'", "'='", "'!='", "'<'", "'<='", "'>'", 
-			"'>='", "'&'", "'and'", "'or'"
+			"'>='", "'&'", "'^'", "'and'", "'or'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -53,7 +53,8 @@ public class MappingExpressionParser extends Parser {
 			"TRUE", "FALSE", "STRING", "NULL", "ARR_OPEN", "ARR_CLOSE", "OBJ_OPEN", 
 			"OBJ_CLOSE", "DOLLAR", "ROOT", "DESCEND", "NUMBER", "FUNCTIONID", "WS", 
 			"COMMENT", "CHAIN", "ASSIGN", "MUL", "DIV", "ADD", "SUB", "REM", "EQ", 
-			"NOT_EQ", "LT", "LE", "GT", "GE", "CONCAT", "AND", "OR", "VAR_ID", "ID"
+			"NOT_EQ", "LT", "LE", "GT", "GE", "CONCAT", "CIRCUMFLEX", "AND", "OR", 
+			"VAR_ID", "ID"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -91,7 +92,7 @@ public class MappingExpressionParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "MappingExpression.g4"; }
+	public String getGrammarFileName() { return "java-escape"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -107,6 +108,7 @@ public class MappingExpressionParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class Expr_to_eofContext extends ParserRuleContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
@@ -154,6 +156,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ExprContext extends ParserRuleContext {
 		public ExprContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -165,6 +168,7 @@ public class MappingExpressionParser extends Parser {
 			super.copyFrom(ctx);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class ParensContext extends ExprContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -187,6 +191,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Muldiv_opContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -213,6 +218,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class LogorContext extends ExprContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -236,6 +242,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Regular_expressionContext extends ExprContext {
 		public RegularExpressionContext regularExpression() {
 			return getRuleContext(RegularExpressionContext.class,0);
@@ -255,6 +262,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class StringContext extends ExprContext {
 		public TerminalNode STRING() { return getToken(MappingExpressionParser.STRING, 0); }
 		public StringContext(ExprContext ctx) { copyFrom(ctx); }
@@ -272,6 +280,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class LogandContext extends ExprContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -295,6 +304,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class ConditionalContext extends ExprContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -317,6 +327,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Function_callContext extends ExprContext {
 		public TerminalNode VAR_ID() { return getToken(MappingExpressionParser.VAR_ID, 0); }
 		public EmptyValuesContext emptyValues() {
@@ -340,6 +351,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Var_assignContext extends ExprContext {
 		public TerminalNode VAR_ID() { return getToken(MappingExpressionParser.VAR_ID, 0); }
 		public TerminalNode ASSIGN() { return getToken(MappingExpressionParser.ASSIGN, 0); }
@@ -370,6 +382,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class DescendantContext extends ExprContext {
 		public TerminalNode DESCEND() { return getToken(MappingExpressionParser.DESCEND, 0); }
 		public DescendantContext(ExprContext ctx) { copyFrom(ctx); }
@@ -387,6 +400,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class MembershipContext extends ExprContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -409,6 +423,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Addsub_opContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -434,6 +449,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Function_declContext extends ExprContext {
 		public TerminalNode FUNCTIONID() { return getToken(MappingExpressionParser.FUNCTIONID, 0); }
 		public VarListContext varList() {
@@ -459,6 +475,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class NumberContext extends ExprContext {
 		public TerminalNode NUMBER() { return getToken(MappingExpressionParser.NUMBER, 0); }
 		public NumberContext(ExprContext ctx) { copyFrom(ctx); }
@@ -476,6 +493,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class PathContext extends ExprContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -498,6 +516,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class To_arrayContext extends ExprContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
@@ -519,6 +538,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class ArrayContext extends ExprContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -543,6 +563,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class IdContext extends ExprContext {
 		public TerminalNode ID() { return getToken(MappingExpressionParser.ID, 0); }
 		public IdContext(ExprContext ctx) { copyFrom(ctx); }
@@ -560,6 +581,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Object_constructorContext extends ExprContext {
 		public TerminalNode OBJ_OPEN() { return getToken(MappingExpressionParser.OBJ_OPEN, 0); }
 		public TerminalNode OBJ_CLOSE() { return getToken(MappingExpressionParser.OBJ_CLOSE, 0); }
@@ -581,6 +603,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Context_refContext extends ExprContext {
 		public TerminalNode DOLLAR() { return getToken(MappingExpressionParser.DOLLAR, 0); }
 		public Context_refContext(ExprContext ctx) { copyFrom(ctx); }
@@ -598,6 +621,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Regular_expression_multilineContext extends ExprContext {
 		public RegularExpressionMultilineContext regularExpressionMultiline() {
 			return getRuleContext(RegularExpressionMultilineContext.class,0);
@@ -617,6 +641,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Regular_expression_caseinsensitiveContext extends ExprContext {
 		public RegularExpressionCaseInsensitiveContext regularExpressionCaseInsensitive() {
 			return getRuleContext(RegularExpressionCaseInsensitiveContext.class,0);
@@ -636,6 +661,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Array_constructorContext extends ExprContext {
 		public TerminalNode ARR_OPEN() { return getToken(MappingExpressionParser.ARR_OPEN, 0); }
 		public TerminalNode ARR_CLOSE() { return getToken(MappingExpressionParser.ARR_CLOSE, 0); }
@@ -657,6 +683,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Unary_opContext extends ExprContext {
 		public Token op;
 		public ExprContext expr() {
@@ -678,6 +705,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Var_recallContext extends ExprContext {
 		public TerminalNode VAR_ID() { return getToken(MappingExpressionParser.VAR_ID, 0); }
 		public Var_recallContext(ExprContext ctx) { copyFrom(ctx); }
@@ -695,6 +723,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Concat_opContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -719,6 +748,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Root_pathContext extends ExprContext {
 		public TerminalNode ROOT() { return getToken(MappingExpressionParser.ROOT, 0); }
 		public Root_pathContext(ExprContext ctx) { copyFrom(ctx); }
@@ -736,6 +766,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Fct_chainContext extends ExprContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -759,6 +790,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class BooleanContext extends ExprContext {
 		public Token op;
 		public TerminalNode TRUE() { return getToken(MappingExpressionParser.TRUE, 0); }
@@ -778,6 +810,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class NullContext extends ExprContext {
 		public TerminalNode NULL() { return getToken(MappingExpressionParser.NULL, 0); }
 		public NullContext(ExprContext ctx) { copyFrom(ctx); }
@@ -795,6 +828,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Comp_opContext extends ExprContext {
 		public Token op;
 		public List<ExprContext> expr() {
@@ -824,6 +858,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Function_execContext extends ExprContext {
 		public ExprValuesContext exprValues() {
 			return getRuleContext(ExprValuesContext.class,0);
@@ -852,6 +887,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class Field_valuesContext extends ExprContext {
 		public TerminalNode MUL() { return getToken(MappingExpressionParser.MUL, 0); }
 		public Field_valuesContext(ExprContext ctx) { copyFrom(ctx); }
@@ -869,6 +905,7 @@ public class MappingExpressionParser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	@SuppressWarnings("CheckReturnValue")
 	public static class ObjectContext extends ExprContext {
 		public ExprContext expr() {
 			return getRuleContext(ExprContext.class,0);
@@ -969,7 +1006,7 @@ public class MappingExpressionParser extends Parser {
 				setState(39);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << TRUE) | (1L << FALSE) | (1L << STRING) | (1L << NULL) | (1L << ARR_OPEN) | (1L << OBJ_OPEN) | (1L << DOLLAR) | (1L << ROOT) | (1L << DESCEND) | (1L << NUMBER) | (1L << FUNCTIONID) | (1L << MUL) | (1L << DIV) | (1L << SUB) | (1L << VAR_ID) | (1L << ID))) != 0)) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 52782496608288L) != 0) {
 					{
 					setState(38);
 					exprOrSeqList();
@@ -990,7 +1027,7 @@ public class MappingExpressionParser extends Parser {
 				setState(44);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << TRUE) | (1L << FALSE) | (1L << STRING) | (1L << NULL) | (1L << ARR_OPEN) | (1L << OBJ_OPEN) | (1L << DOLLAR) | (1L << ROOT) | (1L << DESCEND) | (1L << NUMBER) | (1L << FUNCTIONID) | (1L << MUL) | (1L << DIV) | (1L << SUB) | (1L << VAR_ID) | (1L << ID))) != 0)) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 52782496608288L) != 0) {
 					{
 					setState(43);
 					fieldList();
@@ -1040,7 +1077,7 @@ public class MappingExpressionParser extends Parser {
 				setState(56);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << TRUE) | (1L << FALSE) | (1L << STRING) | (1L << NULL) | (1L << ARR_OPEN) | (1L << OBJ_OPEN) | (1L << DOLLAR) | (1L << ROOT) | (1L << DESCEND) | (1L << NUMBER) | (1L << FUNCTIONID) | (1L << MUL) | (1L << DIV) | (1L << SUB) | (1L << VAR_ID) | (1L << ID))) != 0)) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 52782496608288L) != 0) {
 					{
 					setState(55);
 					exprList();
@@ -1081,7 +1118,7 @@ public class MappingExpressionParser extends Parser {
 					setState(67);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << TRUE) | (1L << FALSE) | (1L << STRING) | (1L << NULL) | (1L << ARR_OPEN) | (1L << OBJ_OPEN) | (1L << DOLLAR) | (1L << ROOT) | (1L << DESCEND) | (1L << NUMBER) | (1L << FUNCTIONID) | (1L << MUL) | (1L << DIV) | (1L << SUB) | (1L << VAR_ID) | (1L << ID))) != 0)) {
+					if (((_la) & ~0x3f) == 0 && ((1L << _la) & 52782496608288L) != 0) {
 						{
 						setState(66);
 						exprList();
@@ -1111,7 +1148,7 @@ public class MappingExpressionParser extends Parser {
 				setState(77);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << TRUE) | (1L << FALSE) | (1L << STRING) | (1L << NULL) | (1L << ARR_OPEN) | (1L << OBJ_OPEN) | (1L << DOLLAR) | (1L << ROOT) | (1L << DESCEND) | (1L << NUMBER) | (1L << FUNCTIONID) | (1L << MUL) | (1L << DIV) | (1L << SUB) | (1L << VAR_ID) | (1L << ID))) != 0)) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 52782496608288L) != 0) {
 					{
 					setState(76);
 					exprList();
@@ -1191,7 +1228,7 @@ public class MappingExpressionParser extends Parser {
 				setState(100);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << TRUE) | (1L << FALSE) | (1L << STRING) | (1L << NULL) | (1L << ARR_OPEN) | (1L << OBJ_OPEN) | (1L << DOLLAR) | (1L << ROOT) | (1L << DESCEND) | (1L << NUMBER) | (1L << FUNCTIONID) | (1L << MUL) | (1L << DIV) | (1L << SUB) | (1L << VAR_ID) | (1L << ID))) != 0)) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 52782496608288L) != 0) {
 					{
 					setState(90);
 					expr(0);
@@ -1206,7 +1243,7 @@ public class MappingExpressionParser extends Parser {
 						setState(93);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
-						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << TRUE) | (1L << FALSE) | (1L << STRING) | (1L << NULL) | (1L << ARR_OPEN) | (1L << OBJ_OPEN) | (1L << DOLLAR) | (1L << ROOT) | (1L << DESCEND) | (1L << NUMBER) | (1L << FUNCTIONID) | (1L << MUL) | (1L << DIV) | (1L << SUB) | (1L << VAR_ID) | (1L << ID))) != 0)) {
+						if (((_la) & ~0x3f) == 0 && ((1L << _la) & 52782496608288L) != 0) {
 							{
 							setState(92);
 							expr(0);
@@ -1296,7 +1333,7 @@ public class MappingExpressionParser extends Parser {
 						setState(113);
 						((Muldiv_opContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MUL) | (1L << DIV) | (1L << REM))) != 0)) ) {
+						if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 10200547328L) != 0) ) {
 							((Muldiv_opContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -1350,7 +1387,7 @@ public class MappingExpressionParser extends Parser {
 						setState(122);
 						((Comp_opContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << EQ) | (1L << NOT_EQ) | (1L << LT) | (1L << LE) | (1L << GT) | (1L << GE))) != 0)) ) {
+						if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 1082331758592L) != 0) ) {
 							((Comp_opContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -1447,7 +1484,7 @@ public class MappingExpressionParser extends Parser {
 						setState(147);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
-						if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__4) | (1L << TRUE) | (1L << FALSE) | (1L << STRING) | (1L << NULL) | (1L << ARR_OPEN) | (1L << OBJ_OPEN) | (1L << DOLLAR) | (1L << ROOT) | (1L << DESCEND) | (1L << NUMBER) | (1L << FUNCTIONID) | (1L << MUL) | (1L << DIV) | (1L << SUB) | (1L << VAR_ID) | (1L << ID))) != 0)) {
+						if (((_la) & ~0x3f) == 0 && ((1L << _la) & 52782496608288L) != 0) {
 							{
 							setState(146);
 							fieldList();
@@ -1502,6 +1539,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class FieldListContext extends ParserRuleContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -1606,6 +1644,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ExprListContext extends ParserRuleContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -1670,6 +1709,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class VarListContext extends ParserRuleContext {
 		public List<TerminalNode> VAR_ID() { return getTokens(MappingExpressionParser.VAR_ID); }
 		public TerminalNode VAR_ID(int i) {
@@ -1748,6 +1788,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ExprValuesContext extends ParserRuleContext {
 		public ExprListContext exprList() {
 			return getRuleContext(ExprListContext.class,0);
@@ -1829,6 +1870,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class EmptyValuesContext extends ParserRuleContext {
 		public EmptyValuesContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -1872,6 +1914,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class SeqContext extends ParserRuleContext {
 		public List<ExprContext> expr() {
 			return getRuleContexts(ExprContext.class);
@@ -1923,6 +1966,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ExprOrSeqContext extends ParserRuleContext {
 		public SeqContext seq() {
 			return getRuleContext(SeqContext.class,0);
@@ -1983,6 +2027,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class ExprOrSeqListContext extends ParserRuleContext {
 		public List<ExprOrSeqContext> exprOrSeq() {
 			return getRuleContexts(ExprOrSeqContext.class);
@@ -2047,6 +2092,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class RegularExpressionCaseInsensitiveContext extends ParserRuleContext {
 		public TerminalNode DIV() { return getToken(MappingExpressionParser.DIV, 0); }
 		public RegexPatternContext regexPattern() {
@@ -2096,6 +2142,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class RegularExpressionMultilineContext extends ParserRuleContext {
 		public TerminalNode DIV() { return getToken(MappingExpressionParser.DIV, 0); }
 		public RegexPatternContext regexPattern() {
@@ -2145,6 +2192,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class RegularExpressionContext extends ParserRuleContext {
 		public List<TerminalNode> DIV() { return getTokens(MappingExpressionParser.DIV); }
 		public TerminalNode DIV(int i) {
@@ -2197,6 +2245,7 @@ public class MappingExpressionParser extends Parser {
 		return _localctx;
 	}
 
+	@SuppressWarnings("CheckReturnValue")
 	public static class RegexPatternContext extends ParserRuleContext {
 		public List<TerminalNode> DIV() { return getTokens(MappingExpressionParser.DIV); }
 		public TerminalNode DIV(int i) {
@@ -2306,7 +2355,7 @@ public class MappingExpressionParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001,\u00ff\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0004\u0001-\u00ff\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
 		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
 		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
 		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+
@@ -2357,19 +2406,19 @@ public class MappingExpressionParser extends Parser {
 		"\u0000\u0000\u0000\u0016\u00f0\u0001\u0000\u0000\u0000\u0018\u00f4\u0001"+
 		"\u0000\u0000\u0000\u001a\u00fb\u0001\u0000\u0000\u0000\u001c\u001d\u0003"+
 		"\u0002\u0001\u0000\u001d\u001e\u0005\u0000\u0000\u0001\u001e\u0001\u0001"+
-		"\u0000\u0000\u0000\u001f \u0006\u0001\uffff\uffff\u0000 l\u0005,\u0000"+
+		"\u0000\u0000\u0000\u001f \u0006\u0001\uffff\uffff\u0000 l\u0005-\u0000"+
 		"\u0000!l\u0005\u001d\u0000\u0000\"l\u0005\u0016\u0000\u0000#l\u0005\u0014"+
 		"\u0000\u0000$l\u0005\u0015\u0000\u0000%\'\u0005\u0010\u0000\u0000&(\u0003"+
 		"\u0012\t\u0000\'&\u0001\u0000\u0000\u0000\'(\u0001\u0000\u0000\u0000("+
 		")\u0001\u0000\u0000\u0000)l\u0005\u0011\u0000\u0000*,\u0005\u0012\u0000"+
 		"\u0000+-\u0003\u0004\u0002\u0000,+\u0001\u0000\u0000\u0000,-\u0001\u0000"+
 		"\u0000\u0000-.\u0001\u0000\u0000\u0000.l\u0005\u0013\u0000\u0000/2\u0005"+
-		"+\u0000\u000003\u0003\f\u0006\u000013\u0003\n\u0005\u000020\u0001\u0000"+
+		",\u0000\u000003\u0003\f\u0006\u000013\u0003\n\u0005\u000020\u0001\u0000"+
 		"\u0000\u000021\u0001\u0000\u0000\u00003l\u0001\u0000\u0000\u000045\u0005"+
 		"\u0018\u0000\u000056\u0003\b\u0004\u000068\u0005\u0012\u0000\u000079\u0003"+
 		"\u0006\u0003\u000087\u0001\u0000\u0000\u000089\u0001\u0000\u0000\u0000"+
 		"9:\u0001\u0000\u0000\u0000:;\u0005\u0013\u0000\u0000;l\u0001\u0000\u0000"+
-		"\u0000<=\u0005+\u0000\u0000=G\u0005\u001c\u0000\u0000>H\u0003\u0002\u0001"+
+		"\u0000<=\u0005,\u0000\u0000=G\u0005\u001c\u0000\u0000>H\u0003\u0002\u0001"+
 		"\u0000?@\u0005\u0018\u0000\u0000@A\u0003\b\u0004\u0000AC\u0005\u0012\u0000"+
 		"\u0000BD\u0003\u0006\u0003\u0000CB\u0001\u0000\u0000\u0000CD\u0001\u0000"+
 		"\u0000\u0000DE\u0001\u0000\u0000\u0000EF\u0005\u0013\u0000\u0000FH\u0001"+
@@ -2386,7 +2435,7 @@ public class MappingExpressionParser extends Parser {
 		"\u0000`c\u0001\u0000\u0000\u0000a_\u0001\u0000\u0000\u0000ab\u0001\u0000"+
 		"\u0000\u0000be\u0001\u0000\u0000\u0000ca\u0001\u0000\u0000\u0000dZ\u0001"+
 		"\u0000\u0000\u0000de\u0001\u0000\u0000\u0000ef\u0001\u0000\u0000\u0000"+
-		"fl\u0005\u0007\u0000\u0000gl\u0005+\u0000\u0000hl\u0005\u0017\u0000\u0000"+
+		"fl\u0005\u0007\u0000\u0000gl\u0005,\u0000\u0000hl\u0005\u0017\u0000\u0000"+
 		"il\u0005\u000e\u0000\u0000jl\u0005\u000f\u0000\u0000k\u001f\u0001\u0000"+
 		"\u0000\u0000k!\u0001\u0000\u0000\u0000k\"\u0001\u0000\u0000\u0000k#\u0001"+
 		"\u0000\u0000\u0000k$\u0001\u0000\u0000\u0000k%\u0001\u0000\u0000\u0000"+
@@ -2403,8 +2452,8 @@ public class MappingExpressionParser extends Parser {
 		"\u0001\u0010yz\n\u000e\u0000\u0000z{\u0007\u0003\u0000\u0000{\u009e\u0003"+
 		"\u0002\u0001\u000f|}\n\r\u0000\u0000}~\u0005\u0002\u0000\u0000~\u009e"+
 		"\u0003\u0002\u0001\u000e\u007f\u0080\n\f\u0000\u0000\u0080\u0081\u0005"+
-		")\u0000\u0000\u0081\u009e\u0003\u0002\u0001\r\u0082\u0083\n\u000b\u0000"+
-		"\u0000\u0083\u0084\u0005*\u0000\u0000\u0084\u009e\u0003\u0002\u0001\f"+
+		"*\u0000\u0000\u0081\u009e\u0003\u0002\u0001\r\u0082\u0083\n\u000b\u0000"+
+		"\u0000\u0083\u0084\u0005+\u0000\u0000\u0084\u009e\u0003\u0002\u0001\f"+
 		"\u0085\u0086\n\t\u0000\u0000\u0086\u0087\u0005\u001b\u0000\u0000\u0087"+
 		"\u009e\u0003\u0002\u0001\n\u0088\u0089\n\u001a\u0000\u0000\u0089\u008a"+
 		"\u0005\u0010\u0000\u0000\u008a\u009e\u0005\u0011\u0000\u0000\u008b\u008c"+
@@ -2441,8 +2490,8 @@ public class MappingExpressionParser extends Parser {
 		"\u00b7\u00b5\u0001\u0000\u0000\u0000\u00b8\u00bb\u0001\u0000\u0000\u0000"+
 		"\u00b9\u00b7\u0001\u0000\u0000\u0000\u00b9\u00ba\u0001\u0000\u0000\u0000"+
 		"\u00ba\u0007\u0001\u0000\u0000\u0000\u00bb\u00b9\u0001\u0000\u0000\u0000"+
-		"\u00bc\u00c7\u0005\u0005\u0000\u0000\u00bd\u00c2\u0005+\u0000\u0000\u00be"+
-		"\u00bf\u0005\b\u0000\u0000\u00bf\u00c1\u0005+\u0000\u0000\u00c0\u00be"+
+		"\u00bc\u00c7\u0005\u0005\u0000\u0000\u00bd\u00c2\u0005,\u0000\u0000\u00be"+
+		"\u00bf\u0005\b\u0000\u0000\u00bf\u00c1\u0005,\u0000\u0000\u00c0\u00be"+
 		"\u0001\u0000\u0000\u0000\u00c1\u00c4\u0001\u0000\u0000\u0000\u00c2\u00c0"+
 		"\u0001\u0000\u0000\u0000\u00c2\u00c3\u0001\u0000\u0000\u0000\u00c3\u00c6"+
 		"\u0001\u0000\u0000\u0000\u00c4\u00c2\u0001\u0000\u0000\u0000\u00c5\u00bd"+
