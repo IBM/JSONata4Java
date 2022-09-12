@@ -144,6 +144,7 @@ GT  : '>' ;
 GE  : '>=' ;
 CONCAT : '&';
 CIRCUMFLEX : '^';
+UNDER : '_';
 AND : 'and';
 OR : 'or';
 

@@ -22,7 +22,7 @@ public class MappingExpressionParser extends Parser {
 		ARR_CLOSE=18, OBJ_OPEN=19, OBJ_CLOSE=20, DOLLAR=21, ROOT=22, DESCEND=23, 
 		NUMBER=24, FUNCTIONID=25, WS=26, COMMENT=27, CHAIN=28, ASSIGN=29, MUL=30, 
 		DIV=31, ADD=32, SUB=33, REM=34, EQ=35, NOT_EQ=36, LT=37, LE=38, GT=39, 
-		GE=40, CONCAT=41, CIRCUMFLEX=42, AND=43, OR=44, VAR_ID=45, ID=46;
+		GE=40, CONCAT=41, CIRCUMFLEX=42, UNDER=43, AND=44, OR=45, VAR_ID=46, ID=47;
 	public static final int
 		RULE_expr_to_eof = 0, RULE_expr = 1, RULE_fieldList = 2, RULE_exprList = 3, 
 		RULE_varList = 4, RULE_exprValues = 5, RULE_emptyValues = 6, RULE_seq = 7, 
@@ -43,7 +43,7 @@ public class MappingExpressionParser extends Parser {
 			"'/i'", "'/m'", "'\\'", "'true'", "'false'", null, "'null'", "'['", "']'", 
 			"'{'", "'}'", "'$'", "'$$'", "'**'", null, null, null, null, "'~>'", 
 			"':='", "'*'", "'/'", "'+'", "'-'", "'%'", "'='", "'!='", "'<'", "'<='", 
-			"'>'", "'>='", "'&'", "'^'", "'and'", "'or'"
+			"'>'", "'>='", "'&'", "'^'", "'_'", "'and'", "'or'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -53,8 +53,8 @@ public class MappingExpressionParser extends Parser {
 			null, "TRUE", "FALSE", "STRING", "NULL", "ARR_OPEN", "ARR_CLOSE", "OBJ_OPEN", 
 			"OBJ_CLOSE", "DOLLAR", "ROOT", "DESCEND", "NUMBER", "FUNCTIONID", "WS", 
 			"COMMENT", "CHAIN", "ASSIGN", "MUL", "DIV", "ADD", "SUB", "REM", "EQ", 
-			"NOT_EQ", "LT", "LE", "GT", "GE", "CONCAT", "CIRCUMFLEX", "AND", "OR", 
-			"VAR_ID", "ID"
+			"NOT_EQ", "LT", "LE", "GT", "GE", "CONCAT", "CIRCUMFLEX", "UNDER", "AND", 
+			"OR", "VAR_ID", "ID"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -1006,7 +1006,7 @@ public class MappingExpressionParser extends Parser {
 				setState(39);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 105564993216544L) != 0) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 211118109483040L) != 0) {
 					{
 					setState(38);
 					exprOrSeqList();
@@ -1027,7 +1027,7 @@ public class MappingExpressionParser extends Parser {
 				setState(44);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 105564993216544L) != 0) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 211118109483040L) != 0) {
 					{
 					setState(43);
 					fieldList();
@@ -1077,7 +1077,7 @@ public class MappingExpressionParser extends Parser {
 				setState(56);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 105564993216544L) != 0) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 211118109483040L) != 0) {
 					{
 					setState(55);
 					exprList();
@@ -1118,7 +1118,7 @@ public class MappingExpressionParser extends Parser {
 					setState(67);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					if (((_la) & ~0x3f) == 0 && ((1L << _la) & 105564993216544L) != 0) {
+					if (((_la) & ~0x3f) == 0 && ((1L << _la) & 211118109483040L) != 0) {
 						{
 						setState(66);
 						exprList();
@@ -1148,7 +1148,7 @@ public class MappingExpressionParser extends Parser {
 				setState(77);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 105564993216544L) != 0) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 211118109483040L) != 0) {
 					{
 					setState(76);
 					exprList();
@@ -1228,7 +1228,7 @@ public class MappingExpressionParser extends Parser {
 				setState(100);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 105564993216544L) != 0) {
+				if (((_la) & ~0x3f) == 0 && ((1L << _la) & 211118109483040L) != 0) {
 					{
 					setState(90);
 					expr(0);
@@ -1243,7 +1243,7 @@ public class MappingExpressionParser extends Parser {
 						setState(93);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
-						if (((_la) & ~0x3f) == 0 && ((1L << _la) & 105564993216544L) != 0) {
+						if (((_la) & ~0x3f) == 0 && ((1L << _la) & 211118109483040L) != 0) {
 							{
 							setState(92);
 							expr(0);
@@ -1484,7 +1484,7 @@ public class MappingExpressionParser extends Parser {
 						setState(147);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
-						if (((_la) & ~0x3f) == 0 && ((1L << _la) & 105564993216544L) != 0) {
+						if (((_la) & ~0x3f) == 0 && ((1L << _la) & 211118109483040L) != 0) {
 							{
 							setState(146);
 							fieldList();
@@ -2369,7 +2369,7 @@ public class MappingExpressionParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001.\u0101\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0004\u0001/\u0101\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
 		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
 		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
 		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+
@@ -2421,18 +2421,18 @@ public class MappingExpressionParser extends Parser {
 		"\u0001\u0000\u0000\u0000\u001a\u00fd\u0001\u0000\u0000\u0000\u001c\u001d"+
 		"\u0003\u0002\u0001\u0000\u001d\u001e\u0005\u0000\u0000\u0001\u001e\u0001"+
 		"\u0001\u0000\u0000\u0000\u001f \u0006\u0001\uffff\uffff\u0000 l\u0005"+
-		".\u0000\u0000!l\u0005\u001e\u0000\u0000\"l\u0005\u0017\u0000\u0000#l\u0005"+
+		"/\u0000\u0000!l\u0005\u001e\u0000\u0000\"l\u0005\u0017\u0000\u0000#l\u0005"+
 		"\u0015\u0000\u0000$l\u0005\u0016\u0000\u0000%\'\u0005\u0011\u0000\u0000"+
 		"&(\u0003\u0012\t\u0000\'&\u0001\u0000\u0000\u0000\'(\u0001\u0000\u0000"+
 		"\u0000()\u0001\u0000\u0000\u0000)l\u0005\u0012\u0000\u0000*,\u0005\u0013"+
 		"\u0000\u0000+-\u0003\u0004\u0002\u0000,+\u0001\u0000\u0000\u0000,-\u0001"+
 		"\u0000\u0000\u0000-.\u0001\u0000\u0000\u0000.l\u0005\u0014\u0000\u0000"+
-		"/2\u0005-\u0000\u000003\u0003\f\u0006\u000013\u0003\n\u0005\u000020\u0001"+
+		"/2\u0005.\u0000\u000003\u0003\f\u0006\u000013\u0003\n\u0005\u000020\u0001"+
 		"\u0000\u0000\u000021\u0001\u0000\u0000\u00003l\u0001\u0000\u0000\u0000"+
 		"45\u0005\u0019\u0000\u000056\u0003\b\u0004\u000068\u0005\u0013\u0000\u0000"+
 		"79\u0003\u0006\u0003\u000087\u0001\u0000\u0000\u000089\u0001\u0000\u0000"+
 		"\u00009:\u0001\u0000\u0000\u0000:;\u0005\u0014\u0000\u0000;l\u0001\u0000"+
-		"\u0000\u0000<=\u0005-\u0000\u0000=G\u0005\u001d\u0000\u0000>H\u0003\u0002"+
+		"\u0000\u0000<=\u0005.\u0000\u0000=G\u0005\u001d\u0000\u0000>H\u0003\u0002"+
 		"\u0001\u0000?@\u0005\u0019\u0000\u0000@A\u0003\b\u0004\u0000AC\u0005\u0013"+
 		"\u0000\u0000BD\u0003\u0006\u0003\u0000CB\u0001\u0000\u0000\u0000CD\u0001"+
 		"\u0000\u0000\u0000DE\u0001\u0000\u0000\u0000EF\u0005\u0014\u0000\u0000"+
@@ -2449,7 +2449,7 @@ public class MappingExpressionParser extends Parser {
 		"\u0000\u0000`c\u0001\u0000\u0000\u0000a_\u0001\u0000\u0000\u0000ab\u0001"+
 		"\u0000\u0000\u0000be\u0001\u0000\u0000\u0000ca\u0001\u0000\u0000\u0000"+
 		"dZ\u0001\u0000\u0000\u0000de\u0001\u0000\u0000\u0000ef\u0001\u0000\u0000"+
-		"\u0000fl\u0005\u0007\u0000\u0000gl\u0005-\u0000\u0000hl\u0005\u0018\u0000"+
+		"\u0000fl\u0005\u0007\u0000\u0000gl\u0005.\u0000\u0000hl\u0005\u0018\u0000"+
 		"\u0000il\u0005\u000f\u0000\u0000jl\u0005\u0010\u0000\u0000k\u001f\u0001"+
 		"\u0000\u0000\u0000k!\u0001\u0000\u0000\u0000k\"\u0001\u0000\u0000\u0000"+
 		"k#\u0001\u0000\u0000\u0000k$\u0001\u0000\u0000\u0000k%\u0001\u0000\u0000"+
@@ -2466,8 +2466,8 @@ public class MappingExpressionParser extends Parser {
 		"\u0002\u0001\u0010yz\n\u000e\u0000\u0000z{\u0007\u0003\u0000\u0000{\u009e"+
 		"\u0003\u0002\u0001\u000f|}\n\r\u0000\u0000}~\u0005\u0002\u0000\u0000~"+
 		"\u009e\u0003\u0002\u0001\u000e\u007f\u0080\n\f\u0000\u0000\u0080\u0081"+
-		"\u0005+\u0000\u0000\u0081\u009e\u0003\u0002\u0001\r\u0082\u0083\n\u000b"+
-		"\u0000\u0000\u0083\u0084\u0005,\u0000\u0000\u0084\u009e\u0003\u0002\u0001"+
+		"\u0005,\u0000\u0000\u0081\u009e\u0003\u0002\u0001\r\u0082\u0083\n\u000b"+
+		"\u0000\u0000\u0083\u0084\u0005-\u0000\u0000\u0084\u009e\u0003\u0002\u0001"+
 		"\f\u0085\u0086\n\t\u0000\u0000\u0086\u0087\u0005\u001c\u0000\u0000\u0087"+
 		"\u009e\u0003\u0002\u0001\n\u0088\u0089\n\u001a\u0000\u0000\u0089\u008a"+
 		"\u0005\u0011\u0000\u0000\u008a\u009e\u0005\u0012\u0000\u0000\u008b\u008c"+
@@ -2504,8 +2504,8 @@ public class MappingExpressionParser extends Parser {
 		"\u00b7\u00b5\u0001\u0000\u0000\u0000\u00b8\u00bb\u0001\u0000\u0000\u0000"+
 		"\u00b9\u00b7\u0001\u0000\u0000\u0000\u00b9\u00ba\u0001\u0000\u0000\u0000"+
 		"\u00ba\u0007\u0001\u0000\u0000\u0000\u00bb\u00b9\u0001\u0000\u0000\u0000"+
-		"\u00bc\u00c7\u0005\u0005\u0000\u0000\u00bd\u00c2\u0005-\u0000\u0000\u00be"+
-		"\u00bf\u0005\b\u0000\u0000\u00bf\u00c1\u0005-\u0000\u0000\u00c0\u00be"+
+		"\u00bc\u00c7\u0005\u0005\u0000\u0000\u00bd\u00c2\u0005.\u0000\u0000\u00be"+
+		"\u00bf\u0005\b\u0000\u0000\u00bf\u00c1\u0005.\u0000\u0000\u00c0\u00be"+
 		"\u0001\u0000\u0000\u0000\u00c1\u00c4\u0001\u0000\u0000\u0000\u00c2\u00c0"+
 		"\u0001\u0000\u0000\u0000\u00c2\u00c3\u0001\u0000\u0000\u0000\u00c3\u00c6"+
 		"\u0001\u0000\u0000\u0000\u00c4\u00c2\u0001\u0000\u0000\u0000\u00c5\u00bd"+

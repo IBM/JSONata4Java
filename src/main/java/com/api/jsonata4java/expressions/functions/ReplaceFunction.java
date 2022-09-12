@@ -24,11 +24,13 @@ package com.api.jsonata4java.expressions.functions;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.POJONode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
@@ -123,7 +125,7 @@ public class ReplaceFunction extends FunctionBase implements Function {
 						useContext ? 0 : 1);
 				int limit = -1;
 				// Make sure that the separator is not null
-				if (argPattern != null && argPattern.isTextual()) {
+				if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode)) {
 					if (argPattern.asText().isEmpty()) {
 						throw new EvaluateRuntimeException(ERR_MSG_ARG2_EMPTY_STR);
 					}
@@ -136,7 +138,8 @@ public class ReplaceFunction extends FunctionBase implements Function {
 								throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 							}
 							final String str = argString.textValue();
-							final String pattern = argPattern.textValue();
+							final String pattern = argPattern.isTextual() ? argPattern.textValue()
+									: ((RegularExpression) ((POJONode) argPattern).getPojo()).toString();
 							final String replacement = argReplacement.textValue();
 
 							if (argCount == 4) {

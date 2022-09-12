@@ -8,14 +8,18 @@ public class RegularExpression {
 		NORMAL, CASEINSENSITIVE, MULTILINE
 	};
 
-	private final Pattern pattern;
+	private final Type type;
+
+	private String regexPattern;
+
+	private Pattern pattern;
 
 	public RegularExpression(String string) {
 		this(Type.NORMAL, string);
 	}
 
 	public RegularExpression(final Type type, final String regex) {
-		String regexPattern;
+		this.type = type;
 		switch (type) {
 		case CASEINSENSITIVE:
 		case MULTILINE:
@@ -25,13 +29,26 @@ public class RegularExpression {
 			regexPattern = regex.substring(1, regex.length() - 1);
 			break;
 		}
+		compile();
+	}
+
+	public RegularExpression extend() {
 		if (!(regexPattern.startsWith("^") || regexPattern.startsWith("\\A"))) {
 			regexPattern = ".*" + regexPattern;
 		}
 		if (!(regexPattern.endsWith("$") || regexPattern.endsWith("\\z") || regexPattern.endsWith("\\Z"))) {
 			regexPattern = regexPattern + ".*";
 		}
-		switch (type) {
+		compile();
+		return this;
+	}
+
+	public boolean matches(final String string) {
+		return this.pattern.matcher(string).matches();
+	}
+
+	private void compile() {
+		switch (this.type) {
 		case CASEINSENSITIVE:
 			this.pattern = Pattern.compile(regexPattern, Pattern.CASE_INSENSITIVE);
 			break;
@@ -42,10 +59,6 @@ public class RegularExpression {
 			this.pattern = Pattern.compile(regexPattern);
 			break;
 		}
-	}
-
-	public boolean matches(final String string) {
-		return this.pattern.matcher(string).matches();
 	}
 
 	@Override

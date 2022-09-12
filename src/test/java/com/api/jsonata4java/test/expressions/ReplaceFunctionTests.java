@@ -195,7 +195,9 @@ public class ReplaceFunctionTests implements Serializable {
 				{ "$replace('foo bar', 'o', 'a', [])", null, ERR_MSG_ARG4_BAD_TYPE }, //
 				{ "$replace('foo bar', 'o', 'a', true)", null, ERR_MSG_ARG4_BAD_TYPE }, //
 				{ "$replace('foo bar', 'o', 'a', null)", null, ERR_MSG_ARG4_BAD_TYPE }, //
-				{ "$replace('foo bar', 'o', 'a', -1)", null, ERR_MSG_ARG4_BAD_TYPE } });
+				{ "$replace('foo bar', 'o', 'a', -1)", null, ERR_MSG_ARG4_BAD_TYPE }, //
+				{ "$replace('foox123xfuox456xfiox789xfoo', /x?f[a-z]ox?/, '---')", "\"---123---456---789---\"", null }, //
+		});
 	}
 
 	@Test

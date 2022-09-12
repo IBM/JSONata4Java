@@ -114,11 +114,11 @@ public class ContainsFunction extends FunctionBase implements Function {
 			if (argPattern != null) {
 				// Check to see if the pattern is just a string
 				if (argPattern.isTextual()) {
-					final String pattern = argPattern.textValue();
 					// Do a simple String::contains
-					result = str.contains(pattern) ? BooleanNode.TRUE : BooleanNode.FALSE;
+					result = str.contains(argPattern.textValue()) ? BooleanNode.TRUE : BooleanNode.FALSE;
 				} else if (argPattern instanceof POJONode) {
-					final RegularExpression regex = (RegularExpression) ((POJONode) argPattern).getPojo();
+					// Match against a regular expression
+					final RegularExpression regex = ((RegularExpression) ((POJONode) argPattern).getPojo()).extend();
 					result = regex.matches(str) ? BooleanNode.TRUE : BooleanNode.FALSE;
 				} else {
 					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
