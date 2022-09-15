@@ -132,7 +132,9 @@ public class SplitFunctionTests implements Serializable {
 				{ "$split('so many words', ' ')", "[ \"so\", \"many\", \"words\" ]", null }, //
 				{ "$split('so many words', ' ', 2)", "[ \"so\", \"many\" ]", null }, //
 				{ "$split('foo', '')", "[ \"f\", \"o\", \"o\" ]", null }, //
-				{ "$split('', '')", "[]", null } }); //
+				{ "$split('', '')", "[]", null },  //
+				{ "$split('this     is   a simple  test', /\\s+/)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null }
+		});
 	}
 
 	@Test

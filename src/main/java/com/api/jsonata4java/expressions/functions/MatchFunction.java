@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.POJONode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -92,12 +94,6 @@ public class MatchFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-//			if (argString == null) {
-//				return null;
-//			}
-//			if (!argString.isTextual()) {
-//				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-//			}
 			final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
 					useContext ? 0 : 1);
 			int limit = -1;
@@ -106,8 +102,9 @@ public class MatchFunction extends FunctionBase implements Function {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 			// Make sure that the pattern is a non-empty string
-			if (argPattern != null && argPattern.isTextual() && !(argPattern.asText().isEmpty())) {
-				final String pattern = argPattern.textValue();
+			if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode) && !(argPattern.asText().isEmpty())) {
+				final String pattern = argPattern.isTextual() ? argPattern.textValue()
+						: ((RegularExpression) ((POJONode) argPattern).getPojo()).toString();
 				final Pattern regexPattern = Pattern.compile(pattern);
 				// Check to see if the separator is just a string
 				final String str = argString.textValue();
@@ -175,10 +172,6 @@ public class MatchFunction extends FunctionBase implements Function {
 						result = (SelectorArrayNode) declFct.invoke(expressionVisitor, fctCallCtx);
 					}
 				} else {
-					/*
-					 * TODO: Add support for regex patterns using / delimiters once the grammar has
-					 * been updated. For now, simply throw an exception.
-					 */
 					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
 			}

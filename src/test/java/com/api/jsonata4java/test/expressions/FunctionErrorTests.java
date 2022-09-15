@@ -23,4 +23,9 @@ public class FunctionErrorTests {
 	public void replaceWithRegexWithBlank() throws Exception {
 		test("$replace('foo 123   fuo  456 fio    789 foo',/\\s+/, '--')", "\"foo--123--fuo--456--fio--789--foo\"", null, null);
 	}
+	
+	@Test
+	public void splitWithRegex() throws Exception {
+		test("$split('this     is   a simple  test', /\\s+/)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null, null);
+	}
 }
