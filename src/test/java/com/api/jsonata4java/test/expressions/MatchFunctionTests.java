@@ -140,14 +140,15 @@ public class MatchFunctionTests implements Serializable {
 				{ "$match('foo bar', 'o', true)", null, ERR_MSG_ARG3_BAD_TYPE }, //
 				{ "$match('foo bar', 'o', null)", null, ERR_MSG_ARG3_BAD_TYPE }, //
 				{ "$match('foo bar', 'o', -1)", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				// TODO: the actual test is for "$match('ababbabbcc',/a(b+)/) but we don't
-				// recognize regex expressions at the moment. All are the same except groups
 				{ "$match('ababbabbcc',/a(b+)/)",
 						"[{\"match\":\"ab\",\"start\":0,\"groups\":[\"ab\"]},{\"match\":\"abb\",\"start\":2,\"groups\":[\"abb\"]},{\"match\":\"abb\",\"start\":5,\"groups\":[\"abb\"]}]",
 						null },
 				{ "$match('ababbabbcc','a(b+)')",
 						"[{\"match\":\"ab\",\"start\":0,\"groups\":[\"ab\"]},{\"match\":\"abb\",\"start\":2,\"groups\":[\"abb\"]},{\"match\":\"abb\",\"start\":5,\"groups\":[\"abb\"]}]",
 						null },
+//				{ "$match('abbbaabbaaabcc', /(a+)(b+)/)",
+//							"[{\"match\":\"ab\",\"start\":0,\"groups\":[\"a\"\"bbb\"]},{\"match\":\"abb\",\"start\":2,\"groups\":[\"abb\"]},{\"match\":\"abb\",\"start\":5,\"groups\":[\"abb\"]}]",
+//							null },
 		});
 	}
 

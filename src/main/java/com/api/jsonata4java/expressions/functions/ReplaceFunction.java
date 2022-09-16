@@ -22,6 +22,8 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.util.regex.Pattern;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.RegularExpression;
@@ -70,11 +72,11 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * 
  * Examples
  * 
- * $replace("John Smith and John Jones", "John", "Mr")=="Mr Smith and Mr
- * Jones" $replace("John Smith and John Jones", "John", "Mr", 1)=="Mr Smith
- * and John Jones" $replace("abracadabra", "a.*?a", "*")=="*c*bra"
- * $replace("John Smith", "(\w+)\s(\w+)", "$2, $1")=="Smith, John"
- * $replace("265USD", "([0-9]+)USD", "$$$1")=="$265"
+ * $replace("John Smith and John Jones", "John", "Mr")=="Mr Smith and Mr Jones"
+ * $replace("John Smith and John Jones", "John", "Mr", 1)=="Mr Smith and John
+ * Jones" $replace("abracadabra", "a.*?a", "*")=="*c*bra" $replace("John Smith",
+ * "(\w+)\s(\w+)", "$2, $1")=="Smith, John" $replace("265USD", "([0-9]+)USD",
+ * "$$$1")=="$265"
  * 
  */
 public class ReplaceFunction extends FunctionBase implements Function {
@@ -138,16 +140,19 @@ public class ReplaceFunction extends FunctionBase implements Function {
 								throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 							}
 							final String str = argString.textValue();
-							final String pattern = argPattern.isTextual() ? argPattern.textValue()
-									: ((RegularExpression) ((POJONode) argPattern).getPojo()).toString();
+							final RegularExpression regex = argPattern instanceof POJONode
+									? (RegularExpression) ((POJONode) argPattern).getPojo()
+									: null;
+							final String pattern = regex != null
+									? regex.toString()
+									: argPattern.textValue();
 							final String replacement = argReplacement.textValue();
 
 							if (argCount == 4) {
 								final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
 										useContext ? 2 : 3);
 
-								// Check to see if we have an optional limit argument we check
-								// it
+								// Check to see if we have an optional limit argument we check it
 								if (argLimit != null) {
 									if (argLimit.isNumber() && argLimit.asInt() >= 0) {
 										limit = argLimit.asInt();
@@ -160,12 +165,20 @@ public class ReplaceFunction extends FunctionBase implements Function {
 							// Check to see if a limit was specified
 							if (limit == -1) {
 								// No limits... replace all occurrences in the string
-								result = new TextNode(str.replaceAll(pattern, replacement));
+								if (regex != null) {
+									result = new TextNode(regex.getPattern().matcher(str).replaceAll(replacement));
+								} else {
+									result = new TextNode(str.replaceAll(Pattern.quote(pattern), replacement));
+								}
 							} else {
 								// Only perform the replace the specified number of times
 								String retString = new String(str);
 								for (int i = 0; i < limit; i++) {
-									retString = retString.replaceFirst(pattern, replacement);
+									if (regex != null) {
+										retString = regex.getPattern().matcher(retString).replaceFirst(replacement);
+									} else {
+										retString = retString.replaceFirst(Pattern.quote(pattern), replacement);
+									}
 								} // FOR
 								result = new TextNode(retString);
 							}
@@ -198,6 +211,7 @@ public class ReplaceFunction extends FunctionBase implements Function {
 	public int getMaxArgs() {
 		return 3;
 	}
+
 	@Override
 	public int getMinArgs() {
 		return 1; // account for context variable

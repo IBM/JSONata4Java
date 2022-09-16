@@ -65,4 +65,12 @@ public class RegularExpression {
 	public String toString() {
 		return this.pattern.toString();
 	}
+
+	public Type getType() {
+		return this.type;
+	}
+
+	public Pattern getPattern() {
+		return this.pattern;
+	}
 }
