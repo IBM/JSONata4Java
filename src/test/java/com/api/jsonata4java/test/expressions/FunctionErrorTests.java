@@ -12,6 +12,11 @@ import org.junit.Test;
 public class FunctionErrorTests {
 
 	@Test
+	public void testToMillis() throws Exception {
+		test("($toMillis('13:45', '[H]:[m]') ~> $fromMillis() ~> $substringBefore('T')) = $substringBefore($now(), 'T')", "true", null, null);
+	}
+
+	@Test
 	public void containsWithBlank() throws Exception {
 		test("$contains(\"abra cadabra\", /^abra\\scadabra$/)", "true", null, null);
 		test("$contains(\"abra   cadabra\", /^abra\\s*cadabra$/)", "true", null, null);
@@ -27,5 +32,23 @@ public class FunctionErrorTests {
 	@Test
 	public void splitWithRegex() throws Exception {
 		test("$split('this     is   a simple  test', /\\s+/)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null, null);
+	}
+
+	@Test
+	public void match() throws Exception {
+		test("$match('ababbabbbcc',/a(b+)/)",
+				"[{\"match\":\"ab\",\"index\":0,\"groups\":[\"b\"]},"
+				+ "{\"match\":\"abb\",\"index\":2,\"groups\":[\"bb\"]},"
+				+ "{\"match\":\"abbb\",\"index\":5,\"groups\":[\"bbb\"]}]",
+				null, null);
+	}
+
+	@Test
+	public void matchCaseInsensitively() throws Exception {
+		test("$match('abBbAabbaAaBcc', /(a+)(b+)/i))",
+				"[{\"match\":\"abBb\",\"index\":0,\"groups\":[\"a\",\"bBb\"]},"
+				+ "{\"match\":\"Aabb\",\"index\":4,\"groups\":[\"Aa\",\"bb\"]},"
+				+ "{\"match\":\"aAaB\",\"index\":8,\"groups\":[\"aAa\",\"B\"]}]",
+				null, null);
 	}
 }

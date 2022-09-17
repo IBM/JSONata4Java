@@ -103,15 +103,22 @@ public class MatchFunction extends FunctionBase implements Function {
 			}
 			// Make sure that the pattern is a non-empty string
 			if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode) && !(argPattern.asText().isEmpty())) {
-				final String pattern = argPattern.isTextual() ? argPattern.textValue()
-						: ((RegularExpression) ((POJONode) argPattern).getPojo()).toString();
-				final Pattern regexPattern = Pattern.compile(pattern);
+				RegularExpression regex = null;
+				if (argPattern instanceof POJONode) {
+					regex = (RegularExpression) ((POJONode) argPattern).getPojo();
+				}
+				// final String patternText = regex != null ? regex.toString() : Pattern.quote(argPattern.textValue());
+				Pattern regexPattern;
+				if (regex != null) {
+					regexPattern = regex.getPattern();
+				} else {
+					regexPattern = Pattern.compile(Pattern.quote(argPattern.textValue()));
+				}
 				// Check to see if the separator is just a string
 				final String str = argString.textValue();
 
 				if (argCount == 3) {
-					final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-							useContext ? 1 : 2);
+					final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 1 : 2);
 
 					// Check to see if we have an optional limit argument we check it
 					if (argLimit != null) {
@@ -130,24 +137,30 @@ public class MatchFunction extends FunctionBase implements Function {
 				if (limit == -1) {
 					// No limits... match all occurrences in the string
 					while (matcher.find()) {
-						ObjectNode obj = JsonNodeFactory.instance.objectNode();
+						final ObjectNode obj = JsonNodeFactory.instance.objectNode();
 						obj.put("match", str.substring(matcher.start(), matcher.end()));
-						obj.put("start", new Long(matcher.start()));
-						ArrayNode groups = JsonNodeFactory.instance.arrayNode();
+						obj.put("index", new Long(matcher.start()));
+						final ArrayNode groups = JsonNodeFactory.instance.arrayNode();
 						obj.set("groups", groups);
-						groups.add(matcher.group());
+						final int groupCount = matcher.groupCount();
+						for (int i = 1; i <= groupCount; i++) {
+							groups.add(matcher.group(i));
+						}
 						result.add(obj);
 					}
 				} else if (limit > 0) {
 					int count = 0;
 					while (matcher.find() && count < limit) {
 						count++;
-						ObjectNode obj = JsonNodeFactory.instance.objectNode();
+						final ObjectNode obj = JsonNodeFactory.instance.objectNode();
 						obj.put("match", str.substring(matcher.start(), matcher.end()));
-						obj.put("start", new Long(matcher.start()));
-						ArrayNode groups = JsonNodeFactory.instance.arrayNode();
+						obj.put("index", new Long(matcher.start()));
+						final ArrayNode groups = JsonNodeFactory.instance.arrayNode();
 						obj.set("groups", groups);
-						groups.add(matcher.group());
+						final int groupCount = matcher.groupCount();
+						for (int i = 1; i <= groupCount; i++) {
+							groups.add(matcher.group(i));
+						}
 						result.add(obj);
 					}
 				} else {
