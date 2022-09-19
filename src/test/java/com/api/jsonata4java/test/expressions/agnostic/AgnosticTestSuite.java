@@ -159,8 +159,22 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 		// issue #54 timeouts
 		SKIP_CASES("range-operator", "case021", "case024");
 		// issue 71 support regular expressions
-		SKIP_CASES("regex", "case015", "case016", "case022",
-				"case028", "case029", "case030", "case031", "case032", "case033", "case034", "case037");
+		SKIP_CASES("regex",
+				// - case015, case032, case33, case34
+				//   Referencing undefined capturing groups in the replacement is not allowed in Java:
+				//   Java replace() does not allow to use capturing group numbers in the replacement
+				//   you have not defined in the regular expression pattern...
+				//   Don't know any sensible use of the JSONata behavior simply not to expand such capturing groups references in the replacement.
+				//   For me this is a programming error and thus the Java behavior is OK.
+				// - case022
+				//   Exotic error case throws an error in Java too but another one.
+				// - case031
+				//   JSONATA evaluates $replace("abcdefghijklmno", /(ijk)/, "$x$") to "abcdefgh$x$lmno"
+				//   We could argue if this is a bug or a feature
+				//   but since replacement "$x$$" leads to the same result we might all agree that supporting $x$$ is sufficient.
+				// - case37
+				//   To be investigated
+				"case015", "case022", "case028", "case029", "case031", "case032", "case033", "case034", "case037");
 		// issue #55 and / or stand alone to get by parser
 		SKIP_CASES("boolean-expresssions", "case012", "case013", "case014", "case015");
 		// issue #56 closures

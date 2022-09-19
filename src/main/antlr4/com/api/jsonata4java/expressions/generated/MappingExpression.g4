@@ -62,7 +62,7 @@ expr:
  | expr op='&' expr                                       # concat_op
  | expr op=('<'|'<='|'>'|'>='|'!='|'=') expr              # comp_op
  | expr 'in' expr                                         # membership
- | expr 'and' expr                                        #logand
+ | expr 'and' expr                                        # logand
  | expr 'or' expr                                         # logor
  | expr '?' expr (':' expr)?                              # conditional
  | expr CHAIN expr                                        # fct_chain
@@ -86,8 +86,8 @@ seq : expr '..' expr ;
 exprOrSeq : seq | expr ;
 exprOrSeqList : exprOrSeq (',' exprOrSeq)* ;
 
-regularExpressionCaseInsensitive : '/' regexPattern '/i';
-regularExpressionMultiline : '/' regexPattern '/m';
+regularExpressionCaseInsensitive : '/' regexPattern '/' 'i';
+regularExpressionMultiline : '/' regexPattern '/' 'm';
 regularExpression : '/' regexPattern '/';
 regexPattern : (~DIV | '\\' DIV)*;
 
@@ -144,6 +144,7 @@ GT  : '>' ;
 GE  : '>=' ;
 CONCAT : '&';
 CIRCUMFLEX : '^';
+PIPE : '|';
 UNDER : '_';
 AND : 'and';
 OR : 'or';
