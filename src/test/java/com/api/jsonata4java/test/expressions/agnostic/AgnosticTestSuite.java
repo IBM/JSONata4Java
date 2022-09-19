@@ -110,7 +110,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 //			"function-distinct", // issue #63
 //			"lambdas", // issue #70
 			"higher-order-functions", // issue #70
-			"regex", // issue #71
+//			"regex", // issue #71
 			"function-assert", // issue #72
 			"function-eval", // issue #73
 			"sorting", // issue #74
@@ -158,6 +158,9 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 		SKIP_CASES("hof-reduce", "case010");
 		// issue #54 timeouts
 		SKIP_CASES("range-operator", "case021", "case024");
+		// issue 71 support regular expressions
+		SKIP_CASES("regex", "case015", "case016", "case022",
+				"case028", "case029", "case030", "case031", "case032", "case033", "case034", "case037");
 		// issue #55 and / or stand alone to get by parser
 		SKIP_CASES("boolean-expresssions", "case012", "case013", "case014", "case015");
 		// issue #56 closures

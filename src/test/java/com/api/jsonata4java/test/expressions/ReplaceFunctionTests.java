@@ -205,6 +205,10 @@ public class ReplaceFunctionTests implements Serializable {
 		        { "$replace('a-b---+c--d', '-+', '_', 2)", "\"a-b--_c--d\"", null }, //
 		        { "$replace('fooa123aAafuoAa456aaAfioAaAa789afoo', /a+/i, '--')", "\"foo--123--fuo--456--fio--789--foo\"", null }, //
 		        { "$replace('fooa123aAafuoAa456aaAfioAaAa789afoo', /a+/i, '--', 4)", "\"foo--123--fuo--456--fioAaAa789afoo\"", null }, //
+		    	// JSNOata test suite group "regex" case012
+		        { "$replace(\"265USD\", /([0-9]+)USD/, \"$$$1\")", "\"$265\"", null }, //
+		    	// JSNOata test suite group "regex" case013
+		        { "$replace(\"265USD\", /([0-9]+)USD/, \"$w\")", "\"$w\"", null }, //
 		});
 	}
 

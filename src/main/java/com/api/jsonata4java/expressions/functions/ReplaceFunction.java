@@ -166,18 +166,18 @@ public class ReplaceFunction extends FunctionBase implements Function {
 							if (limit == -1) {
 								// No limits... replace all occurrences in the string
 								if (regex != null) {
-									result = new TextNode(regex.getPattern().matcher(str).replaceAll(replacement));
+									result = new TextNode(regex.getPattern().matcher(str).replaceAll(jsonata2JavaReplacement(replacement)));
 								} else {
-									result = new TextNode(str.replaceAll(Pattern.quote(pattern), replacement));
+									result = new TextNode(str.replaceAll(Pattern.quote(pattern), jsonata2JavaReplacement(replacement)));
 								}
 							} else {
 								// Only perform the replace the specified number of times
 								String retString = new String(str);
 								for (int i = 0; i < limit; i++) {
 									if (regex != null) {
-										retString = regex.getPattern().matcher(retString).replaceFirst(replacement);
+										retString = regex.getPattern().matcher(retString).replaceFirst(jsonata2JavaReplacement(replacement));
 									} else {
-										retString = retString.replaceFirst(Pattern.quote(pattern), replacement);
+										retString = retString.replaceFirst(Pattern.quote(pattern), jsonata2JavaReplacement(replacement));
 									}
 								} // FOR
 								result = new TextNode(retString);
@@ -205,6 +205,15 @@ public class ReplaceFunction extends FunctionBase implements Function {
 		}
 
 		return result;
+	}
+
+	public static String jsonata2JavaReplacement(String in) {
+		// In JSONata and in Java the $ in the replacement test usually starts the insertion of a capturing group
+		// In order to replace a simple $ in Java you have to escape the $ with "\$"
+		// in JSONata you do this with a '$$'
+		// "\$" followed any character besides '<' and and digit into $ + this character  
+		return in.replaceAll("\\$\\$", "\\\\\\$")
+				.replaceAll("([^\\\\]|^)\\$([^0-9^<])", "$1\\\\\\$$2");
 	}
 
 	@Override

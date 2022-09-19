@@ -120,16 +120,16 @@ public class MatchFunctionTests implements Serializable {
 				{ "$match(' ', 10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE }, //
 
 				{ "$match(a.b.c)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(a.b.c, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, // TODO: issue #71 ERR_MSG_ARG2_BAD_TYPE }, //
+				{ "$match(a.b.c, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$match(' ', a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE }, //
 
-				{ "$match('foo bar', 'a')", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null }, // TODO: see below
-				{ "$match('foo bar', /a/)", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null }, // TODO: see below
-				{ "$match('foo bar', /(a)/)", "{\"match\":\"a\",\"index\":5,\"groups\":[\"a\"]}", null }, // TODO: see below
+				{ "$match('foo bar', 'a')", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null }, //
+				{ "$match('foo bar', /a/)", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null }, //
+				{ "$match('foo bar', /(a)/)", "{\"match\":\"a\",\"index\":5,\"groups\":[\"a\"]}", null }, //
 				{ "$match('foo bar', 'o', 0)", null, null }, //
-				{ "$match('foo bar', 'o', 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[]}", null }, // see below
-				{ "$match('foo bar', /o/, 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[]}", null }, // see below
-				{ "$match('foo bar', /(o)/, 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[\"o\"]}", null }, // see below
+				{ "$match('foo bar', 'o', 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[]}", null }, //
+				{ "$match('foo bar', /o/, 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[]}", null }, //
+				{ "$match('foo bar', /(o)/, 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[\"o\"]}", null }, //
 				{ "$match('foo bar', 'o', {})", null, ERR_MSG_ARG3_BAD_TYPE }, //
 				{ "$match('foo bar', 'o', [])", null, ERR_MSG_ARG3_BAD_TYPE }, //
 				{ "$match('foo bar', 'o', true)", null, ERR_MSG_ARG3_BAD_TYPE }, //
@@ -143,19 +143,19 @@ public class MatchFunctionTests implements Serializable {
 				{ "$match('ababbabbcc','a(b+)')", "[]", null },
 				{ "$match('aba(b+)babbcc','a(b+)')", "{\"match\":\"a(b+)\",\"index\":2,\"groups\":[]}", null },
 				{ "$match('abbbaabbaaabcc', /(a+)(b+)/)",
-							"[{\"match\":\"abbb\",\"index\":0,\"groups\":[\"a\",\"bbb\"]},"
-							+ "{\"match\":\"aabb\",\"index\":4,\"groups\":[\"aa\",\"bb\"]},"
-							+ "{\"match\":\"aaab\",\"index\":8,\"groups\":[\"aaa\",\"b\"]}]",
-							null },
+						"[{\"match\":\"abbb\",\"index\":0,\"groups\":[\"a\",\"bbb\"]},"
+						+ "{\"match\":\"aabb\",\"index\":4,\"groups\":[\"aa\",\"bb\"]},"
+						+ "{\"match\":\"aaab\",\"index\":8,\"groups\":[\"aaa\",\"b\"]}]",
+						null },
 				{ "$match('abBbAabbaAaBcc', /(a+)(b+)/)",
-							"[{\"match\":\"ab\",\"index\":0,\"groups\":[\"a\",\"b\"]},"
-							+ "{\"match\":\"abb\",\"index\":5,\"groups\":[\"a\",\"bb\"]}]",
-							null },
+						"[{\"match\":\"ab\",\"index\":0,\"groups\":[\"a\",\"b\"]},"
+						+ "{\"match\":\"abb\",\"index\":5,\"groups\":[\"a\",\"bb\"]}]",
+						null },
 				{ "$match('abBbAabbaAaBcc', /(a+)(b+)/i)",
-								"[{\"match\":\"abBb\",\"index\":0,\"groups\":[\"a\",\"bBb\"]},"
-										+ "{\"match\":\"Aabb\",\"index\":4,\"groups\":[\"Aa\",\"bb\"]},"
-										+ "{\"match\":\"aAaB\",\"index\":8,\"groups\":[\"aAa\",\"B\"]}]",
-										null },
+						"[{\"match\":\"abBb\",\"index\":0,\"groups\":[\"a\",\"bBb\"]},"
+						+ "{\"match\":\"Aabb\",\"index\":4,\"groups\":[\"Aa\",\"bb\"]},"
+						+ "{\"match\":\"aAaB\",\"index\":8,\"groups\":[\"aAa\",\"B\"]}]",
+						null },
 		});
 	}
 
