@@ -66,7 +66,71 @@ public class FunctionErrorTests {
 		test("$replace(\"abcdefghijklmno\", /(ijk)/, \"$x$$\")", "\"abcdefgh$x$lmno\"", null, null);
 	}
 
-	
+	// JSONAata expression
+	// Account.Order.Product.$replace($."Product Name", /hat/i, function($match) { "foo" })
+	// running against the "invoice" example of the JSONata Exerciser - works fine there
+	// In JSONata4Java the arguments for the $replace() function get mixed up
+	// argCount = 4
+	// arg 1 (string): {"Product Name":"Bowler Hat"}
+	// arg 2 (pattern): "Bowler Hat"
+	// arg 3 (replacement): {"type":"CASEINSENSITIVE","pattern":"hat"}
+	// Since the same problem occurs also if the 2nd $replace() arg is not a regular exprssion
+	// I suppose that this problem also existed before the changes for regular expression support
+	@Test
+	public void testRegex_case32() throws Exception {
+		test("Account.Order.Product.$replace($.\"Product Name\", /hat/i, function($match) { \"foo\" })", "\"\"", null,
+				"{\n"
+				+ "  \"Account\": {\n"
+				+ "    \"Account Name\": \"Firefly\",\n"
+				+ "    \"Order\": [\n"
+				+ "      {\n"
+				+ "        \"OrderID\": \"order103\",\n"
+				+ "        \"Product\": [\n"
+				+ "          {\n"
+				+ "            \"Product Name\": \"Bowler Hat\"\n"
+				+ "          },\n"
+				+ "          {\n"
+				+ "            \"Product Name\": \"Trilby hat\"\n"
+				+ "          }\n"
+				+ "        ]\n"
+				+ "      },\n"
+				+ "      {\n"
+				+ "        \"OrderID\": \"order104\",\n"
+				+ "        \"Product\": [\n"
+				+ "          {\n"
+				+ "            \"Product Name\": \"Bowler Hat\"\n"
+				+ "          },\n"
+				+ "          {\n"
+				+ "            \"Product Name\": \"Cloak\"\n"
+				+ "          }\n"
+				+ "        ]\n"
+				+ "      }\n"
+				+ "    ]\n"
+				+ "  }\n"
+				+ "}");
+	}
+
+	@Test
+	public void testRegex_case34() throws Exception {
+		// This is a heavy expression.
+		// To be honest I do not know the usage at all.
+		// If it is meant to convert degrees of F into C it definitely does not work.
+		// But basically the processing has the same problem that 33
+		test("$replace(\"temperature = 68F today\", /(-?\\\\d+(?:\\\\.\\\\d*)?)F\\\\b/, function($m) { ($number($m.groups[0]) - 32) * 5/9 & \"C\" })",
+				"\"temperature = 68F today\"", null, null);
+	}
+
+	@Test
+	public void testRegex_case37() throws Exception {
+		// This one seems to be a general problem with JSONata4Java's parser.
+		// It has problems to parse the first match argument ?.
+		// I suppose that this problem also existed before the changes for regular expression support.
+		test("$map($, $match(?, /^(\\w*\\s\\w*)/)).match",
+				"[\"Felicia Saunders\",\"Jimmy Schultz\"]", null,
+				"[\"Felicia Saunders\",\"Jimmy Schultz\"]");
+	}
+
+
 	// Fixed
 
 	@Test

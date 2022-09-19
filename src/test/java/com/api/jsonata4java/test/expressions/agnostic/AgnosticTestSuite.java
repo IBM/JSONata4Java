@@ -160,21 +160,54 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 		SKIP_CASES("range-operator", "case021", "case024");
 		// issue 71 support regular expressions
 		SKIP_CASES("regex",
-				// - case015, case032, case33, case34
+				"case015",
 				//   Referencing undefined capturing groups in the replacement is not allowed in Java:
 				//   Java replace() does not allow to use capturing group numbers in the replacement
 				//   you have not defined in the regular expression pattern...
 				//   Don't know any sensible use of the JSONata behavior simply not to expand such capturing groups references in the replacement.
 				//   For me this is a programming error and thus the Java behavior is OK.
-				// - case022
+				//
+
+				"case022",
 				//   Exotic error case throws an error in Java too but another one.
-				// - case031
+				//
+
+				"case028", "case029",
+				//   JSONATA evaluates only the first digit after $ as group number.
+				//   $replace("abcdefghijklmno", /ijk/, "$8$5$12$12$18$123") => abcdefgh22823lmno
+				//   Java regex allows higher numbers than 9 for groups
+				//
+
+				"case031",
 				//   JSONATA evaluates $replace("abcdefghijklmno", /(ijk)/, "$x$") to "abcdefgh$x$lmno"
 				//   We could argue if this is a bug or a feature
 				//   but since replacement "$x$$" leads to the same result we might all agree that supporting $x$$ is sufficient.
-				// - case37
-				//   To be investigated
-				"case015", "case022", "case028", "case029", "case031", "case032", "case033", "case034", "case037");
+				//
+
+				"case032", "case033",
+				// JSONAata expression
+				// Account.Order.Product.$replace($."Product Name", /hat/i, function($match) { "foo" })
+				// running against the "invoice" example of the JSONata Exerciser - works fine there
+				// In JSONata4Java the arguments for the $replace() function get mixed up
+				// argCount = 4
+				// arg 1 (string): {"Product Name":"Bowler Hat"}
+				// arg 2 (pattern): "Bowler Hat"
+				// arg 3 (replacement): {"type":"CASEINSENSITIVE","pattern":"hat"}
+				// Since the same problem occurs also if the 2nd $replace() arg is not a regular exprssion
+				// I suppose that this problem also existed before the changes for regular expression support.
+
+				"case034",
+				// This is a heavy expression.
+				// To be honest I do not know the usage at all.
+				// If it is meant to convert degrees of F into C it definitely does not work.
+				// But basically the processing has the same problem that 33
+
+				"case037"
+				// JSONata expression: $map($, $match(?, /^(\w*\s\w*)/)).match
+				// This one seems to be a general problem with JSONata4Java's parser.
+				// It has problems to parse the first match argument ?.
+				// I suppose that this problem also existed before the changes for regular expression support.
+				);
 		// issue #55 and / or stand alone to get by parser
 		SKIP_CASES("boolean-expresssions", "case012", "case013", "case014", "case015");
 		// issue #56 closures
