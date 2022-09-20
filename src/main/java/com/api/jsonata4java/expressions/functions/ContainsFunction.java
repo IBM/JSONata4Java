@@ -119,7 +119,7 @@ public class ContainsFunction extends FunctionBase implements Function {
 				} else if (argPattern instanceof POJONode) {
 					// Match against a regular expression
 					final RegularExpression regex = ((RegularExpression) ((POJONode) argPattern).getPojo()).extend();
-					result = regex.matches(str) ? BooleanNode.TRUE : BooleanNode.FALSE;
+					result = regex.getPattern().matcher(str).matches() ? BooleanNode.TRUE : BooleanNode.FALSE;
 				} else {
 					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}

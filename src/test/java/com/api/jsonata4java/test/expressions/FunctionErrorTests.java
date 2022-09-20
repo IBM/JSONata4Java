@@ -1,3 +1,25 @@
+/**
+ * (c) Copyright 2018, 2019 IBM Corporation
+ * 1 New Orchard Road, 
+ * Armonk, New York, 10504-1722
+ * United States
+ * +1 914 499 1900
+ * support: Nathaniel Mills wnm3@us.ibm.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
@@ -5,11 +27,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.functions.ReplaceFunction;
 
 /**
- * A JUnit test class used in order to ease debugging of particular prblematic
- * cases.
+ * A JUnit test class used in order to ease debugging of particular problematic cases.
  * 
  * @author Martin Bluemel
  */
@@ -76,7 +98,7 @@ public class FunctionErrorTests {
 	// arg 3 (replacement): {"type":"CASEINSENSITIVE","pattern":"hat"}
 	// Since the same problem occurs also if the 2nd $replace() arg is not a regular exprssion
 	// I suppose that this problem also existed before the changes for regular expression support
-	@Test
+	@Test(expected = EvaluateException.class)
 	public void testRegex_case32() throws Exception {
 		test("Account.Order.Product.$replace($.\"Product Name\", /hat/i, function($match) { \"foo\" })", "\"\"", null,
 				"{\n"
@@ -110,7 +132,7 @@ public class FunctionErrorTests {
 				+ "}");
 	}
 
-	@Test
+	@Test(expected = EvaluateException.class)
 	public void testRegex_case34() throws Exception {
 		// This is a heavy expression.
 		// To be honest I do not know the usage at all.
@@ -120,7 +142,7 @@ public class FunctionErrorTests {
 				"\"temperature = 68F today\"", null, null);
 	}
 
-	@Test
+	@Test(expected = AssertionError.class)
 	public void testRegex_case37() throws Exception {
 		// This one seems to be a general problem with JSONata4Java's parser.
 		// It has problems to parse the first match argument ?.
@@ -180,6 +202,12 @@ public class FunctionErrorTests {
 	@Test
 	public void replaceWithRegexWithBlank() throws Exception {
 		test("$replace('foo 123   fuo  456 fio    789 foo',/\\s+/, '--')", "\"foo--123--fuo--456--fio--789--foo\"", null, null);
+	}
+
+	@Test
+	public void containsCaseInsensitively() throws Exception {
+		test("$contains('ABCdef', /^ab.*ef$/)", "false", null, null);
+		test("$contains('ABCdef', /^ab.*ef$/i)", "true", null, null);
 	}
 
 	@Test

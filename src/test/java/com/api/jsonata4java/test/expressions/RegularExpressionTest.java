@@ -1,3 +1,25 @@
+/**
+ * (c) Copyright 2018, 2019 IBM Corporation
+ * 1 New Orchard Road, 
+ * Armonk, New York, 10504-1722
+ * United States
+ * +1 914 499 1900
+ * support: Nathaniel Mills wnm3@us.ibm.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
 package com.api.jsonata4java.test.expressions;
 
 import static org.junit.Assert.assertEquals;
@@ -8,24 +30,29 @@ import org.junit.Test;
 
 import com.api.jsonata4java.expressions.RegularExpression;
 
+/**
+ * Some unit tests for helper class RegularExpression.
+ *
+ * @author Martin Bluemel
+ */
 public class RegularExpressionTest {
 
 	@Test
 	public void testToString() {
-		assertEquals(".*c.*f.*", new RegularExpression("c.*f").toString());
-		assertEquals("^.*$", new RegularExpression("^.*$").toString());
+		assertEquals("c.*f", new RegularExpression("/c.*f/").toString());
+		assertEquals("^.*$", new RegularExpression("/^.*$/").toString());
 	}
 
 	@Test
 	public void matches() {
-		assertTrue(new RegularExpression("^.*$").matches("asdfgh"));
-		assertTrue(new RegularExpression("^ab.*ef$").matches("abcdef"));
-		assertTrue(new RegularExpression("c.*f").matches("abcdefgh"));
+		assertTrue(new RegularExpression("/^.*$/").getPattern().matcher("asdfgh").matches());
+		assertTrue(new RegularExpression("/^ab.*ef$/").getPattern().matcher("abcdef").matches());
+		assertTrue(new RegularExpression("/c.*f/").getPattern().matcher("abcdefgh").matches());
 	}
 
 	@Test
 	public void matchesCaseInsensitive() {
-		assertFalse(new RegularExpression("^ab.*ef$").matches("ABCdef"));		
-		assertTrue(new RegularExpression(RegularExpression.Type.CASEINSENSITIVE, "^ab.*ef$").matches("ABCdef"));		
+		assertFalse(new RegularExpression("/^ab.*ef$/").getPattern().matcher("ABCdef").matches());	
+		assertTrue(new RegularExpression(RegularExpression.Type.CASEINSENSITIVE, "/^ab.*ef$/").getPattern().matcher("ABCdef").matches());		
 	}
 }

@@ -179,7 +179,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 				//
 
 				"case031",
-				//   JSONATA evaluates $replace("abcdefghijklmno", /(ijk)/, "$x$") to "abcdefgh$x$lmno"
+				//   JSONata evaluates $replace("abcdefghijklmno", /(ijk)/, "$x$") to "abcdefgh$x$lmno"
 				//   We could argue if this is a bug or a feature
 				//   but since replacement "$x$$" leads to the same result we might all agree that supporting $x$$ is sufficient.
 				//
