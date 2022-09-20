@@ -46,8 +46,8 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  *
  * Examples
  *
- * $distinct([1,2,3,3,4,3,5]) => [1, 2, 3, 4, 5]
- * $distinct(Account.Order.Product.Description.Colour) => [ "Purple", "Orange", "Black" ]
+ * $distinct([1,2,3,3,4,3,5]) k]] results in [1, 2, 3, 4, 5]
+ * $distinct(Account.Order.Product.Description.Colour) results in [ "Purple", "Orange", "Black" ]
  *
  */
 public class DistinctFunction extends FunctionBase implements Function {

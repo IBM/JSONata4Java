@@ -65,7 +65,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * Example The following expression returns all the products whose price is
  * higher than average:
  *
- * $filter(Account.Order.Product, function($v, $i, $a) { $v.Price >
+ * $filter(Account.Order.Product, function($v, $i, $a) { $v.Price &gt;
  * $average($a.Price) })
  */
 public class FilterFunction extends FunctionBase implements Function {

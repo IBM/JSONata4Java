@@ -225,8 +225,8 @@ public class Constants implements Serializable {
     * Collection of decimal format strings that defined by xsl:decimal-format.
     * 
     * <pre>
-    *     <!ELEMENT xsl:decimal-format EMPTY&GT;
-    *     <!ATTLIST xsl:decimal-format
+    *     &lt;!ELEMENT xsl:decimal-format EMPTY&gt;
+    *     &lt;!ATTLIST xsl:decimal-format
     *       name %qname; #IMPLIED
     *       decimal-separator %char; "."
     *       grouping-separator %char; ","

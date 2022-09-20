@@ -63,11 +63,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * Examples
  *
- * $map([1..5], $string) => ["1", "2", "3", "4", "5"] With user-defined (lambda)
+ * $map([1..5], $string) results in ["1", "2", "3", "4", "5"] With user-defined (lambda)
  * function:
  *
- * $map(Email.address, function($v, $i, $a) { 'Item ' & ($i+1) & ' of ' &
- * $count($a) & ': ' & $v }) evaluates to:
+ * $map(Email.address, function($v, $i, $a) { 'Item ' &amp; ($i+1) &amp; ' of ' &amp;
+ * $count($a) &amp; ': ' &amp; $v }) evaluates to:
  *
  * [ "Item 1 of 4: fred.smith@my-work.com", "Item 2 of 4: fsmith@my-work.com",
  * "Item 3 of 4: freddy@my-social.com", "Item 4 of 4:

@@ -46,14 +46,14 @@ public class FrameEnvironment implements Serializable {
    private Map<String, Function> _jsonataFunctionMap = new HashMap<String, Function>();
    /**
     * This stack is used for storing the current "context" under which to evaluate
-    * predicate-type array indexes, e.g. [{"a":1}, {"a":2}][a=2] -> {"a":2}
+    * predicate-type array indexes, e.g. [{"a":1}, {"a":2}][a=2] results in {"a":2}
     * Specifically, it is used to resolve path expressions (a, in the above)
     * against each of the elements in the array in order to figure out which
     * elements match the predicate and which don't.
     * 
     * We use a stack (rather than just a singleton) here, since predicates can be
     * nested inside other predicates, e.g. [{"x":2}, {"x":3}] [x=(["a":101, "b":2},
-    * {"a":102, "b":3}][a=101]).b] -> {"x":2}
+    * {"a":102, "b":3}][a=101]).b] results in {"x":2}
     */
    private Deque<JsonNode> _stack = new LinkedList<JsonNode>();
    private JS4JDate _timestamp = null;

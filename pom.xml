@@ -97,7 +97,7 @@
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-runtime</artifactId>
-			<version>4.11.1</version>
+			<version>${antlr4.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -196,6 +196,7 @@
 					</execution>
 				</executions>
 				<configuration>
+				    <source>8</source>
 					<additionalOptions>
 						<additionalOption>-Xdoclint:none</additionalOption>
 					</additionalOptions>
@@ -256,7 +257,7 @@
 			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>4.11.1</version>
+				<version>${antlr4.version}</version>
 				<configuration>
 					<visitor>true</visitor>
 				</configuration>

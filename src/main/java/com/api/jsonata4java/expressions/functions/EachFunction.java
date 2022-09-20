@@ -59,9 +59,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  * Examples
  *
- * $each(Address, function($v, $k) {$k & ": " & $v})
+ * $each(Address, function($v, $k) {$k &amp; ": " &amp; $v})
  *
- * =>
+ * results in
  *
  * [ "Street: Hursley Park", "City: Winchester", "Postcode: SO21 2JN" ]
  * 
