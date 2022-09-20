@@ -27,7 +27,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.jsonata4java</groupId>
 	<artifactId>JSONata4Java</artifactId>
-	<version>1.7.9</version>
+	<version>1.8.0</version>
 	<name>JSONata4Java</name>
 	<description>Port of jsonata.js to Java to enable rules for JSON content</description>
 	<url>https://github.com/IBM/JSONata4Java</url>
@@ -69,7 +69,8 @@
 		<runSuite>**/AgnosticTestSuite.class</runSuite>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<gpg.skip>true</gpg.skip><!-- by default skip gpg -->
-	</properties>
+		<antlr4.version>4.11.1</antlr4.version>
+  </properties>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -96,7 +97,7 @@
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-runtime</artifactId>
-			<version>4.9.2</version>
+			<version>${antlr4.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -255,7 +256,7 @@
 			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>4.9.2</version>
+				<version>${antlr4.version}</version>
 				<configuration>
 					<sourceDirectory>src/main/antlr4</sourceDirectory>
 					<outputDirectory>src/main/java</outputDirectory>

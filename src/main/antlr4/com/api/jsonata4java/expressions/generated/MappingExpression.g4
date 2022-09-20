@@ -62,10 +62,13 @@ expr:
  | expr op='&' expr                                       # concat_op
  | expr op=('<'|'<='|'>'|'>='|'!='|'=') expr              # comp_op
  | expr 'in' expr                                         # membership
- | expr 'and' expr                                        #logand
+ | expr 'and' expr                                        # logand
  | expr 'or' expr                                         # logor
  | expr '?' expr (':' expr)?                              # conditional
  | expr CHAIN expr                                        # fct_chain
+ | regularExpression                                      # regular_expression
+ | regularExpressionCaseInsensitive                       # regular_expression_caseinsensitive
+ | regularExpressionMultiline                             # regular_expression_multiline
  | '(' (expr (';' (expr)?)*)? ')'                         # parens
  | VAR_ID                                                 # var_recall
  | NUMBER                                                 # number
@@ -82,6 +85,11 @@ seq : expr '..' expr ;
 
 exprOrSeq : seq | expr ;
 exprOrSeqList : exprOrSeq (',' exprOrSeq)* ;
+
+regularExpressionCaseInsensitive : '/' regexPattern '/' 'i';
+regularExpressionMultiline : '/' regexPattern '/' 'm';
+regularExpression : '/' regexPattern '/';
+regexPattern : (~DIV | '\\' DIV)*;
 
 // =======================
 // = LEXER RULES
@@ -135,6 +143,9 @@ LE  : '<=' ;
 GT  : '>' ;
 GE  : '>=' ;
 CONCAT : '&';
+CIRCUMFLEX : '^';
+PIPE : '|';
+UNDER : '_';
 AND : 'and';
 OR : 'or';
 

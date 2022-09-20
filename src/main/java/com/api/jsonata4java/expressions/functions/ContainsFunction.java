@@ -24,6 +24,7 @@ package com.api.jsonata4java.expressions.functions;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.POJONode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -107,20 +109,18 @@ public class ContainsFunction extends FunctionBase implements Function {
 			if (!argString.isTextual()) {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
+			final String str = argString.textValue();
 			// Make sure argPattern is not null
 			if (argPattern != null) {
 				// Check to see if the pattern is just a string
 				if (argPattern.isTextual()) {
-					final String str = argString.textValue();
-					final String pattern = argPattern.textValue();
-
 					// Do a simple String::contains
-					result = str.contains(pattern) ? BooleanNode.TRUE : BooleanNode.FALSE;
+					result = str.contains(argPattern.textValue()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+				} else if (argPattern instanceof POJONode) {
+					// Match against a regular expression
+					final RegularExpression regex = ((RegularExpression) ((POJONode) argPattern).getPojo()).extend();
+					result = regex.getPattern().matcher(str).matches() ? BooleanNode.TRUE : BooleanNode.FALSE;
 				} else {
-					/*
-					 * TODO: Add support for regex patterns once the grammar has been updated. For
-					 * now, simply throw an exception.
-					 */
 					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
 			} else {

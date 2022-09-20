@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.9.2
+// Generated from java-escape by ANTLR 4.11.1
 package com.api.jsonata4java.expressions.path.generated;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 

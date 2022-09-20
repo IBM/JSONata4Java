@@ -22,14 +22,18 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.util.regex.Pattern;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.POJONode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -102,18 +106,13 @@ public class SplitFunction extends FunctionBase implements Function {
 					useContext ? 0 : 1);
 			int limit = -1; // assume unlimited
 			// Make sure that the separator is not null
-			if (argSeparator == null || !(argSeparator.isTextual())) {
+			if (argSeparator == null || !(argSeparator.isTextual() || argSeparator instanceof POJONode)) {
 				if (argString == null) {
 					if (useContext) {
 						throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
 					}
 					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 				}
-				/*
-				 * TODO: Add support for regex patterns using / delimiters once the grammar has
-				 * been updated. For now, simply throw an exception.
-				 */
-				// throw new EvaluateRuntimeException("The matcher function argument passed to function \""+Constants.FUNCTION_SPLIT+"\" does not return the correct object structure");
 				throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 			}
 			if (argString == null) {
@@ -124,7 +123,9 @@ public class SplitFunction extends FunctionBase implements Function {
 			}
 			// Check to see if the separator is just a string
 			final String str = argString.textValue();
-			final String separator = argSeparator.textValue();
+			final RegularExpression regex = argSeparator instanceof POJONode
+					? (RegularExpression) ((POJONode) argSeparator).getPojo() : null;
+			final String separator = regex != null ? regex.toString() : argSeparator.textValue();
 
 			if (argCount == 3) {
 				final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
@@ -154,7 +155,12 @@ public class SplitFunction extends FunctionBase implements Function {
 			 */
 			result = JsonNodeFactory.instance.arrayNode();
 			if (!str.isEmpty()) {
-				String[] items = str.split(separator);
+				String[] items;
+				if (regex != null) {
+					items = regex.getPattern().split(str);
+				} else {
+					items = str.split(Pattern.quote(separator));
+				}
 				for (int i = 0; i < items.length; i++) {
 					if (limit == -1 || i < limit) {
 						((ArrayNode) result).add(items[i]);

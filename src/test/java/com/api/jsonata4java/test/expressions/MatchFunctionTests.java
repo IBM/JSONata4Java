@@ -120,30 +120,43 @@ public class MatchFunctionTests implements Serializable {
 				{ "$match(' ', 10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE }, //
 
 				{ "$match(a.b.c)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(a.b.c, ' ')", null, ERR_MSG_ARG1_BAD_TYPE}, // TODO: issue #71 ERR_MSG_ARG2_BAD_TYPE }, //
+				{ "$match(a.b.c, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
 				{ "$match(' ', a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE }, //
 
-				{ "$match('foo bar', 'a')", "{\"match\":\"a\",\"start\":5,\"groups\":[\"a\"]}", null }, // TODO: see below
-				/**
-				 * jsonata 1.8.2 throws exception bad arg2 but if changed to /a/ doesn't have the array 
-				 * just the object "[{\"match\":\"a\",\"start\":5,\"groups\":[\"a\"]}]", null }, //
-				 */
+				{ "$match('foo bar', 'a')", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null }, //
+				{ "$match('foo bar', /a/)", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null }, //
+				{ "$match('foo bar', /(a)/)", "{\"match\":\"a\",\"index\":5,\"groups\":[\"a\"]}", null }, //
 				{ "$match('foo bar', 'o', 0)", null, null }, //
-				{ "$match('foo bar', 'o', 1)", "{\"match\":\"o\",\"start\":1,\"groups\":[\"o\"]}", null }, // see below
-				/**
-				 * jsonata 1.8.2 throws exception bad arg2 but if changed to /a/ doesn't have the array
-				 * "[{\"match\":\"o\",\"start\":1,\"groups\":[\"o\"]}]", null }, //
-				 */
+				{ "$match('foo bar', 'o', 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[]}", null }, //
+				{ "$match('foo bar', /o/, 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[]}", null }, //
+				{ "$match('foo bar', /(o)/, 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[\"o\"]}", null }, //
 				{ "$match('foo bar', 'o', {})", null, ERR_MSG_ARG3_BAD_TYPE }, //
 				{ "$match('foo bar', 'o', [])", null, ERR_MSG_ARG3_BAD_TYPE }, //
 				{ "$match('foo bar', 'o', true)", null, ERR_MSG_ARG3_BAD_TYPE }, //
 				{ "$match('foo bar', 'o', null)", null, ERR_MSG_ARG3_BAD_TYPE }, //
 				{ "$match('foo bar', 'o', -1)", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				// TODO: the actual test is for "$match('ababbabbcc',/a(b+)/) but we don't
-				// recognize regex expressions at the moment. All are the same except groups
-				{ "$match('ababbabbcc','a(b+)')",
-						"[{\"match\":\"ab\",\"start\":0,\"groups\":[\"ab\"]},{\"match\":\"abb\",\"start\":2,\"groups\":[\"abb\"]},{\"match\":\"abb\",\"start\":5,\"groups\":[\"abb\"]}]",
-						null } });
+				{ "$match('ababbabbbcc',/a(b+)/)",
+						"[{\"match\":\"ab\",\"index\":0,\"groups\":[\"b\"]},"
+						+ "{\"match\":\"abb\",\"index\":2,\"groups\":[\"bb\"]},"
+						+ "{\"match\":\"abbb\",\"index\":5,\"groups\":[\"bbb\"]}]",
+						null },
+				{ "$match('ababbabbcc','a(b+)')", "[]", null },
+				{ "$match('aba(b+)babbcc','a(b+)')", "{\"match\":\"a(b+)\",\"index\":2,\"groups\":[]}", null },
+				{ "$match('abbbaabbaaabcc', /(a+)(b+)/)",
+						"[{\"match\":\"abbb\",\"index\":0,\"groups\":[\"a\",\"bbb\"]},"
+						+ "{\"match\":\"aabb\",\"index\":4,\"groups\":[\"aa\",\"bb\"]},"
+						+ "{\"match\":\"aaab\",\"index\":8,\"groups\":[\"aaa\",\"b\"]}]",
+						null },
+				{ "$match('abBbAabbaAaBcc', /(a+)(b+)/)",
+						"[{\"match\":\"ab\",\"index\":0,\"groups\":[\"a\",\"b\"]},"
+						+ "{\"match\":\"abb\",\"index\":5,\"groups\":[\"a\",\"bb\"]}]",
+						null },
+				{ "$match('abBbAabbaAaBcc', /(a+)(b+)/i)",
+						"[{\"match\":\"abBb\",\"index\":0,\"groups\":[\"a\",\"bBb\"]},"
+						+ "{\"match\":\"Aabb\",\"index\":4,\"groups\":[\"Aa\",\"bb\"]},"
+						+ "{\"match\":\"aAaB\",\"index\":8,\"groups\":[\"aAa\",\"B\"]}]",
+						null },
+		});
 	}
 
 	@Test

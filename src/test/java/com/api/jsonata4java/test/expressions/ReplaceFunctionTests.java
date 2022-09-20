@@ -195,7 +195,21 @@ public class ReplaceFunctionTests implements Serializable {
 				{ "$replace('foo bar', 'o', 'a', [])", null, ERR_MSG_ARG4_BAD_TYPE }, //
 				{ "$replace('foo bar', 'o', 'a', true)", null, ERR_MSG_ARG4_BAD_TYPE }, //
 				{ "$replace('foo bar', 'o', 'a', null)", null, ERR_MSG_ARG4_BAD_TYPE }, //
-				{ "$replace('foo bar', 'o', 'a', -1)", null, ERR_MSG_ARG4_BAD_TYPE } });
+				{ "$replace('foo bar', 'o', 'a', -1)", null, ERR_MSG_ARG4_BAD_TYPE }, //
+				{ "$replace('foox123xfuox456xfiox789xfoo', /x?f[a-z]ox?/, '---')", "\"---123---456---789---\"", null }, //
+				{ "$replace('foox123xfuox456xfiox789xfoo', /x?f[a-z]ox?/, '---')", "\"---123---456---789---\"", null }, //
+		        { "$replace('foo_123_fuo_456_fio_789_foo', /_?f[a-z]o_?/, '---')", "\"---123---456---789---\"", null }, //
+		        { "$replace('foo_123_fuo_?f[a-z]o_?456_fio_789_foo', /_?f[a-z]o_?/, '---')", "\"---123---?f[a-z]o_?456---789---\"", null }, //
+		        { "$replace('foo_123_fuo_?f[a-z]o_?456_fio_789_foo', '_?f[a-z]o_?', '---')", "\"foo_123_fuo---456_fio_789_foo\"", null }, //
+		        { "$replace('a-b---+c--d', /-+/, '_', 2)", "\"a_b_+c--d\"", null }, //
+		        { "$replace('a-b---+c--d', '-+', '_', 2)", "\"a-b--_c--d\"", null }, //
+		        { "$replace('fooa123aAafuoAa456aaAfioAaAa789afoo', /a+/i, '--')", "\"foo--123--fuo--456--fio--789--foo\"", null }, //
+		        { "$replace('fooa123aAafuoAa456aaAfioAaAa789afoo', /a+/i, '--', 4)", "\"foo--123--fuo--456--fioAaAa789afoo\"", null }, //
+		    	// JSNOata test suite group "regex" case012
+		        { "$replace(\"265USD\", /([0-9]+)USD/, \"$$$1\")", "\"$265\"", null }, //
+		    	// JSNOata test suite group "regex" case013
+		        { "$replace(\"265USD\", /([0-9]+)USD/, \"$w\")", "\"$w\"", null }, //
+		});
 	}
 
 	@Test

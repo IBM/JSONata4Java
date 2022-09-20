@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/path/generated/PathExpressionParser.g4 by ANTLR 4.9.2
+// Generated from java-escape by ANTLR 4.11.1
 package com.api.jsonata4java.expressions.path.generated;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * @param <T> The return type of the visit operation. Use {@link Void} for
  * operations with no return type.
  */
+@SuppressWarnings("CheckReturnValue")
 public class PathExpressionParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements PathExpressionParserVisitor<T> {
 	/**
 	 * {@inheritDoc}

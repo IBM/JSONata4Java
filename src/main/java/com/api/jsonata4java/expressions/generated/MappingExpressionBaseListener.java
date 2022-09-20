@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.9.2
+// Generated from java-escape by ANTLR 4.11.1
 package com.api.jsonata4java.expressions.generated;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -10,6 +10,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * which can be extended to create a listener which only needs to handle a subset
  * of the available methods.
  */
+@SuppressWarnings("CheckReturnValue")
 public class MappingExpressionBaseListener implements MappingExpressionListener {
 	/**
 	 * {@inheritDoc}
@@ -59,6 +60,18 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLogor(MappingExpressionParser.LogorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegular_expression(MappingExpressionParser.Regular_expressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegular_expression(MappingExpressionParser.Regular_expressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -251,6 +264,30 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitContext_ref(MappingExpressionParser.Context_refContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegular_expression_multiline(MappingExpressionParser.Regular_expression_multilineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegular_expression_multiline(MappingExpressionParser.Regular_expression_multilineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegular_expression_caseinsensitive(MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegular_expression_caseinsensitive(MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -491,6 +528,54 @@ public class MappingExpressionBaseListener implements MappingExpressionListener 
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExprOrSeqList(MappingExpressionParser.ExprOrSeqListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegularExpressionCaseInsensitive(MappingExpressionParser.RegularExpressionCaseInsensitiveContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegularExpressionCaseInsensitive(MappingExpressionParser.RegularExpressionCaseInsensitiveContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegularExpressionMultiline(MappingExpressionParser.RegularExpressionMultilineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegularExpressionMultiline(MappingExpressionParser.RegularExpressionMultilineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegularExpression(MappingExpressionParser.RegularExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegularExpression(MappingExpressionParser.RegularExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterRegexPattern(MappingExpressionParser.RegexPatternContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRegexPattern(MappingExpressionParser.RegexPatternContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

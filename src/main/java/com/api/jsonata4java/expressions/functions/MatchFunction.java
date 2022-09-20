@@ -27,6 +27,7 @@ import java.util.regex.Pattern;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -36,6 +37,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.POJONode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -92,12 +94,6 @@ public class MatchFunction extends FunctionBase implements Function {
 			if (!useContext) {
 				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
 			}
-//			if (argString == null) {
-//				return null;
-//			}
-//			if (!argString.isTextual()) {
-//				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-//			}
 			final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
 					useContext ? 0 : 1);
 			int limit = -1;
@@ -106,15 +102,23 @@ public class MatchFunction extends FunctionBase implements Function {
 				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 			}
 			// Make sure that the pattern is a non-empty string
-			if (argPattern != null && argPattern.isTextual() && !(argPattern.asText().isEmpty())) {
-				final String pattern = argPattern.textValue();
-				final Pattern regexPattern = Pattern.compile(pattern);
+			if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode) && !(argPattern.asText().isEmpty())) {
+				RegularExpression regex = null;
+				if (argPattern instanceof POJONode) {
+					regex = (RegularExpression) ((POJONode) argPattern).getPojo();
+				}
+				// final String patternText = regex != null ? regex.toString() : Pattern.quote(argPattern.textValue());
+				Pattern regexPattern;
+				if (regex != null) {
+					regexPattern = regex.getPattern();
+				} else {
+					regexPattern = Pattern.compile(Pattern.quote(argPattern.textValue()));
+				}
 				// Check to see if the separator is just a string
 				final String str = argString.textValue();
 
 				if (argCount == 3) {
-					final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-							useContext ? 1 : 2);
+					final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 1 : 2);
 
 					// Check to see if we have an optional limit argument we check it
 					if (argLimit != null) {
@@ -133,24 +137,30 @@ public class MatchFunction extends FunctionBase implements Function {
 				if (limit == -1) {
 					// No limits... match all occurrences in the string
 					while (matcher.find()) {
-						ObjectNode obj = JsonNodeFactory.instance.objectNode();
+						final ObjectNode obj = JsonNodeFactory.instance.objectNode();
 						obj.put("match", str.substring(matcher.start(), matcher.end()));
-						obj.put("start", new Long(matcher.start()));
-						ArrayNode groups = JsonNodeFactory.instance.arrayNode();
+						obj.put("index", new Long(matcher.start()));
+						final ArrayNode groups = JsonNodeFactory.instance.arrayNode();
 						obj.set("groups", groups);
-						groups.add(matcher.group());
+						final int groupCount = matcher.groupCount();
+						for (int i = 1; i <= groupCount; i++) {
+							groups.add(matcher.group(i));
+						}
 						result.add(obj);
 					}
 				} else if (limit > 0) {
 					int count = 0;
 					while (matcher.find() && count < limit) {
 						count++;
-						ObjectNode obj = JsonNodeFactory.instance.objectNode();
+						final ObjectNode obj = JsonNodeFactory.instance.objectNode();
 						obj.put("match", str.substring(matcher.start(), matcher.end()));
-						obj.put("start", new Long(matcher.start()));
-						ArrayNode groups = JsonNodeFactory.instance.arrayNode();
+						obj.put("index", new Long(matcher.start()));
+						final ArrayNode groups = JsonNodeFactory.instance.arrayNode();
 						obj.set("groups", groups);
-						groups.add(matcher.group());
+						final int groupCount = matcher.groupCount();
+						for (int i = 1; i <= groupCount; i++) {
+							groups.add(matcher.group(i));
+						}
 						result.add(obj);
 					}
 				} else {
@@ -175,10 +185,6 @@ public class MatchFunction extends FunctionBase implements Function {
 						result = (SelectorArrayNode) declFct.invoke(expressionVisitor, fctCallCtx);
 					}
 				} else {
-					/*
-					 * TODO: Add support for regex patterns using / delimiters once the grammar has
-					 * been updated. For now, simply throw an exception.
-					 */
 					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
 				}
 			}

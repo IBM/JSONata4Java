@@ -123,7 +123,7 @@ public class Utils implements Serializable {
 	 * @param expression expression to be tested
 	 * @param expected result expected
 	 * @param expectedExceptionMsg the text of an expected exception
-	 * @param rootContext the json object against which the expression is evalated
+	 * @param rootContext the json object against which the expression is evaluated
 	 * @throws Exception if expected values are not provided
 	 */
 	public static void test(String expression, String expected, String expectedExceptionMsg, String rootContext)

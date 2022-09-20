@@ -1,4 +1,4 @@
-// Generated from com/api/jsonata4java/expressions/generated/MappingExpression.g4 by ANTLR 4.9.2
+// Generated from java-escape by ANTLR 4.11.1
 package com.api.jsonata4java.expressions.generated;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -37,6 +37,13 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLogor(MappingExpressionParser.LogorContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code regular_expression}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegular_expression(MappingExpressionParser.Regular_expressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code string}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
@@ -149,6 +156,20 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitContext_ref(MappingExpressionParser.Context_refContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code regular_expression_multiline}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegular_expression_multiline(MappingExpressionParser.Regular_expression_multilineContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code regular_expression_caseinsensitive}
+	 * labeled alternative in {@link MappingExpressionParser#expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegular_expression_caseinsensitive(MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code array_constructor}
 	 * labeled alternative in {@link MappingExpressionParser#expr}.
@@ -281,4 +302,28 @@ public interface MappingExpressionVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExprOrSeqList(MappingExpressionParser.ExprOrSeqListContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MappingExpressionParser#regularExpressionCaseInsensitive}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegularExpressionCaseInsensitive(MappingExpressionParser.RegularExpressionCaseInsensitiveContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MappingExpressionParser#regularExpressionMultiline}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegularExpressionMultiline(MappingExpressionParser.RegularExpressionMultilineContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MappingExpressionParser#regularExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegularExpression(MappingExpressionParser.RegularExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link MappingExpressionParser#regexPattern}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRegexPattern(MappingExpressionParser.RegexPatternContext ctx);
 }

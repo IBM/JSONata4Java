@@ -22,13 +22,17 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.util.regex.Pattern;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.POJONode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
@@ -68,11 +72,11 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * 
  * Examples
  * 
- * $replace("John Smith and John Jones", "John", "Mr")=="Mr Smith and Mr
- * Jones" $replace("John Smith and John Jones", "John", "Mr", 1)=="Mr Smith
- * and John Jones" $replace("abracadabra", "a.*?a", "*")=="*c*bra"
- * $replace("John Smith", "(\w+)\s(\w+)", "$2, $1")=="Smith, John"
- * $replace("265USD", "([0-9]+)USD", "$$$1")=="$265"
+ * $replace("John Smith and John Jones", "John", "Mr")=="Mr Smith and Mr Jones"
+ * $replace("John Smith and John Jones", "John", "Mr", 1)=="Mr Smith and John
+ * Jones" $replace("abracadabra", "a.*?a", "*")=="*c*bra" $replace("John Smith",
+ * "(\w+)\s(\w+)", "$2, $1")=="Smith, John" $replace("265USD", "([0-9]+)USD",
+ * "$$$1")=="$265"
  * 
  */
 public class ReplaceFunction extends FunctionBase implements Function {
@@ -123,7 +127,7 @@ public class ReplaceFunction extends FunctionBase implements Function {
 						useContext ? 0 : 1);
 				int limit = -1;
 				// Make sure that the separator is not null
-				if (argPattern != null && argPattern.isTextual()) {
+				if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode)) {
 					if (argPattern.asText().isEmpty()) {
 						throw new EvaluateRuntimeException(ERR_MSG_ARG2_EMPTY_STR);
 					}
@@ -136,15 +140,19 @@ public class ReplaceFunction extends FunctionBase implements Function {
 								throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
 							}
 							final String str = argString.textValue();
-							final String pattern = argPattern.textValue();
+							final RegularExpression regex = argPattern instanceof POJONode
+									? (RegularExpression) ((POJONode) argPattern).getPojo()
+									: null;
+							final String pattern = regex != null
+									? regex.toString()
+									: argPattern.textValue();
 							final String replacement = argReplacement.textValue();
 
 							if (argCount == 4) {
 								final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
 										useContext ? 2 : 3);
 
-								// Check to see if we have an optional limit argument we check
-								// it
+								// Check to see if we have an optional limit argument we check it
 								if (argLimit != null) {
 									if (argLimit.isNumber() && argLimit.asInt() >= 0) {
 										limit = argLimit.asInt();
@@ -157,12 +165,20 @@ public class ReplaceFunction extends FunctionBase implements Function {
 							// Check to see if a limit was specified
 							if (limit == -1) {
 								// No limits... replace all occurrences in the string
-								result = new TextNode(str.replaceAll(pattern, replacement));
+								if (regex != null) {
+									result = new TextNode(regex.getPattern().matcher(str).replaceAll(jsonata2JavaReplacement(replacement)));
+								} else {
+									result = new TextNode(str.replaceAll(Pattern.quote(pattern), jsonata2JavaReplacement(replacement)));
+								}
 							} else {
 								// Only perform the replace the specified number of times
 								String retString = new String(str);
 								for (int i = 0; i < limit; i++) {
-									retString = retString.replaceFirst(pattern, replacement);
+									if (regex != null) {
+										retString = regex.getPattern().matcher(retString).replaceFirst(jsonata2JavaReplacement(replacement));
+									} else {
+										retString = retString.replaceFirst(Pattern.quote(pattern), jsonata2JavaReplacement(replacement));
+									}
 								} // FOR
 								result = new TextNode(retString);
 							}
@@ -191,10 +207,20 @@ public class ReplaceFunction extends FunctionBase implements Function {
 		return result;
 	}
 
+	public static String jsonata2JavaReplacement(String in) {
+		// In JSONata and in Java the $ in the replacement test usually starts the insertion of a capturing group
+		// In order to replace a simple $ in Java you have to escape the $ with "\$"
+		// in JSONata you do this with a '$$'
+		// "\$" followed any character besides '<' and and digit into $ + this character  
+		return in.replaceAll("\\$\\$", "\\\\\\$")
+				.replaceAll("([^\\\\]|^)\\$([^0-9^<])", "$1\\\\\\$$2");
+	}
+
 	@Override
 	public int getMaxArgs() {
 		return 3;
 	}
+
 	@Override
 	public int getMinArgs() {
 		return 1; // account for context variable
