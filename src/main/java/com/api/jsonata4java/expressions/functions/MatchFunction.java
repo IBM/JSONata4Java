@@ -135,7 +135,7 @@ public class MatchFunction extends FunctionBase implements Function {
 					while (matcher.find()) {
 						ObjectNode obj = JsonNodeFactory.instance.objectNode();
 						obj.put("match", str.substring(matcher.start(), matcher.end()));
-						obj.put("start", Long.valueOf(matcher.start()));
+						obj.put("start", new Long(matcher.start()));
 						ArrayNode groups = JsonNodeFactory.instance.arrayNode();
 						obj.set("groups", groups);
 						groups.add(matcher.group());
@@ -147,7 +147,7 @@ public class MatchFunction extends FunctionBase implements Function {
 						count++;
 						ObjectNode obj = JsonNodeFactory.instance.objectNode();
 						obj.put("match", str.substring(matcher.start(), matcher.end()));
-						obj.put("start", Long.valueOf(matcher.start()));
+						obj.put("start", new Long(matcher.start()));
 						ArrayNode groups = JsonNodeFactory.instance.arrayNode();
 						obj.set("groups", groups);
 						groups.add(matcher.group());
