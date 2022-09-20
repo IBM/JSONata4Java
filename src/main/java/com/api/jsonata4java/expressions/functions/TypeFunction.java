@@ -26,11 +26,11 @@ import java.util.List;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
-import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.ExprContext;
-import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.ExprListContext;
-import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.ExprValuesContext;
-import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.Function_callContext;
-import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.Var_recallContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;

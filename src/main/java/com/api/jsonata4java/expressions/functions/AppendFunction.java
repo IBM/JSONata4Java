@@ -26,8 +26,9 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
-import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.Fct_chainContext;
-import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.Function_callContext;
+// import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.ArrayUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;

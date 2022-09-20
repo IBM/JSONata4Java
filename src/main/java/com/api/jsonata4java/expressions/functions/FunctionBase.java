@@ -24,7 +24,7 @@ package com.api.jsonata4java.expressions.functions;
 
 import java.io.Serializable;
 
-import com.api.jsonata4java.expressions.antlr.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 
 public abstract class FunctionBase implements Serializable {
 
