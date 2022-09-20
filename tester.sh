@@ -1,2 +1,2 @@
 #! /bin/bash
-java -cp target/JSONata4Java-1.7.9-jar-with-dependencies.jar com.api.jsonata4java.Tester $1
+java -cp target/JSONata4Java-2.0.0-jar-with-dependencies.jar com.api.jsonata4java.Tester $1

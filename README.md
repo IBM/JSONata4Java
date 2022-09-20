@@ -8,13 +8,13 @@ JSONata was created by Andrew Coleman to provide many of the features that XPath
 * [JSONata Documentation](http://docs.jsonata.org/overview.html)
 * [JavaScript JSONata github repository](https://github.com/jsonata-js/jsonata)
 
-JSONata4Java is an attempt to port the jsonata.js 1.8.4 capabilities to Java v1.8. 
+JSONata4Java is an attempt to port the jsonata.js 1.8.4 capabilities to Java 11. 
 The easiest way to use this library is to include it as a dependency in your Maven pom.xml using these line:
 ```
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>1.8.0</version>
+  <version>2.0.0</version>
 </dependency>
 ```
 
@@ -22,22 +22,28 @@ You can also opt to clone this repository using the command line below and build
 ```
 git clone https://github.com/IBM/JSONata4Java.git
 ```
-The code was created using IBM Semeru Runtime Open Edition (build 1.8.0_322-b06). You can import the project into Eclipse 2022-03 or newer. 
+
+### Java 11 Version needed for new Antlr 4.11.1 (Also updated project file to Eclipse 
+2022-09)
+
+The code was created using IBM Semeru Runtime Open Edition 11.0.16.1 (build 11.0.16.1+1). You can import the project into Eclipse 2022-09 or newer. 
+You can download the Java JDK 11 from https://developer.ibm.com/languages/java/semeru-runtimes/downloads/?license=IBM 
+
 
 ### Building the jar files
 
 To build the code, 
 you'll want to right click on the project and select Maven / Update Project to ensure the dependencies are available, then 
-you can right click on the pom.xml file and select **Run as... / Maven build...** then fill in clean install as the goals:
+you can right click on the pom.xml file and select **Run as... / Maven build...** then fill in clean install as the goals\:
 **clean install** as shown below:
 
-![Launcher Image](images/Launcher.png)
+![Launcher Image](./images/Launcher.png)
 
 Alternatively, you can run from the command line in the JSONata4Java directory: **mvn clean install -Dgpg.skip**
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two:
-* **JSONata4Java-1.8.0-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-1.8.0.jar** (only the JSONata4Java code)
+* **JSONata4Java-2.0.0-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-2.0.0.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
@@ -49,7 +55,7 @@ against the same JSON as is used at the https://try.jsonata.org site.
 
 The API's to embed JSONata execution in your code are simple. The code below is copied from the Test utility, and uses the 
 jackson core ObjectMapper to parse a JSON formatted String into a JsonNode object. The dependency for the 
-jackson core is below:
+jackson core is below\:
 ``` 
 <dependency>
    <groupId>com.fasterxml.jackson.core</groupId>
@@ -74,7 +80,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Test {
 
-   public static void main(String[] args) {
+   public static void main(String[\] args) {
       Expressions expr = null;
       ObjectMapper mapper = new ObjectMapper();
       JsonNode jsonObj = null;
@@ -136,7 +142,7 @@ evaluate returns:
 
 Running this in the https://try.jsonata.org we get:
 
-![TryImage](images/TryJsonata.png)
+![TryImage](./images/TryJsonata.png)
 
 The various functions and syntax for the expression are documented at https://docs.jsonata.org/overview.html 
 
@@ -165,7 +171,7 @@ There are some jsonata.org 1.8.4 tests that we skip because we fail on them in t
 
 ### Regular Expressions:
 
-Since version 1.8.0 we support regular expression arguments of the form `/<regular expression pattern>/` for functions:  
+Since version 2.0.0 we support regular expression arguments of the form `/<regular expression pattern>/` for functions:  
 - $contains()
 - $replace()
 - $split()
@@ -193,6 +199,6 @@ that in JSONata4Java we use different parser technology and we use the original 
 - $match()
   
 when using a pattern argument written in form `"<pattern>"` or `'<pattern>'` containing a regular expression.
-Since version 1.8.0 you have to convert such arguments into syntax `/<pattern>/`.
+Since version 2.0.0 you have to convert such arguments into syntax `/<pattern>/`.
 Example: `$replace("foo bar", "fo.*ar", "Foo Bar")` would have to be converted into
 `$replace("foo bar", /fo.*ar/, "Foo Bar")` in order to provide the same result.

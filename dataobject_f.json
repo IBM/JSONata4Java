@@ -1,0 +1,12 @@
+{
+  "Email": [
+    {
+      "type": "work",
+      "address": [{ "email":"fred.smith@my-work.com"}, {"email":"fsmith@my-work.com"}]
+    },
+    {
+      "type": "home",
+      "address": [{"email":"freddy@my-social.com"}, {"email":"frederic.smith@very-serious.com"}]
+    }
+  ]
+}
