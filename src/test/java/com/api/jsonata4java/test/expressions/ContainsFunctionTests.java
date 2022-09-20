@@ -123,7 +123,20 @@ public class ContainsFunctionTests implements Serializable {
 				{ "$contains(a.b.c, ' ')", null, null }, //
 				{ "$contains('',  ' ')", "false", null }, //
 				{ "$contains('abracadabra',  ' ')", "false", null }, //
-				{ "$contains('abracadabra', 'bra')", "true", null }
+				{ "$contains('abracadabra', 'bra')", "true", null },
+				{ "$contains(\"abracadabra\", \"bra\")", "true", null },
+				{ "$contains(\"abracadabra\", /.*bra.*/)", "true", null },
+				{ "$contains(\"abracadabra\", /bra/)", "true", null },
+				{ "$contains(\"abracadabra\", /^abracadabra$/)", "true", null },
+				{ "$contains(\"abra/cadabra\", /^abra\\/cadabra$/)", "true", null },
+				{ "$contains(\"abracadabra\", /[abcdr]*/)", "true", null },
+				{ "$contains(\"abra cadabra\", /^abra\\scadabra$/)", "true", null, },
+				{ "$contains(\"abra   cadabra\", /^abra\\s*cadabra$/)", "true", null, },
+				{ "$contains(\"abra   cadabra\", /^abra\\040*cadabra$/)", "true", null, },
+				{ "$contains(\"abra   cadabra\", /^abra\\x20*cadabra$/)", "true", null, },
+				{ "($compute := function($val1, $val2) { $val1 + $val2}; $contains($string($compute(120000 / 3 / 2, 10000)), /30+/))", "true", null },
+				{ "$contains('Hello World', /wo/i)", "true", null },
+				{ "$contains('Hello World Games', /World/m)", "true", null },
 		});
 	}
 

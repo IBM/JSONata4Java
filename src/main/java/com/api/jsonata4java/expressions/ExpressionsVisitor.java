@@ -90,6 +90,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.NumericNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.POJONode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -130,8 +131,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		 * list. This will be used selector-aware operators (e.g. array index) to apply
 		 * appropriate semantics
 		 * 
-		 * @param group
-		 *              JsonNode containing the group definitions
+		 * @param group JsonNode containing the group definitions
 		 */
 		public void addAsSelectionGroup(JsonNode group) {
 			if (group.isArray()) {
@@ -215,12 +215,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 	 * 
 	 * $string(5) == "5" [1..5].$string() == ["1", "2", "3", "4", "5"]
 	 * 
-	 * @param node
-	 *                 JsonNode whose content is to be cast as a String
-	 * @param prettify
-	 *                 Whether the objects or arrays should be pretty printed
-	 * @throws EvaluateRuntimeException
-	 *                                  if json serialization fails
+	 * @param node     JsonNode whose content is to be cast as a String
+	 * @param prettify Whether the objects or arrays should be pretty printed
+	 * @throws EvaluateRuntimeException if json serialization fails
 	 * @return the String representation of the supplied node
 	 */
 	public static String castString(JsonNode node, boolean prettify) throws EvaluateRuntimeException {
@@ -229,79 +226,79 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		}
 
 		switch (node.getNodeType()) {
-			case STRING: {
-				return node.textValue();
-			}
-			case NUMBER: {
-				if (node.isDouble()) {
-					Double dValue = node.asDouble();
-					if (Double.isInfinite(dValue) || Double.isNaN(dValue)) {
-						throw new EvaluateRuntimeException("Attempting to invoke string function on Infinity or NaN");
+		case STRING: {
+			return node.textValue();
+		}
+		case NUMBER: {
+			if (node.isDouble()) {
+				Double dValue = node.asDouble();
+				if (Double.isInfinite(dValue) || Double.isNaN(dValue)) {
+					throw new EvaluateRuntimeException("Attempting to invoke string function on Infinity or NaN");
+				}
+				String test = dValue.toString();
+				// try to determine precision
+				String strVal = "";
+				int index = test.indexOf("E");
+				String expStr = ".e+";
+				if (index >= 0) {
+					int minusSize = dValue < 0.0d ? 1 : 0;
+					int exp = new Integer(test.substring(index + 1));
+					if (exp < 0) {
+						expStr = ".e";
 					}
-					String test = dValue.toString();
-					// try to determine precision
-					String strVal = "";
-					int index = test.indexOf("E");
-					String expStr = ".e+";
-					if (index >= 0) {
-						int minusSize = dValue < 0.0d ? 1 : 0;
-						int exp = new Integer(test.substring(index + 1));
-						if (exp < 0) {
-							expStr = ".e";
-						}
-						// how many digits before E?
-						int len = test.indexOf(".");
-						if (len - minusSize + Math.abs(exp) <= 21) {
-							if (exp > 0) {
-								strVal = _decimalFormat.format(dValue);
-								return strVal;
-							}
-							if (exp > -7) {
-								strVal = new BigDecimal(dValue, new MathContext(15)).toString().toLowerCase();
-								if (strVal.indexOf(".") >= 0) {
-									while (strVal.endsWith("0") && strVal.length() > 0) {
-										strVal = strVal.substring(0, strVal.length() - 1);
-									}
-								}
-								return strVal;
-							}
-						}
-						// need to check for ".0E" to make it the whole number e+exp
-						if (test.indexOf(".0E") > 0) {
-							strVal = test.substring(0, len) + expStr.substring(1) + test.substring(index + 1);
-						} else {
-							strVal = test.substring(0, index) + expStr + test.substring(index + 1);
-						}
-					} else {
-						if (prettify) {
+					// how many digits before E?
+					int len = test.indexOf(".");
+					if (len - minusSize + Math.abs(exp) <= 21) {
+						if (exp > 0) {
 							strVal = _decimalFormat.format(dValue);
-						} else {
+							return strVal;
+						}
+						if (exp > -7) {
 							strVal = new BigDecimal(dValue, new MathContext(15)).toString().toLowerCase();
 							if (strVal.indexOf(".") >= 0) {
 								while (strVal.endsWith("0") && strVal.length() > 0) {
 									strVal = strVal.substring(0, strVal.length() - 1);
 								}
 							}
+							return strVal;
 						}
 					}
-					return strVal;
-				}
-			}
-
-			default:
-				// arrays and objects
-				try {
-					if (prettify) {
-						JsonElement jsonElt = JsonParser.parseString(objectMapper.writeValueAsString(node));
-						return gson.toJson(jsonElt);
-
+					// need to check for ".0E" to make it the whole number e+exp
+					if (test.indexOf(".0E") > 0) {
+						strVal = test.substring(0, len) + expStr.substring(1) + test.substring(index + 1);
 					} else {
-						return objectMapper.writeValueAsString(node);
+						strVal = test.substring(0, index) + expStr + test.substring(index + 1);
 					}
-				} catch (JsonProcessingException e) {
-					throw new EvaluateRuntimeException(
-							"Failed to cast value " + node + " to a string. Reason: " + e.getMessage());
+				} else {
+					if (prettify) {
+						strVal = _decimalFormat.format(dValue);
+					} else {
+						strVal = new BigDecimal(dValue, new MathContext(15)).toString().toLowerCase();
+						if (strVal.indexOf(".") >= 0) {
+							while (strVal.endsWith("0") && strVal.length() > 0) {
+								strVal = strVal.substring(0, strVal.length() - 1);
+							}
+						}
+					}
 				}
+				return strVal;
+			}
+		}
+
+		default:
+			// arrays and objects
+			try {
+				if (prettify) {
+					JsonElement jsonElt = JsonParser.parseString(objectMapper.writeValueAsString(node));
+					return gson.toJson(jsonElt);
+
+				} else {
+					return objectMapper.writeValueAsString(node);
+				}
+			} catch (JsonProcessingException e) {
+				throw new EvaluateRuntimeException(
+						"Failed to cast value " + node + " to a string. Reason: " + e.getMessage());
+			}
 		}
 
 	}
@@ -769,10 +766,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 	 * Recursively traverse the descendants of the input and them in the results
 	 * array
 	 * 
-	 * @param input
-	 *                the object, array, or node whose descendants are sought
-	 * @param results
-	 *                the array containing the descendants of the input and all of
+	 * @param input   the object, array, or node whose descendants are sought
+	 * @param results the array containing the descendants of the input and all of
 	 *                their descendants
 	 */
 	void traverseDescendants(JsonNode input, ArrayNode results) {
@@ -814,7 +809,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 			if (result != null && result instanceof SelectorArrayNode) {
 //					&& ((SelectorArrayNode) result).getSelectionGroups().size() == 1) {
 //				result = ((SelectorArrayNode) result).getSelectionGroups().get(0);
-				SelectorArrayNode san = (SelectorArrayNode)result;
+				SelectorArrayNode san = (SelectorArrayNode) result;
 				if (san.size() == 1 && san.selectionGroups.size() == 1) {
 					JsonNode test = san.selectionGroups.get(0);
 					if (test instanceof SelectorArrayNode) {
@@ -1519,66 +1514,66 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 							CommonToken token = null;
 							ExprContext expr = null;
 							switch (context.getNodeType()) {
-								case BINARY:
-								case POJO: {
-									break;
+							case BINARY:
+							case POJO: {
+								break;
+							}
+							case ARRAY: {
+								child0 = FunctionUtils.getArrayConstructorContext(ctx, (ArrayNode) context);
+								expr = new MappingExpressionParser.ArrayContext(ctx);
+								for (int i = 0; i < ctx.children.size(); i++) {
+									expr.children.add(ctx.children.get(i));
 								}
-								case ARRAY: {
-									child0 = FunctionUtils.getArrayConstructorContext(ctx, (ArrayNode) context);
-									expr = new MappingExpressionParser.ArrayContext(ctx);
-									for (int i = 0; i < ctx.children.size(); i++) {
-										expr.children.add(ctx.children.get(i));
-									}
-									expr.children.set(0, child0);
-									result = visit(expr);
-									break;
+								expr.children.set(0, child0);
+								result = visit(expr);
+								break;
+							}
+							case BOOLEAN: {
+								token = (context.asBoolean()
+										? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, context.asText())
+										: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, context.asText()));
+								TerminalNodeImpl tn = new TerminalNodeImpl(token);
+								BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
+								bc.children.set(0, tn);
+								result = visit(bc);
+								break;
+							}
+							case MISSING:
+							case NULL: {
+								token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NULL, null);
+								TerminalNodeImpl tn = new TerminalNodeImpl(token);
+								NullContext nc = new MappingExpressionParser.NullContext(ctx);
+								nc.children.set(0, tn);
+								result = visit(nc);
+								break;
+							}
+							case NUMBER: {
+								token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER, context.asText());
+								TerminalNodeImpl tn = new TerminalNodeImpl(token);
+								NumberContext nc = new NumberContext(ctx);
+								nc.children.set(0, tn);
+								result = visit(nc);
+								break;
+							}
+							case OBJECT: {
+								child0 = FunctionUtils.getObjectConstructorContext(ctx, (ObjectNode) context);
+								expr = new MappingExpressionParser.PathContext(ctx);
+								for (int i = 0; i < ctx.children.size(); i++) {
+									expr.children.add(ctx.children.get(i));
 								}
-								case BOOLEAN: {
-									token = (context.asBoolean()
-											? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, context.asText())
-											: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, context.asText()));
-									TerminalNodeImpl tn = new TerminalNodeImpl(token);
-									BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
-									bc.children.set(0, tn);
-									result = visit(bc);
-									break;
-								}
-								case MISSING:
-								case NULL: {
-									token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NULL, null);
-									TerminalNodeImpl tn = new TerminalNodeImpl(token);
-									NullContext nc = new MappingExpressionParser.NullContext(ctx);
-									nc.children.set(0, tn);
-									result = visit(nc);
-									break;
-								}
-								case NUMBER: {
-									token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER, context.asText());
-									TerminalNodeImpl tn = new TerminalNodeImpl(token);
-									NumberContext nc = new NumberContext(ctx);
-									nc.children.set(0, tn);
-									result = visit(nc);
-									break;
-								}
-								case OBJECT: {
-									child0 = FunctionUtils.getObjectConstructorContext(ctx, (ObjectNode) context);
-									expr = new MappingExpressionParser.PathContext(ctx);
-									for (int i = 0; i < ctx.children.size(); i++) {
-										expr.children.add(ctx.children.get(i));
-									}
-									expr.children.set(0, child0);
-									result = visit(expr);
-									break;
-								}
-								case STRING:
-								default: {
-									token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, context.asText());
-									TerminalNodeImpl tn = new TerminalNodeImpl(token);
-									StringContext sc = new StringContext(ctx);
-									sc.children.set(0, tn);
-									result = visit(sc);
-									break;
-								}
+								expr.children.set(0, child0);
+								result = visit(expr);
+								break;
+							}
+							case STRING:
+							default: {
+								token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, context.asText());
+								TerminalNodeImpl tn = new TerminalNodeImpl(token);
+								StringContext sc = new StringContext(ctx);
+								sc.children.set(0, tn);
+								result = visit(sc);
+								break;
+							}
 							} // end switch
 						}
 					} else {
@@ -1918,9 +1913,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		JsonNode result = null;
 
 		JsonNode left = visit(ctx.expr(0)); // get value of left subexpression
-		if (BooleanUtils.convertJsonNodeToBoolean(left)) { 
+		if (BooleanUtils.convertJsonNodeToBoolean(left)) {
 			JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
-	
+
 			result = BooleanUtils.convertJsonNodeToBoolean(left) && BooleanUtils.convertJsonNodeToBoolean(right)
 					? BooleanNode.TRUE
 					: BooleanNode.FALSE;
@@ -1946,7 +1941,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		JsonNode left = visit(ctx.expr(0)); // get value of left subexpression
 		if (BooleanUtils.convertJsonNodeToBoolean(left) == false) {
 			JsonNode right = visit(ctx.expr(1)); // get value of right subexpression
-	
+
 			result = BooleanUtils.convertJsonNodeToBoolean(left) || BooleanUtils.convertJsonNodeToBoolean(right)
 					? BooleanNode.TRUE
 					: BooleanNode.FALSE;
@@ -2099,7 +2094,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		}
 		return result;
 	}
-	
+
 //	/**
 //	 * Don't process the <EOF> token as it returns null and overwrites the result
 //	 */
@@ -2153,7 +2148,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 			ParseTree firstChild = ctx.getChild(0);
 			if (firstChild instanceof Var_recallContext) {
 				context = visit(firstChild);
-			} else if (firstChild instanceof PathContext)  {
+			} else if (firstChild instanceof PathContext) {
 				context = visit(firstChild);
 			} else if (_environment.isEmptyContext() == false) {
 				context = _environment.peekContext();
@@ -2210,14 +2205,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 			result = object;
 		} else {
 			// no longer required after patch applied
-			//			JsonNode context = null;
-			//			// check to see if there is a referenced variable use that as the context
-			//			ParseTree firstChild = ctx.getChild(0);
-			//			if (firstChild instanceof Var_recallContext) {
-			//				context = visit(firstChild);
-			//			} else if (_environment.isEmptyContext() == false) {
-			//				context = _environment.peekContext();
-			//			}
+			// JsonNode context = null;
+			// // check to see if there is a referenced variable use that as the context
+			// ParseTree firstChild = ctx.getChild(0);
+			// if (firstChild instanceof Var_recallContext) {
+			// context = visit(firstChild);
+			// } else if (_environment.isEmptyContext() == false) {
+			// context = _environment.peekContext();
+			// }
 			// List<TerminalNode> keyNodes = new ArrayList<TerminalNode>(); //
 			// ctx.fieldList().STRING();
 			List<String> keys = new ArrayList<String>();
@@ -2232,65 +2227,65 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 			ParseTree comma;
 			for (int f = 0; f < fieldList.getChildCount(); f++) {
 				switch (f % 4) {
-					case 0: {
-						keyField = fieldList.getChild(f);
-						// determine if this is already a string or attempt to evaluate to a String
-						if (keyField instanceof TerminalNode) {
-							keys.add(((TerminalNode) keyField).getText());
+				case 0: {
+					keyField = fieldList.getChild(f);
+					// determine if this is already a string or attempt to evaluate to a String
+					if (keyField instanceof TerminalNode) {
+						keys.add(((TerminalNode) keyField).getText());
+					} else {
+						// attempt to resolve to a String
+						JsonNode key = visit(keyField);
+						if (key == null) {
+							throw new EvaluateRuntimeException(
+									"Key in object structure must evaluate to a string; got: undefined");
+						}
+						if (key.isNull()) {
+							throw new EvaluateRuntimeException(
+									"Key in object structure must evaluate to a string; got: null");
+						}
+						if (key.isTextual()) {
+							keys.add(key.asText());
 						} else {
-							// attempt to resolve to a String
-							JsonNode key = visit(keyField);
-							if (key == null) {
-								throw new EvaluateRuntimeException(
-										"Key in object structure must evaluate to a string; got: undefined");
-							}
-							if (key.isNull()) {
-								throw new EvaluateRuntimeException(
-										"Key in object structure must evaluate to a string; got: null");
-							}
-							if (key.isTextual()) {
-								keys.add(key.asText());
-							} else {
-								throw new EvaluateRuntimeException(
-										"Key in object structure must evaluate to a string; got: " + key.toPrettyString());
-							}
+							throw new EvaluateRuntimeException(
+									"Key in object structure must evaluate to a string; got: " + key.toPrettyString());
 						}
-						break;
 					}
-					case 1: {
-						colon = fieldList.getChild(f);
-						if (colon instanceof TerminalNode) {
-							if (":".equals(colon.getText())) {
-								break;
-							}
+					break;
+				}
+				case 1: {
+					colon = fieldList.getChild(f);
+					if (colon instanceof TerminalNode) {
+						if (":".equals(colon.getText())) {
+							break;
 						}
-						throw new EvaluateRuntimeException("Expected \":\" got \"" + colon.getText() + "\"");
 					}
-					case 2: {
-						valueField = fieldList.getChild(f);
-						if (valueField instanceof ExprContext) {
-							valueNodes.add((ExprContext) valueField);
-						} else if (valueField instanceof TerminalNode) {
-							valueNodes.add((ExprContext) valueField);
-						} else if (valueField instanceof Function_declContext) {
-							valueNodes.add((ExprContext) valueField);
-						} else if (valueField instanceof Var_recallContext) {
-							valueNodes.add((ExprContext) valueField);
-						} else {
-							// ignore this entirely from our object
-							keys.remove(keys.size() - 1);
+					throw new EvaluateRuntimeException("Expected \":\" got \"" + colon.getText() + "\"");
+				}
+				case 2: {
+					valueField = fieldList.getChild(f);
+					if (valueField instanceof ExprContext) {
+						valueNodes.add((ExprContext) valueField);
+					} else if (valueField instanceof TerminalNode) {
+						valueNodes.add((ExprContext) valueField);
+					} else if (valueField instanceof Function_declContext) {
+						valueNodes.add((ExprContext) valueField);
+					} else if (valueField instanceof Var_recallContext) {
+						valueNodes.add((ExprContext) valueField);
+					} else {
+						// ignore this entirely from our object
+						keys.remove(keys.size() - 1);
+					}
+					break;
+				}
+				case 3: {
+					comma = fieldList.getChild(f);
+					if (comma instanceof TerminalNode) {
+						if (",".equals(comma.getText())) {
+							break;
 						}
-						break;
 					}
-					case 3: {
-						comma = fieldList.getChild(f);
-						if (comma instanceof TerminalNode) {
-							if (",".equals(comma.getText())) {
-								break;
-							}
-						}
-						throw new EvaluateRuntimeException("Expected \"}\" got \"" + comma.getText() + "\"");
-					}
+					throw new EvaluateRuntimeException("Expected \"}\" got \"" + comma.getText() + "\"");
+				}
 				}
 			}
 			if (keys.size() != valueNodes.size()) {
@@ -2420,18 +2415,18 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		if (lhs != null && lhs.isNull() == false) {
 			// reject path entries that are numbers or values
 			switch (lhs.getNodeType()) {
-				case NUMBER: {
-					// leaving number as is since * can reference array values too
-					// lhs = factory.textNode(lhs.asText());
-					break;
-				}
-				case BOOLEAN:
-				case NULL: {
-					throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY, lhs.toString()));
-				}
-				default: {
-					break;
-				}
+			case NUMBER: {
+				// leaving number as is since * can reference array values too
+				// lhs = factory.textNode(lhs.asText());
+				break;
+			}
+			case BOOLEAN:
+			case NULL: {
+				throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_PATH_ENTRY, lhs.toString()));
+			}
+			default: {
+				break;
+			}
 			}
 			if (rhsCtx == null) {
 				result = lhs;
@@ -2492,7 +2487,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 							}
 							firstStepCons = false;
 						} else {
-								result = rhs;
+							result = rhs;
 
 //							if (keepArray) {
 //								result = rhs;
@@ -2612,6 +2607,60 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 
 		result = TextNode.valueOf(val);
 		lastVisited = METHOD;
+		if (LOG.isLoggable(Level.FINEST)) {
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
+		}
+		return result;
+	}
+
+	@Override
+	public JsonNode visitRegular_expression(MappingExpressionParser.Regular_expressionContext ctx) {
+		final String METHOD = "visitRegular_expression";
+		if (LOG.isLoggable(Level.FINEST)) {
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
+		}
+		JsonNode result = null;
+		if (ctx.getText() != null) {
+			final RegularExpression regex = new RegularExpression(ctx.getText());
+			result = new POJONode(regex);
+			lastVisited = METHOD;
+		}
+		if (LOG.isLoggable(Level.FINEST)) {
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
+		}
+		return result;
+	}
+
+	@Override
+	public JsonNode visitRegular_expression_caseinsensitive(MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx) {
+		final String METHOD = "visitRegular_expression_caseinsensitive";
+		if (LOG.isLoggable(Level.FINEST)) {
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
+		}
+		JsonNode result = null;
+		if (ctx.getText() != null) {
+			final RegularExpression regex = new RegularExpression(RegularExpression.Type.CASEINSENSITIVE, ctx.getText());
+			result = new POJONode(regex);
+			lastVisited = METHOD;
+		}
+		if (LOG.isLoggable(Level.FINEST)) {
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
+		}
+		return result;
+	}
+
+	@Override
+	public JsonNode visitRegular_expression_multiline(MappingExpressionParser.Regular_expression_multilineContext ctx) {
+		final String METHOD = "visitRegular_expression_multiline";
+		if (LOG.isLoggable(Level.FINEST)) {
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
+		}
+		JsonNode result = null;
+		if (ctx.getText() != null) {
+			final RegularExpression regex = new RegularExpression(RegularExpression.Type.MULTILINE, ctx.getText());
+			result = new POJONode(regex);
+			lastVisited = METHOD;
+		}
 		if (LOG.isLoggable(Level.FINEST)) {
 			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}

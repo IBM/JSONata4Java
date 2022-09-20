@@ -380,6 +380,13 @@ public class BasicExpressionsTest implements Serializable {
 		// jsonata 1.8.2 no longer allows join of arrays of anything but strings
 		test("[Account.Order].{\"id\" : $join(Product.ProductID, ', ')}", expectArray,
 				"Argument 1 of function $join must be an array of strings", jsonObj);
+
+		// issue #71
+		// verify that simple arithmetic expressions with 2 or more '/' still work out
+		simpleTest("12 / 2 ", 6, null);
+		simpleTest("12/2 ", 6, null);
+		simpleTest("24 / (2 + 2) / 3", 2, null);
+		simpleTest("12/2/3 / 2", 1, null);
 	}
 
 	@Test

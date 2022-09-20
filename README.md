@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>1.7.9</version>
+  <version>1.8.0</version>
 </dependency>
 ```
 
@@ -36,12 +36,12 @@ you can right click on the pom.xml file and select **Run as... / Maven build...*
 Alternatively, you can run from the command line in the JSONata4Java directory: **mvn clean install -Dgpg.skip**
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two:
-* **JSONata4Java-1.7.9-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-1.7.9.jar** (only the JSONata4Java code)
+* **JSONata4Java-1.8.0-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-1.8.0.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
-provide a fully qualified filename of a json file on the command line to test expressions 
+provide a fully qualified filename of a JSON file on the command line to test expressions 
 against your own data.
 
 There is a tester.sh you can run in the project to enable you to test expressions 
@@ -57,8 +57,8 @@ jackson core is below:
    <version>2.9.8</version>
 </dependency>
 ```
-Here is example code to parse and execute an expression against a jsonObj created from 
-a json String.
+Here is example code to parse and execute an expression against an object (jsonObj) created from 
+a JSON String.
 ```
 package com.api.jsonata4java;
 
@@ -87,7 +87,7 @@ public class Test {
       }
 
       try {
-         System.out.println("Using json:\n" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj));
+         System.out.println("Using JSON:\n" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj));
          System.out.println("expression=" + expression);
          expr = Expressions.parse(expression);
       } catch (ParseException e) {
@@ -123,7 +123,7 @@ against the jsonObj object.
 
 When you run the Test program above, you will see:
 ```
-Using json:
+Using JSON:
 {
   "a" : 1,
   "b" : 2,
@@ -159,7 +159,40 @@ From: https://docs.jsonata.org/string-functions
 From: https://docs.jsonata.org/numeric-functions we did not implement:
 * $formatInteger()
 * $parseInteger()
-
+  
 There are some jsonata.org 1.8.4 tests that we skip because we fail on them in the AgnosticTestSuite.java.
 
 
+### Regular Expressions:
+
+Since version 1.8.0 we support regular expression arguments of the form `/<regular expression pattern>/` for functions:  
+- $contains()
+- $replace()
+- $split()
+- $match()
+
+There are only few differences to regular expressions in original JSONata due to the fact
+that in JSONata4Java we use different parser technology and we use the original Java regular expression implementation.
+
+- we do not support regular expressions patterns containing any white space character.  
+  Please use escaped forms: **\s \t \n** instead. This will be compatible to original JSONata.
+  
+
+- in function $replace() the behavior of capturing group replacements differs slightly from original JSONata:
+    - we support more than 9 capturing groups.
+    - like original JSONata we support escaping $ with $$ in the replacement text but
+      if you want to have a $ at the end of your replacement string you have to escape it explicitly in JSONata4Java:  
+      Example:  
+      Original JSONata evaluates `$replace("abcdefghijklmno", /(ijk)/, "$x$")` to `"abcdefgh$x$lmno"`  
+      In JSONata4Java you should write `$replace("abcdefghijklmno", /(ijk)/, "$x$$")` to `"abcdefgh$x$lmno"`
+      in order to achieve the same - which is compatible to original JSONata anyway. 
+  
+**Please note:** that in JSONata4Java <= 1.7.9 we already provided (non documented) regular expressions support for functions:
+- $replace()
+- $split()
+- $match()
+  
+when using a pattern argument written in form `"<pattern>"` or `'<pattern>'` containing a regular expression.
+Since version 1.8.0 you have to convert such arguments into syntax `/<pattern>/`.
+Example: `$replace("foo bar", "fo.*ar", "Foo Bar")` would have to be converted into
+`$replace("foo bar", /fo.*ar/, "Foo Bar")` in order to provide the same result.
