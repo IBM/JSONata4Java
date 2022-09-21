@@ -211,6 +211,23 @@ public class FunctionErrorTests {
 	}
 
 	@Test
+	public void replaceWithMultilinedText() throws Exception {
+		test("$replace('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/, '$1---$2')", "\"1234sjdffjf\\n5678jkfjf\\n9999fg grrs\"", null, null);
+		test("$replace('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m, '$1---$2')", "\"1234---sjdffjf\\n5678---jkfjf\\n9999---fg grrs\"", null, null);
+	}
+
+	// while $replace() works out fine (original JSONata like) with "multilined" strings
+	// $contains has problems
+	@Test
+	public void containsWithMultilinedText() throws Exception {
+		// TODO make run: test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /([0-9]+)/)", "true", null, null);
+		// TODO make run: test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /(^[0-9]+)/)", "true", null, null);
+		// TODO make run: test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/)", "false", null, null);
+		// TODO make run
+		test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m)", "true", null, null);
+	}
+
+	@Test
 	public void splitWithRegex() throws Exception {
 		test("$split('this     is   a simple  test', /\\s+/)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null, null);
 	}
