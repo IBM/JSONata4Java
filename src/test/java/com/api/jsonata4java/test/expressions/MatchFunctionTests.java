@@ -156,7 +156,7 @@ public class MatchFunctionTests implements Serializable {
 						+ "{\"match\":\"Aabb\",\"index\":4,\"groups\":[\"Aa\",\"bb\"]},"
 						+ "{\"match\":\"aAaB\",\"index\":8,\"groups\":[\"aAa\",\"B\"]}]",
 						null },
-				// $match() seems to work out equally with and with /m
+				// $match() seems to work out equally with and without /m
 				// This seems to hold for original JSONata as well as for Java regular expressions
 				{ "$match('ex12am345\\n6ple89', /[0-9]+/)",
 							"[{\"match\":\"12\",\"index\":2,\"groups\":[]},"
