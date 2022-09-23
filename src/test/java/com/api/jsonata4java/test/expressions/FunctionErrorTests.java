@@ -206,6 +206,8 @@ public class FunctionErrorTests {
 
 	@Test
 	public void containsCaseInsensitively() throws Exception {
+		test("$contains('xyxyABCdefxyxxy', /ab.*ef/)", "false", null, null);
+		test("$contains('xyxyABCdefxyxxy', /ab.*ef/i)", "true", null, null);
 		test("$contains('ABCdef', /^ab.*ef$/)", "false", null, null);
 		test("$contains('ABCdef', /^ab.*ef$/i)", "true", null, null);
 	}
@@ -214,16 +216,21 @@ public class FunctionErrorTests {
 	public void replaceWithMultilinedText() throws Exception {
 		test("$replace('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/, '$1---$2')", "\"1234sjdffjf\\n5678jkfjf\\n9999fg grrs\"", null, null);
 		test("$replace('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m, '$1---$2')", "\"1234---sjdffjf\\n5678---jkfjf\\n9999---fg grrs\"", null, null);
+		test("$replace('1234sjdffjf\\njkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m, '$1---$2')", "\"1234---sjdffjf\\njkfjf\\n9999---fg grrs\"", null, null);
 	}
 
 	// while $replace() works out fine (original JSONata like) with "multilined" strings
 	// $contains has problems
 	@Test
 	public void containsWithMultilinedText() throws Exception {
-		// TODO make run: test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /([0-9]+)/)", "true", null, null);
-		// TODO make run: test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /(^[0-9]+)/)", "true", null, null);
-		// TODO make run: test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/)", "false", null, null);
-		// TODO make run
+		test("$contains('12xyzabc3def', /[0-9]+/)", "true", null, null);
+		test("$contains('12xyz\\nabc\\n3def', /[0-9]+/)", "true", null, null);
+		test("$contains('12xyz\\nabc\\n3def', /^[0-9]+.*$/)", "false", null, null);
+		test("$contains('12xyz\\nabc\\n3def', /^[0-9]+.*$/m)", "true", null, null);
+		test("$contains('12xyz\\nabc\\n3def', /[0-9]+/)", "true", null, null);
+		test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /([0-9]+)/)", "true", null, null);
+		test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /(^[0-9]+)/)", "true", null, null);
+		test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/)", "false", null, null);
 		test("$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m)", "true", null, null);
 	}
 

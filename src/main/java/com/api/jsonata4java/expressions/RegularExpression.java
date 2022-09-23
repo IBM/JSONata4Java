@@ -59,17 +59,6 @@ public class RegularExpression {
 		compile();
 	}
 
-	public RegularExpression extend() {
-		if (!(regexPattern.startsWith("^") || regexPattern.startsWith("\\A"))) {
-			regexPattern = ".*" + regexPattern;
-		}
-		if (!(regexPattern.endsWith("$") || regexPattern.endsWith("\\z") || regexPattern.endsWith("\\Z"))) {
-			regexPattern = regexPattern + ".*";
-		}
-		compile();
-		return this;
-	}
-
 	private void compile() {
 		switch (this.type) {
 		case CASEINSENSITIVE:
