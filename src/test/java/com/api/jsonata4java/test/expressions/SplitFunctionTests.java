@@ -138,6 +138,12 @@ public class SplitFunctionTests implements Serializable {
 				{ "$split('this     is   a +simple  test', ' +')", "[\"this     is   a\",\"simple  test\"]", null },
 				{ "$split('thisOOOOOisOOOaOsimpleOOtest', /O+/)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null },
 				{ "$split('thisOoOooisOoOaOsimpleOotest', /O+/i)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null },
+				// $split() seems to work out equally with and with /m
+				// This seems to hold for original JSONata as well as for Java regular expressions
+				{ "$split('this   is a  simple   test\\nwith a    second     line.', /[\\s]+/)",
+					"[ \"this\", \"is\", \"a\", \"simple\", \"test\", \"with\", \"a\", \"second\", \"line.\" ]", null },
+				{ "$split('this   is a  simple   test\\nwith a    second     line.', /[\\s]+/m)",
+						"[ \"this\", \"is\", \"a\", \"simple\", \"test\", \"with\", \"a\", \"second\", \"line.\" ]", null },
 		});
 	}
 

@@ -205,6 +205,9 @@ public class ReplaceFunctionTests implements Serializable {
 		        { "$replace('a-b---+c--d', '-+', '_', 2)", "\"a-b--_c--d\"", null }, //
 		        { "$replace('fooa123aAafuoAa456aaAfioAaAa789afoo', /a+/i, '--')", "\"foo--123--fuo--456--fio--789--foo\"", null }, //
 		        { "$replace('fooa123aAafuoAa456aaAfioAaAa789afoo', /a+/i, '--', 4)", "\"foo--123--fuo--456--fioAaAa789afoo\"", null }, //
+		        { "$replace('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/, '$1---$2')", "\"1234sjdffjf\\n5678jkfjf\\n9999fg grrs\"", null }, //
+		        { "$replace('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m, '$1---$2')", "\"1234---sjdffjf\\n5678---jkfjf\\n9999---fg grrs\"", null }, //
+		        { "$replace('1234sjdffjf\\njkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m, '$1---$2')", "\"1234---sjdffjf\\njkfjf\\n9999---fg grrs\"", null }, //
 		    	// JSNOata test suite group "regex" case012
 		        { "$replace(\"265USD\", /([0-9]+)USD/, \"$$$1\")", "\"$265\"", null }, //
 		    	// JSNOata test suite group "regex" case013

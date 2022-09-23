@@ -136,7 +136,16 @@ public class ContainsFunctionTests implements Serializable {
 				{ "$contains(\"abra   cadabra\", /^abra\\x20*cadabra$/)", "true", null, },
 				{ "($compute := function($val1, $val2) { $val1 + $val2}; $contains($string($compute(120000 / 3 / 2, 10000)), /30+/))", "true", null },
 				{ "$contains('Hello World', /wo/i)", "true", null },
-				{ "$contains('Hello World Games', /World/m)", "true", null },
+				{ "$contains('Hello World Games\\nHello Europe Games', /World/)", "true", null },
+				{ "$contains('12xyzabc3def', /[0-9]+/)", "true", null },
+				{ "$contains('12xyz\\nabc\\n3def', /[0-9]+/)", "true", null },
+				{ "$contains('12xyz\\nabc\\n3def', /^[0-9]+.*$/)", "false", null },
+				{ "$contains('12xyz\\nabc\\n3def', /^[0-9]+.*$/m)", "true", null },
+				{ "$contains('12xyz\\nabc\\n3def', /[0-9]+/)", "true", null },
+				{ "$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /([0-9]+)/)", "true", null },
+				{ "$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /(^[0-9]+)/)", "true", null },
+				{ "$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/)", "false", null },
+				{ "$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m)", "true", null },
 		});
 	}
 

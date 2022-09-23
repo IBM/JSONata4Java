@@ -44,15 +44,16 @@ public class RegularExpressionTest {
 	}
 
 	@Test
-	public void matches() {
-		assertTrue(new RegularExpression("/^.*$/").getPattern().matcher("asdfgh").matches());
-		assertTrue(new RegularExpression("/^ab.*ef$/").getPattern().matcher("abcdef").matches());
-		assertTrue(new RegularExpression("/c.*f/").getPattern().matcher("abcdefgh").matches());
+	public void find() {
+		assertTrue(new RegularExpression("/^.*$/").getPattern().matcher("asdfgh").find());
+		assertTrue(new RegularExpression("/^ab.*ef$/").getPattern().matcher("abcdef").find());
+		assertTrue(new RegularExpression("/c.*f/").getPattern().matcher("abcdefgh").find());
 	}
 
 	@Test
-	public void matchesCaseInsensitive() {
-		assertFalse(new RegularExpression("/^ab.*ef$/").getPattern().matcher("ABCdef").matches());	
-		assertTrue(new RegularExpression(RegularExpression.Type.CASEINSENSITIVE, "/^ab.*ef$/").getPattern().matcher("ABCdef").matches());		
+	public void findCaseInsensitive() {
+		assertFalse(new RegularExpression("/^ab.*ef$/").getPattern().matcher("ABCdef").find());	
+		assertTrue(new RegularExpression(RegularExpression.Type.CASEINSENSITIVE, "/^ab.*ef$/")
+				.getPattern().matcher("ABCdef").find());		
 	}
 }
