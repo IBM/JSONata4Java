@@ -1,7 +1,7 @@
 {
   "FirstName": "Fred",
   "Surname": "Smith",
-  "Age": 28,
+  "Age": "28",
   "Address": {
     "Street": "Hursley Park",
     "City": "Winchester",
@@ -42,8 +42,8 @@
     }
   ],
   "Other": {
-    "Over 18 ?": true,
-    "Misc": null,
+    "Over_18": "true",
+    "Misc": "",
     "Alternative.Address": {
       "Street": "Brick Lane",
       "City": "London",
