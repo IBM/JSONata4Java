@@ -2,6 +2,7 @@ package com.api.jsonata4java;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -41,6 +42,7 @@ public class TesterUi {
 	private final ObjectMapper jsonMapper = new ObjectMapper();
 	private final XmlMapper xmlMapper = new XmlMapper();
 
+	private final Font font = new Font("Consolas", Font.PLAIN, 18);
 	private final JTextArea inputArea = new JTextArea();
 	private final JTextArea jsonataArea = new JTextArea();
 	private final JTextArea outputArea = new JTextArea();
@@ -62,8 +64,11 @@ public class TesterUi {
 
 	protected TesterUi() throws IOException {
 
+		inputArea.setFont(font);
 		inputArea.setText(readFile("src/test/resources/exerciser/address.json"));
+		jsonataArea.setFont(font);
 		jsonataArea.setText(readFile("src/test/resources/exerciser/addressExpression.jsonata"));
+		outputArea.setFont(font);
 		outputArea.setEditable(false);
 
 		splitPane.add(inputSp);
@@ -72,9 +77,6 @@ public class TesterUi {
 		splitPane.add(splitPaneRight);
 
 		frame.setTitle("JSONata4Java Tester UI");
-		final Dimension screendim = Toolkit.getDefaultToolkit().getScreenSize();
-		// frame.setLocation(dim.width/2-frame.getSize().width/2,
-		// dim.height/2-frame.getSize().height/2);
 		frame.getContentPane().add(splitPane);
 		this.frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -82,10 +84,11 @@ public class TesterUi {
 				close();
 			}
 		});
-		frame.setSize(new Dimension(screendim.getWidth() > 800 ? 800 : (int) (screendim.getWidth() / 2),
-				screendim.getHeight() > 500 ? 500 : (int) (screendim.getHeight() / 2)));
+		final Dimension screendim = Toolkit.getDefaultToolkit().getScreenSize();
+		final Dimension windim = new Dimension(screendim.getWidth() > 1500 ? 1500 : (int) (screendim.getWidth() / 2),
+				screendim.getHeight() > 800 ? 800 : (int) (screendim.getHeight() / 2));
+		frame.setSize(windim);
 		frame.setLocation(100, 100);
-		// frame.pack();
 
 		parseMappingDescription();
 		map();
