@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.file.Paths;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,13 +24,13 @@ public class TesterUITest {
 
 	@Test
 	public void testJsonToXml() throws IOException {
-		System.out.println(testerUi.jsonToXml(TesterUI.readFile("src/test/resources/exerciser/address.json")));
+		System.out.println(testerUi.jsonToXml(TesterUI.readFile(Paths.get("src/test/resources/exerciser/address.json"))));
 	}
 
 	@Test
 	public void testXmlToJson() throws IOException {
-		assertEquals(minifyJson(TesterUI.readFile("src/test/resources/exerciser/address.json")),
-				minifyJson(testerUi.xmlToJson(TesterUI.readFile("src/test/resources/exerciser/address.xml"))));
+		assertEquals(minifyJson(TesterUI.readFile(Paths.get("src/test/resources/exerciser/address.json"))),
+				minifyJson(testerUi.xmlToJson(TesterUI.readFile(Paths.get("src/test/resources/exerciser/address.xml")))));
 	}
 
 	public static String minifyJson(final String in) {

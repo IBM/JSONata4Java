@@ -5,16 +5,22 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -41,7 +47,15 @@ public class TesterUI {
 	private Expressions expressions;
 	private final ObjectMapper jsonMapper = new ObjectMapper();
 	private final XmlMapper xmlMapper = new XmlMapper();
+	private TesterUISettings settings = new TesterUISettings();
 
+	private final JMenuBar menuBar = new JMenuBar();
+	private final JMenu menuFile = new JMenu("File");
+	private final JMenuItem menuItemExit = new JMenuItem("Exit");
+	private final JMenu menuEdit = new JMenu("Edit");
+	private final JMenuItem menuItemFormatInput = new JMenuItem("Format input");
+//	private final JMenu menuSettings = new JMenu("Settings");
+//	private final JMenuItem menuItemPreferences = new JMenuItem("Preferences...");
 	private final Font font = new Font("Consolas", Font.PLAIN, 18);
 	private final JTextArea inputArea = new JTextArea();
 	private final JTextArea jsonataArea = new JTextArea();
@@ -64,10 +78,22 @@ public class TesterUI {
 
 	protected TesterUI() throws IOException {
 
+		xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+		settings.load();
+
 		inputArea.setFont(font);
-		inputArea.setText(readFile("src/test/resources/exerciser/address.json"));
+		try {
+			inputArea.setText(readFile(settings.getPathInput()));
+		} catch (NoSuchFileException e) {
+			inputArea.setText(readFile(TesterUISettings.DEFAULT_PATH_INPUT));
+		}
 		jsonataArea.setFont(font);
-		jsonataArea.setText(readFile("src/test/resources/exerciser/addressExpression.jsonata"));
+		try {
+			jsonataArea.setText(readFile(settings.getPathJsonata()));
+		} catch (NoSuchFileException e) {
+			jsonataArea.setText(readFile(TesterUISettings.DEFAULT_PATH_JSONATA));
+		}
 		outputArea.setFont(font);
 		outputArea.setEditable(false);
 
@@ -78,10 +104,35 @@ public class TesterUI {
 
 		frame.setTitle("JSONata4Java Tester UI");
 		frame.getContentPane().add(splitPane);
+		frame.setJMenuBar(menuBar);
+		menuBar.add(menuFile);
+		menuFile.add(menuItemExit);
+		menuItemExit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				exit();
+			}
+		});
+		menuBar.add(menuEdit);
+		menuEdit.add(menuItemFormatInput);
+		menuItemFormatInput.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				formatInput();
+			}
+		});
+//		menuBar.add(menuSettings);
+//		menuSettings.add(menuItemPreferences);
+//		menuItemPreferences.addActionListener(new ActionListener() {
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				showPreferences();
+//			}
+//		});
 		this.frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				close();
+				exit();
 			}
 		});
 		final Dimension screendim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -169,10 +220,55 @@ public class TesterUI {
 		area.getInputMap().put(redoKey, REDO_KEY_NAME);
 	}
 
-	private void close() {
+	private static final File INPUT_FILE_JSON = new File(TesterUISettings.SETTINGS_FOLDER, "input.json");
+	private static final File INPUT_FILE_XML = new File(TesterUISettings.SETTINGS_FOLDER, "input.xml");
+	private static final File JSONATA_FILE = new File(TesterUISettings.SETTINGS_FOLDER, "expression.jsonata");
+
+	private void exit() {
+		try {
+			settings.ensureSettingsFolder();
+			switch (getFormat(inputArea.getText())) {
+			case XML:
+				Files.write(INPUT_FILE_XML.toPath(), inputArea.getText().getBytes());
+				settings.setPathInput(INPUT_FILE_XML.toPath());
+				break;
+			default:
+				Files.write(INPUT_FILE_JSON.toPath(), inputArea.getText().getBytes());
+				settings.setPathInput(INPUT_FILE_JSON.toPath());
+				break;
+			}
+			Files.write(JSONATA_FILE.toPath(), jsonataArea.getText().getBytes());
+			settings.setPathJsonata(JSONATA_FILE.toPath());
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
+		settings.store();
 		System.out.println("Bye bye");
 		System.exit(0);
 	}
+
+	private void formatInput() {
+		try {
+			switch (getFormat(inputArea.getText())) {
+			case XML:
+				inputArea.setText(xmlMapper.writeValueAsString(xmlMapper.readTree(inputArea.getText())));
+				break;
+			default:
+				inputArea.setText(jsonMapper.writerWithDefaultPrettyPrinter()
+						.writeValueAsString(jsonMapper.readTree(inputArea.getText())));
+				break;
+			}
+		} catch (JsonProcessingException e) {
+			System.err.println("Input error: " + e.getMessage());
+			this.outputArea.setText("Input error: " + e.getMessage());
+			this.inputArea.setBackground(new Color(0xFFEEEE));
+			this.outputArea.setBackground(new Color(0xFFEEEE));
+		}
+	}
+
+//	private void showPreferences() {
+//	}
 
 	private void inputChanged() {
 		if (this.expressions != null || parseMappingDescription()) {
@@ -205,7 +301,7 @@ public class TesterUI {
 		try {
 			switch (getFormat(inputArea.getText())) {
 			case XML:
-				inNode = xmlMapper.readTree(inputArea.getText());				
+				inNode = xmlMapper.readTree(inputArea.getText());
 				break;
 			default:
 				inNode = jsonMapper.readTree(inputArea.getText());
@@ -237,7 +333,9 @@ public class TesterUI {
 		}
 	}
 
-	enum Format { XML, JSON };
+	enum Format {
+		XML, JSON
+	};
 
 	private Format getFormat(String text) {
 		if (text.trim().startsWith("<")) {
@@ -246,8 +344,8 @@ public class TesterUI {
 		return Format.JSON;
 	}
 
-	protected static String readFile(String filePath) throws IOException {
-		byte[] bytes = Files.readAllBytes(Paths.get(filePath));
+	protected static String readFile(Path filePath) throws IOException {
+		byte[] bytes = Files.readAllBytes(filePath);
 		String s = new String(bytes, StandardCharsets.UTF_8);
 		return s;
 	}
@@ -265,7 +363,7 @@ public class TesterUI {
 
 	protected String xmlToJson(final String xml) throws IOException {
 		JsonNode node = xmlMapper.readTree(xml.getBytes());
-		return  jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+		return jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(node);
 	}
 
 	public static void main(String[] args) {
