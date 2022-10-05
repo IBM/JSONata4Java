@@ -12,24 +12,24 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 
-public class TesterUiTest {
+public class TesterUITest {
 
-	TesterUi testerUi;
+	TesterUI testerUi;
 
 	@Before
 	public void setUp() throws IOException {
-		testerUi = new TesterUi();
+		testerUi = new TesterUI();
 	}
 
 	@Test
 	public void testJsonToXml() throws IOException {
-		System.out.println(testerUi.jsonToXml(TesterUi.readFile("src/test/resources/exerciser/address.json")));
+		System.out.println(testerUi.jsonToXml(TesterUI.readFile("src/test/resources/exerciser/address.json")));
 	}
 
 	@Test
 	public void testXmlToJson() throws IOException {
-		assertEquals(minifyJson(TesterUi.readFile("src/test/resources/exerciser/address.json")),
-				minifyJson(testerUi.xmlToJson(TesterUi.readFile("src/test/resources/exerciser/address.xml"))));
+		assertEquals(minifyJson(TesterUI.readFile("src/test/resources/exerciser/address.json")),
+				minifyJson(testerUi.xmlToJson(TesterUI.readFile("src/test/resources/exerciser/address.xml"))));
 	}
 
 	public static String minifyJson(final String in) {

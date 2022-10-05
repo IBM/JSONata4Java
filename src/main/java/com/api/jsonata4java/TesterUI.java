@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
-public class TesterUi {
+public class TesterUI {
 
 	private Expressions expressions;
 	private final ObjectMapper jsonMapper = new ObjectMapper();
@@ -62,7 +62,7 @@ public class TesterUi {
 	private final KeyStroke undoKey = KeyStroke.getKeyStroke("control Z");
 	private final KeyStroke redoKey = KeyStroke.getKeyStroke("control Y");
 
-	protected TesterUi() throws IOException {
+	protected TesterUI() throws IOException {
 
 		inputArea.setFont(font);
 		inputArea.setText(readFile("src/test/resources/exerciser/address.json"));
@@ -220,7 +220,10 @@ public class TesterUi {
 		}
 		try {
 			final JsonNode outNode = this.expressions.evaluate(inNode);
-			final String newOutput = jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(outNode);
+			String newOutput = jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(outNode);
+			if (newOutput == null || newOutput.trim().equals("null")) {
+				newOutput = "** no match **";
+			}
 			this.outputArea.setText(newOutput);
 			System.out.println("Mapped successfully");
 			this.inputArea.setBackground(new Color(0xEEFFFF));
@@ -269,7 +272,7 @@ public class TesterUi {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					new TesterUi().frame.setVisible(true);
+					new TesterUI().frame.setVisible(true);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
