@@ -54,8 +54,8 @@ public class TesterUI {
 	private final JMenuItem menuItemExit = new JMenuItem("Exit");
 	private final JMenu menuEdit = new JMenu("Edit");
 	private final JMenuItem menuItemFormatInput = new JMenuItem("Format input");
-//	private final JMenu menuSettings = new JMenu("Settings");
-//	private final JMenuItem menuItemPreferences = new JMenuItem("Preferences...");
+	private final JMenu menuSettings = new JMenu("Settings");
+	private final JMenuItem menuItemPreferences = new JMenuItem("Preferences...");
 	private final Font font = new Font("Consolas", Font.PLAIN, 18);
 	private final JTextArea inputArea = new JTextArea();
 	private final JTextArea jsonataArea = new JTextArea();
@@ -121,14 +121,14 @@ public class TesterUI {
 				formatInput();
 			}
 		});
-//		menuBar.add(menuSettings);
-//		menuSettings.add(menuItemPreferences);
-//		menuItemPreferences.addActionListener(new ActionListener() {
-//			@Override
-//			public void actionPerformed(ActionEvent e) {
-//				showPreferences();
-//			}
-//		});
+		menuBar.add(menuSettings);
+		menuSettings.add(menuItemPreferences);
+		menuItemPreferences.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showPreferences();
+			}
+		});
 		this.frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -267,8 +267,9 @@ public class TesterUI {
 		}
 	}
 
-//	private void showPreferences() {
-//	}
+	private void showPreferences() {
+		new TesterUiPerferences(this, this.settings).open();
+	}
 
 	private void inputChanged() {
 		if (this.expressions != null || parseMappingDescription()) {
@@ -283,8 +284,12 @@ public class TesterUI {
 	}
 
 	private boolean parseMappingDescription() {
+		final String mappingDescription = this.jsonataArea.getText();
+		if (mappingDescription.length() == 0) {
+			return false;
+		}
 		try {
-			this.expressions = Expressions.parse(this.jsonataArea.getText());
+			this.expressions = Expressions.parse(mappingDescription);
 			return true;
 		} catch (ParseException | IOException | RuntimeException e) {
 			System.err.println("JSONata syntax error: " + e.getMessage());
@@ -376,5 +381,21 @@ public class TesterUI {
 				}
 			}
 		});
+	}
+
+	public void loadInput(Path path) {
+		try {
+			inputArea.setText(readFile(path));
+		} catch (NoSuchFileException e) {
+		} catch (IOException e) {
+		}
+	}
+
+	public void loadJsoanata(Path path) {
+		try {
+			jsonataArea.setText(readFile(path));
+		} catch (NoSuchFileException e) {
+		} catch (IOException e) {
+		}
 	}
 }
