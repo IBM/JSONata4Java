@@ -1,4 +1,4 @@
-package com.api.jsonata4java;
+package com.api.jsonata4java.testerui;
 
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
@@ -44,6 +44,7 @@ public class TesterUIPerferences extends JDialog {
 	private final JTextField pathJsonata = new JTextField();
 	private final JButton changePathJsonata = new JButton(DOTS_3);
 	private final JComboBox<TesterUIJsonataExample> examples = new JComboBox<TesterUIJsonataExample>(TesterUIJsonataExample.values());
+	private final JComboBox<TesterUIColors> colors = new JComboBox<TesterUIColors>(TesterUIColors.values());
 
 	private final JPanel inputPanel = new JPanel();
 	private final JPanel southPanel = new JPanel();
@@ -110,6 +111,8 @@ public class TesterUIPerferences extends JDialog {
 		examples.setSelectedItem(settings.getExample());
 		pathInput.setText(settings.getPathInput().toString());
 		pathJsonata.setText(settings.getPathJsonata().toString());
+		colors.setSelectedItem(TesterUIColors.fromColors(settings.getBackgroundInput(),
+				settings.getBackgroundJsonata(), settings.getBackgroundOutput(), settings.getBackgroundError()));
 	}
 
 	private void close() {
@@ -157,10 +160,16 @@ public class TesterUIPerferences extends JDialog {
 				GridBagConstraints.WEST, GridBagConstraints.NONE, INSETS, 0, 0));
 		inputPanel.add(pathJsonata, new GridBagConstraints(x++, y, 1, 1, 1.0, 1.0,
 				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
-		inputPanel.add(changePathJsonata, new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+		inputPanel.add(changePathJsonata, new GridBagConstraints(x++, y++, 1, 1, 0.0, 0.0,
 				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
 
-		buttonsPanel.add(okButton, new GridBagConstraints(x++, 1, 1, 1, 0.0, 0.0,
+		x = 1;
+		inputPanel.add(new JLabel("Default color schemas"), new GridBagConstraints(1, y, 1, 1, 0.0, 0.0,
+				GridBagConstraints.WEST, GridBagConstraints.NONE, INSETS, 0, 0));
+		inputPanel.add(colors, new GridBagConstraints(2, y++, 1, 1, 1.0, 1.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+
+		buttonsPanel.add(okButton, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
 				GridBagConstraints.WEST, GridBagConstraints.NONE, INSETS, 0, 0));
 
 		southPanel.add(buttonsPanel, BorderLayout.SOUTH);
@@ -175,6 +184,7 @@ public class TesterUIPerferences extends JDialog {
 		uiListenerExamples();
 		uiListenerChangePathInput();
 		uiListenerChangePathJsonata();
+		uiListenerColors();
 		uiListenerOkButton();
 	}
 
@@ -224,6 +234,25 @@ public class TesterUIPerferences extends JDialog {
 					ui.loadJsoanata(new File(pathJsonata.getText()).toPath());
 					settings.setPathJsonata(new File(pathJsonata.getText()).toPath());
 				}
+			}
+		});
+	}
+
+	private void uiListenerColors() {
+		colors.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				final TesterUIColors selColors = (TesterUIColors) colors.getSelectedItem();
+				if (selColors == TesterUIColors.CUSTOM) {
+					return;
+				}
+				settings.setBackgroundInput(selColors.getColorInput());
+				ui.setBackgroundInput(selColors.getColorInput());
+				settings.setBackgroundJsonata(selColors.getColorJsonata());
+				ui.setBackgroundJsonata(selColors.getColorJsonata());
+				settings.setBackgroundOutput(selColors.getColorOutput());
+				ui.setBackgroundOutput(selColors.getColorOutput());
+				settings.setBackgroundError(selColors.getColorError());
 			}
 		});
 	}

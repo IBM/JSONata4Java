@@ -1,4 +1,4 @@
-package com.api.jsonata4java;
+package com.api.jsonata4java.testerui;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -266,8 +266,8 @@ public class TesterUI {
 		} catch (JsonProcessingException e) {
 			System.err.println("Input error: " + e.getMessage());
 			this.outputArea.setText("Input error: " + e.getMessage());
-			this.inputArea.setBackground(new Color(0xFFEEEE));
-			this.outputArea.setBackground(new Color(0xFFEEEE));
+			this.inputArea.setBackground(settings.getBackgroundError());
+			this.outputArea.setBackground(settings.getBackgroundError());
 		}
 	}
 
@@ -300,8 +300,8 @@ public class TesterUI {
 		} catch (ParseException | IOException | RuntimeException e) {
 			System.err.println("JSONata syntax error: " + e.getMessage());
 			this.outputArea.setText("JSONata syntax error: " + e.getMessage());
-			this.jsonataArea.setBackground(new Color(0xFFEEEE));
-			this.outputArea.setBackground(new Color(0xFFEEEE));
+			this.jsonataArea.setBackground(settings.getBackgroundError());
+			this.outputArea.setBackground(settings.getBackgroundError());
 			this.expressions = null;
 			return false;
 		}
@@ -321,8 +321,8 @@ public class TesterUI {
 		} catch (JsonProcessingException | RuntimeException e) {
 			System.err.println("Input error: " + e.getMessage());
 			this.outputArea.setText("Input error: " + e.getMessage());
-			this.inputArea.setBackground(new Color(0xFFEEEE));
-			this.outputArea.setBackground(new Color(0xFFEEEE));
+			this.inputArea.setBackground(settings.getBackgroundError());
+			this.outputArea.setBackground(settings.getBackgroundError());
 			return;
 		}
 		try {
@@ -333,14 +333,14 @@ public class TesterUI {
 			}
 			this.outputArea.setText(newOutput);
 			System.out.println("Mapped successfully");
-			this.inputArea.setBackground(new Color(0xEEFFFF));
-			this.jsonataArea.setBackground(new Color(0xFFFFEE));
-			this.outputArea.setBackground(new Color(0xEEFFEE));
+			this.inputArea.setBackground(settings.getBackgroundInput());
+			this.jsonataArea.setBackground(settings.getBackgroundJsonata());
+			this.outputArea.setBackground(settings.getBackgroundOutput());
 		} catch (JsonProcessingException | EvaluateException | RuntimeException e) {
 			System.err.println("JSONata mapping error: " + e.getMessage());
 			this.outputArea.setText("JSONata mapping error: " + e.getMessage());
-			this.jsonataArea.setBackground(new Color(0xFFEEEE));
-			this.outputArea.setBackground(new Color(0xFFEEEE));
+			this.jsonataArea.setBackground(settings.getBackgroundError());
+			this.outputArea.setBackground(settings.getBackgroundError());
 		}
 	}
 
@@ -403,5 +403,17 @@ public class TesterUI {
 		} catch (NoSuchFileException e) {
 		} catch (IOException e) {
 		}
+	}
+
+	public void setBackgroundInput(Color color) {
+		this.inputArea.setBackground(color);
+	}
+
+	public void setBackgroundJsonata(Color color) {
+		this.jsonataArea.setBackground(color);
+	}
+
+	public void setBackgroundOutput(Color color) {
+		this.outputArea.setBackground(color);
 	}
 }

@@ -1,5 +1,6 @@
-package com.api.jsonata4java;
+package com.api.jsonata4java.testerui;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -18,6 +19,11 @@ public class TesterUISettings {
 	private TesterUIJsonataExample example = TesterUIJsonataExample.ADDRESS;
 	private Path pathInput = example.getPathInput();
 	private Path pathJsonata = example.getPathJsonata();
+	private Color backgroundInput = TesterUIColors.EXERCISER.getColorInput();
+	private Color backgroundJsonata = TesterUIColors.EXERCISER.getColorJsonata();
+	private Color backgroundOutput = TesterUIColors.EXERCISER.getColorOutput();
+	private Color backgroundError = TesterUIColors.EXERCISER.getColorError();
+
 	public void load() {
 		final Properties storedSettings = new Properties();
 		final File settingsFile = SETTINGS_FILE;
@@ -41,15 +47,31 @@ public class TesterUISettings {
 		if (storedSettings.getProperty("path.jsonata") != null) {
 			pathJsonata = Paths.get(storedSettings.getProperty("path.jsonata"));
 		}
+		if (storedSettings.getProperty("color.background.input") != null) {
+			backgroundInput = new Color(Integer.parseInt(storedSettings.getProperty("color.background.input"), 16));
+		}
+		if (storedSettings.getProperty("color.background.jsonata") != null) {
+			backgroundJsonata = new Color(Integer.parseInt(storedSettings.getProperty("color.background.jsonata"), 16));
+		}
+		if (storedSettings.getProperty("color.background.output") != null) {
+			backgroundOutput = new Color(Integer.parseInt(storedSettings.getProperty("color.background.output"), 16));
+		}
+		if (storedSettings.getProperty("color.background.error") != null) {
+			backgroundError = new Color(Integer.parseInt(storedSettings.getProperty("color.background.error"), 16));
+		}
 	}
 
 	public void store() {
-		final Properties storedSettings = new Properties();
+		final SortedProperties storedSettings = new SortedProperties(new Properties());
 		ensureSettingsFolder();
 		final File settingsFile = SETTINGS_FILE;
 		storedSettings.setProperty("example", example.name());
 		storedSettings.setProperty("path.input", pathInput.toString());
 		storedSettings.setProperty("path.jsonata", pathJsonata.toString());
+		storedSettings.setProperty("color.background.input", Integer.toHexString(backgroundInput.getRGB()).substring(2).toUpperCase());
+		storedSettings.setProperty("color.background.jsonata", Integer.toHexString(backgroundJsonata.getRGB()).substring(2).toUpperCase());
+		storedSettings.setProperty("color.background.output", Integer.toHexString(backgroundOutput.getRGB()).substring(2).toUpperCase());
+		storedSettings.setProperty("color.background.error", Integer.toHexString(backgroundError.getRGB()).substring(2).toUpperCase());
 		try (final FileOutputStream fos = new FileOutputStream(settingsFile)) {
 			storedSettings.store(fos, null);
 		} catch (IOException e) {
@@ -91,5 +113,37 @@ public class TesterUISettings {
 
 	public void setPathJsonata(Path path) {
 		pathJsonata = path;
+	}
+
+	public Color getBackgroundInput() {
+		return backgroundInput;
+	}
+
+	public void setBackgroundInput(Color backgoundInput) {
+		this.backgroundInput = backgoundInput;
+	}
+
+	public Color getBackgroundJsonata() {
+		return backgroundJsonata;
+	}
+
+	public void setBackgroundJsonata(Color backgroundJsonata) {
+		this.backgroundJsonata = backgroundJsonata;
+	}
+
+	public Color getBackgroundOutput() {
+		return backgroundOutput;
+	}
+
+	public void setBackgroundOutput(Color backgroundOutput) {
+		this.backgroundOutput = backgroundOutput;
+	}
+
+	public Color getBackgroundError() {
+		return backgroundError;
+	}
+
+	public void setBackgroundError(Color backgroundError) {
+		this.backgroundError = backgroundError;
 	}
 }

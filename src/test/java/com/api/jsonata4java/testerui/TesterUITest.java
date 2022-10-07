@@ -1,4 +1,4 @@
-package com.api.jsonata4java;
+package com.api.jsonata4java.testerui;
 
 import static org.junit.Assert.assertEquals;
 

@@ -1,4 +1,4 @@
-package com.api.jsonata4java;
+package com.api.jsonata4java.testerui;
 
 import java.io.File;
 import java.io.IOException;
