@@ -15,25 +15,9 @@ public class TesterUISettings {
 	public static final Path DEFAULT_PATH_INPUT = Paths.get("src/test/resources/exerciser/address.json");
 	public static final Path DEFAULT_PATH_JSONATA = Paths.get("src/test/resources/exerciser/addressExpression.jsonata");
 
-	private Path pathInput = DEFAULT_PATH_INPUT;
-	private Path pathJsonata = DEFAULT_PATH_JSONATA;
-
-	public Path getPathInput() {
-		return pathInput;
-	}
-
-	public void setPathInput(Path path) {
-		pathInput = path;
-	}
-
-	public Path getPathJsonata() {
-		return pathJsonata;
-	}
-
-	public void setPathJsonata(Path path) {
-		pathJsonata = path;
-	}
-
+	private TesterUIJsonataExample example = TesterUIJsonataExample.ADDRESS;
+	private Path pathInput = example.getPathInput();
+	private Path pathJsonata = example.getPathJsonata();
 	public void load() {
 		final Properties storedSettings = new Properties();
 		final File settingsFile = SETTINGS_FILE;
@@ -45,6 +29,11 @@ public class TesterUISettings {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
+		}
+		if (storedSettings.getProperty("example") == null) {
+			example = TesterUIJsonataExample.NONE;
+		} else {
+			example = TesterUIJsonataExample.valueOf(storedSettings.getProperty("example"));
 		}
 		if (storedSettings.getProperty("path.input") != null) {
 			pathInput = Paths.get(storedSettings.getProperty("path.input"));
@@ -58,6 +47,7 @@ public class TesterUISettings {
 		final Properties storedSettings = new Properties();
 		ensureSettingsFolder();
 		final File settingsFile = SETTINGS_FILE;
+		storedSettings.setProperty("example", example.name());
 		storedSettings.setProperty("path.input", pathInput.toString());
 		storedSettings.setProperty("path.jsonata", pathJsonata.toString());
 		try (final FileOutputStream fos = new FileOutputStream(settingsFile)) {
@@ -76,5 +66,30 @@ public class TesterUISettings {
 				return;
 			}
 		}
+	}
+
+
+	public TesterUIJsonataExample getExample() {
+		return example;
+	}
+
+	public void setExample(TesterUIJsonataExample example) {
+		this.example = example;
+	}
+
+	public Path getPathInput() {
+		return pathInput;
+	}
+
+	public void setPathInput(Path path) {
+		pathInput = path;
+	}
+
+	public Path getPathJsonata() {
+		return pathJsonata;
+	}
+
+	public void setPathJsonata(Path path) {
+		pathJsonata = path;
 	}
 }

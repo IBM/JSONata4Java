@@ -97,6 +97,9 @@ public class TesterUI {
 		outputArea.setFont(font);
 		outputArea.setEditable(false);
 
+		inputSp.setMinimumSize(new Dimension(400, 0));
+		jsonataSp.setMinimumSize(new Dimension(0, 50));
+
 		splitPane.add(inputSp);
 		splitPaneRight.add(jsonataSp);
 		splitPaneRight.add(outputSp);
@@ -239,6 +242,7 @@ public class TesterUI {
 			}
 			Files.write(JSONATA_FILE.toPath(), jsonataArea.getText().getBytes());
 			settings.setPathJsonata(JSONATA_FILE.toPath());
+			settings.setExample(TesterUIJsonataExample.fromContent(inputArea.getText(), jsonataArea.getText()));
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
@@ -268,18 +272,20 @@ public class TesterUI {
 	}
 
 	private void showPreferences() {
-		new TesterUiPerferences(this, this.settings).open();
+		new TesterUIPerferences(this, this.settings).open();
 	}
 
 	private void inputChanged() {
 		if (this.expressions != null || parseMappingDescription()) {
 			map();
+			this.settings.setExample(TesterUIJsonataExample.NONE);
 		}
 	}
 
 	private void jsonataChanged() {
 		if (parseMappingDescription()) {
 			map();
+			this.settings.setExample(TesterUIJsonataExample.NONE);
 		}
 	}
 

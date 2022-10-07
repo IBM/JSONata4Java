@@ -1,0 +1,128 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "required": [
+    "Account"
+  ],
+  "type": "object",
+  "id": "file://input-schema.json",
+  "properties": {
+    "Account": {
+      "required": [
+        "Order"
+      ],
+      "type": "object",
+      "properties": {
+        "Customer": {
+          "required": [
+            "First Name",
+            "Surname"
+          ],
+          "type": "object",
+          "properties": {
+            "First Name": {
+              "type": "string"
+            },
+            "Surname": {
+              "type": "string"
+            }
+          }
+        },
+        "AccID": {
+          "type": "string"
+        },
+        "Order": {
+          "items": {
+            "required": [
+              "OrderID",
+              "Product"
+            ],
+            "type": "object",
+            "properties": {
+              "OrderID": {
+                "type": "string"
+              },
+              "Product": {
+                "items": {
+                  "required": [
+                    "ProductID",
+                    "Product Name",
+                    "Price",
+                    "Quantity"
+                  ],
+                  "type": "object",
+                  "properties": {
+                    "SKU": {
+                      "type": "string"
+                    },
+                    "Description": {
+                      "type": "object",
+                      "properties": {
+                        "Width": {
+                          "type": "integer"
+                        },
+                        "Depth": {
+                          "type": "integer"
+                        },
+                        "Weight": {
+                          "type": "number"
+                        },
+                        "Colour": {
+                          "type": "string"
+                        },
+                        "Material": {
+                          "type": "string"
+                        },
+                        "Height": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "Product Name": {
+                      "type": "string"
+                    },
+                    "Price": {
+                      "type": "number"
+                    },
+                    "Quantity": {
+                      "type": "integer"
+                    },
+                    "ProductID": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "type": "array"
+              }
+            }
+          },
+          "type": "array"
+        },
+        "Account Name": {
+          "type": "string"
+        },
+        "Address": {
+          "required": [
+            "Address Line 1",
+            "City",
+            "Postcode"
+          ],
+          "type": "object",
+          "properties": {
+            "Address Line 1": {
+              "type": "string"
+            },
+            "Address Line 2": {
+              "type": "string"
+            },
+            "Postcode": {
+              "type": "string"
+            },
+            "City": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}
