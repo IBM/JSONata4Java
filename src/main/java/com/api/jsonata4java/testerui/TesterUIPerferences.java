@@ -23,6 +23,7 @@ package com.api.jsonata4java.testerui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -35,7 +36,6 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,25 +48,18 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author Martin Bluemel
  */
-public class TesterUIPerferences extends JDialog {
-
-	private final TesterUI ui;
-
-	private final TesterUISettings settings;
-
-	public TesterUIPerferences(final TesterUI ui, final TesterUISettings settings) {
-		this.ui = ui;
-		this.settings = settings;
-	}
-
-	private static final int FRAME_SIZE_Y = 600;
+public class TesterUIPerferences {
 
 	private static final int FRAME_SIZE_X = 800;
-
-	private final JFrame frame = new JFrame("JSONata4Java Tester UI Settings");
-
+	private static final int FRAME_SIZE_Y = 600;
+	private static final int PAD = 5;
+	private static final Insets INSETS = new Insets(PAD, PAD, PAD, PAD);
 	private static final String DOTS_3 = "...";
 
+	private final TesterUI ui;
+	private final TesterUISettings settings;
+
+	private final JFrame frame = new JFrame("JSONata4Java Tester UI Settings");
 	private final JTextField pathInput = new JTextField();
 	private final JButton changePathInput = new JButton(DOTS_3);
 	private final JTextField pathJsonata = new JTextField();
@@ -81,17 +74,17 @@ public class TesterUIPerferences extends JDialog {
 	private final JButton chooseColorOutput = new JButton("Choose");
 	private final JTextField colorError = new JTextField();
 	private final JButton chooseColorError = new JButton("Choose");
-
+	private final JTextField font = new JTextField();
+	private final JButton chooseFont = new JButton("Choose");
 	private final JPanel inputPanel = new JPanel();
 	private final JPanel southPanel = new JPanel();
 	private final JPanel buttonsPanel = new JPanel();
 	private final JButton okButton = new JButton("Ok");
 
-	private static final int PAD = 5;
-
-	private static final Insets INSETS = new Insets(PAD, PAD, PAD, PAD);
-
-	private static final long serialVersionUID = 1L;
+	public TesterUIPerferences(final TesterUI ui, final TesterUISettings settings) {
+		this.ui = ui;
+		this.settings = settings;
+	}
 
 	public void open() {
 		readProps();
@@ -153,6 +146,7 @@ public class TesterUIPerferences extends JDialog {
 		colorJsonata.setText(colorToUIText(settings.getBackgroundJsonata()));
 		colorOutput.setText(colorToUIText(settings.getBackgroundOutput()));
 		colorError.setText(colorToUIText(settings.getBackgroundError()));
+		font.setText(TesterUISettings.fontToText(settings.getFont()));
 	}
 
 	private void close() {
@@ -173,10 +167,11 @@ public class TesterUIPerferences extends JDialog {
 		colorJsonata.setEditable(false);
 		colorOutput.setEditable(false);
 		colorError.setEditable(false);
+		font.setEditable(false);
 		frame.setLayout(new BorderLayout(0, 0));
 		frame.setSize(FRAME_SIZE_X, FRAME_SIZE_Y);
 		frame.setLocationRelativeTo(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		// frame.setIconImage(parentApp.getIconApp().getImage());
 		inputPanel.setLayout(new GridBagLayout());
 		southPanel.setLayout(new BorderLayout());
@@ -245,6 +240,14 @@ public class TesterUIPerferences extends JDialog {
 		inputPanel.add(chooseColorError, new GridBagConstraints(x++, y++, 1, 1, 0.0, 0.0,
 				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
 
+		x = 1;
+		inputPanel.add(new JLabel("Font"), new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+				GridBagConstraints.WEST, GridBagConstraints.NONE, INSETS, 0, 0));
+		inputPanel.add(font, new GridBagConstraints(x++, y, 1, 1, 1.0, 1.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+		inputPanel.add(chooseFont, new GridBagConstraints(x++, y++, 1, 1, 0.0, 0.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+
 		buttonsPanel.add(okButton, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
 				GridBagConstraints.WEST, GridBagConstraints.NONE, INSETS, 0, 0));
 
@@ -252,7 +255,6 @@ public class TesterUIPerferences extends JDialog {
 
 		frame.add(inputPanel, BorderLayout.NORTH);
 		frame.add(southPanel, BorderLayout.SOUTH);
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 
 	private void uiSetListeners() {
@@ -261,10 +263,11 @@ public class TesterUIPerferences extends JDialog {
 		uiListenerChangePathInput();
 		uiListenerChangePathJsonata();
 		uiListenerColors();
-		uiListenerColorInput(this);
-		uiListenerColorJsonata(this);
-		uiListenerColorOutput(this);
-		uiListenerColorError(this);
+		uiListenerColorInput(frame);
+		uiListenerColorJsonata(frame);
+		uiListenerColorOutput(frame);
+		uiListenerColorError(frame);
+		uiListenerFont(this);
 		uiListenerOkButton();
 	}
 
@@ -341,12 +344,12 @@ public class TesterUIPerferences extends JDialog {
 		});
 	}
 
-	private void uiListenerColorInput(JDialog dialog) {
+	private void uiListenerColorInput(JFrame parent) {
 		chooseColorInput.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Color newColor = JColorChooser.showDialog(dialog,
-	                     "Choose background color for Input area",
+				Color newColor = JColorChooser.showDialog(parent,
+	                     "JSONata4Java: Choose Background Color For Input Area",
 	                     settings.getBackgroundInput());
 				if (newColor == null) {
 					return;
@@ -360,12 +363,12 @@ public class TesterUIPerferences extends JDialog {
 		});
 	}
 
-	private void uiListenerColorJsonata(JDialog dialog) {
+	private void uiListenerColorJsonata(JFrame parent) {
 		chooseColorJsonata.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Color newColor = JColorChooser.showDialog(dialog,
-	                     "Choose background color for JSONata (mapping expression) area",
+				Color newColor = JColorChooser.showDialog(parent,
+	                     "JSONata4Java: Choose Background Color For JSONata Area",
 	                     settings.getBackgroundJsonata());
 				if (newColor == null) {
 					return;
@@ -379,12 +382,12 @@ public class TesterUIPerferences extends JDialog {
 		});
 	}
 
-	private void uiListenerColorOutput(JDialog dialog) {
+	private void uiListenerColorOutput(JFrame parent) {
 		chooseColorOutput.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Color newColor = JColorChooser.showDialog(dialog,
-	                     "Choose background color for Output area",
+				Color newColor = JColorChooser.showDialog(parent,
+	                     "JSONata4Java: Choose Background Color For Output area",
 	                     settings.getBackgroundOutput());
 				if (newColor == null) {
 					return;
@@ -398,12 +401,12 @@ public class TesterUIPerferences extends JDialog {
 		});
 	}
 
-	private void uiListenerColorError(JDialog dialog) {
+	private void uiListenerColorError(JFrame parent) {
 		chooseColorError.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Color newColor = JColorChooser.showDialog(dialog,
-	                     "Choose background color for areas with error",
+				Color newColor = JColorChooser.showDialog(parent,
+	                     "JSONata4Java: Choose Background Color For Areas With Error",
 	                     settings.getBackgroundError());
 				if (newColor == null) {
 					return;
@@ -412,6 +415,15 @@ public class TesterUIPerferences extends JDialog {
 				settings.setBackgroundError(newColor);
 				colors.setSelectedItem(TesterUIColors.fromColors(settings.getBackgroundInput(),
 						settings.getBackgroundJsonata(), settings.getBackgroundOutput(), settings.getBackgroundError()));
+			}
+		});
+	}
+
+	private void uiListenerFont(TesterUIPerferences dialog) {
+		chooseFont.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new TesterUIFontChooser(ui, settings, dialog).open();
 			}
 		});
 	}
@@ -427,5 +439,9 @@ public class TesterUIPerferences extends JDialog {
 
 	private static String colorToUIText(Color in) {
 		return '#' + Integer.toHexString(in.getRGB()).substring(2).toUpperCase();
+	}
+
+	public void setFont(Font newFont) {
+		this.font.setText(TesterUISettings.fontToText(newFont));
 	}
 }

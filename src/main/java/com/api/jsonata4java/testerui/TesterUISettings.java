@@ -22,6 +22,7 @@
 package com.api.jsonata4java.testerui;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -49,6 +50,7 @@ public class TesterUISettings {
 	private Color backgroundJsonata = TesterUIColors.EXERCISER.getColorJsonata();
 	private Color backgroundOutput = TesterUIColors.EXERCISER.getColorOutput();
 	private Color backgroundError = TesterUIColors.EXERCISER.getColorError();
+	private Font font = new Font("Consolas", Font.PLAIN, 18);
 
 	public void load() {
 		final Properties storedSettings = new Properties();
@@ -85,6 +87,9 @@ public class TesterUISettings {
 		if (storedSettings.getProperty("color.background.error") != null) {
 			backgroundError = new Color(Integer.parseInt(storedSettings.getProperty("color.background.error"), 16));
 		}
+		if (storedSettings.getProperty("font") != null) {
+			font = textToFont(storedSettings.getProperty("font"));
+		}
 	}
 
 	public void store() {
@@ -98,12 +103,22 @@ public class TesterUISettings {
 		storedSettings.setProperty("color.background.jsonata", Integer.toHexString(backgroundJsonata.getRGB()).substring(2).toUpperCase());
 		storedSettings.setProperty("color.background.output", Integer.toHexString(backgroundOutput.getRGB()).substring(2).toUpperCase());
 		storedSettings.setProperty("color.background.error", Integer.toHexString(backgroundError.getRGB()).substring(2).toUpperCase());
+		storedSettings.setProperty("font", fontToText(font));
 		try (final FileOutputStream fos = new FileOutputStream(settingsFile)) {
 			storedSettings.store(fos, null);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
 		}
+	}
+
+	public static String fontToText(final Font in) {
+		return in.getFamily() + ',' + in.getFontName() + ',' + in.getStyle() + ',' + in.getSize();
+	}
+
+	public static Font textToFont(final String in) {
+		String[] args = in.split(",");
+		return new Font(args[1], Integer.parseInt(args[2]), Integer.parseInt(args[3]));
 	}
 
 	public void ensureSettingsFolder() {
@@ -171,5 +186,13 @@ public class TesterUISettings {
 
 	public void setBackgroundError(Color backgroundError) {
 		this.backgroundError = backgroundError;
+	}
+
+	public Font getFont() {
+		return font;
+	}
+
+	public void setFont(Font font) {
+		this.font = font;
 	}
 }

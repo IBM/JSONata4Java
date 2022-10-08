@@ -82,7 +82,6 @@ public class TesterUI {
 	private final JMenuItem menuItemFormatInput = new JMenuItem("Format input");
 	private final JMenu menuSettings = new JMenu("Settings");
 	private final JMenuItem menuItemPreferences = new JMenuItem("Preferences...");
-	private final Font font = new Font("Consolas", Font.PLAIN, 18);
 	private final JTextArea inputArea = new JTextArea();
 	private final JTextArea jsonataArea = new JTextArea();
 	private final JTextArea outputArea = new JTextArea();
@@ -108,19 +107,19 @@ public class TesterUI {
 
 		settings.load();
 
-		inputArea.setFont(font);
+		inputArea.setFont(settings.getFont());
 		try {
 			inputArea.setText(readFile(settings.getPathInput()));
 		} catch (NoSuchFileException e) {
 			inputArea.setText(readFile(TesterUISettings.DEFAULT_PATH_INPUT));
 		}
-		jsonataArea.setFont(font);
+		jsonataArea.setFont(settings.getFont());
 		try {
 			jsonataArea.setText(readFile(settings.getPathJsonata()));
 		} catch (NoSuchFileException e) {
 			jsonataArea.setText(readFile(TesterUISettings.DEFAULT_PATH_JSONATA));
 		}
-		outputArea.setFont(font);
+		outputArea.setFont(settings.getFont());
 		outputArea.setEditable(false);
 
 		inputSp.setMinimumSize(new Dimension(400, 0));
@@ -441,5 +440,11 @@ public class TesterUI {
 
 	public void setBackgroundOutput(Color color) {
 		this.outputArea.setBackground(color);
+	}
+
+	public void setFont(Font font) {
+		this.inputArea.setFont(font);
+		this.jsonataArea.setFont(font);
+		this.outputArea.setFont(font);
 	}
 }
