@@ -42,7 +42,9 @@ public enum TesterUIJsonataExample {
 	// Example "Address" from the original JSONata Exerciser
 	ADDRESS("Address"),
 	// Example "Schema" from the original JSONata Exerciser
-	SCHEMA("Schema");
+	SCHEMA("Schema"),
+	// Derived from Example "Address" from the Exerciser but with input XML
+	XMLADDRESS("XML Address");
 
 	private final String uiName;
 
