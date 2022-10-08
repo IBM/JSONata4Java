@@ -1,3 +1,24 @@
+/**
+ * (c) Copyright 2018 - 2022 IBM Corporation
+ * 1 New Orchard Road, 
+ * Armonk, New York, 10504-1722
+ * United States
+ * +1 914 499 1900
+ * support: Nathaniel Mills wnm3@us.ibm.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 package com.api.jsonata4java.testerui;
 
 import java.awt.Color;
@@ -9,6 +30,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+/**
+ * Aggregates all Tester UI app settings that can be interactively changed.
+ *
+ * @author Martin Bluemel
+ */
 public class TesterUISettings {
 
 	public static final File SETTINGS_FOLDER = new File(System.getProperty("user.home") + File.separator + ".jsonata4java");
@@ -62,7 +88,7 @@ public class TesterUISettings {
 	}
 
 	public void store() {
-		final SortedProperties storedSettings = new SortedProperties(new Properties());
+		final TesterUIProperties storedSettings = new TesterUIProperties(new Properties());
 		ensureSettingsFolder();
 		final File settingsFile = SETTINGS_FILE;
 		storedSettings.setProperty("example", example.name());
