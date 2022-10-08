@@ -46,6 +46,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.undo.CannotRedoException;
@@ -64,7 +65,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 /**
- * A Swing UI app to test JSONata4Java interactively similar to the original JSONata Exerciser (see https://try.jsonata.org).
+ * A Swing UI app to test JSONata4Java interactively similar to the original
+ * JSONata Exerciser (see https://try.jsonata.org).
  *
  * @author Martin Bluemel
  */
@@ -82,6 +84,7 @@ public class TesterUI {
 	private final JMenuItem menuItemFormatInput = new JMenuItem("Format input");
 	private final JMenu menuSettings = new JMenu("Settings");
 	private final JMenuItem menuItemPreferences = new JMenuItem("Preferences...");
+	private final JMenuItem menuItemTest = new JMenuItem("Test");
 	private final JTextArea inputArea = new JTextArea();
 	private final JTextArea jsonataArea = new JTextArea();
 	private final JTextArea outputArea = new JTextArea();
@@ -157,17 +160,40 @@ public class TesterUI {
 				showPreferences();
 			}
 		});
+		menuSettings.add(menuItemTest);
+		menuItemTest.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				test();
+			}
+
+			private void test() {
+				inputSp.getVerticalScrollBar().setValue(1000);
+			}
+		});
 		this.frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				exit();
 			}
 		});
-		final Dimension screendim = Toolkit.getDefaultToolkit().getScreenSize();
-		final Dimension windim = new Dimension(screendim.getWidth() > 1500 ? 1500 : (int) (screendim.getWidth() / 2),
-				screendim.getHeight() > 800 ? 800 : (int) (screendim.getHeight() / 2));
-		frame.setSize(windim);
+		final Integer frameSizeX = settings.getFrameSizeX();
+		final Integer frameSizeY = settings.getFrameSizeY();
+		if (frameSizeX != null && frameSizeY != null) {
+			frame.setSize(new Dimension(frameSizeX, frameSizeY));
+		} else {
+			final Dimension screendim = Toolkit.getDefaultToolkit().getScreenSize();
+			final Dimension windim = new Dimension(screendim.getWidth() > 1500 ? 1500 : (int) (screendim.getWidth() / 2),
+					screendim.getHeight() > 800 ? 800 : (int) (screendim.getHeight() / 2));
+			frame.setSize(windim);
+		}
 		frame.setLocation(100, 100);
+		if (settings.getSpiltPaneDivLocation() != null) {
+			splitPane.setDividerLocation(settings.getSpiltPaneDivLocation());
+		}
+		if (settings.getSpiltPaneDivLocationRight() != null) {
+			splitPaneRight.setDividerLocation(settings.getSpiltPaneDivLocationRight());
+		}
 
 		parseMappingDescription();
 		map();
@@ -176,6 +202,21 @@ public class TesterUI {
 		makeUndoable(jsonataArea, undoManJsonata);
 		listenToInputChanges();
 		listenToJsonataChanges();
+
+		SwingUtilities.invokeLater(new Runnable() {	
+			@Override
+			public void run() {
+				if (settings.getScrollPositionInputY() != null) {
+					inputSp.getVerticalScrollBar().setValue(settings.getScrollPositionInputY());
+				}
+				if (settings.getScrollPositionJsonataY() != null) {
+					jsonataSp.getVerticalScrollBar().setValue(settings.getScrollPositionJsonataY());
+				}
+				if (settings.getScrollPositionOutputY() != null) {
+					outputSp.getVerticalScrollBar().setValue(settings.getScrollPositionOutputY());
+				}		
+			}
+		});
 	}
 
 	private void listenToInputChanges() {
@@ -272,6 +313,13 @@ public class TesterUI {
 			e.printStackTrace();
 			return;
 		}
+		settings.setFrameSizeX(frame.getSize().getSize().width);
+		settings.setFrameSizeY(frame.getSize().getSize().height);
+		settings.setSpiltPaneDivLocation(splitPane.getDividerLocation());
+		settings.setSpiltPaneDivLocationRight(splitPaneRight.getDividerLocation());
+		settings.setScrollPositionInputY(inputSp.getVerticalScrollBar().getValue());
+		settings.setScrollPositionJsonataY(jsonataSp.getVerticalScrollBar().getValue());
+		settings.setScrollPositionOutputY(outputSp.getVerticalScrollBar().getValue());
 		settings.store();
 		System.out.println("Bye bye");
 		System.exit(0);
@@ -356,7 +404,14 @@ public class TesterUI {
 			if (newOutput == null || newOutput.trim().equals("null")) {
 				newOutput = "** no match **";
 			}
+			final int outputScrollPosBefore = outputSp.getVerticalScrollBar().getValue();
 			this.outputArea.setText(newOutput);
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					outputSp.getVerticalScrollBar().setValue(outputScrollPosBefore);
+				}
+			});
 			System.out.println("Mapped successfully");
 			this.inputArea.setBackground(settings.getBackgroundInput());
 			this.jsonataArea.setBackground(settings.getBackgroundJsonata());
@@ -406,7 +461,8 @@ public class TesterUI {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					new TesterUI().frame.setVisible(true);
+					TesterUI ui = new TesterUI();
+					ui.frame.setVisible(true);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
