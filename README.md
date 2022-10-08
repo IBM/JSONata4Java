@@ -52,7 +52,7 @@ against your own data.
 There is a tester.sh you can run in the project to enable you to test expressions 
 against the same JSON as is used at the https://try.jsonata.org site.
 
-New!!! additionally to the command line based tester we provide also a JSONata Tester UI app based on Java Swing.
+**(New)** additionally to the command line based tester we provide also a JSONata Tester UI app based on Java Swing.
 Start the app by running class `com.api.jsonata4java.testerui.TesterUI` from the IDE of your choice
 or use the start wrapper script testerui.sh (or testerui.cmd on Windows).
 
