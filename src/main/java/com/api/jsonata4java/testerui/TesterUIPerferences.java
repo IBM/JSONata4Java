@@ -22,6 +22,7 @@
 package com.api.jsonata4java.testerui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -32,6 +33,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 
 import javax.swing.JButton;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -71,6 +73,14 @@ public class TesterUIPerferences extends JDialog {
 	private final JButton changePathJsonata = new JButton(DOTS_3);
 	private final JComboBox<TesterUIJsonataExample> examples = new JComboBox<TesterUIJsonataExample>(TesterUIJsonataExample.values());
 	private final JComboBox<TesterUIColors> colors = new JComboBox<TesterUIColors>(TesterUIColors.values());
+	private final JTextField colorInput = new JTextField();
+	private final JButton chooseColorInput = new JButton("Choose");
+	private final JTextField colorJsonata = new JTextField();
+	private final JButton chooseColorJsonata = new JButton("Choose");
+	private final JTextField colorOutput = new JTextField();
+	private final JButton chooseColorOutput = new JButton("Choose");
+	private final JTextField colorError = new JTextField();
+	private final JButton chooseColorError = new JButton("Choose");
 
 	private final JPanel inputPanel = new JPanel();
 	private final JPanel southPanel = new JPanel();
@@ -139,6 +149,10 @@ public class TesterUIPerferences extends JDialog {
 		pathJsonata.setText(settings.getPathJsonata().toString());
 		colors.setSelectedItem(TesterUIColors.fromColors(settings.getBackgroundInput(),
 				settings.getBackgroundJsonata(), settings.getBackgroundOutput(), settings.getBackgroundError()));
+		colorInput.setText(colorToUIText(settings.getBackgroundInput()));
+		colorJsonata.setText(colorToUIText(settings.getBackgroundJsonata()));
+		colorOutput.setText(colorToUIText(settings.getBackgroundOutput()));
+		colorError.setText(colorToUIText(settings.getBackgroundError()));
 	}
 
 	private void close() {
@@ -155,6 +169,10 @@ public class TesterUIPerferences extends JDialog {
 	private void uiConfigure() {
 		pathInput.setEditable(false);
 		pathJsonata.setEditable(false);
+		colorInput.setEditable(false);
+		colorJsonata.setEditable(false);
+		colorOutput.setEditable(false);
+		colorError.setEditable(false);
 		frame.setLayout(new BorderLayout(0, 0));
 		frame.setSize(FRAME_SIZE_X, FRAME_SIZE_Y);
 		frame.setLocationRelativeTo(null);
@@ -195,6 +213,38 @@ public class TesterUIPerferences extends JDialog {
 		inputPanel.add(colors, new GridBagConstraints(2, y++, 1, 1, 1.0, 1.0,
 				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
 
+		x = 1;
+		inputPanel.add(new JLabel("Input area background color"), new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+				GridBagConstraints.WEST, GridBagConstraints.NONE, INSETS, 0, 0));
+		inputPanel.add(colorInput, new GridBagConstraints(x++, y, 1, 1, 1.0, 1.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+		inputPanel.add(chooseColorInput, new GridBagConstraints(x++, y++, 1, 1, 0.0, 0.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+
+		x = 1;
+		inputPanel.add(new JLabel("Jsonata area background color"), new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+				GridBagConstraints.WEST, GridBagConstraints.NONE, INSETS, 0, 0));
+		inputPanel.add(colorJsonata, new GridBagConstraints(x++, y, 1, 1, 1.0, 1.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+		inputPanel.add(chooseColorJsonata, new GridBagConstraints(x++, y++, 1, 1, 0.0, 0.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+
+		x = 1;
+		inputPanel.add(new JLabel("Output area background color"), new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+				GridBagConstraints.WEST, GridBagConstraints.NONE, INSETS, 0, 0));
+		inputPanel.add(colorOutput, new GridBagConstraints(x++, y, 1, 1, 1.0, 1.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+		inputPanel.add(chooseColorOutput, new GridBagConstraints(x++, y++, 1, 1, 0.0, 0.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+
+		x = 1;
+		inputPanel.add(new JLabel("Error background color"), new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+				GridBagConstraints.WEST, GridBagConstraints.NONE, INSETS, 0, 0));
+		inputPanel.add(colorError, new GridBagConstraints(x++, y, 1, 1, 1.0, 1.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+		inputPanel.add(chooseColorError, new GridBagConstraints(x++, y++, 1, 1, 0.0, 0.0,
+				GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, INSETS, 0, 0));
+
 		buttonsPanel.add(okButton, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0,
 				GridBagConstraints.WEST, GridBagConstraints.NONE, INSETS, 0, 0));
 
@@ -211,6 +261,10 @@ public class TesterUIPerferences extends JDialog {
 		uiListenerChangePathInput();
 		uiListenerChangePathJsonata();
 		uiListenerColors();
+		uiListenerColorInput(this);
+		uiListenerColorJsonata(this);
+		uiListenerColorOutput(this);
+		uiListenerColorError(this);
 		uiListenerOkButton();
 	}
 
@@ -272,13 +326,92 @@ public class TesterUIPerferences extends JDialog {
 				if (selColors == TesterUIColors.CUSTOM) {
 					return;
 				}
+				colorInput.setText(colorToUIText(selColors.getColorInput()));
 				settings.setBackgroundInput(selColors.getColorInput());
 				ui.setBackgroundInput(selColors.getColorInput());
+				colorJsonata.setText(colorToUIText(selColors.getColorJsonata()));
 				settings.setBackgroundJsonata(selColors.getColorJsonata());
 				ui.setBackgroundJsonata(selColors.getColorJsonata());
+				colorOutput.setText(colorToUIText(selColors.getColorOutput()));
 				settings.setBackgroundOutput(selColors.getColorOutput());
 				ui.setBackgroundOutput(selColors.getColorOutput());
+				colorError.setText(colorToUIText(selColors.getColorError()));
 				settings.setBackgroundError(selColors.getColorError());
+			}
+		});
+	}
+
+	private void uiListenerColorInput(JDialog dialog) {
+		chooseColorInput.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color newColor = JColorChooser.showDialog(dialog,
+	                     "Choose background color for Input area",
+	                     settings.getBackgroundInput());
+				if (newColor == null) {
+					return;
+				}
+				colorInput.setText(colorToUIText(newColor));
+				settings.setBackgroundInput(newColor);
+				ui.setBackgroundInput(newColor);
+				colors.setSelectedItem(TesterUIColors.fromColors(settings.getBackgroundInput(),
+						settings.getBackgroundJsonata(), settings.getBackgroundOutput(), settings.getBackgroundError()));
+			}
+		});
+	}
+
+	private void uiListenerColorJsonata(JDialog dialog) {
+		chooseColorJsonata.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color newColor = JColorChooser.showDialog(dialog,
+	                     "Choose background color for JSONata (mapping expression) area",
+	                     settings.getBackgroundJsonata());
+				if (newColor == null) {
+					return;
+				}
+				colorJsonata.setText(colorToUIText(newColor));
+				settings.setBackgroundJsonata(newColor);
+				ui.setBackgroundJsonata(newColor);
+				colors.setSelectedItem(TesterUIColors.fromColors(settings.getBackgroundInput(),
+						settings.getBackgroundJsonata(), settings.getBackgroundOutput(), settings.getBackgroundError()));
+			}
+		});
+	}
+
+	private void uiListenerColorOutput(JDialog dialog) {
+		chooseColorOutput.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color newColor = JColorChooser.showDialog(dialog,
+	                     "Choose background color for Output area",
+	                     settings.getBackgroundOutput());
+				if (newColor == null) {
+					return;
+				}
+				colorOutput.setText(colorToUIText(newColor));
+				settings.setBackgroundOutput(newColor);
+				ui.setBackgroundOutput(newColor);
+				colors.setSelectedItem(TesterUIColors.fromColors(settings.getBackgroundInput(),
+						settings.getBackgroundJsonata(), settings.getBackgroundOutput(), settings.getBackgroundError()));
+			}
+		});
+	}
+
+	private void uiListenerColorError(JDialog dialog) {
+		chooseColorError.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Color newColor = JColorChooser.showDialog(dialog,
+	                     "Choose background color for areas with error",
+	                     settings.getBackgroundError());
+				if (newColor == null) {
+					return;
+				}
+				colorError.setText(colorToUIText(newColor));
+				settings.setBackgroundError(newColor);
+				colors.setSelectedItem(TesterUIColors.fromColors(settings.getBackgroundInput(),
+						settings.getBackgroundJsonata(), settings.getBackgroundOutput(), settings.getBackgroundError()));
 			}
 		});
 	}
@@ -290,5 +423,9 @@ public class TesterUIPerferences extends JDialog {
 				close();
 			}
 		});
+	}
+
+	private static String colorToUIText(Color in) {
+		return '#' + Integer.toHexString(in.getRGB()).substring(2).toUpperCase();
 	}
 }
