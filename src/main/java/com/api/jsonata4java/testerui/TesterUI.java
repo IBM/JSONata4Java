@@ -84,7 +84,6 @@ public class TesterUI {
 	private final JMenuItem menuItemFormatInput = new JMenuItem("Format input");
 	private final JMenu menuSettings = new JMenu("Settings");
 	private final JMenuItem menuItemPreferences = new JMenuItem("Preferences...");
-	private final JMenuItem menuItemTest = new JMenuItem("Test");
 	private final JTextArea inputArea = new JTextArea();
 	private final JTextArea jsonataArea = new JTextArea();
 	private final JTextArea outputArea = new JTextArea();
@@ -158,17 +157,6 @@ public class TesterUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				showPreferences();
-			}
-		});
-		menuSettings.add(menuItemTest);
-		menuItemTest.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				test();
-			}
-
-			private void test() {
-				inputSp.getVerticalScrollBar().setValue(1000);
 			}
 		});
 		this.frame.addWindowListener(new WindowAdapter() {
