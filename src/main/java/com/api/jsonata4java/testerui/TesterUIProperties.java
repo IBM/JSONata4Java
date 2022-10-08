@@ -1,5 +1,5 @@
 /**
- * (c) Copyright 2018 - 2022 IBM Corporation
+ * (c) Copyright 2018, 2019 IBM Corporation
  * 1 New Orchard Road, 
  * Armonk, New York, 10504-1722
  * United States
