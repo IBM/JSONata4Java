@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>2.0.1</version>
+  <version>2.1.0</version>
 </dependency>
 ```
 
@@ -41,8 +41,8 @@ you can right click on the pom.xml file and select **Run as... / Maven build...*
 Alternatively, you can run from the command line in the JSONata4Java directory: **mvn clean install -Dgpg.skip**
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two:
-* **JSONata4Java-2.0.1-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-2.0.1.jar** (only the JSONata4Java code)
+* **JSONata4Java-2.1.0-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-2.1.0.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
@@ -51,6 +51,15 @@ against your own data.
 
 There is a tester.sh you can run in the project to enable you to test expressions 
 against the same JSON as is used at the https://try.jsonata.org site.
+
+**(New)** additionally to the command line based tester we provide also a JSONata Tester UI app based on Java Swing.
+Start the app by running class `com.api.jsonata4java.testerui.TesterUI` from the IDE of your choice
+or use the start wrapper script testerui.sh (or testerui.cmd on Windows).
+
+Basically it works quite similar to the JSONata Exerciser. This way you can test any JSONata mapping interactively
+against JSONata4Java.
+
+![JSONata Tester UI app Image](./images/JSONataTesterUI.png)
 
 The API's to embed JSONata execution in your code are simple. The code below is copied from the Test utility, and uses the 
 jackson core ObjectMapper to parse a JSON formatted String into a JsonNode object. The dependency for the 
@@ -157,9 +166,6 @@ There are a few functions that have not been implemented:
 From: https://docs.jsonata.org/control-operators we did not implement:
 * ^(...) (Order-by)
 * ... ~> | ... | ...| (Transform)
-
-From: https://docs.jsonata.org/string-functions
-* we only recognize patterns as strings "xxx" but not delimited with slashes /xxx/
 
 From: https://docs.jsonata.org/numeric-functions we did not implement:
 * $formatInteger()
