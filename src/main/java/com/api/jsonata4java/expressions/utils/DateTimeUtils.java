@@ -889,7 +889,7 @@ public class DateTimeUtils implements Serializable {
             String timeComps = timeB ? "Phmsf" : "Hmsf";
             String comps = dateComps + timeComps;
 
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
 
             boolean startSpecified = false;
             boolean endSpecified = false;

@@ -37,6 +37,11 @@ import com.api.jsonata4java.expressions.functions.ReplaceFunction;
  */
 public class FunctionErrorTests {
 
+	@Test
+	public void testToMillis_failingInEuropeBetweenMidnightAnd2() throws Exception {
+		test("($toMillis('13:45', '[H]:[m]') ~> $fromMillis() ~> $substringBefore('T')) = $substringBefore($now(), 'T')", "true", null, null);
+	}
+
 	// From JSONata test group "regex"
 
 	// in contrary to JSONata Java does not allow to use capturing group numbers in
