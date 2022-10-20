@@ -2415,7 +2415,13 @@ System.out.println("@@@ visitPath: -> PathContext = \"" + ctx.toString() + "\"")
 			lhs = visit(lhsCtx);
 		}
 		if (lhs != null && lhs.isNull() == false) {
-System.out.println("@@@ visitPath: lhs =  \"" + lhs.toString() + "\"");
+// @@@ trace
+			String lhscontent = lhs.toString();
+			if (lhscontent.length() > 300) {
+				lhscontent = lhscontent.substring(0, 300) + "...";
+			}
+System.out.println("@@@ visitPath: lhs =  \"" + lhscontent + "\"");
+//@@@ trace
 			// reject path entries that are numbers or values
 			switch (lhs.getNodeType()) {
 			case NUMBER: {
@@ -2512,7 +2518,13 @@ System.out.println("@@@ visitPath: lhs =  \"" + lhs.toString() + "\"");
 		if (LOG.isLoggable(Level.FINEST)) {
 			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
-System.out.println("@@@ visitPath: <- result = \"" + (result == null ? "null" : result.toString()) + "\"");
+// @@@ trace
+		String resultcontent = result == null ? "null" : result.toString();
+		if (resultcontent != null && resultcontent.length() > 300) {
+			resultcontent = resultcontent.substring(0, 300) + "...";
+		}
+System.out.println("@@@ visitPath: <- result = \"" + (result == null ? "null" : resultcontent) + "\"");
+//@@@ trace
 		return result;
 	}
 

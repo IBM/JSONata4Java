@@ -79,6 +79,7 @@ public class TesterUI {
 
 	private final JMenuBar menuBar = new JMenuBar();
 	private final JMenu menuFile = new JMenu("File");
+	private final JMenuItem menuItemToJson = new JMenuItem("To JSON");
 	private final JMenuItem menuItemExit = new JMenuItem("Exit");
 	private final JMenu menuEdit = new JMenu("Edit");
 	private final JMenuItem menuItemFormatInput = new JMenuItem("Format input");
@@ -151,6 +152,13 @@ public class TesterUI {
 				formatInput();
 			}
 		});
+		menuEdit.add(menuItemToJson);
+		menuItemToJson.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				inputToJson();
+			}
+		});
 		menuBar.add(menuSettings);
 		menuSettings.add(menuItemPreferences);
 		menuItemPreferences.addActionListener(new ActionListener() {
@@ -191,7 +199,7 @@ public class TesterUI {
 		listenToInputChanges();
 		listenToJsonataChanges();
 
-		SwingUtilities.invokeLater(new Runnable() {	
+		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				if (settings.getScrollPositionInputY() != null) {
@@ -202,7 +210,7 @@ public class TesterUI {
 				}
 				if (settings.getScrollPositionOutputY() != null) {
 					outputSp.getVerticalScrollBar().setValue(settings.getScrollPositionOutputY());
-				}		
+				}
 			}
 		});
 	}
@@ -280,6 +288,21 @@ public class TesterUI {
 	private static final File INPUT_FILE_JSON = new File(TesterUISettings.SETTINGS_FOLDER, "input.json");
 	private static final File INPUT_FILE_XML = new File(TesterUISettings.SETTINGS_FOLDER, "input.xml");
 	private static final File JSONATA_FILE = new File(TesterUISettings.SETTINGS_FOLDER, "expression.jsonata");
+
+	private void inputToJson() {
+		try {
+			switch (getFormat(inputArea.getText())) {
+			case XML:
+				inputArea.setText(jsonMapper.writeValueAsString(xmlMapper.readTree(inputArea.getText())));
+				break;
+			default:
+				// nothing to do
+				break;
+			}
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+	}
 
 	private void exit() {
 		try {
