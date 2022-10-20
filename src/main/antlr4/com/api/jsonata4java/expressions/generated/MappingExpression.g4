@@ -45,6 +45,7 @@ expr:
  | DESCEND                                                # descendant
  | DOLLAR                                                 # context_ref
  | ROOT                                                   # root_path
+ | '%'                                                    # parent_path
  | ARR_OPEN exprOrSeqList? ARR_CLOSE                      # array_constructor
  | OBJ_OPEN fieldList? OBJ_CLOSE					      # object_constructor
  | expr '.' expr                                          # path

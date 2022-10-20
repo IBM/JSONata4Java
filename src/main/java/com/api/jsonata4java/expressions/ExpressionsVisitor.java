@@ -69,6 +69,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullCo
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ObjectContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Object_constructorContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Parent_pathContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.PathContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Root_pathContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.SeqContext;
@@ -2386,6 +2387,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 
 	@Override
 	public JsonNode visitPath(PathContext ctx) {
+System.out.println("@@@ visitPath: -> PathContext = \"" + ctx.toString() + "\"");
 		final String METHOD = "visitPath";
 		if (LOG.isLoggable(Level.FINEST)) {
 			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
@@ -2413,6 +2415,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 			lhs = visit(lhsCtx);
 		}
 		if (lhs != null && lhs.isNull() == false) {
+System.out.println("@@@ visitPath: lhs =  \"" + lhs.toString() + "\"");
 			// reject path entries that are numbers or values
 			switch (lhs.getNodeType()) {
 			case NUMBER: {
@@ -2509,7 +2512,15 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		if (LOG.isLoggable(Level.FINEST)) {
 			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
 		}
+System.out.println("@@@ visitPath: <- result = \"" + (result == null ? "null" : result.toString()) + "\"");
 		return result;
+	}
+
+	@Override
+	public JsonNode visitParent_path(Parent_pathContext ctx)
+	{
+System.out.println("@@@ visitParent_path: Parent_pathContext = \"" + ctx.toString() + "\"");
+		return null;
 	}
 
 	@Override
