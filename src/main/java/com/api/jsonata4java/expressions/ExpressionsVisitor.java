@@ -243,7 +243,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 				String expStr = ".e+";
 				if (index >= 0) {
 					int minusSize = dValue < 0.0d ? 1 : 0;
-					int exp = new Integer(test.substring(index + 1));
+					int exp = Integer.parseInt(test.substring(index + 1));
 					if (exp < 0) {
 						expStr = ".e";
 					}

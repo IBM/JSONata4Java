@@ -63,8 +63,8 @@ public class NumberUtils implements Serializable {
 
 			// Check to see if the converted number is within the acceptable range
 			if (!doubleValue.isInfinite() && !doubleValue.isNaN()) {
-				if ((doubleValue >= 0.0d && doubleValue <= new Double(Long.MAX_VALUE))
-						|| (doubleValue < 0.0d && doubleValue >= new Double(Long.MIN_VALUE))) {
+				if ((doubleValue >= 0.0d && doubleValue <= Double.valueOf(Long.MAX_VALUE))
+						|| (doubleValue < 0.0d && doubleValue >= Double.valueOf(Long.MIN_VALUE))) {
 					if (doubleValue - doubleValue.longValue() == 0.0d) {
 						result = new LongNode((long) doubleValue.doubleValue());
 					} else {
