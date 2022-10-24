@@ -35,17 +35,66 @@ import org.junit.Test;
 public class PathErrorTests {
 
 	@Test
-	public void testPathWithParent() throws Exception {
+	public void testPathWithParent1() throws Exception {
 		test("Account.Order.Product.{\n"
-				+ "  'Product': $.'Product Name',\n"
-				+ "  'Order': $.%.OrderID/*,\n"
-				+ "  'Account': %.%.'Account Name'\n"
+				+ "  'XProduct': $.'Product Name',\n"
+				+ "  'XOrder': %.OrderID,\n"
+				+ "  'XAccount': %.%.'Account Name'\n"
 				+ "}",
 				"["
-						+ "{\"Product\":\"Bowler Hat\"},"
-						+ "{\"Product\":\"Trilby hat\"},"
-						+ "{\"Product\":\"Bowler Hat\"},"
-						+ "{\"Product\":\"Cloak\"}]",
+				+ "  {\"XProduct\":\"Bowler Hat\"},"
+				+ "  {\"XProduct\":\"Trilby hat\"},"
+				+ "  {\"XProduct\":\"Bowler Hat\"},{\"XProduct\":\"Cloak\"}"
+				+ "]",
+				null, "{\n"
+						+ "  \"Account\": {\n"
+						+ "    \"Account Name\": \"Firefly\",\n"
+						+ "    \"Order\": [\n"
+						+ "      {\n"
+						+ "        \"OrderID\": \"order103\",\n"
+						+ "        \"Product\": [\n"
+						+ "          {\n"
+						+ "            \"Product Name\": \"Bowler Hat\"\n"
+						+ "          },\n"
+						+ "          {\n"
+						+ "            \"Product Name\": \"Trilby hat\"\n"
+						+ "          }\n"
+						+ "        ]\n"
+						+ "      },\n"
+						+ "      {\n"
+						+ "        \"OrderID\": \"order104\",\n"
+						+ "        \"Product\": [\n"
+						+ "          {\n"
+						+ "            \"Product Name\": \"Bowler Hat\"\n"
+						+ "          },\n"
+						+ "          {\n"
+						+ "            \"Product Name\": \"Cloak\"\n"
+						+ "          }\n"
+						+ "        ]\n"
+						+ "      }\n"
+						+ "    ]\n"
+						+ "  }\n"
+						+ "}");
+	}
+
+	@Test
+	public void testPathWithParent2() throws Exception {
+		test("Account.{\n"
+				+ "  \"Products\": Order.Product.{\n"
+				+ "    'XProduct': $.'Product Name',\n"
+				+ "    'XOrder': %.OrderID,\n"
+				+ "    'XAccount': %.%.'Account Name'\n"
+				+ "  },"
+				+ "\"YAccount\": $.'Account Name'"
+				+ "}",
+				"{"
+				+ "  \"Products\":["
+				+ "    {\"XProduct\":\"Bowler Hat\"},"
+				+ "    {\"XProduct\":\"Trilby hat\"},"
+				+ "    {\"XProduct\":\"Bowler Hat\"},{\"XProduct\":\"Cloak\"}"
+				+ "  ],"
+				+ "  \"YAccount\":\"Firefly\""
+				+ "}",
 				null, "{\n"
 						+ "  \"Account\": {\n"
 						+ "    \"Account Name\": \"Firefly\",\n"
