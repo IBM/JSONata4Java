@@ -42,10 +42,10 @@ public class PathErrorTests {
 				+ "  'XAccount': %.%.'Account Name'\n"
 				+ "}",
 				"["
-				+ "  {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\"},"
-				+ "  {\"XProduct\":\"Trilby hat\",\"XOrder\":\"order103\"},"
-				+ "  {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\"},"
-				+ "  {\"XProduct\":\"Cloak\",\"XOrder\":\"order104\"}"
+				+ "  {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"},"
+				+ "  {\"XProduct\":\"Trilby hat\",\"XOrder\":\"order103\",\"XAccount\":\"Account Name\"},"
+				+ "  {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"},"
+				+ "  {\"XProduct\":\"Cloak\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"}"
 				+ "]",
 				null, "{\n"
 						+ "  \"Account\": {\n"
@@ -90,10 +90,10 @@ public class PathErrorTests {
 				+ "}",
 				"{"
 				+ "  \"Products\":["
-				+ "    {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\"},"
-				+ "    {\"XProduct\":\"Trilby hat\",\"XOrder\":\"order103\"},"
-				+ "    {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\"},"
-				+ "    {\"XProduct\":\"Cloak\",\"XOrder\":\"order104\"}"
+				+ "    {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"},"
+				+ "    {\"XProduct\":\"Trilby hat\",\"XOrder\":\"order103\",\"XAccount\":\"Account Name\"},"
+				+ "    {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"},"
+				+ "    {\"XProduct\":\"Cloak\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"}"
 				+ "  ],"
 				+ "  \"YAccount\":\"Firefly\""
 				+ "}",

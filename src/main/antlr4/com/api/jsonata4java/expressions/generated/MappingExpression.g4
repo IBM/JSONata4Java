@@ -48,7 +48,7 @@ expr:
  | ARR_OPEN exprOrSeqList? ARR_CLOSE                      # array_constructor
  | OBJ_OPEN fieldList? OBJ_CLOSE					      # object_constructor
  | expr '.' expr                                          # path
- | '%' '.' expr                                           # parent_path
+ | (('%' '.')+ expr)                                      # parent_path
  | expr ARR_OPEN ARR_CLOSE                                # to_array
  | expr ARR_OPEN expr ARR_CLOSE                           # array
  | expr OBJ_OPEN fieldList? OBJ_CLOSE                     # object

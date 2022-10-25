@@ -1531,8 +1531,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 							}
 							case BOOLEAN: {
 								token = (context.asBoolean()
-										? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, context.asText())
-										: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, context.asText()));
+										? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE,
+												context.asText())
+										: CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE,
+												context.asText()));
 								TerminalNodeImpl tn = new TerminalNodeImpl(token);
 								BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
 								bc.children.set(0, tn);
@@ -1549,7 +1551,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 								break;
 							}
 							case NUMBER: {
-								token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER, context.asText());
+								token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER,
+										context.asText());
 								TerminalNodeImpl tn = new TerminalNodeImpl(token);
 								NumberContext nc = new NumberContext(ctx);
 								nc.children.set(0, tn);
@@ -1568,7 +1571,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 							}
 							case STRING:
 							default: {
-								token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, context.asText());
+								token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING,
+										context.asText());
 								TerminalNodeImpl tn = new TerminalNodeImpl(token);
 								StringContext sc = new StringContext(ctx);
 								sc.children.set(0, tn);
@@ -2165,7 +2169,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 					for (JsonNode element : context) {
 						_environment.pushContext(element);
 						final JsonNode fieldList = visit(ctx.fieldList());
-						fieldList.fields().forEachRemaining(e -> grouping.computeIfAbsent(e.getKey(), ignore -> factory.arrayNode()).add(e.getValue()));
+						fieldList.fields().forEachRemaining(e -> grouping
+								.computeIfAbsent(e.getKey(), ignore -> factory.arrayNode()).add(e.getValue()));
 						_environment.popContext();
 					}
 					grouping.forEach((k, v) -> object.set(k, unwrapArray(v)));
@@ -2387,7 +2392,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 
 	@Override
 	public JsonNode visitPath(PathContext ctx) {
-System.out.println("@@@ visitPath: -> PathContext = \"" + ctx.toString() + "\"");
+		System.out.println("@@@ visitPath: -> PathContext = \"" + ctx.toString() + "\"");
 		final String METHOD = "visitPath";
 		if (LOG.isLoggable(Level.FINEST)) {
 			LOG.entering(CLASS, METHOD, new Object[] { (ctx.expr(0) == null ? "null" : ctx.expr(0).getText()),
@@ -2420,7 +2425,7 @@ System.out.println("@@@ visitPath: -> PathContext = \"" + ctx.toString() + "\"")
 			if (lhscontent.length() > 300) {
 				lhscontent = lhscontent.substring(0, 300) + "...";
 			}
-System.out.println("@@@ visitPath: lhs =  \"" + lhscontent + "\"");
+			System.out.println("@@@ visitPath: lhs =  \"" + lhscontent + "\"");
 //@@@ trace
 			// reject path entries that are numbers or values
 			switch (lhs.getNodeType()) {
@@ -2450,8 +2455,8 @@ System.out.println("@@@ visitPath: lhs =  \"" + lhscontent + "\"");
 					idCtx.addChild(node);
 					rhs = resolvePath(lhs, idCtx);
 				} else if (rhsCtx instanceof NumberContext) {
-					throw new EvaluateRuntimeException(
-							"The literal value " + visit(rhsCtx) + " cannot be used as a step within a path expression");
+					throw new EvaluateRuntimeException("The literal value " + visit(rhsCtx)
+							+ " cannot be used as a step within a path expression");
 				} else {
 					rhs = resolvePath(lhs, rhsCtx);
 				}
@@ -2523,7 +2528,7 @@ System.out.println("@@@ visitPath: lhs =  \"" + lhscontent + "\"");
 		if (resultcontent != null && resultcontent.length() > 300) {
 			resultcontent = resultcontent.substring(0, 300) + "...";
 		}
-System.out.println("@@@ visitPath: <- result = \"" + (result == null ? "null" : resultcontent) + "\"");
+		System.out.println("@@@ visitPath: <- result = \"" + (result == null ? "null" : resultcontent) + "\"");
 //@@@ trace
 		return result;
 	}
@@ -2536,7 +2541,7 @@ System.out.println("@@@ visitPath: <- result = \"" + (result == null ? "null" : 
 			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 
-		JsonNode result = determineParentPath(ctx, 1);
+		final JsonNode result = determineParentPath(ctx);
 
 		lastVisited = METHOD;
 		if (LOG.isLoggable(Level.FINEST)) {
@@ -2548,18 +2553,30 @@ System.out.println("@@@ visitPath: <- result = \"" + (result == null ? "null" : 
 			resultcontent = resultcontent.substring(0, 300) + "...";
 		}
 		System.out.println("@@@ visitParent_path: <- result = \"" + (result == null ? "null" : resultcontent) + "\"");
-		//@@@ trace
+		// @@@ trace
 		return result;
 	}
 
-	private JsonNode determineParentPath(final ExprContext ctx, final int depth) {
+	private JsonNode determineParentPath(final ExprContext ctx) {
 		JsonNode result = null;
-		final JsonNode parentNode = _environment.getParentNode(1);
-		if (parentNode != null && ctx.getChildCount() == ((2 * depth) + 1) && ctx.getChild((2 * depth)) instanceof MappingExpressionParser.IdContext) {
-System.out.println("@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child = \"" + ctx.getChild(2 * depth).getChild(0).toString() + "\"");
-			_environment.pushContext(parentNode);
-			result = resolvePath(parentNode, ((MappingExpressionParser.IdContext) ctx.getChild((2 * depth))));
-			_environment.popContext();
+		if (ctx.getChildCount() >= 3 && (/* ctx.getChildCount() is odd */ ctx.getChildCount() % 2 == 1)) {
+			final int depth = (ctx.getChildCount() - 1) / 2;
+			final JsonNode parentNode = _environment.getParentNode(1);
+			System.out.println(
+					"@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child() = " + ctx.getChild((2 * depth)).getClass().getSimpleName());
+			if (parentNode != null && ctx.getChildCount() == ((2 * depth) + 1)
+					&& (ctx.getChild(2 * depth) instanceof MappingExpressionParser.IdContext
+							|| ctx.getChild(2 * depth) instanceof MappingExpressionParser.StringContext)) {
+				System.out.println("@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child = \""
+						+ ctx.getChild(2 * depth).getChild(0).toString() + "\"");
+				_environment.pushContext(parentNode);
+				if (ctx.getChild(2 * depth) instanceof MappingExpressionParser.IdContext) {
+					result = resolvePath(parentNode, ((MappingExpressionParser.IdContext) ctx.getChild((2 * depth))));
+				} else if (ctx.getChild(2 * depth) instanceof MappingExpressionParser.StringContext) {
+					result = resolvePath(parentNode, ((MappingExpressionParser.StringContext) ctx.getChild((2 * depth))));
+				}
+				_environment.popContext();
+			}
 		}
 		return result;
 	}
@@ -2684,14 +2701,16 @@ System.out.println("@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child = 
 	}
 
 	@Override
-	public JsonNode visitRegular_expression_caseinsensitive(MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx) {
+	public JsonNode visitRegular_expression_caseinsensitive(
+			MappingExpressionParser.Regular_expression_caseinsensitiveContext ctx) {
 		final String METHOD = "visitRegular_expression_caseinsensitive";
 		if (LOG.isLoggable(Level.FINEST)) {
 			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
 		JsonNode result = null;
 		if (ctx.getText() != null) {
-			final RegularExpression regex = new RegularExpression(RegularExpression.Type.CASEINSENSITIVE, ctx.getText());
+			final RegularExpression regex = new RegularExpression(RegularExpression.Type.CASEINSENSITIVE,
+					ctx.getText());
 			result = new POJONode(regex);
 			lastVisited = METHOD;
 		}
