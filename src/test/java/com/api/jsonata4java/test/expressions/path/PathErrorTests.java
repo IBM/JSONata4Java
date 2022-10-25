@@ -42,9 +42,10 @@ public class PathErrorTests {
 				+ "  'XAccount': %.%.'Account Name'\n"
 				+ "}",
 				"["
-				+ "  {\"XProduct\":\"Bowler Hat\"},"
-				+ "  {\"XProduct\":\"Trilby hat\"},"
-				+ "  {\"XProduct\":\"Bowler Hat\"},{\"XProduct\":\"Cloak\"}"
+				+ "  {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\"},"
+				+ "  {\"XProduct\":\"Trilby hat\",\"XOrder\":\"order103\"},"
+				+ "  {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\"},"
+				+ "  {\"XProduct\":\"Cloak\",\"XOrder\":\"order104\"}"
 				+ "]",
 				null, "{\n"
 						+ "  \"Account\": {\n"
@@ -89,9 +90,10 @@ public class PathErrorTests {
 				+ "}",
 				"{"
 				+ "  \"Products\":["
-				+ "    {\"XProduct\":\"Bowler Hat\"},"
-				+ "    {\"XProduct\":\"Trilby hat\"},"
-				+ "    {\"XProduct\":\"Bowler Hat\"},{\"XProduct\":\"Cloak\"}"
+				+ "    {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\"},"
+				+ "    {\"XProduct\":\"Trilby hat\",\"XOrder\":\"order103\"},"
+				+ "    {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\"},"
+				+ "    {\"XProduct\":\"Cloak\",\"XOrder\":\"order104\"}"
 				+ "  ],"
 				+ "  \"YAccount\":\"Firefly\""
 				+ "}",

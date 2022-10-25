@@ -2529,10 +2529,39 @@ System.out.println("@@@ visitPath: <- result = \"" + (result == null ? "null" : 
 	}
 
 	@Override
-	public JsonNode visitParent_path(Parent_pathContext ctx)
-	{
-System.out.println("@@@ visitParent_path: Parent_pathContext = \"" + ctx.toString() + "\"");
-		return null;
+	public JsonNode visitParent_path(Parent_pathContext ctx) {
+		System.out.println("@@@ !!! @@@ visitParent_path: Parent_pathContext = \"" + ctx.toString() + "\"");
+		final String METHOD = "visitRoot_path";
+		if (LOG.isLoggable(Level.FINEST)) {
+			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
+		}
+
+		JsonNode result = determineParentPath(ctx, 1);
+
+		lastVisited = METHOD;
+		if (LOG.isLoggable(Level.FINEST)) {
+			LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
+		}
+		// @@@ trace
+		String resultcontent = result == null ? "null" : result.toString();
+		if (resultcontent != null && resultcontent.length() > 300) {
+			resultcontent = resultcontent.substring(0, 300) + "...";
+		}
+		System.out.println("@@@ visitParent_path: <- result = \"" + (result == null ? "null" : resultcontent) + "\"");
+		//@@@ trace
+		return result;
+	}
+
+	private JsonNode determineParentPath(final ExprContext ctx, final int depth) {
+		JsonNode result = null;
+		final JsonNode parentNode = _environment.getParentNode(1);
+		if (parentNode != null && ctx.getChildCount() == ((2 * depth) + 1) && ctx.getChild((2 * depth)) instanceof MappingExpressionParser.IdContext) {
+System.out.println("@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child = \"" + ctx.getChild(2 * depth).getChild(0).toString() + "\"");
+			_environment.pushContext(parentNode);
+			result = resolvePath(parentNode, ((MappingExpressionParser.IdContext) ctx.getChild((2 * depth))));
+			_environment.popContext();
+		}
+		return result;
 	}
 
 	@Override
