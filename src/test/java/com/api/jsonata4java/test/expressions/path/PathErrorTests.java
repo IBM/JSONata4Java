@@ -127,4 +127,57 @@ public class PathErrorTests {
 						+ "  }\n"
 						+ "}");
 	}
+
+	@Test
+	public void testPathWithParent3() throws Exception {
+
+		test("data.xxb.datavalue.{\n"
+				+ "    \"properties\": {\"value\":value},\n"
+				+ "    \"timestamp\": timestamp,\n"
+				+ "    \"mId\": %.%.xxa.module,\n"
+				+ "    \"oid\": %.%.name\n"
+				+ "}",
+				"["
+				+ "  {"
+				+ "    \"properties\": {"
+				+ "      \"value\": 0.24"
+				+ "    },"
+				+ "    \"timestamp\": 1664339583,"
+				+ "    \"mId\": 2122,"
+				+ "    \"oid\": \"root-type:p\""
+				+ "  },"
+				+ "  {"
+				+ "    \"properties\": {"
+				+ "      \"value\": 0.25"
+				+ "    },"
+				+ "    \"timestamp\": 1664341325,"
+				+ "    \"mId\": 2122,"
+				+ "    \"oid\": \"root-type:p\""
+				+ "  }"
+				+ "]",
+				null, "{\n"
+						+ "  \"data\": [\n"
+						+ "    {\n"
+						+ "      \"name\": \"root-type:p\",\n"
+						+ "      \"xxa\": {\n"
+						+ "        \"module\": 2122\n"
+						+ "      },\n"
+						+ "      \"xxb\": [\n"
+						+ "        {\n"
+						+ "          \"datavalue\": [\n"
+						+ "            {\n"
+						+ "              \"value\": 0.24,\n"
+						+ "              \"timestamp\": 1664339583\n"
+						+ "            },\n"
+						+ "            {\n"
+						+ "              \"value\": 0.25,\n"
+						+ "              \"timestamp\": 1664341325\n"
+						+ "            }\n"
+						+ "          ]\n"
+						+ "        }\n"
+						+ "      ]\n"
+						+ "    }\n"
+						+ "  ]\n"
+						+ "}");
+	}
 }

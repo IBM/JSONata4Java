@@ -2561,21 +2561,27 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		JsonNode result = null;
 		if (ctx.getChildCount() >= 3 && (/* ctx.getChildCount() is odd */ ctx.getChildCount() % 2 == 1)) {
 			final int depth = (ctx.getChildCount() - 1) / 2;
-			final JsonNode parentNode = _environment.getParentNode(1);
+			final JsonNode parentNode = _environment.getParentNode(depth);
 			System.out.println(
 					"@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child() = " + ctx.getChild((2 * depth)).getClass().getSimpleName());
 			if (parentNode != null && ctx.getChildCount() == ((2 * depth) + 1)
-					&& (ctx.getChild(2 * depth) instanceof MappingExpressionParser.IdContext
-							|| ctx.getChild(2 * depth) instanceof MappingExpressionParser.StringContext)) {
+					&& (ctx.getChild(2 * depth) instanceof IdContext
+							|| ctx.getChild(2 * depth) instanceof StringContext
+							|| ctx.getChild(2 * depth) instanceof PathContext)) {
 				System.out.println("@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child = \""
 						+ ctx.getChild(2 * depth).getChild(0).toString() + "\"");
 				_environment.pushContext(parentNode);
 				if (ctx.getChild(2 * depth) instanceof MappingExpressionParser.IdContext) {
-					result = resolvePath(parentNode, ((MappingExpressionParser.IdContext) ctx.getChild((2 * depth))));
-				} else if (ctx.getChild(2 * depth) instanceof MappingExpressionParser.StringContext) {
-					result = resolvePath(parentNode, ((MappingExpressionParser.StringContext) ctx.getChild((2 * depth))));
+					result = resolvePath(parentNode, (IdContext) ctx.getChild((2 * depth)));
+				} else if (ctx.getChild(2 * depth) instanceof StringContext) {
+					result = resolvePath(parentNode, (StringContext) ctx.getChild((2 * depth)));
+				} else if (ctx.getChild(2 * depth) instanceof PathContext) {
+					result = resolvePath(parentNode, (PathContext) ctx.getChild((2 * depth)));
 				}
 				_environment.popContext();
+			} else {
+				LOG.warning("Unexpected class of last child of current context: "
+						+ ctx.getChild(2 * depth).getClass().getName());
 			}
 		}
 		return result;
