@@ -269,20 +269,15 @@ public class FrameEnvironment implements Serializable {
       if (_parentNodeMap == null) {
          return null;
       }
-      JsonNode currentContextNode = getContextStack().peek();
-	  JsonNode parentNode = _parentNodeMap.get(currentContextNode);      
-      if (parentNode instanceof ArrayNode) {
-    	  parentNode = _parentNodeMap.get(parentNode);
-      }
-      for (int i = 1; i < depth; i++) {
-    	  parentNode = _parentNodeMap.get(parentNode);
-          if (parentNode instanceof ArrayNode) {
-        	  parentNode = _parentNodeMap.get(parentNode);
-          }
-    	  if (parentNode == null) {
-    		  break;
-    	  }
-      }
+	  JsonNode parentNode = getContextStack().peek();
+	  int i = 0;
+	  while (parentNode != null && i < depth) {
+		  parentNode = _parentNodeMap.get(parentNode);
+	      if (parentNode instanceof ArrayNode) {
+	    	  parentNode = _parentNodeMap.get(parentNode);
+	      }
+	      i++;
+	  }
       return parentNode;
    }
 
