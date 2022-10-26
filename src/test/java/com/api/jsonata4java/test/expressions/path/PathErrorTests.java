@@ -180,4 +180,53 @@ public class PathErrorTests {
 						+ "  ]\n"
 						+ "}");
 	}
+
+	@Test
+	public void testPathWithParent4() throws Exception {
+
+		test("data.metrics.history.{\n"
+				+ "       \"objectId\":%.%.tags[0],\n"
+				+ "       \"test\":\"test\"\n"
+				+ "}",
+				"[\n"
+				+ "  {\n"
+				+ "    \"objectId\": \"module=yq01-d2\",\n"
+				+ "    \"test\": \"test\"\n"
+				+ "  },\n"
+				+ "  {\n"
+				+ "    \"objectId\": \"module=yq01-d2\",\n"
+				+ "    \"test\": \"test\"\n"
+				+ "  }\n"
+				+ "]",
+				null, "{\n"
+						+ "    \"status\": 0,\n"
+						+ "    \"message\": \"OK\",\n"
+						+ "    \"data\": [\n"
+						+ "        {\n"
+						+ "            \"product\": \"ipcd\",\n"
+						+ "            \"namespace\": \"carr2_amps_%.pv\",\n"
+						+ "            \"tags\": [\n"
+						+ "                \"module=yq01-d2\",\"module=yq01-d3\"\n"
+						+ "            ],\n"
+						+ "            \"metrics\": [\n"
+						+ "                {\n"
+						+ "                    \"metric\": \"value\",\n"
+						+ "                    \"histoCount\": 1,\n"
+						+ "                    \"history\": [\n"
+						+ "                        {\n"
+						+ "                            \"value\": 0.0,\n"
+						+ "                            \"timestamp\": 1660046403\n"
+						+ "                        },\n"
+						+ "                        {\n"
+						+ "                            \"value\": 0.0,\n"
+						+ "                            \"timestamp\": 1660046414\n"
+						+ "                        }\n"
+						+ "                  \n"
+						+ "                    ]\n"
+						+ "                }\n"
+						+ "            ]\n"
+						+ "        }\n"
+						+ "    ]\n"
+						+ "}");
+	}
 }

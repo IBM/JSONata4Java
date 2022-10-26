@@ -2565,19 +2565,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 			System.out.println(
 					"@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child() = " + ctx.getChild((2 * depth)).getClass().getSimpleName());
 			if (parentNode != null && ctx.getChildCount() == ((2 * depth) + 1)
-					&& (ctx.getChild(2 * depth) instanceof IdContext
-							|| ctx.getChild(2 * depth) instanceof StringContext
-							|| ctx.getChild(2 * depth) instanceof PathContext)) {
+					&& (ctx.getChild(2 * depth) instanceof ExprContext)) {
 				System.out.println("@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child = \""
 						+ ctx.getChild(2 * depth).getChild(0).toString() + "\"");
 				_environment.pushContext(parentNode);
-				if (ctx.getChild(2 * depth) instanceof MappingExpressionParser.IdContext) {
-					result = resolvePath(parentNode, (IdContext) ctx.getChild((2 * depth)));
-				} else if (ctx.getChild(2 * depth) instanceof StringContext) {
-					result = resolvePath(parentNode, (StringContext) ctx.getChild((2 * depth)));
-				} else if (ctx.getChild(2 * depth) instanceof PathContext) {
-					result = resolvePath(parentNode, (PathContext) ctx.getChild((2 * depth)));
-				}
+				result = resolvePath(parentNode, (ExprContext) ctx.getChild((2 * depth)));
 				_environment.popContext();
 			} else {
 				LOG.warning("Unexpected class of last child of current context: "
