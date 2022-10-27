@@ -106,7 +106,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 			"closures", // issue #56
 			"matchers", // issue #57
 			"hof-zip-map", // issue #58
-			"parent-operator", // issue #60
+//			"parent-operator", // issue #60
 //			"function-distinct", // issue #63
 //			"lambdas", // issue #70
 			"higher-order-functions", // issue #70
@@ -158,6 +158,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 		SKIP_CASES("hof-reduce", "case010");
 		// issue #54 timeouts
 		SKIP_CASES("range-operator", "case021", "case024");
+		// issue #60 parent-operator
+		SKIP_CASES("parent-operator", "parent-27");
 		// issue 71 support regular expressions
 		SKIP_CASES("regex",
 				"case015",

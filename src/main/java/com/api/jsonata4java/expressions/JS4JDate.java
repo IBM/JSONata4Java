@@ -22,7 +22,6 @@
 
 package com.api.jsonata4java.expressions;
 
-import java.io.Serializable;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,7 +37,7 @@ import java.util.TimeZone;
  * provides a formatted date suitable for sorting in the format
  * "yyyy/MM/ddTHH:mm:ss.SSS(Z)"
  */
-public class JS4JDate extends Date implements Cloneable, Serializable {
+public class JS4JDate extends Date {
 
    /**
     * Format for parsing the create date string: 2004/08/04-07:23:15.987(-0400)
