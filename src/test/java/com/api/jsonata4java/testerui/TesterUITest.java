@@ -19,19 +19,15 @@ public class TesterUITest {
 
     @Before
     public void setUp() throws IOException {
-        if (isOnWindows()) {
+        if (!isOnWindows()) {
             return;
         }
         testerUi = new TesterUI();
     }
 
-    private boolean isOnWindows() {
-        return System.getProperty("os.name").startsWith("Windows");
-    }
-
     @Test
     public void testXmlToJson() throws IOException {
-        if (isOnWindows()) {
+        if (!isOnWindows()) {
             return;
         }
         assertEquals(minifyJson(TesterUI.readFile(Paths.get("src/test/resources/exerciser/xmladdress.json"))),
@@ -51,5 +47,9 @@ public class TesterUITest {
             throw new RuntimeException(e);
         }
         return sw.getBuffer().toString();
+    }
+
+    private boolean isOnWindows() {
+        return System.getProperty("os.name").startsWith("Windows");
     }
 }
