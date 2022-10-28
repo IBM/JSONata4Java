@@ -23,14 +23,9 @@ public class TesterUITest {
 	}
 
 	@Test
-	public void testJsonToXml() throws IOException {
-		System.out.println(testerUi.jsonToXml(TesterUI.readFile(Paths.get("src/test/resources/exerciser/address.json"))));
-	}
-
-	@Test
 	public void testXmlToJson() throws IOException {
-		assertEquals(minifyJson(TesterUI.readFile(Paths.get("src/test/resources/exerciser/address.json"))),
-				minifyJson(testerUi.xmlToJson(TesterUI.readFile(Paths.get("src/test/resources/exerciser/address.xml")))));
+		assertEquals(minifyJson(TesterUI.readFile(Paths.get("src/test/resources/exerciser/xmladdress.json"))),
+				minifyJson(testerUi.xmlToJson(TesterUI.readFile(Paths.get("src/test/resources/exerciser/xmladdress.xml")))));
 	}
 
 	public static String minifyJson(final String in) {
@@ -46,15 +41,4 @@ public class TesterUITest {
 		}
 		return sw.getBuffer().toString();
 	}
-
-//	public static String minifyXml(final String in) {
-//		return XalanWrapper.xslt(in, /* style sheet */
-//				"<?xml version=\"1.0\"?>"
-//						+ "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">"
-//						+ "<xsl:output indent=\"no\"/>" + "<xsl:strip-space elements=\"*\"/>"
-//						+ "<xsl:template match=\"@*|node()\">"
-//						+ "<xsl:copy><xsl:apply-templates select=\"@*|node()\"/></xsl:copy>" + "</xsl:template>"
-//						+ "</xsl:stylesheet>",
-//				/* no params */ null, "xml", "UTF-8", false, null, !in.strip().startsWith("<?xml"));
-//	}
 }

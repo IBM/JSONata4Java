@@ -66,7 +66,8 @@
 		<url>https://github.com/IBM/JSONata4Java</url>
 	</scm>
 	<properties>
-		<runSuite>**/AgnosticTestSuite.class</runSuite>
+		<test.unitTests>**/*Test.class</test.unitTests>
+		<test.agnostic>com/api/jsonata4java/test/expressions/agnostic/AgnosticTestSuite.class</test.agnostic>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<gpg.skip>true</gpg.skip><!-- by default skip gpg -->
 		<antlr4.version>4.11.1</antlr4.version>
@@ -255,7 +256,8 @@
 					<reuseForks>true</reuseForks>
 					<argLine>-Xmx1024m</argLine>
 					<includes>
-						<include>${runSuite}</include>
+						<include>${test.unitTests}</include>
+						<include>${test.agnostic}</include>
 					</includes>
 				</configuration>
 			</plugin>

@@ -35,7 +35,7 @@ import com.api.jsonata4java.expressions.functions.ReplaceFunction;
  * 
  * @author Martin Bluemel
  */
-public class FunctionErrorTests {
+public class FunctionErrorTest {
 
 	@Test
 	public void testToMillis_failingInEuropeBetweenMidnightAnd2() throws Exception {
