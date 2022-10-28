@@ -278,6 +278,9 @@ public class FrameEnvironment implements Serializable {
 	      }
 	      i++;
 	  }
+	  if (i >= depth && parentNode == null) {
+	      throw new RuntimeException("The object representing the 'parent' cannot be derived from this expression");
+	  }
       return parentNode;
    }
 
