@@ -8,6 +8,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -410,44 +412,32 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 
 		runJsonataTest(JsonataDotOrgTests.data());
 
-		BasicExpressionsTests bet = new BasicExpressionsTests();
-		bet.testNewStuff();
-		bet.testNullNode();
-		bet.testCustomerScenario();
-		bet.testArrayToString();
-		bet.testStrings();
-		bet.testLiterals();
-		bet.testNegation();
-		bet.testArithmeticOperators();
-		bet.testStringOperators();
-		bet.eventAccessNoQuotes();
-		bet.eventAccessWithQuotes();
-		bet.appAccessNoQuotes();
-		bet.appAccessWithQuotes();
-		bet.testArrays();
-		bet.testVariableAssignment();
-		bet.testFunctionDecl();
-		bet.testObjectFunctions();
-		bet.testArrayFlattening();
-		bet.exceptions();
-		bet.testBooleanOperators();
-		bet.testCompOperators();
-		bet.testConditionalLazyEval();
-		bet.testNullEquality();
-		bet.testNullComparison();
-		bet.testExistsFunction();
-		bet.testArrayConstructor();
-		bet.testArraySeqConstructor();
-		bet.testAppendFunction();
-		bet.testCountFunction();
-		bet.testObjectConstructors();
-		bet.testSumFunction();
-		bet.testAverageFunction();
-		bet.testBasicSelection();
-		bet.testComplexSelection();
+		runJunitTests(new BasicExpressionsTests());
+        runJunitTests(new com.api.jsonata4java.test.expressions.PathExpressionTests());
 	}
 
-	protected void runPathExpressionTest(Collection<Object[]> data) throws Exception {
+	private void runJunitTests(final Object testCase) {
+        for (final Method method : testCase.getClass().getMethods()) {
+            if (method.getAnnotationsByType(org.junit.Test.class).length != 1) {
+                continue;
+            }
+            try {
+                method.invoke(testCase);
+            } catch (InvocationTargetException e) {
+                if (((InvocationTargetException) e).getTargetException() instanceof AssertionError) {
+                    throw (AssertionError) ((InvocationTargetException) e).getTargetException();
+                } else if (((InvocationTargetException) e).getTargetException() instanceof RuntimeException) {
+                    throw (RuntimeException) ((InvocationTargetException) e).getTargetException();
+                } else {
+                    throw new RuntimeException(e);
+                }
+            } catch (IllegalAccessException | IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    protected void runPathExpressionTest(Collection<Object[]> data) throws Exception {
 		for (Object[] test : data) {
 
 			JsonNode inputJson = test[1] == null ? null
