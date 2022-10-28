@@ -1,7 +1,7 @@
 # JSONata4Java
 This project provides an Open Source Java version of the JSONata project from https://jsonata.org
 
-JSONata was created by Andrew Coleman to provide many of the features that XPath and XQuery provide for XML, except these capabilities apply to JSON-structured data. The JavaScript implementation is described at the following websites%3a
+JSONata was created by Andrew Coleman to provide many of the features that XPath and XQuery provide for XML, except these capabilities apply to JSON-structured data. The JavaScript implementation is described at the following websites&colon;
 
 * [JSONata main site](http://jsonata.org/)
 * [Try JSONata -- experiment with commands](http://try.jsonata.org/)
@@ -9,7 +9,7 @@ JSONata was created by Andrew Coleman to provide many of the features that XPath
 * [JavaScript JSONata github repository](https://github.com/jsonata-js/jsonata)
 
 JSONata4Java is an attempt to port the jsonata.js 1.8.4 capabilities to Java 11. 
-The easiest way to use this library is to include it as a dependency in your Maven pom.xml using these line%3a
+The easiest way to use this library is to include it as a dependency in your Maven pom.xml using these line&colon;
 ```
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
@@ -18,7 +18,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 </dependency>
 ```
 
-You can also opt to clone this repository using the command line below and build the jars yourself%3a
+You can also opt to clone this repository using the command line below and build the jars yourself&colon;
 ```
 git clone https://github.com/IBM/JSONata4Java.git
 ```
@@ -33,14 +33,14 @@ You can download the Java JDK 11 from https://developer.ibm.com/languages/java/s
 
 To build the code, 
 you'll want to right click on the project and select Maven / Update Project to ensure the dependencies are available, then 
-you can right click on the pom.xml file and select **Run as... / Maven build...** then fill in clean install as the goals\%3a
-**clean install** as shown below%3a
+you can right click on the pom.xml file and select **Run as... / Maven build...** then fill in clean install as the goals&colon;
+**clean install** as shown below&colon;
 
 ![Launcher Image](./images/Launcher.png)
 
-Alternatively, you can run from the command line in the JSONata4Java directory%3a **mvn clean install -Dgpg.skip**
+Alternatively, you can run from the command line in the JSONata4Java directory&colon; **mvn clean install -Dgpg.skip**
 
-Once you have run the launcher, you can find the jar files in the /target directory. There are two%3a
+Once you have run the launcher, you can find the jar files in the /target directory. There are two&colon;
 * **JSONata4Java-2.2.0-jar-with-dependencies.jar** (thinks includes dependent jar files)
 * **JSONata4Java-2.2.0.jar** (only the JSONata4Java code)
 
@@ -52,7 +52,16 @@ against your own data.
 There is a tester.sh you can run in the project to enable you to test expressions 
 against the same JSON as is used at the https://try.jsonata.org site.
 
-**(New)** additionally to the command line based tester we provide also a JSONata Tester UI app based on Java Swing.
+### New Features ###
+Many thanks to **Martin Bluemel** for adding these new features&colon;  
+
+**Parent Operator (%)**&colon;  
+JSONata4Java now supports the parent (%) operator. This allows 
+references to parents in the path. See [jsonata docs for % Parent Operator](https://docs.jsonata.org/path-operators#-parent) 
+for details.
+
+**Tester UI**&colon;  
+In addition to the command line based tester we provide also a JSONata Tester UI app based on Java Swing.
 Start the app by running class `com.api.jsonata4java.testerui.TesterUI` from the IDE of your choice
 or use the start wrapper script testerui.sh (or testerui.cmd on Windows).
 
@@ -61,9 +70,47 @@ against JSONata4Java.
 
 ![JSONata Tester UI app Image](./images/JSONataTesterUI.png)
 
+
+**Regular Expressions**&colon;
+
+Since version 2.0.0 we support regular expression arguments of the form `/<regular expression pattern>/` for functions&colon;  
+- $contains()
+- $replace()
+- $split()
+- $match()
+
+There are only few differences to regular expressions in original JSONata due to the fact
+that in JSONata4Java we use different parser technology and we use the original Java regular expression implementation.
+
+- we do not support regular expressions patterns containing any white space character.  
+  Please use escaped forms&colon; **\s \t \n** instead. This will be compatible to original JSONata.
+  
+
+- in function $replace() the behavior of capturing group replacements differs slightly from original JSONata&colon;
+    - we support more than 9 capturing groups.
+    - like original JSONata we support escaping $ with $$ in the replacement text but
+      if you want to have a $ at the end of your replacement string you have to escape it explicitly in JSONata4Java&colon;  For 
+        example&colon;  
+      Original JSONata evaluates `$replace("abcdefghijklmno", /(ijk)/, "$x$")` to `"abcdefgh$x$lmno"`  
+      In JSONata4Java you should write `$replace("abcdefghijklmno", /(ijk)/, "$x$$")` to `"abcdefgh$x$lmno"`
+      in order to achieve the same - which is compatible to original JSONata anyway. 
+  
+**Please note&colon;** that in JSONata4Java <= 1.7.9 we already provided (non documented) regular expressions support for functions&colon;
+- $replace()
+- $split()
+- $match()
+  
+when using a pattern argument written in form `"<pattern>"` or `'<pattern>'` containing a regular expression.
+Since version 2.0.0 you have to convert such arguments into syntax `/<pattern>/`.  For 
+example&colon;  
+`$replace("foo bar", "fo.*ar", "Foo Bar")`  
+would have to be converted into  
+`$replace("foo bar", /fo.*ar/, "Foo Bar")` in order to provide the same result.  
+
+### Using JSONata4Java APIs ###
 The API's to embed JSONata execution in your code are simple. The code below is copied from the Test utility, and uses the 
 jackson core ObjectMapper to parse a JSON formatted String into a JsonNode object. The dependency for the 
-jackson core is below\%3a
+jackson core is below\&colon;
 
 ``` 
 <dependency>
@@ -95,7 +142,7 @@ public class Test {
       Expressions expr = null;
       ObjectMapper mapper = new ObjectMapper();
       JsonNode jsonObj = null;
-      String json = "{ \"a\"%3a1, \"b\"%3a2, \"c\"%3a[1,2,3,4,5] }";
+      String json = "{ \"a\":1, \"b\":2, \"c\":[1,2,3,4,5] }";
       String expression = "$sum(c)";
       try {
          jsonObj = mapper.readTree(json);
@@ -104,7 +151,7 @@ public class Test {
       }
 
       try {
-         System.out.println("Using JSON%3a\n" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj));
+         System.out.println("Using JSON:\n" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj));
          System.out.println("expression=" + expression);
          expr = Expressions.parse(expression);
       } catch (ParseException e) {
@@ -115,7 +162,7 @@ public class Test {
          e.printStackTrace();
       }
       try {
-         System.out.println("evaluate returns%3a");
+         System.out.println("evaluate returns:");
          JsonNode result = expr.evaluate(jsonObj);
          if (result == null) {
             System.out.println("** no match **");
@@ -138,76 +185,42 @@ We begin by parsing the expression to ensure there are no syntax errors.
 If the content parses correctly, you can then execute the parsed expression (expr) 
 against the jsonObj object. 
 
-When you run the Test program above, you will see%3a
+When you run the Test program above, you will see&colon;
 
 ```
-Using JSON%3a
+Using JSON&colon;
 {
-  "a" %3a 1,
-  "b" %3a 2,
-  "c" %3a [ 1, 2, 3, 4, 5 ]
+  "a" : 1,
+  "b" : 2,
+  "c" : [ 1, 2, 3, 4, 5 ]
 }
 expression=$sum(c)
-evaluate returns%3a
+evaluate returns&colon;
 15
 ```
 
-Running this in the https://try.jsonata.org we get%3a
+Running this in the https://try.jsonata.org we get&colon;
 
 ![TryImage](./images/TryJsonata.png)
 
 The various functions and syntax for the expression are documented at https://docs.jsonata.org/overview.html 
 
-* Short, 5 minute youtube video here%3a https://www.youtube.com/watch?v=ZBaK40rtIBM
-* Medium, 27 minute youtube video here%3a https://www.youtube.com/watch?v=TDWf6R8aqDo
-* Long, 1 hour presentation here%3a https://www.youtube.com/watch?v=ZRtlkIj0uDY
+* Short, 5 minute youtube video here&colon; https://www.youtube.com/watch?v=ZBaK40rtIBM
+* Medium, 27 minute youtube video here&colon; https://www.youtube.com/watch?v=TDWf6R8aqDo
+* Long, 1 hour presentation here&colon; https://www.youtube.com/watch?v=ZRtlkIj0uDY
 
 This initial release of JSONata4Java has attempted to cover the large majority of features described in the JSONata documentation.
 
-### Current Limitations%3a
-There are a few functions that have not been implemented%3a
+### Current Limitations&colon;
+There are a few functions that have not been implemented&colon;
 
-From%3a https://docs.jsonata.org/control-operators we did not implement%3a
+From&colon; https://docs.jsonata.org/control-operators we did not implement&colon;
 * ^(...) (Order-by)
 * ... ~> | ... | ...| (Transform)
 
-From%3a https://docs.jsonata.org/numeric-functions we did not implement%3a
+From&colon; https://docs.jsonata.org/numeric-functions we did not implement&colon;
 * $formatInteger()
 * $parseInteger()
   
 There are some jsonata.org 1.8.4 tests that we skip because we fail on them in the AgnosticTestSuite.java.
 
-
-### Regular Expressions%3a
-
-Since version 2.0.0 we support regular expression arguments of the form `/<regular expression pattern>/` for functions%3a  
-- $contains()
-- $replace()
-- $split()
-- $match()
-
-There are only few differences to regular expressions in original JSONata due to the fact
-that in JSONata4Java we use different parser technology and we use the original Java regular expression implementation.
-
-- we do not support regular expressions patterns containing any white space character.  
-  Please use escaped forms%3a **\s \t \n** instead. This will be compatible to original JSONata.
-  
-
-- in function $replace() the behavior of capturing group replacements differs slightly from original JSONata%3a
-    - we support more than 9 capturing groups.
-    - like original JSONata we support escaping $ with $$ in the replacement text but
-      if you want to have a $ at the end of your replacement string you have to escape it explicitly in JSONata4Java%3a  
-      Example%3a  
-      Original JSONata evaluates `$replace("abcdefghijklmno", /(ijk)/, "$x$")` to `"abcdefgh$x$lmno"`  
-      In JSONata4Java you should write `$replace("abcdefghijklmno", /(ijk)/, "$x$$")` to `"abcdefgh$x$lmno"`
-      in order to achieve the same - which is compatible to original JSONata anyway. 
-  
-**Please note%3a** that in JSONata4Java <= 1.7.9 we already provided (non documented) regular expressions support for functions%3a
-- $replace()
-- $split()
-- $match()
-  
-when using a pattern argument written in form `"<pattern>"` or `'<pattern>'` containing a regular expression.
-Since version 2.0.0 you have to convert such arguments into syntax `/<pattern>/`.
-Example%3a `$replace("foo bar", "fo.*ar", "Foo Bar")` would have to be converted into
-`$replace("foo bar", /fo.*ar/, "Foo Bar")` in order to provide the same result.
