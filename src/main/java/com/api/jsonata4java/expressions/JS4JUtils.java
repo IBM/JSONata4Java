@@ -57,8 +57,8 @@ public class JS4JUtils implements Serializable {
       String strHours = strTimeZone.substring(1, 3);
       String strMinutes = strTimeZone.substring(3, 5);
       try {
-         int iHours = new Integer(strHours).intValue();
-         int iMinutes = new Integer(strMinutes).intValue();
+         int iHours = Integer.valueOf(strHours).intValue();
+         int iMinutes = Integer.valueOf(strMinutes).intValue();
          iMillisecs = iMinutes * s_iMinuteMilliseconds;
          iMillisecs = iMillisecs + (iHours * s_iHourMilliseconds);
          if (strSign.startsWith("-") == true) {

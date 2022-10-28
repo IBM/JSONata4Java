@@ -22,7 +22,6 @@
 
 package com.api.jsonata4java.expressions;
 
-import java.io.Serializable;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,7 +37,7 @@ import java.util.TimeZone;
  * provides a formatted date suitable for sorting in the format
  * "yyyy/MM/ddTHH:mm:ss.SSS(Z)"
  */
-public class JS4JDate extends Date implements Cloneable, Serializable {
+public class JS4JDate extends Date {
 
    /**
     * Format for parsing the create date string: 2004/08/04-07:23:15.987(-0400)
@@ -348,7 +347,7 @@ public class JS4JDate extends Date implements Cloneable, Serializable {
             }
          } // end switch on month
          try {
-            int day = new Integer(parts[1].trim());
+            int day = Integer.parseInt(parts[1].trim());
             if (day < 10) {
                newDate += "0";
             }
@@ -419,7 +418,7 @@ public class JS4JDate extends Date implements Cloneable, Serializable {
             }
          } // end switch on month
          try {
-            int day = new Integer(parts[1].trim());
+            int day =  Integer.parseInt(parts[1].trim());
             if (day < 10) {
                newDate += "0";
             }
@@ -472,7 +471,7 @@ public class JS4JDate extends Date implements Cloneable, Serializable {
                if (iMSLen > 3) {
                   strMS = strMS.substring(0, 3) + "." + strMS.substring(3);
                }
-               int imsecs = Math.round(new Float(strMS));
+               int imsecs = Math.round(Float.parseFloat(strMS));
                strMS = JS4JUtils.padRight(imsecs, 3, '0');
                // rebuild the date string with the 3 digits
                String strTZ = strDate.substring(iTZOffset);
@@ -490,7 +489,7 @@ public class JS4JDate extends Date implements Cloneable, Serializable {
                // have ss.SSSS or more
                String strMS = strDate.substring(iMSOffset + 1);
                strMS = strMS.substring(0, 3) + "." + strMS.substring(3);
-               int imsecs = Math.round(new Float(strMS));
+               int imsecs = Math.round(Float.parseFloat(strMS));
                strMS = JS4JUtils.padRight(imsecs, 3, '0');
                // rebuild the date string with the 3 digits
                strDate = strDate.substring(0, iMSOffset) + strMS;
@@ -750,7 +749,7 @@ public class JS4JDate extends Date implements Cloneable, Serializable {
       if (iLength >= 5) {
          strTimeZone = strTimeZoneListEntry.substring(0, 5);
          try {
-            int iTime = new Integer(strTimeZone).intValue();
+            int iTime = Integer.valueOf(strTimeZone).intValue();
             if (iTime < -1300 || iTime > 1300) {
                strTimeZone = "+0000"; // invalid so use GMT
             }

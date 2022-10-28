@@ -71,7 +71,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * class. Retained because we might as well keep them (they execute in seconds).
  */
 @SuppressWarnings("deprecation")
-public class BasicExpressionsTest implements Serializable {
+public class BasicExpressionsTests implements Serializable {
 
 	private static final long serialVersionUID = -2403728781442037506L;
 

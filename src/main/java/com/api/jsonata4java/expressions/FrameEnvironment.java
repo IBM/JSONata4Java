@@ -25,22 +25,26 @@ package com.api.jsonata4java.expressions;
 import java.io.Serializable;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.functions.Function;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * Object to manage access to variable and function maps used in the
  * {@link ExpressionsVisitor} to manage the current block's environment.
  */
 public class FrameEnvironment implements Serializable {
-	private static final long serialVersionUID = 8451009715230117298L;
+   private static final long serialVersionUID = 8451009715230117298L;
 
-	private Map<String, DeclaredFunction> _declFunctionMap = new HashMap<String, DeclaredFunction>();
+   private Map<String, DeclaredFunction> _declFunctionMap = new HashMap<String, DeclaredFunction>();
    FrameEnvironment _enclosingFrame = null;
    private boolean _isAsync = false;
    private Map<String, Function> _jsonataFunctionMap = new HashMap<String, Function>();
@@ -58,6 +62,8 @@ public class FrameEnvironment implements Serializable {
    private Deque<JsonNode> _stack = new LinkedList<JsonNode>();
    private JS4JDate _timestamp = null;
    private Map<String, JsonNode> _variableMap = new HashMap<String, JsonNode>();
+   // private JsonNode _rootNode = null;
+   private Map<JsonNode, JsonNode> _parentNodeMap = null;
 
    /**
     * Constructor taking a null enclosing frame to form the root of the environment
@@ -132,11 +138,6 @@ public class FrameEnvironment implements Serializable {
    			return null;
    		}
    		JsonNode result = getContextStack().peek();
-//   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
-//   			if (result.size() == 1) {
-//   				result = ((ArrayNode)result).get(0);
-//   			}
-//   		}
    		return result;
    	}
    	
@@ -146,11 +147,6 @@ public class FrameEnvironment implements Serializable {
    			return null;
    		}
    		JsonNode result = getContextStack().peekLast();
-//   		if (result != null && result.isArray() && result instanceof SelectorArrayNode == false) {
-//   			if (result.size() == 1) {
-//   				result = ((ArrayNode)result).get(0);
-//   			}
-//   		}
    		return result;
    	}
    	
@@ -214,11 +210,14 @@ public class FrameEnvironment implements Serializable {
    }
    
    public JsonNode pushContext(JsonNode context) {
-   	while(_enclosingFrame != null) {
-   		return _enclosingFrame.pushContext(context);
-   	}
-   	_stack.push(context);
-   	return context;
+   	  while(_enclosingFrame != null) {
+         return _enclosingFrame.pushContext(context);
+   	  }
+   	  _stack.push(context);
+   	  // if (_rootNode == null) {
+      //   _rootNode = context;
+   	  //}
+   	  return context;
    }
    
    public void setAsync(boolean isAsync) {
@@ -262,5 +261,51 @@ public class FrameEnvironment implements Serializable {
    	}
    	return _stack.size();
    }
-   
+
+   public JsonNode getParentNode(final int depth) {
+      if (_parentNodeMap == null) {
+         initParentNodeMap();
+      }
+      if (_parentNodeMap == null) {
+         return null;
+      }
+	  JsonNode parentNode = getContextStack().peek();
+	  int i = 0;
+	  while (parentNode != null && i < depth) {
+		  parentNode = _parentNodeMap.get(parentNode);
+	      if (parentNode instanceof ArrayNode) {
+	    	  parentNode = _parentNodeMap.get(parentNode);
+	      }
+	      i++;
+	  }
+	  if (i >= depth && parentNode == null) {
+	      throw new RuntimeException("The object representing the 'parent' cannot be derived from this expression");
+	  }
+      return parentNode;
+   }
+
+   private void initParentNodeMap() {
+      if (getContextStack().peekLast() != null) {
+	      _parentNodeMap = new HashMap<>();
+          indexNodes(_parentNodeMap, getContextStack().peekLast());
+      }
+   }
+
+   private void indexNodes(Map<JsonNode, JsonNode> parentNodes, JsonNode parent) {
+      if (parent instanceof ObjectNode) {
+         final Iterator<Entry<String, JsonNode>> iter = parent.fields();
+         while (iter.hasNext()) {
+            JsonNode childNode = iter.next().getValue();
+            indexNodes(parentNodes, childNode);
+            parentNodes.put(childNode, parent);
+         }
+      } else if (parent instanceof ArrayNode) {
+         final Iterator<JsonNode> iter = ((ArrayNode) parent).elements();
+         while (iter.hasNext()) {
+	            JsonNode elementNode = iter.next();
+	            indexNodes(parentNodes, elementNode);
+	            parentNodes.put(elementNode, parent);
+         }
+      }
+   }
 }

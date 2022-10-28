@@ -122,7 +122,7 @@ public class TesterUIFontChooser {
 		nameList.setSelectedValue(settings.getFont().getFontName(), true);
 		nameSp.setMinimumSize(new Dimension(100, 100));
 		for (int i = 0; i < fontSizes.length; i++) {
-			sizeBoxModel.addElement(new Integer(fontSizes[i]));
+			sizeBoxModel.addElement(Integer.valueOf(fontSizes[i]));
 		}
 		styleBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {

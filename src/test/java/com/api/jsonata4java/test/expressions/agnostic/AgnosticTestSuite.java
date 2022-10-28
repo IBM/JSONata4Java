@@ -8,6 +8,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +40,7 @@ import com.api.jsonata4java.expressions.utils.JsonMergeUtils;
 import com.api.jsonata4java.test.expressions.AbsFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64DecodeFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64EncodeFunctionTests;
-import com.api.jsonata4java.test.expressions.BasicExpressionsTest;
+import com.api.jsonata4java.test.expressions.BasicExpressionsTests;
 import com.api.jsonata4java.test.expressions.BooleanFunctionTests;
 import com.api.jsonata4java.test.expressions.CeilFunctionTests;
 import com.api.jsonata4java.test.expressions.ContainsFunctionTests;
@@ -106,7 +108,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 			"closures", // issue #56
 			"matchers", // issue #57
 			"hof-zip-map", // issue #58
-			"parent-operator", // issue #60
+//			"parent-operator", // issue #60
 //			"function-distinct", // issue #63
 //			"lambdas", // issue #70
 			"higher-order-functions", // issue #70
@@ -158,6 +160,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 		SKIP_CASES("hof-reduce", "case010");
 		// issue #54 timeouts
 		SKIP_CASES("range-operator", "case021", "case024");
+		// issue #60 parent-operator
+		SKIP_CASES("parent-operator", "parent-27");
 		// issue 71 support regular expressions
 		SKIP_CASES("regex",
 				"case015",
@@ -408,45 +412,32 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 
 		runJsonataTest(JsonataDotOrgTests.data());
 
-		BasicExpressionsTest bet = new BasicExpressionsTest();
-		bet.testNewStuff();
-		bet.testNullNode();
-		bet.testCustomerScenario();
-		bet.testArrayToString();
-		bet.testStrings();
-		bet.testLiterals();
-		bet.testNegation();
-		bet.testArithmeticOperators();
-		bet.testStringOperators();
-		bet.eventAccessNoQuotes();
-		bet.eventAccessWithQuotes();
-		bet.appAccessNoQuotes();
-		bet.appAccessWithQuotes();
-		bet.testArrays();
-		bet.testVariableAssignment();
-		bet.testFunctionDecl();
-		bet.testObjectFunctions();
-		bet.testArrayFlattening();
-		bet.exceptions();
-		bet.testBooleanOperators();
-		bet.testCompOperators();
-		bet.testConditionalLazyEval();
-		bet.testNullEquality();
-		bet.testNullComparison();
-		bet.testExistsFunction();
-		bet.testArrayConstructor();
-		bet.testArraySeqConstructor();
-		bet.testAppendFunction();
-		bet.testCountFunction();
-		bet.testObjectConstructors();
-		bet.testSumFunction();
-		bet.testAverageFunction();
-		bet.testBasicSelection();
-		bet.testComplexSelection();
-
+		runJunitTests(new BasicExpressionsTests());
+        runJunitTests(new com.api.jsonata4java.test.expressions.PathExpressionParentPathTests());
 	}
 
-	protected void runPathExpressionTest(Collection<Object[]> data) throws Exception {
+	private void runJunitTests(final Object testCase) {
+        for (final Method method : testCase.getClass().getMethods()) {
+            if (method.getAnnotationsByType(org.junit.Test.class).length != 1) {
+                continue;
+            }
+            try {
+                method.invoke(testCase);
+            } catch (InvocationTargetException e) {
+                if (((InvocationTargetException) e).getTargetException() instanceof AssertionError) {
+                    throw (AssertionError) ((InvocationTargetException) e).getTargetException();
+                } else if (((InvocationTargetException) e).getTargetException() instanceof RuntimeException) {
+                    throw (RuntimeException) ((InvocationTargetException) e).getTargetException();
+                } else {
+                    throw new RuntimeException(e);
+                }
+            } catch (IllegalAccessException | IllegalArgumentException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    protected void runPathExpressionTest(Collection<Object[]> data) throws Exception {
 		for (Object[] test : data) {
 
 			JsonNode inputJson = test[1] == null ? null
