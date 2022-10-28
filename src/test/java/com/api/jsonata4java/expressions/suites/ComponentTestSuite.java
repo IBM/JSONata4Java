@@ -31,7 +31,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import com.api.jsonata4java.test.expressions.AbsFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64DecodeFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64EncodeFunctionTests;
-import com.api.jsonata4java.test.expressions.BasicExpressionsTest;
+import com.api.jsonata4java.test.expressions.BasicExpressionsTests;
 import com.api.jsonata4java.test.expressions.BooleanFunctionTests;
 import com.api.jsonata4java.test.expressions.CeilFunctionTests;
 import com.api.jsonata4java.test.expressions.ContainsFunctionTests;
@@ -84,7 +84,7 @@ import com.api.jsonata4java.text.expressions.utils.JsonMergeUtilsTest;
 	AbsFunctionTests.class, //
 	Base64DecodeFunctionTests.class, //
 	Base64EncodeFunctionTests.class, //
-	BasicExpressionsTest.class, //
+	BasicExpressionsTests.class, //
 	BooleanFunctionTests.class, //
 	CeilFunctionTests.class, //
 	ContainsFunctionTests.class, //

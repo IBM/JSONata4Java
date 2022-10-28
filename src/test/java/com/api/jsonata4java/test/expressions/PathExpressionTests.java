@@ -32,7 +32,7 @@ import org.junit.Test;
  * 
  * @author Martin Bluemel
  */
-public class PathExpressionTest {
+public class PathExpressionTests {
 
 	@Test
 	public void testPathWithParent1() throws Exception {

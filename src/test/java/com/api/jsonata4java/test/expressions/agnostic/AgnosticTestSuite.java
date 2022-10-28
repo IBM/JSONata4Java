@@ -38,7 +38,7 @@ import com.api.jsonata4java.expressions.utils.JsonMergeUtils;
 import com.api.jsonata4java.test.expressions.AbsFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64DecodeFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64EncodeFunctionTests;
-import com.api.jsonata4java.test.expressions.BasicExpressionsTest;
+import com.api.jsonata4java.test.expressions.BasicExpressionsTests;
 import com.api.jsonata4java.test.expressions.BooleanFunctionTests;
 import com.api.jsonata4java.test.expressions.CeilFunctionTests;
 import com.api.jsonata4java.test.expressions.ContainsFunctionTests;
@@ -410,7 +410,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 
 		runJsonataTest(JsonataDotOrgTests.data());
 
-		BasicExpressionsTest bet = new BasicExpressionsTest();
+		BasicExpressionsTests bet = new BasicExpressionsTests();
 		bet.testNewStuff();
 		bet.testNullNode();
 		bet.testCustomerScenario();
@@ -445,7 +445,6 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 		bet.testAverageFunction();
 		bet.testBasicSelection();
 		bet.testComplexSelection();
-
 	}
 
 	protected void runPathExpressionTest(Collection<Object[]> data) throws Exception {
