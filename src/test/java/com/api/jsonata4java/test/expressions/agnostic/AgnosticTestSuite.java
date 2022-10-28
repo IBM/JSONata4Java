@@ -413,7 +413,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 		runJsonataTest(JsonataDotOrgTests.data());
 
 		runJunitTests(new BasicExpressionsTests());
-        runJunitTests(new com.api.jsonata4java.test.expressions.PathExpressionTests());
+        runJunitTests(new com.api.jsonata4java.test.expressions.PathExpressionParentPathTests());
 	}
 
 	private void runJunitTests(final Object testCase) {

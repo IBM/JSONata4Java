@@ -32,7 +32,29 @@ import org.junit.Test;
  * 
  * @author Martin Bluemel
  */
-public class PathExpressionTests {
+public class PathExpressionParentPathTests {
+
+//    @Test
+//    public void testExample() throws Exception {
+//        test("<JSONata expression>",
+//                "<output JSON>",
+//                null, "<input JSON>");
+//    }
+
+    @Test
+    public void testParentPathSolitary() throws Exception {
+        test("root.%",
+                "{\n"
+                + "  \"root\": {\n"
+                + "    \"a\": \"xxx\"\n"
+                + "  }\n"
+                + "}",
+                null, "{\n"
+                        + "  \"root\": {\n"
+                        + "    \"a\": \"xxx\"\n"
+                        + "  }\n"
+                        + "}");
+    }
 
 	@Test
 	public void testPathWithParent1() throws Exception {

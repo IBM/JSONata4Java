@@ -2536,7 +2536,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 	@Override
 	public JsonNode visitParent_path(Parent_pathContext ctx) {
 		System.out.println("@@@ !!! @@@ visitParent_path: Parent_pathContext = \"" + ctx.toString() + "\"");
-		final String METHOD = "visitRoot_path";
+		final String METHOD = "visitParent_path";
 		if (LOG.isLoggable(Level.FINEST)) {
 			LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
 		}
@@ -2555,6 +2555,30 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 		System.out.println("@@@ visitParent_path: <- result = \"" + (result == null ? "null" : resultcontent) + "\"");
 		// @@@ trace
 		return result;
+	}
+
+	@Override
+	public JsonNode visitParent_path_solitary(MappingExpressionParser.Parent_path_solitaryContext ctx) {
+        System.out.println("@@@ !!! @@@ visitParent_path_solitary: Parent_pathContext = \"" + ctx.toString() + "\"");
+        final String METHOD = "visitParent_path_solitary";
+        if (LOG.isLoggable(Level.FINEST)) {
+            LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
+        }
+
+        final JsonNode result = _environment.getParentNode(1);
+
+        lastVisited = METHOD;
+        if (LOG.isLoggable(Level.FINEST)) {
+            LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
+        }
+        // @@@ trace
+        String resultcontent = result == null ? "null" : result.toString();
+        if (resultcontent != null && resultcontent.length() > 300) {
+            resultcontent = resultcontent.substring(0, 300) + "...";
+        }
+        System.out.println("@@@ visitParent_path_solitary: <- result = \"" + (result == null ? "null" : resultcontent) + "\"");
+        // @@@ trace
+        return result;
 	}
 
 	private JsonNode determineParentPath(final ExprContext ctx) {

@@ -49,6 +49,7 @@ expr:
  | OBJ_OPEN fieldList? OBJ_CLOSE					      # object_constructor
  | expr '.' expr                                          # path
  | (('%' '.')+ expr)                                      # parent_path
+ | '%'                                                    # parent_path_solitary
  | expr ARR_OPEN ARR_CLOSE                                # to_array
  | expr ARR_OPEN expr ARR_CLOSE                           # array
  | expr OBJ_OPEN fieldList? OBJ_CLOSE                     # object
