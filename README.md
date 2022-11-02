@@ -188,7 +188,7 @@ against the jsonObj object.
 When you run the Test program above, you will see&colon;
 
 ```
-Using JSON&colon;
+Using JSON:
 {
   "a" : 1,
   "b" : 2,
