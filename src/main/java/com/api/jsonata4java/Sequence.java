@@ -24,64 +24,64 @@ package com.api.jsonata4java;
 
 import java.io.Serializable;
 import java.util.List;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class Sequence implements Serializable {
-	private static final long serialVersionUID = 9212862402936258721L;
-	
-	ArrayNode _array = JsonNodeFactory.instance.arrayNode();
-	boolean _sequence = true;
-	boolean _keepSingleton = false;
-	int _length = 0;
 
-	public Sequence() {
-	}
+    private static final long serialVersionUID = 9212862402936258721L;
 
-	protected Sequence(List<JsonNode> arg) {
-		this();
-		if (arg != null && arg.size() == 1) {
-			push(arg.get(0));
-		}
-	}
+    ArrayNode _array = JsonNodeFactory.instance.arrayNode();
+    boolean _sequence = true;
+    boolean _keepSingleton = false;
+    int _length = 0;
 
-	public int push(JsonNode obj) {
-		_array.add(obj);
-		_length = _array.size();
-		return _length;
-	}
+    public Sequence() {
+    }
 
-	public void keepSingleton(boolean keepSingleton) {
-		_keepSingleton = keepSingleton;
-	}
+    protected Sequence(List<JsonNode> arg) {
+        this();
+        if (arg != null && arg.size() == 1) {
+            push(arg.get(0));
+        }
+    }
 
-	public void sequence(boolean sequence) {
-		_sequence = sequence;
-	}
+    public int push(JsonNode obj) {
+        _array.add(obj);
+        _length = _array.size();
+        return _length;
+    }
 
-	public void setSize(int size) {
-		_array = JsonNodeFactory.instance.arrayNode(size);
-		_length = 0;
-	}
+    public void keepSingleton(boolean keepSingleton) {
+        _keepSingleton = keepSingleton;
+    }
 
-	public void put(int index, JsonNode obj) {
-		_array.set(index, obj);
-	}
+    public void sequence(boolean sequence) {
+        _sequence = sequence;
+    }
 
-	public static void main(String[] args) {
-	}
+    public void setSize(int size) {
+        _array = JsonNodeFactory.instance.arrayNode(size);
+        _length = 0;
+    }
 
-	public String toString() {
-		ObjectNode obj = JsonNodeFactory.instance.objectNode();
-		ArrayNode array = JsonNodeFactory.instance.arrayNode();
-		array.addAll(_array);
-		obj.set("array", array);
-		obj.put("sequence", _sequence);
-		obj.put("length", _length);
-		obj.put("keepSingleton", _keepSingleton);
-		return obj.toString();
-	}
+    public void put(int index, JsonNode obj) {
+        _array.set(index, obj);
+    }
+
+    public static void main(String[] args) {
+    }
+
+    public String toString() {
+        ObjectNode obj = JsonNodeFactory.instance.objectNode();
+        ArrayNode array = JsonNodeFactory.instance.arrayNode();
+        array.addAll(_array);
+        obj.set("array", array);
+        obj.put("sequence", _sequence);
+        obj.put("length", _length);
+        obj.put("keepSingleton", _keepSingleton);
+        return obj.toString();
+    }
 }

@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.utils.Constants;
 
 /**
@@ -66,115 +63,212 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class MatchFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = -3302876811482172935L;
+    private static final long serialVersionUID = -3302876811482172935L;
 
-	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_MATCH);
-	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_MATCH);
-	private static final String ERR_MSG_ARG3_BAD_TYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
-			Constants.FUNCTION_MATCH);
+    private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_MATCH);
+    private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_MATCH);
+    private static final String ERR_MSG_ARG3_BAD_TYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
+        Constants.FUNCTION_MATCH);
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$match()", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match({}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(' ', {})", null, ERR_MSG_ARG2_BAD_TYPE }, //
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$match()", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match({})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match({}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(' ', {})", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
 
-				{ "$match([])", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match([], ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(' ', [])", null, ERR_MSG_ARG2_BAD_TYPE }, //
+            {
+                "$match([])", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match([], ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(' ', [])", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
 
-				{ "$match({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match({\"hello\": 1}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(' ', {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE }, //
+            {
+                "$match({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match({\"hello\": 1}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(' ', {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
 
-				{ "$match(true)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(true, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(' ', true)", null, ERR_MSG_ARG2_BAD_TYPE }, //
+            {
+                "$match(true)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(true, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(' ', true)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
 
-				{ "$match(null)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE }, //
+            {
+                "$match(null)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
 
-				{ "$match(5)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(' ', 5)", null, ERR_MSG_ARG2_BAD_TYPE }, //
+            {
+                "$match(5)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(' ', 5)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
 
-				{ "$match(-5)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(-5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(' ', -5)", null, ERR_MSG_ARG2_BAD_TYPE }, //
+            {
+                "$match(-5)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(-5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(' ', -5)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
 
-				{ "$match(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(10/3.0, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(' ', 10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE }, //
+            {
+                "$match(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(10/3.0, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(' ', 10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
 
-				{ "$match(a.b.c)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(a.b.c, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$match(' ', a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE }, //
+            {
+                "$match(a.b.c)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(a.b.c, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$match(' ', a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
 
-				{ "$match('foo bar', 'a')", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null }, //
-				{ "$match('foo bar', /a/)", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null }, //
-				{ "$match('foo bar', /(a)/)", "{\"match\":\"a\",\"index\":5,\"groups\":[\"a\"]}", null }, //
-				{ "$match('foo bar', 'o', 0)", null, null }, //
-				{ "$match('foo bar', 'o', 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[]}", null }, //
-				{ "$match('foo bar', /o/, 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[]}", null }, //
-				{ "$match('foo bar', /(o)/, 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[\"o\"]}", null }, //
-				{ "$match('foo bar', 'o', {})", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$match('foo bar', 'o', [])", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$match('foo bar', 'o', true)", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$match('foo bar', 'o', null)", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$match('foo bar', 'o', -1)", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$match('ababbabbbcc',/a(b+)/)",
-						"[{\"match\":\"ab\",\"index\":0,\"groups\":[\"b\"]},"
-						+ "{\"match\":\"abb\",\"index\":2,\"groups\":[\"bb\"]},"
-						+ "{\"match\":\"abbb\",\"index\":5,\"groups\":[\"bbb\"]}]",
-						null },
-				{ "$match('ababbabbcc','a(b+)')", "[]", null },
-				{ "$match('aba(b+)babbcc','a(b+)')", "{\"match\":\"a(b+)\",\"index\":2,\"groups\":[]}", null },
-				{ "$match('abbbaabbaaabcc', /(a+)(b+)/)",
-						"[{\"match\":\"abbb\",\"index\":0,\"groups\":[\"a\",\"bbb\"]},"
-						+ "{\"match\":\"aabb\",\"index\":4,\"groups\":[\"aa\",\"bb\"]},"
-						+ "{\"match\":\"aaab\",\"index\":8,\"groups\":[\"aaa\",\"b\"]}]",
-						null },
-				{ "$match('abBbAabbaAaBcc', /(a+)(b+)/)",
-						"[{\"match\":\"ab\",\"index\":0,\"groups\":[\"a\",\"b\"]},"
-						+ "{\"match\":\"abb\",\"index\":5,\"groups\":[\"a\",\"bb\"]}]",
-						null },
-				{ "$match('abBbAabbaAaBcc', /(a+)(b+)/i)",
-						"[{\"match\":\"abBb\",\"index\":0,\"groups\":[\"a\",\"bBb\"]},"
-						+ "{\"match\":\"Aabb\",\"index\":4,\"groups\":[\"Aa\",\"bb\"]},"
-						+ "{\"match\":\"aAaB\",\"index\":8,\"groups\":[\"aAa\",\"B\"]}]",
-						null },
-				// $match() seems to work out equally with and without /m
-				// This seems to hold for original JSONata as well as for Java regular expressions
-				{ "$match('ex12am345\\n6ple89', /[0-9]+/)",
-							"[{\"match\":\"12\",\"index\":2,\"groups\":[]},"
-							+ "{\"match\":\"345\",\"index\":6,\"groups\":[]},"
-							+ "{\"match\":\"6\",\"index\":10,\"groups\":[]},"
-							+ "{\"match\":\"89\",\"index\":14,\"groups\":[]}]",
-							null },
-				{ "$match('ex12am345\\n6ple89', /[0-9]+/m)",
-								"[{\"match\":\"12\",\"index\":2,\"groups\":[]},"
-								+ "{\"match\":\"345\",\"index\":6,\"groups\":[]},"
-								+ "{\"match\":\"6\",\"index\":10,\"groups\":[]},"
-								+ "{\"match\":\"89\",\"index\":14,\"groups\":[]}]",
-								null },
-		});
-	}
+            {
+                "$match('foo bar', 'a')", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null
+            }, //
+            {
+                "$match('foo bar', /a/)", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null
+            }, //
+            {
+                "$match('foo bar', /(a)/)", "{\"match\":\"a\",\"index\":5,\"groups\":[\"a\"]}", null
+            }, //
+            {
+                "$match('foo bar', 'o', 0)", null, null
+            }, //
+            {
+                "$match('foo bar', 'o', 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[]}", null
+            }, //
+            {
+                "$match('foo bar', /o/, 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[]}", null
+            }, //
+            {
+                "$match('foo bar', /(o)/, 1)", "{\"match\":\"o\",\"index\":1,\"groups\":[\"o\"]}", null
+            }, //
+            {
+                "$match('foo bar', 'o', {})", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$match('foo bar', 'o', [])", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$match('foo bar', 'o', true)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$match('foo bar', 'o', null)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$match('foo bar', 'o', -1)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$match('ababbabbbcc',/a(b+)/)",
+                "[{\"match\":\"ab\",\"index\":0,\"groups\":[\"b\"]},"
+                    + "{\"match\":\"abb\",\"index\":2,\"groups\":[\"bb\"]},"
+                    + "{\"match\":\"abbb\",\"index\":5,\"groups\":[\"bbb\"]}]",
+                null
+            },
+            {
+                "$match('ababbabbcc','a(b+)')", "[]", null
+            },
+            {
+                "$match('aba(b+)babbcc','a(b+)')", "{\"match\":\"a(b+)\",\"index\":2,\"groups\":[]}", null
+            },
+            {
+                "$match('abbbaabbaaabcc', /(a+)(b+)/)",
+                "[{\"match\":\"abbb\",\"index\":0,\"groups\":[\"a\",\"bbb\"]},"
+                    + "{\"match\":\"aabb\",\"index\":4,\"groups\":[\"aa\",\"bb\"]},"
+                    + "{\"match\":\"aaab\",\"index\":8,\"groups\":[\"aaa\",\"b\"]}]",
+                null
+            },
+            {
+                "$match('abBbAabbaAaBcc', /(a+)(b+)/)",
+                "[{\"match\":\"ab\",\"index\":0,\"groups\":[\"a\",\"b\"]},"
+                    + "{\"match\":\"abb\",\"index\":5,\"groups\":[\"a\",\"bb\"]}]",
+                null
+            },
+            {
+                "$match('abBbAabbaAaBcc', /(a+)(b+)/i)",
+                "[{\"match\":\"abBb\",\"index\":0,\"groups\":[\"a\",\"bBb\"]},"
+                    + "{\"match\":\"Aabb\",\"index\":4,\"groups\":[\"Aa\",\"bb\"]},"
+                    + "{\"match\":\"aAaB\",\"index\":8,\"groups\":[\"aAa\",\"B\"]}]",
+                null
+            },
+            // $match() seems to work out equally with and without /m
+            // This seems to hold for original JSONata as well as for Java regular expressions
+            {
+                "$match('ex12am345\\n6ple89', /[0-9]+/)",
+                "[{\"match\":\"12\",\"index\":2,\"groups\":[]},"
+                    + "{\"match\":\"345\",\"index\":6,\"groups\":[]},"
+                    + "{\"match\":\"6\",\"index\":10,\"groups\":[]},"
+                    + "{\"match\":\"89\",\"index\":14,\"groups\":[]}]",
+                null
+            },
+            {
+                "$match('ex12am345\\n6ple89', /[0-9]+/m)",
+                "[{\"match\":\"12\",\"index\":2,\"groups\":[]},"
+                    + "{\"match\":\"345\",\"index\":6,\"groups\":[]},"
+                    + "{\"match\":\"6\",\"index\":10,\"groups\":[]},"
+                    + "{\"match\":\"89\",\"index\":14,\"groups\":[]}]",
+                null
+            },
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 }

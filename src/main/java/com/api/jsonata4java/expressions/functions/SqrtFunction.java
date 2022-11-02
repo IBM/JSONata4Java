@@ -51,84 +51,85 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class SqrtFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -6310204343833186502L;
+    private static final long serialVersionUID = -6310204343833186502L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SQRT);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SQRT);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SQRT);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SQRT);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SQRT);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SQRT);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argNumber = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argNumber != null && argNumber.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argNumber = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argNumber = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argNumber != null && argNumber.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argNumber == null) {
-				return null;
-			}
-			// Check the type of the argument
-			if (argNumber.isNumber()) {
-				// Make sure that the number is a valid positive number
-				Double number = argNumber.doubleValue();
-				if (number >= 0 && number.isNaN() == false && number.isInfinite() == false // Should not be possible
-														// because it should be
-														// caught in
-														// ExpressionsVisitor::visitNumber
-				) {
-					// Calculate the result and create the node to return
-					Double sqrt = Math.sqrt(argNumber.doubleValue());
-					if (sqrt - sqrt.longValue() ==  0.0) {
-					   result = new LongNode(sqrt.longValue());
-					} else {
-					   result = new DoubleNode(sqrt);
-					}
-				} else {
-					/*
-					 * The sqrt function cannot be applied to the argument. Throw a suitable
-					 * exception.
-					 */
-					final String msg = String.format(Constants.ERR_MSG_FUNC_CANNOT_BE_APPLIED_NEG_NUM,
-							Constants.FUNCTION_SQRT, argNumber.doubleValue());
-					throw new EvaluateRuntimeException(msg);
-				}
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-		}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argNumber == null) {
+                return null;
+            }
+            // Check the type of the argument
+            if (argNumber.isNumber()) {
+                // Make sure that the number is a valid positive number
+                Double number = argNumber.doubleValue();
+                if (number >= 0 && number.isNaN() == false && number.isInfinite() == false // Should not be possible
+                // because it should be
+                // caught in
+                // ExpressionsVisitor::visitNumber
+                ) {
+                    // Calculate the result and create the node to return
+                    Double sqrt = Math.sqrt(argNumber.doubleValue());
+                    if (sqrt - sqrt.longValue() == 0.0) {
+                        result = new LongNode(sqrt.longValue());
+                    } else {
+                        result = new DoubleNode(sqrt);
+                    }
+                } else {
+                    /*
+                     * The sqrt function cannot be applied to the argument. Throw a suitable
+                     * exception.
+                     */
+                    final String msg = String.format(Constants.ERR_MSG_FUNC_CANNOT_BE_APPLIED_NEG_NUM,
+                        Constants.FUNCTION_SQRT, argNumber.doubleValue());
+                    throw new EvaluateRuntimeException(msg);
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a number (or context variable), returns a number
-		return "<n-:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a number (or context variable), returns a number
+        return "<n-:n>";
+    }
 }

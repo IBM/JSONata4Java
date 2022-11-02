@@ -24,7 +24,6 @@ package com.api.jsonata4java.expressions.functions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -62,91 +61,92 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  */
 public class RoundFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 5580194763804600855L;
+    private static final long serialVersionUID = 5580194763804600855L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_ROUND);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_ROUND);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_ROUND);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_ROUND);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_ROUND);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_ROUND);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_ROUND);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_ROUND);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argNumber = JsonNodeFactory.instance.nullNode();
-		JsonNode argPrecision = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argNumber != null && argNumber.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
-		// Make sure that we have the right number of arguments
-		if (argCount == 1 || argCount == 2) {
-			if (!useContext) {
-				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
+        // Retrieve the number of arguments
+        JsonNode argNumber = JsonNodeFactory.instance.nullNode();
+        JsonNode argPrecision = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argNumber = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argNumber != null && argNumber.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
+        // Make sure that we have the right number of arguments
+        if (argCount == 1 || argCount == 2) {
+            if (!useContext) {
+                argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
 
-			// Make sure that we have the number argument
-			if (argNumber == null) {
-				return null;
-			}
-			if (argNumber.isNumber()) {
-				/*
-				 * We do not need to check whether the number specified is within the acceptable
-				 * range of Double.MAX_VALUE and -Double.MAX_VALUE. This will already have been
-				 * done in the ExpressionsVisitor::visitNumber method.
-				 * 
-				 * For now, we simply need to convert the number to a BigDecimal. We use
-				 * BigDecimal because it allows us to specify the required rounding strategy.
-				 */
-				BigDecimal bigDec = argNumber.decimalValue();
+            // Make sure that we have the number argument
+            if (argNumber == null) {
+                return null;
+            }
+            if (argNumber.isNumber()) {
+                /*
+                 * We do not need to check whether the number specified is within the acceptable
+                 * range of Double.MAX_VALUE and -Double.MAX_VALUE. This will already have been
+                 * done in the ExpressionsVisitor::visitNumber method.
+                 * 
+                 * For now, we simply need to convert the number to a BigDecimal. We use
+                 * BigDecimal because it allows us to specify the required rounding strategy.
+                 */
+                BigDecimal bigDec = argNumber.decimalValue();
 
-				// If argPrecision is null... default to zero
-				int precision = 0;
-				if (argCount == 2) {
-					argPrecision = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-							useContext ? 0 : 1);
-					if (argPrecision != null) {
-						// Make sure that precision is an integer
-						if (argPrecision.isIntegralNumber()) {
-							precision = argPrecision.intValue();
-						} else {
-							throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-						}
-					}
-				}
+                // If argPrecision is null... default to zero
+                int precision = 0;
+                if (argCount == 2) {
+                    argPrecision = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                        useContext ? 0 : 1);
+                    if (argPrecision != null) {
+                        // Make sure that precision is an integer
+                        if (argPrecision.isIntegralNumber()) {
+                            precision = argPrecision.intValue();
+                        } else {
+                            throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                        }
+                    }
+                }
 
-				// Now round the number and create the node to return
-				BigDecimal round = bigDec.setScale(precision, RoundingMode.HALF_EVEN);
-				result = NumberUtils.convertNumberToValueNode(round.toPlainString());
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
-		}
+                // Now round the number and create the node to return
+                BigDecimal round = bigDec.setScale(precision, RoundingMode.HALF_EVEN);
+                result = NumberUtils.convertNumberToValueNode(round.toPlainString());
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a number (or context variable), an optional number, returns a number
-		return "<n-n?:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a number (or context variable), an optional number, returns a number
+        return "<n-n?:n>";
+    }
 }

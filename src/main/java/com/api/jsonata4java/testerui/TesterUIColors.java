@@ -36,57 +36,57 @@ import java.awt.Color;
  * @author Martin Bluemel
  */
 public enum TesterUIColors {
-	// special semantics: custom settings
-	CUSTOM("- (custom settings)", 0x000000, 0x000000, 0x000000, 0x000000),
-	EXERCISER("exerciser", 0xFFFFFB, 0xFFFFFB, 0xEEEEEE, 0xFFEEEE),
-	PASTEL("pastel", 0xEEFFFF, 0xFFFFEE, 0xEEFFEE, 0xFFEEEE);
 
-	private final String uiName;
-	private final Color colorInput;
-	private final Color colorJsonata;
-	private final Color colorOutput;
-	private final Color colorError;
+        // special semantics: custom settings
+        CUSTOM("- (custom settings)", 0x000000, 0x000000, 0x000000, 0x000000), EXERCISER("exerciser", 0xFFFFFB, 0xFFFFFB, 0xEEEEEE, 0xFFEEEE), PASTEL("pastel", 0xEEFFFF, 0xFFFFEE,
+            0xEEFFEE, 0xFFEEEE);
 
-	private TesterUIColors(final String uiName, int colorInput, int colorJsonata, int colorOutput, int colorError) {
-		this.uiName = uiName;
-		this.colorInput = new Color(colorInput);
-		this.colorJsonata = new Color(colorJsonata);
-		this.colorOutput = new Color(colorOutput);
-		this.colorError = new Color(colorError);
-	}
+    private final String uiName;
+    private final Color colorInput;
+    private final Color colorJsonata;
+    private final Color colorOutput;
+    private final Color colorError;
 
-	public static TesterUIColors fromColors(Color colorInput, Color colorJsonata, Color colorOutput, Color colorError) {
-		for (final TesterUIColors color : TesterUIColors.values()) {
-			if (color == TesterUIColors.CUSTOM) {
-				continue;
-			}
-			if (colorInput.equals(color.getColorInput())
-					&& colorJsonata.equals(color.getColorJsonata())
-					&& colorOutput.equals(color.getColorOutput())
-					&& colorError.equals(color.getColorError())) {
-				return color;
-			}
-		}
-		return TesterUIColors.CUSTOM;
-	}
+    private TesterUIColors(final String uiName, int colorInput, int colorJsonata, int colorOutput, int colorError) {
+        this.uiName = uiName;
+        this.colorInput = new Color(colorInput);
+        this.colorJsonata = new Color(colorJsonata);
+        this.colorOutput = new Color(colorOutput);
+        this.colorError = new Color(colorError);
+    }
 
-	public String toString() {
-		return uiName;
-	}
+    public static TesterUIColors fromColors(Color colorInput, Color colorJsonata, Color colorOutput, Color colorError) {
+        for (final TesterUIColors color : TesterUIColors.values()) {
+            if (color == TesterUIColors.CUSTOM) {
+                continue;
+            }
+            if (colorInput.equals(color.getColorInput())
+                && colorJsonata.equals(color.getColorJsonata())
+                && colorOutput.equals(color.getColorOutput())
+                && colorError.equals(color.getColorError())) {
+                return color;
+            }
+        }
+        return TesterUIColors.CUSTOM;
+    }
 
-	public Color getColorInput() {
-		return colorInput;
-	}
+    public String toString() {
+        return uiName;
+    }
 
-	public Color getColorJsonata() {
-		return colorJsonata;
-	}
+    public Color getColorInput() {
+        return colorInput;
+    }
 
-	public Color getColorOutput() {
-		return colorOutput;
-	}
+    public Color getColorJsonata() {
+        return colorJsonata;
+    }
 
-	public Color getColorError() {
-		return colorError;
-	}
+    public Color getColorOutput() {
+        return colorOutput;
+    }
+
+    public Color getColorError() {
+        return colorError;
+    }
 }

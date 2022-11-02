@@ -36,14 +36,16 @@ import java.util.Vector;
  */
 public class TesterUIProperties extends Properties {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public TesterUIProperties(Properties unsortedProperties) {
+    public TesterUIProperties(Properties unsortedProperties) {
         putAll(unsortedProperties);
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({
+        "unchecked", "rawtypes"
+    })
     public synchronized Enumeration keys() {
         Enumeration<Object> keysEnum = super.keys();
         Vector<String> keyList = new Vector<String>();

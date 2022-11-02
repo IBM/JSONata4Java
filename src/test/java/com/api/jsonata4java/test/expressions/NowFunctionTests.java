@@ -23,13 +23,11 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -56,27 +54,29 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class NowFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = -8084233629920007085L;
+    private static final long serialVersionUID = -8084233629920007085L;
 
-	@Parameter(0)
-	public String expression;
-	
-	@Parameter(1)
-	public String expectedResultJsonString;
-	
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
-	
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] {
-            {"$now(\"[Y0000]\")", new SimpleDateFormat("\"yyyy\"").format(Calendar.getInstance().getTime()), null}
-            // {"$now()",    null, null}
-		});
-	}
-	
+    @Parameter(0)
+    public String expression;
+
+    @Parameter(1)
+    public String expectedResultJsonString;
+
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
+
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$now(\"[Y0000]\")", new SimpleDateFormat("\"yyyy\"").format(Calendar.getInstance().getTime()), null
+            }
+                        // {"$now()",    null, null}
+        });
+    }
+
     @Test
     public void runTest() throws Exception {
-    	test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
     }
 }

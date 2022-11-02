@@ -50,71 +50,72 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  */
 public class BooleanFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 5232965758998683140L;
+    private static final long serialVersionUID = 5232965758998683140L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_BOOLEAN);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_BOOLEAN);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_BOOLEAN);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_BOOLEAN);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode arg = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			arg = FunctionUtils.getContextVariable(expressionVisitor);
-			if (arg != null && (arg.isNull() == false || argCount == 0)) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
-		if (argCount == 0 && arg == null) {
-			return null;
-		}
+        // Retrieve the number of arguments
+        JsonNode arg = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            arg = FunctionUtils.getContextVariable(expressionVisitor);
+            if (arg != null && (arg.isNull() == false || argCount == 0)) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
+        if (argCount == 0 && arg == null) {
+            return null;
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (arg != null) {
-				result = BooleanUtils.convertJsonNodeToBoolean(arg) ? BooleanNode.TRUE : BooleanNode.FALSE;
-			} else {
-				// special test to see if there is a function that exists with this name
-				ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
-				if (exprCtx instanceof Function_declContext) {
-					result = BooleanNode.FALSE;
-				} else if (exprCtx != null) {
-					String functionName = exprCtx.getText();
-					if (expressionVisitor.getDeclaredFunction(functionName) != null) {
-						result = BooleanNode.FALSE;
-					} else if (expressionVisitor.getJsonataFunction(functionName) != null) {
-						result = BooleanNode.FALSE;
-					}
-				}
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-		}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (arg != null) {
+                result = BooleanUtils.convertJsonNodeToBoolean(arg) ? BooleanNode.TRUE : BooleanNode.FALSE;
+            } else {
+                // special test to see if there is a function that exists with this name
+                ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
+                if (exprCtx instanceof Function_declContext) {
+                    result = BooleanNode.FALSE;
+                } else if (exprCtx != null) {
+                    String functionName = exprCtx.getText();
+                    if (expressionVisitor.getDeclaredFunction(functionName) != null) {
+                        result = BooleanNode.FALSE;
+                    } else if (expressionVisitor.getJsonataFunction(functionName) != null) {
+                        result = BooleanNode.FALSE;
+                    }
+                }
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts anything (or context variable), returns a boolean
-		return "<x-:b>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts anything (or context variable), returns a boolean
+        return "<x-:b>";
+    }
 }

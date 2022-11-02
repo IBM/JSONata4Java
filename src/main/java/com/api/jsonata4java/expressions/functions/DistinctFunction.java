@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.util.Iterator;
-
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
@@ -52,83 +51,84 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  */
 public class DistinctFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -1403211347419923420L;
+    private static final long serialVersionUID = -1403211347419923420L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_EACH);
-   public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_EACH);
-   public static String ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS = String
-         .format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_EACH);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_EACH);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_EACH);
+    public static String ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS = String
+        .format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_EACH);
 
-   public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-      JsonNode result = JsonNodeFactory.instance.nullNode();
-      boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-      JsonNode inputNode = null;
-      ExprValuesContext valuesCtx = ctx.exprValues();
-      ExprListContext exprList = valuesCtx.exprList();
-		int argCount = getArgumentCount(ctx);
-      if (useContext) {
-         // pop context var from stack
-         inputNode = FunctionUtils.getContextVariable(expressionVisitor);
-			if (inputNode != null && inputNode.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-      }
-      if (argCount <= 1) {
-	      if (!useContext) {
-	         inputNode = expressionVisitor.visit(exprList.expr(0));
-	      }
-	
-	      if (inputNode == null) {
-	         return null; // signal no match
-	      }
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        JsonNode result = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        JsonNode inputNode = null;
+        ExprValuesContext valuesCtx = ctx.exprValues();
+        ExprListContext exprList = valuesCtx.exprList();
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            // pop context var from stack
+            inputNode = FunctionUtils.getContextVariable(expressionVisitor);
+            if (inputNode != null && inputNode.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
+        if (argCount <= 1) {
+            if (!useContext) {
+                inputNode = expressionVisitor.visit(exprList.expr(0));
+            }
 
-	      if (!inputNode.isArray() || ((ArrayNode)inputNode).size() < 1) {
-	      	result = inputNode;
-	      } else { // isArray()==true
-	      	// run through the array to find distinct members to fill the resultArray
-		      // expect something that evaluates to an element, object or array
-		      ArrayNode newResult = ((inputNode instanceof SelectorArrayNode) ? new SelectorArrayNode(JsonNodeFactory.instance) : JsonNodeFactory.instance.arrayNode());
-		      ArrayNode array = (ArrayNode)inputNode;
-		      if (inputNode instanceof SelectorArrayNode) {
-		      	array = (SelectorArrayNode)inputNode;
-		      }
-		      JsonNode node1, node2;
-		      boolean foundMatch = false;
-		      for (Iterator<JsonNode> it = array.iterator();it.hasNext();) {
-		      	node1 = it.next();
-		      	for (Iterator<JsonNode>it2 = newResult.iterator();it2.hasNext();) {
-		      		node2 = it2.next();
-		      		if (node1 != null && node1.equals(node2)) {
-		      			foundMatch = true;
-		      			break;
-		      		}
-		      	}
-		      	if (!foundMatch) {
-		      		newResult.add(node1);
-		      	}
-		      	foundMatch = false;
-		      }
-		      result = newResult;
-	      }
-      }
-      return result;
-   }
+            if (inputNode == null) {
+                return null; // signal no match
+            }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1; // account for context variable
-	}
+            if (!inputNode.isArray() || ((ArrayNode) inputNode).size() < 1) {
+                result = inputNode;
+            } else { // isArray()==true
+                // run through the array to find distinct members to fill the resultArray
+                // expect something that evaluates to an element, object or array
+                ArrayNode newResult = ((inputNode instanceof SelectorArrayNode) ? new SelectorArrayNode(JsonNodeFactory.instance) : JsonNodeFactory.instance.arrayNode());
+                ArrayNode array = (ArrayNode) inputNode;
+                if (inputNode instanceof SelectorArrayNode) {
+                    array = (SelectorArrayNode) inputNode;
+                }
+                JsonNode node1, node2;
+                boolean foundMatch = false;
+                for (Iterator<JsonNode> it = array.iterator(); it.hasNext();) {
+                    node1 = it.next();
+                    for (Iterator<JsonNode> it2 = newResult.iterator(); it2.hasNext();) {
+                        node2 = it2.next();
+                        if (node1 != null && node1.equals(node2)) {
+                            foundMatch = true;
+                            break;
+                        }
+                    }
+                    if (!foundMatch) {
+                        newResult.add(node1);
+                    }
+                    foundMatch = false;
+                }
+                result = newResult;
+            }
+        }
+        return result;
+    }
 
-   @Override
-   public String getSignature() {
-      // accepts anything (or context variable), and a function, returns an array of objects
-      return "<x:x>";
-   }
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
+
+    @Override
+    public int getMinArgs() {
+        return 1; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts anything (or context variable), and a function, returns an array of objects
+        return "<x:x>";
+    }
 
 }

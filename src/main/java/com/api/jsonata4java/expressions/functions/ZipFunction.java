@@ -34,77 +34,78 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class ZipFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -7312331981757002031L;
+    private static final long serialVersionUID = -7312331981757002031L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_ZIP);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_ZIP);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_ZIP);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_ZIP);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		ArrayNode result = JsonNodeFactory.instance.arrayNode();
-		ArrayNode inputArrays = JsonNodeFactory.instance.arrayNode();
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        ArrayNode result = JsonNodeFactory.instance.arrayNode();
+        ArrayNode inputArrays = JsonNodeFactory.instance.arrayNode();
 
-		// Retrieve the number of arguments
-		JsonNode argObject = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argObject = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argObject != null && argObject.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argObject = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argObject = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argObject != null && argObject.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount > 0) {
-			int minSize = Integer.MAX_VALUE;
-			// handle case where initial argObject is from context
-			ArrayNode a = null;
-			if (useContext) {
-				a = ArrayUtils.ensureArray(argObject);
-				if (a.size() < minSize) {
-					minSize = a.size();
-				}
-				inputArrays.add(a);
-			}
-			for (int i = useContext ? 1 : 0; i < argCount; i++) {
-				a = ArrayUtils
-						.ensureArray(expressionVisitor.visit(ctx.exprValues().exprList().expr(useContext ? i - 1 : i)));
-				if (a.size() < minSize) {
-					minSize = a.size();
-				}
-				inputArrays.add(a);
-			}
-			for (int j = 0; j < minSize; j++) {
-				ArrayNode cell = JsonNodeFactory.instance.arrayNode();
-				for (int i = 0; i < inputArrays.size(); i++) {
-					cell.add(((ArrayNode) inputArrays.get(i)).get(j));
-				}
-				result.add(cell);
-			}
-		} else {
-			throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-		}
-		
-//		ArrayNode temp = JsonNodeFactory.instance.arrayNode();
-//		temp.add(result);
-//		result = temp;
-		return result;
-	}
+        // Make sure that we have the right number of arguments
+        if (argCount > 0) {
+            int minSize = Integer.MAX_VALUE;
+            // handle case where initial argObject is from context
+            ArrayNode a = null;
+            if (useContext) {
+                a = ArrayUtils.ensureArray(argObject);
+                if (a.size() < minSize) {
+                    minSize = a.size();
+                }
+                inputArrays.add(a);
+            }
+            for (int i = useContext ? 1 : 0; i < argCount; i++) {
+                a = ArrayUtils
+                    .ensureArray(expressionVisitor.visit(ctx.exprValues().exprList().expr(useContext ? i - 1 : i)));
+                if (a.size() < minSize) {
+                    minSize = a.size();
+                }
+                inputArrays.add(a);
+            }
+            for (int j = 0; j < minSize; j++) {
+                ArrayNode cell = JsonNodeFactory.instance.arrayNode();
+                for (int i = 0; i < inputArrays.size(); i++) {
+                    cell.add(((ArrayNode) inputArrays.get(i)).get(j));
+                }
+                result.add(cell);
+            }
+        } else {
+            throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+        }
 
-	@Override
-	public int getMaxArgs() {
-		return 10000;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1;
-	}
+        //		ArrayNode temp = JsonNodeFactory.instance.arrayNode();
+        //		temp.add(result);
+        //		result = temp;
+        return result;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts one or more arrays, returns an array
-		return "<a+>";
-	}
+    @Override
+    public int getMaxArgs() {
+        return 10000;
+    }
+
+    @Override
+    public int getMinArgs() {
+        return 1;
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts one or more arrays, returns an array
+        return "<a+>";
+    }
 }

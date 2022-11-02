@@ -22,18 +22,16 @@
 
 package com.api.jsonata4java.expressions;
 
-import java.lang.Exception;
-
 public class EvaluateException extends Exception {
 
-	private static final long serialVersionUID = 360976872389227010L;
+    private static final long serialVersionUID = 360976872389227010L;
 
-	public EvaluateException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public EvaluateException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public EvaluateException(String message) {
-		this(message, null);
-	}
+    public EvaluateException(String message) {
+        this(message, null);
+    }
 
 }

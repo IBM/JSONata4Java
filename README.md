@@ -84,7 +84,6 @@ that in JSONata4Java we use different parser technology and we use the original 
 
 - we do not support regular expressions patterns containing any white space character.  
   Please use escaped forms&colon; **\s \t \n** instead. This will be compatible to original JSONata.
-  
 
 - in function $replace() the behavior of capturing group replacements differs slightly from original JSONata&colon;
     - we support more than 9 capturing groups.

@@ -45,41 +45,42 @@ import com.fasterxml.jackson.databind.node.DoubleNode;
  */
 public class RandomFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 8928040211817757808L;
+    private static final long serialVersionUID = 8928040211817757808L;
 
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_RANDOM);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_RANDOM);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		int argCount = getArgumentCount(ctx);
+        // Retrieve the number of arguments
+        int argCount = getArgumentCount(ctx);
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 0) {
-			// Generate the random number and create the node to return
-			double random = Math.random();
-			result = new DoubleNode(random);
-		} else {
-			throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-		}
+        // Make sure that we have the right number of arguments
+        if (argCount == 0) {
+            // Generate the random number and create the node to return
+            double random = Math.random();
+            result = new DoubleNode(random);
+        } else {
+            throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 0;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 0;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts nothing, returns a number
-		return "<:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0;
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts nothing, returns a number
+        return "<:n>";
+    }
 }

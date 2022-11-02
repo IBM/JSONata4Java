@@ -25,7 +25,6 @@ package com.api.jsonata4java.expressions;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
@@ -36,33 +35,34 @@ import org.antlr.v4.runtime.Recognizer;
  * later via getErrorsAsString().
  */
 public class BufferingErrorListener extends BaseErrorListener implements Serializable {
-	private static final long serialVersionUID = -7132728543942685913L;
-	
-	private List<String> errors = new ArrayList<>();
 
-	@Override
-	public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine,
-			String msg, RecognitionException e) {
-		String message = "line " + line + ":" + charPositionInLine + " at " + offendingSymbol + ": " + msg + "\n";
-		errors.add(message);
-	}
+    private static final long serialVersionUID = -7132728543942685913L;
 
-	public boolean heardErrors() {
-		return !this.errors.isEmpty();
-	}
+    private List<String> errors = new ArrayList<>();
 
-	public String getErrorsAsString() {
-		StringBuffer sb = new StringBuffer();
-		boolean first = true;
-		for (String msg : this.errors) {
-			if (first) {
-				first = false;
-			} else {
-				sb.append(", ");
-			}
-			sb.append(msg);
-		}
-		return sb.toString();
-	}
+    @Override
+    public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine,
+        String msg, RecognitionException e) {
+        String message = "line " + line + ":" + charPositionInLine + " at " + offendingSymbol + ": " + msg + "\n";
+        errors.add(message);
+    }
+
+    public boolean heardErrors() {
+        return !this.errors.isEmpty();
+    }
+
+    public String getErrorsAsString() {
+        StringBuffer sb = new StringBuffer();
+        boolean first = true;
+        for (String msg : this.errors) {
+            if (first) {
+                first = false;
+            } else {
+                sb.append(", ");
+            }
+            sb.append(msg);
+        }
+        return sb.toString();
+    }
 
 }
