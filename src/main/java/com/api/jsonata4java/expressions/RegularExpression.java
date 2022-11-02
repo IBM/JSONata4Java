@@ -31,58 +31,58 @@ import java.util.regex.Pattern;
  */
 public class RegularExpression {
 
-	public enum Type {
-		NORMAL, CASEINSENSITIVE, MULTILINE
-	};
+    public enum Type {
+            NORMAL, CASEINSENSITIVE, MULTILINE
+    };
 
-	private final Type type;
+    private final Type type;
 
-	private String regexPattern;
+    private String regexPattern;
 
-	private Pattern pattern;
+    private Pattern pattern;
 
-	public RegularExpression(String string) {
-		this(Type.NORMAL, string);
-	}
+    public RegularExpression(String string) {
+        this(Type.NORMAL, string);
+    }
 
-	public RegularExpression(final Type type, final String regex) {
-		this.type = type;
-		switch (type) {
-		case CASEINSENSITIVE:
-		case MULTILINE:
-			regexPattern = regex.substring(1, regex.length() - 2);
-			break;
-		default:
-			regexPattern = regex.substring(1, regex.length() - 1);
-			break;
-		}
-		compile();
-	}
+    public RegularExpression(final Type type, final String regex) {
+        this.type = type;
+        switch (type) {
+            case CASEINSENSITIVE:
+            case MULTILINE:
+                regexPattern = regex.substring(1, regex.length() - 2);
+                break;
+            default:
+                regexPattern = regex.substring(1, regex.length() - 1);
+                break;
+        }
+        compile();
+    }
 
-	private void compile() {
-		switch (this.type) {
-		case CASEINSENSITIVE:
-			this.pattern = Pattern.compile(regexPattern, Pattern.CASE_INSENSITIVE);
-			break;
-		case MULTILINE:
-			this.pattern = Pattern.compile(regexPattern, Pattern.MULTILINE);
-			break;
-		default:
-			this.pattern = Pattern.compile(regexPattern);
-			break;
-		}
-	}
+    private void compile() {
+        switch (this.type) {
+            case CASEINSENSITIVE:
+                this.pattern = Pattern.compile(regexPattern, Pattern.CASE_INSENSITIVE);
+                break;
+            case MULTILINE:
+                this.pattern = Pattern.compile(regexPattern, Pattern.MULTILINE);
+                break;
+            default:
+                this.pattern = Pattern.compile(regexPattern);
+                break;
+        }
+    }
 
-	@Override
-	public String toString() {
-		return this.regexPattern;
-	}
+    @Override
+    public String toString() {
+        return this.regexPattern;
+    }
 
-	public Type getType() {
-		return this.type;
-	}
+    public Type getType() {
+        return this.type;
+    }
 
-	public Pattern getPattern() {
-		return this.pattern;
-	}
+    public Pattern getPattern() {
+        return this.pattern;
+    }
 }

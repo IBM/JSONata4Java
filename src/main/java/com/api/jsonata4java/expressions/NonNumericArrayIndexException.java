@@ -23,14 +23,15 @@
 package com.api.jsonata4java.expressions;
 
 public class NonNumericArrayIndexException extends EvaluateRuntimeException {
-	private static final long serialVersionUID = 5132735269556205679L;
 
-	public static final String MSG = "non-numeric value used as array index";
+    private static final long serialVersionUID = 5132735269556205679L;
 
-	/**
-	 * Constructor
-	 */
-	public NonNumericArrayIndexException() {
-		super(MSG);
-	}
+    public static final String MSG = "non-numeric value used as array index";
+
+    /**
+     * Constructor
+     */
+    public NonNumericArrayIndexException() {
+        super(MSG);
+    }
 }

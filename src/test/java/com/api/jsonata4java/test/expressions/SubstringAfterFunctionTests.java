@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.utils.Constants;
 
 /**
@@ -60,59 +57,120 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class SubstringAfterFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = 3714953563785584419L;
+    private static final long serialVersionUID = 3714953563785584419L;
 
-	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_SUBSTRING_AFTER);
-	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_SUBSTRING_AFTER);
+    private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_SUBSTRING_AFTER);
+    private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_SUBSTRING_AFTER);
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { 
-			   { "$substringAfter()", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter({},  ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter('', {})", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$substringAfter({\"hello\": 1}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter(' ', {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$substringAfter([])", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter([], ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter(' ', [])", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$substringAfter([\"hello\"], ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter(' ', [\"hello\"])", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$substringAfter(1)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter(1, 2)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter(1, '2')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter('1', 2)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$substringAfter(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter(10/3.0, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter(' ',  10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$substringAfter(null)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$substringAfter(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$substringAfter(a.b.c)", null, null}, // jsonata 1.8.2 ERR_BAD_CONTEXT }, //
-				{ "$substringAfter(a.b.c, ' ')", null, null }, //
-				{ "$substringAfter('', a.b.c)", "\"\"", null }, //
-				{ "$substringAfter('',  ' ')", "\"\"", null }, //
-				{ "$substringAfter('hello',  ' ')", "\"hello\"", null }, //
-				{ "$substringAfter('hello world', ' ')", "\"world\"", null }, //
-				{ "$substringAfter('hello world again', ' ')", "\"world again\"", null }, //
-				{ "$substringAfter(' hello world again', ' ')", "\"hello world again\"", null }, //
-				{ "$substringAfter('hello ', ' ')", "\"\"", null } });
-	}
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$substringAfter()", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter({})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter({},  ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter('', {})", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$substringAfter({\"hello\": 1}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(' ', {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$substringAfter([])", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter([], ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(' ', [])", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$substringAfter([\"hello\"], ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(' ', [\"hello\"])", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(1)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(1, 2)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(1, '2')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter('1', 2)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(10/3.0, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(' ',  10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(null)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$substringAfter(a.b.c)", null, null
+            }, // jsonata 1.8.2 ERR_BAD_CONTEXT }, //
+            {
+                "$substringAfter(a.b.c, ' ')", null, null
+            }, //
+            {
+                "$substringAfter('', a.b.c)", "\"\"", null
+            }, //
+            {
+                "$substringAfter('',  ' ')", "\"\"", null
+            }, //
+            {
+                "$substringAfter('hello',  ' ')", "\"hello\"", null
+            }, //
+            {
+                "$substringAfter('hello world', ' ')", "\"world\"", null
+            }, //
+            {
+                "$substringAfter('hello world again', ' ')", "\"world again\"", null
+            }, //
+            {
+                "$substringAfter(' hello world again', ' ')", "\"hello world again\"", null
+            }, //
+            {
+                "$substringAfter('hello ', ' ')", "\"\"", null
+            }
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 }

@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 // import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
@@ -38,82 +37,83 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class AppendFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -1826593618672666459L;
+    private static final long serialVersionUID = -1826593618672666459L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_APPEND);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_APPEND);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_APPEND);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_APPEND);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_APPEND);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_APPEND);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_APPEND);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_APPEND);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 
-		// SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
-		ArrayNode result = JsonNodeFactory.instance.arrayNode();
+        // SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
+        ArrayNode result = JsonNodeFactory.instance.arrayNode();
 
-		// Retrieve the number of arguments
-		JsonNode argArray = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argArray = FunctionUtils.getContextVariable(expressionVisitor);
-			ParserRuleContext prc = ctx.getParent();
-			if ((prc != null && prc instanceof Fct_chainContext) || (argArray != null && argArray.isNull() == false)) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argArray = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argArray = FunctionUtils.getContextVariable(expressionVisitor);
+            ParserRuleContext prc = ctx.getParent();
+            if ((prc != null && prc instanceof Fct_chainContext) || (argArray != null && argArray.isNull() == false)) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 2) {
-			if (!useContext) {
-				argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			JsonNode arg2Array = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
+        // Make sure that we have the right number of arguments
+        if (argCount == 2) {
+            if (!useContext) {
+                argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            JsonNode arg2Array = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
 
-			ArrayNode a = null;
-			if (argArray != null) {
-				a = ArrayUtils.ensureArray(argArray);
-			} else {
-				// TODO: remove this once jsonata is updated
-				return arg2Array;
-			}
-			ArrayNode b = null;
-			if (arg2Array != null) {
-				b = ArrayUtils.ensureArray(arg2Array);
-			} else {
-				// TODO: remove this once jsonata is updated
-				return argArray;
-			}
+            ArrayNode a = null;
+            if (argArray != null) {
+                a = ArrayUtils.ensureArray(argArray);
+            } else {
+                // TODO: remove this once jsonata is updated
+                return arg2Array;
+            }
+            ArrayNode b = null;
+            if (arg2Array != null) {
+                b = ArrayUtils.ensureArray(arg2Array);
+            } else {
+                // TODO: remove this once jsonata is updated
+                return argArray;
+            }
 
-			if (a != null) {
-				result.addAll(a);
-			}
-			if (b != null) {
-				result.addAll(b);
-			}
+            if (a != null) {
+                result.addAll(a);
+            }
+            if (b != null) {
+                result.addAll(b);
+            }
 
-		} else {
-			throw new EvaluateRuntimeException(
-					argCount == 0 ? ERR_BAD_CONTEXT : argCount == 1 ? ERR_ARG2BADTYPE : ERR_ARG3BADTYPE);
-		}
+        } else {
+            throw new EvaluateRuntimeException(
+                argCount == 0 ? ERR_BAD_CONTEXT : argCount == 1 ? ERR_ARG2BADTYPE : ERR_ARG3BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts anything, anything, returns an array
-		return "<xx:a>";
-	}
+    @Override
+    public String getSignature() {
+        // accepts anything, anything, returns an array
+        return "<xx:a>";
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 2;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
+
+    @Override
+    public int getMinArgs() {
+        return 2;
+    }
 
 }

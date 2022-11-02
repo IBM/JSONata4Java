@@ -23,14 +23,15 @@
 package com.api.jsonata4java.expressions;
 
 public class PropertyDoesNotExistEvaluateRuntimeException extends EvaluateRuntimeException {
-	private static final long serialVersionUID = 5132735269556205679L;
 
-	/**
-	 * 
-	 * @param base     $state or $event
-	 * @param propName
-	 */
-	PropertyDoesNotExistEvaluateRuntimeException(String base, String propName) {
-		super("The property '" + base + "." + propName + "' does not exist");
-	}
+    private static final long serialVersionUID = 5132735269556205679L;
+
+    /**
+     * 
+     * @param base     $state or $event
+     * @param propName
+     */
+    PropertyDoesNotExistEvaluateRuntimeException(String base, String propName) {
+        super("The property '" + base + "." + propName + "' does not exist");
+    }
 }

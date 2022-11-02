@@ -1,14 +1,11 @@
 package com.api.jsonata4java.testerui;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Paths;
-
 import org.junit.Before;
 import org.junit.Test;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -31,8 +28,8 @@ public class TesterUITest {
             return;
         }
         assertEquals(minifyJson(TesterUI.readFile(Paths.get("src/test/resources/exerciser/xmladdress.json"))),
-                minifyJson(testerUi
-                        .xmlToJson(TesterUI.readFile(Paths.get("src/test/resources/exerciser/xmladdress.xml")))));
+            minifyJson(testerUi
+                .xmlToJson(TesterUI.readFile(Paths.get("src/test/resources/exerciser/xmladdress.xml")))));
     }
 
     public static String minifyJson(final String in) {

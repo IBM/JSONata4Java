@@ -25,10 +25,8 @@ package com.api.jsonata4java.expressions.functions;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.TerminalNode;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.FrameEnvironment;
@@ -44,124 +42,124 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class DeclaredFunction implements Serializable {
 
-	private static final long serialVersionUID = -7984628726118649985L;
+    private static final long serialVersionUID = -7984628726118649985L;
 
-	VarListContext _varList;
-	ExprListContext _exprList;
+    VarListContext _varList;
+    ExprListContext _exprList;
 
-	public DeclaredFunction(VarListContext varList, ExprListContext exprList) {
-		if (varList == null) {
-			throw new EvaluateRuntimeException("VarListContext passed is null.");
-		}
-		if (exprList == null) {
-			throw new EvaluateRuntimeException("ExprListContext passed is null.");
-		}
-		_varList = varList;
-		_exprList = exprList;
-	}
+    public DeclaredFunction(VarListContext varList, ExprListContext exprList) {
+        if (varList == null) {
+            throw new EvaluateRuntimeException("VarListContext passed is null.");
+        }
+        if (exprList == null) {
+            throw new EvaluateRuntimeException("ExprListContext passed is null.");
+        }
+        _varList = varList;
+        _exprList = exprList;
+    }
 
-	public ExprListContext getExpressionList() {
-	   return _exprList;
-	}
-	
-	public List<TerminalNode> getVariables() {
-		List<TerminalNode> variables = _varList.getTokens(MappingExpressionParser.VAR_ID);
-		if (variables == null) {
-			variables = new ArrayList<TerminalNode>();
-		}
-		return variables;
-	}
+    public ExprListContext getExpressionList() {
+        return _exprList;
+    }
 
-	public int getVariableCount() {
-		return getVariables().size();
-	}
-	
-	public int getMaxArgs() {
-		return getVariableCount();
-	}
+    public List<TerminalNode> getVariables() {
+        List<TerminalNode> variables = _varList.getTokens(MappingExpressionParser.VAR_ID);
+        if (variables == null) {
+            variables = new ArrayList<TerminalNode>();
+        }
+        return variables;
+    }
 
-	public int getMinArgs() {
-		return getVariableCount();
-	}
+    public int getVariableCount() {
+        return getVariables().size();
+    }
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, ParserRuleContext ruleValues) {
-      // generate a new frameEnvironment for life of this block
-      FrameEnvironment oldEnvironment = expressionVisitor.setNewEnvironment();
+    public int getMaxArgs() {
+        return getVariableCount();
+    }
 
-      JsonNode result = null;
-		ExprValuesContext exprValues = null;
-		Function_callContext fctCallValues = null;
-		if (ruleValues instanceof ExprValuesContext) {
-		   exprValues = (ExprValuesContext)ruleValues;
-   		List<TerminalNode> varListCtx = _varList.VAR_ID();
-         List<ExprContext> exprValuesCtx = new ArrayList<ExprContext>();
-         if (exprValues != null) {
-         	exprValuesCtx = exprValues.exprList().expr();
-         }
-   		int varListCount = varListCtx.size();
-   		int exprListCount = exprValuesCtx.size();
-   		// ensure a direct mapping is possible
-   		if (varListCount != exprListCount) {
-//   			throw new EvaluateRuntimeException(
-//   					"Expected equal counts for variables (" + varListCount + ") and values (" + exprListCount + ")");
-   		}
-   		for (int i = 0; i < varListCount; i++) {
-   			String varID = varListCtx.get(i).getText();
-   			JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
-   			expressionVisitor.setVariable(varID, value);
-   		}
-   		result = expressionVisitor.visit(_exprList);
-		} else if (ruleValues instanceof Function_callContext) {
-		   fctCallValues = (Function_callContext)ruleValues;
-         List<TerminalNode> varListCtx = _varList.VAR_ID();
-         exprValues = (ExprValuesContext)fctCallValues.exprValues();
-         List<ExprContext> exprValuesCtx = new ArrayList<ExprContext>();
-         if (exprValues != null) {
-         	exprValuesCtx = exprValues.exprList().expr();
-         }
-         int varListCount = varListCtx.size();
-         int exprListCount = exprValuesCtx.size();
-         // ensure a direct mapping is possible filling with nulls where needed
-         if (varListCount < exprListCount) {
-            throw new EvaluateRuntimeException(
-                  "Expected equal counts for variables (" + varListCount + ") and values (" + exprListCount + ")");
-         }
-         for (int i = 0; i < varListCount; i++) {
-            String varID = varListCtx.get(i).getText();
-            if (i < exprListCount) {
-            	JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
-            	expressionVisitor.setVariable(varID, value);
-            } else {
-            	expressionVisitor.setVariable(varID, null);
+    public int getMinArgs() {
+        return getVariableCount();
+    }
+
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, ParserRuleContext ruleValues) {
+        // generate a new frameEnvironment for life of this block
+        FrameEnvironment oldEnvironment = expressionVisitor.setNewEnvironment();
+
+        JsonNode result = null;
+        ExprValuesContext exprValues = null;
+        Function_callContext fctCallValues = null;
+        if (ruleValues instanceof ExprValuesContext) {
+            exprValues = (ExprValuesContext) ruleValues;
+            List<TerminalNode> varListCtx = _varList.VAR_ID();
+            List<ExprContext> exprValuesCtx = new ArrayList<ExprContext>();
+            if (exprValues != null) {
+                exprValuesCtx = exprValues.exprList().expr();
             }
-         }
-         result = expressionVisitor.visit(_exprList);
-		} else if (ruleValues instanceof Var_recallContext) {
-			String fctName = ((Var_recallContext) ruleValues).VAR_ID().getText();
-			// assume this is a variable pointing to a function
-			DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(fctName);
-			if (declFct == null) {
-				Function function = expressionVisitor.getJsonataFunction(fctName);
-				if (function == null) {
-					function = Constants.FUNCTIONS.get(fctName);
-				}
-				if (function != null) {
-					result = function.invoke(expressionVisitor, (Function_callContext)ruleValues.getRuleContext());
-				} else {
-					throw new EvaluateRuntimeException("Unknown function: " + fctName);
-				}
-			} else {
-	         for (int i = 0; i < declFct.getVariableCount(); i++) {
-	            String varID = declFct._varList.VAR_ID().get(i).getText();
-	            JsonNode value = expressionVisitor.visit(_exprList.expr().get(i));
-	            expressionVisitor.setVariable(varID, value);
-	         }
-				result = expressionVisitor.visit(declFct._exprList);
-			}
-		} else {
-		   result = expressionVisitor.visit(_exprList);
-		}
-      expressionVisitor.resetOldEnvironment(oldEnvironment);
-		return result;
-	}
+            int varListCount = varListCtx.size();
+            int exprListCount = exprValuesCtx.size();
+            // ensure a direct mapping is possible
+            if (varListCount != exprListCount) {
+                //   			throw new EvaluateRuntimeException(
+                //   					"Expected equal counts for variables (" + varListCount + ") and values (" + exprListCount + ")");
+            }
+            for (int i = 0; i < varListCount; i++) {
+                String varID = varListCtx.get(i).getText();
+                JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
+                expressionVisitor.setVariable(varID, value);
+            }
+            result = expressionVisitor.visit(_exprList);
+        } else if (ruleValues instanceof Function_callContext) {
+            fctCallValues = (Function_callContext) ruleValues;
+            List<TerminalNode> varListCtx = _varList.VAR_ID();
+            exprValues = (ExprValuesContext) fctCallValues.exprValues();
+            List<ExprContext> exprValuesCtx = new ArrayList<ExprContext>();
+            if (exprValues != null) {
+                exprValuesCtx = exprValues.exprList().expr();
+            }
+            int varListCount = varListCtx.size();
+            int exprListCount = exprValuesCtx.size();
+            // ensure a direct mapping is possible filling with nulls where needed
+            if (varListCount < exprListCount) {
+                throw new EvaluateRuntimeException(
+                    "Expected equal counts for variables (" + varListCount + ") and values (" + exprListCount + ")");
+            }
+            for (int i = 0; i < varListCount; i++) {
+                String varID = varListCtx.get(i).getText();
+                if (i < exprListCount) {
+                    JsonNode value = expressionVisitor.visit(exprValuesCtx.get(i));
+                    expressionVisitor.setVariable(varID, value);
+                } else {
+                    expressionVisitor.setVariable(varID, null);
+                }
+            }
+            result = expressionVisitor.visit(_exprList);
+        } else if (ruleValues instanceof Var_recallContext) {
+            String fctName = ((Var_recallContext) ruleValues).VAR_ID().getText();
+            // assume this is a variable pointing to a function
+            DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(fctName);
+            if (declFct == null) {
+                Function function = expressionVisitor.getJsonataFunction(fctName);
+                if (function == null) {
+                    function = Constants.FUNCTIONS.get(fctName);
+                }
+                if (function != null) {
+                    result = function.invoke(expressionVisitor, (Function_callContext) ruleValues.getRuleContext());
+                } else {
+                    throw new EvaluateRuntimeException("Unknown function: " + fctName);
+                }
+            } else {
+                for (int i = 0; i < declFct.getVariableCount(); i++) {
+                    String varID = declFct._varList.VAR_ID().get(i).getText();
+                    JsonNode value = expressionVisitor.visit(_exprList.expr().get(i));
+                    expressionVisitor.setVariable(varID, value);
+                }
+                result = expressionVisitor.visit(declFct._exprList);
+            }
+        } else {
+            result = expressionVisitor.visit(_exprList);
+        }
+        expressionVisitor.resetOldEnvironment(oldEnvironment);
+        return result;
+    }
 }

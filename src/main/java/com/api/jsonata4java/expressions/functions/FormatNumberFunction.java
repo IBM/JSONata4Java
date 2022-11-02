@@ -25,7 +25,6 @@ package com.api.jsonata4java.expressions.functions;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Iterator;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -64,256 +63,256 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class FormatNumberFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 6183052815295323040L;
+    private static final long serialVersionUID = 6183052815295323040L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
-			Constants.FUNCTION_FORMAT_NUMBER);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_FORMAT_NUMBER);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_FORMAT_NUMBER);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
-			Constants.FUNCTION_FORMAT_NUMBER);
-	public static String ERR_ARG4BADTYPE = String.format(Constants.ERR_MSG_ARG4_BAD_TYPE,
-			Constants.FUNCTION_FORMAT_NUMBER);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
+        Constants.FUNCTION_FORMAT_NUMBER);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_FORMAT_NUMBER);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_FORMAT_NUMBER);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
+        Constants.FUNCTION_FORMAT_NUMBER);
+    public static String ERR_ARG4BADTYPE = String.format(Constants.ERR_MSG_ARG4_BAD_TYPE,
+        Constants.FUNCTION_FORMAT_NUMBER);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argNumber = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argNumber != null && argNumber.isNull() == false) {
-				// check to see if there is a valid context value
-				if (!argNumber.isNumber()) {
-					throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-				}
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argNumber = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argNumber = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argNumber != null && argNumber.isNull() == false) {
+                // check to see if there is a valid context value
+                if (!argNumber.isNumber()) {
+                    throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+                }
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 2 || argCount == 3) {
-			/*
-			 * Read the first argument. When we attempt to read it, an ArithmeticException
-			 * may be thrown if, for example, it is an expression that performs a
-			 * "divide by zero". In this scenario, we need to return the relevant
-			 * representation of infinity so that it can be rendered in the response.
-			 */
-			if (!useContext) {
-				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
+        // Make sure that we have the right number of arguments
+        if (argCount == 2 || argCount == 3) {
+            /*
+             * Read the first argument. When we attempt to read it, an ArithmeticException
+             * may be thrown if, for example, it is an expression that performs a
+             * "divide by zero". In this scenario, we need to return the relevant
+             * representation of infinity so that it can be rendered in the response.
+             */
+            if (!useContext) {
+                argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
 
-			// Make sure that the first argument is a number
-			if (argNumber == null) {
-				return null;
-			}
-			/*
-			 * Now make sure that the first argument is a number. If it is not, we need to
-			 * return the relevant representation of NaN (not a number) so that it can be
-			 * rendered in the response.
-			 */
-			final double number;
-			if (argNumber.isNumber()) {
-				// Read the number
-				number = argNumber.asDouble();
-			} else {
-				// The number argument specified is not a number
-				number = Double.NaN;
-			}
+            // Make sure that the first argument is a number
+            if (argNumber == null) {
+                return null;
+            }
+            /*
+             * Now make sure that the first argument is a number. If it is not, we need to
+             * return the relevant representation of NaN (not a number) so that it can be
+             * rendered in the response.
+             */
+            final double number;
+            if (argNumber.isNumber()) {
+                // Read the number
+                number = argNumber.asDouble();
+            } else {
+                // The number argument specified is not a number
+                number = Double.NaN;
+            }
 
-			// Make sure that the picture string is not null
-			final JsonNode argPicture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-					useContext ? 0 : 1);
-			if (argPicture != null) {
-				// Check to see if the picture string is just a string
-				if (argPicture.isTextual()) {
-					// final double number = argNumber.asDouble();
-					final String picture = argPicture.textValue();
+            // Make sure that the picture string is not null
+            final JsonNode argPicture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                useContext ? 0 : 1);
+            if (argPicture != null) {
+                // Check to see if the picture string is just a string
+                if (argPicture.isTextual()) {
+                    // final double number = argNumber.asDouble();
+                    final String picture = argPicture.textValue();
 
-					// Check to see if we have an optional options argument and
-					// read it if we do
-					DecimalFormatSymbols symbols = Constants.DEFAULT_DECIMAL_FORMAT_SYMBOLS;
-					if (argCount == 3) {
-						final JsonNode argOptions = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-								useContext ? 1 : 2);
-						if (argOptions != null && argOptions.isObject()) {
-							symbols = processOptionsArg(argOptions);
-						} else {
-							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
-						}
-					}
+                    // Check to see if we have an optional options argument and
+                    // read it if we do
+                    DecimalFormatSymbols symbols = Constants.DEFAULT_DECIMAL_FORMAT_SYMBOLS;
+                    if (argCount == 3) {
+                        final JsonNode argOptions = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                            useContext ? 1 : 2);
+                        if (argOptions != null && argOptions.isObject()) {
+                            symbols = processOptionsArg(argOptions);
+                        } else {
+                            throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
+                        }
+                    }
 
-					// Create the formatter and format the number
-					DecimalFormat formatter = new DecimalFormat();
-					formatter.setDecimalFormatSymbols(symbols);
-					String fixedPicture = picture.replaceAll("9", "0");
-					formatter.applyLocalizedPattern(fixedPicture);
-					result = new TextNode(formatter.format(number));
-				} else {
-					// Non-textual picture argument
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-				}
-			} else {
-				// Null picture argument
-				throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(
-					argCount == 0 ? ERR_BAD_CONTEXT : argCount == 1 ? ERR_ARG2BADTYPE : ERR_ARG4BADTYPE);
-		}
+                    // Create the formatter and format the number
+                    DecimalFormat formatter = new DecimalFormat();
+                    formatter.setDecimalFormatSymbols(symbols);
+                    String fixedPicture = picture.replaceAll("9", "0");
+                    formatter.applyLocalizedPattern(fixedPicture);
+                    result = new TextNode(formatter.format(number));
+                } else {
+                    // Non-textual picture argument
+                    throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                }
+            } else {
+                // Null picture argument
+                throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(
+                argCount == 0 ? ERR_BAD_CONTEXT : argCount == 1 ? ERR_ARG2BADTYPE : ERR_ARG4BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	private DecimalFormatSymbols processOptionsArg(JsonNode argOptions) {
-		// Create the variable return
-		DecimalFormatSymbols symbols = (DecimalFormatSymbols) Constants.DEFAULT_DECIMAL_FORMAT_SYMBOLS.clone();
+    private DecimalFormatSymbols processOptionsArg(JsonNode argOptions) {
+        // Create the variable return
+        DecimalFormatSymbols symbols = (DecimalFormatSymbols) Constants.DEFAULT_DECIMAL_FORMAT_SYMBOLS.clone();
 
-		// Iterate over the formatting character overrides
-		Iterator<String> fieldNames = argOptions.fieldNames();
-		while (fieldNames.hasNext()) {
-			String fieldName = fieldNames.next();
-			JsonNode valueNode = argOptions.get(fieldName);
-			// String value = getFormattingCharacter(valueNode);
-			switch (fieldName) {
-			case Constants.SYMBOL_DECIMAL_SEPARATOR: {
-				String value = getFormattingCharacter(valueNode, Constants.SYMBOL_DECIMAL_SEPARATOR, true);
-				symbols.setDecimalSeparator(value.charAt(0));
-				break;
-			}
+        // Iterate over the formatting character overrides
+        Iterator<String> fieldNames = argOptions.fieldNames();
+        while (fieldNames.hasNext()) {
+            String fieldName = fieldNames.next();
+            JsonNode valueNode = argOptions.get(fieldName);
+            // String value = getFormattingCharacter(valueNode);
+            switch (fieldName) {
+                case Constants.SYMBOL_DECIMAL_SEPARATOR: {
+                    String value = getFormattingCharacter(valueNode, Constants.SYMBOL_DECIMAL_SEPARATOR, true);
+                    symbols.setDecimalSeparator(value.charAt(0));
+                    break;
+                }
 
-			case Constants.SYMBOL_GROUPING_SEPARATOR: {
-				String value = getFormattingCharacter(valueNode, Constants.SYMBOL_GROUPING_SEPARATOR, true);
-				symbols.setGroupingSeparator(value.charAt(0));
-				break;
-			}
+                case Constants.SYMBOL_GROUPING_SEPARATOR: {
+                    String value = getFormattingCharacter(valueNode, Constants.SYMBOL_GROUPING_SEPARATOR, true);
+                    symbols.setGroupingSeparator(value.charAt(0));
+                    break;
+                }
 
-			case Constants.SYMBOL_INFINITY: {
-				String value = getFormattingCharacter(valueNode, Constants.SYMBOL_INFINITY, false);
-				symbols.setInfinity(value);
-				break;
-			}
+                case Constants.SYMBOL_INFINITY: {
+                    String value = getFormattingCharacter(valueNode, Constants.SYMBOL_INFINITY, false);
+                    symbols.setInfinity(value);
+                    break;
+                }
 
-			case Constants.SYMBOL_MINUS_SIGN: {
-				String value = getFormattingCharacter(valueNode, Constants.SYMBOL_MINUS_SIGN, true);
-				symbols.setMinusSign(value.charAt(0));
-				break;
-			}
+                case Constants.SYMBOL_MINUS_SIGN: {
+                    String value = getFormattingCharacter(valueNode, Constants.SYMBOL_MINUS_SIGN, true);
+                    symbols.setMinusSign(value.charAt(0));
+                    break;
+                }
 
-			case Constants.SYMBOL_NAN: {
-				String value = getFormattingCharacter(valueNode, Constants.SYMBOL_NAN, false);
-				symbols.setNaN(value);
-				break;
-			}
+                case Constants.SYMBOL_NAN: {
+                    String value = getFormattingCharacter(valueNode, Constants.SYMBOL_NAN, false);
+                    symbols.setNaN(value);
+                    break;
+                }
 
-			case Constants.SYMBOL_PERCENT: {
-				String value = getFormattingCharacter(valueNode, Constants.SYMBOL_PERCENT, true);
-				symbols.setPercent(value.charAt(0));
-				break;
-			}
+                case Constants.SYMBOL_PERCENT: {
+                    String value = getFormattingCharacter(valueNode, Constants.SYMBOL_PERCENT, true);
+                    symbols.setPercent(value.charAt(0));
+                    break;
+                }
 
-			case Constants.SYMBOL_PER_MILLE: {
-				String value = getFormattingCharacter(valueNode, Constants.SYMBOL_PER_MILLE, true);
-				symbols.setPerMill(value.charAt(0));
-				break;
-			}
+                case Constants.SYMBOL_PER_MILLE: {
+                    String value = getFormattingCharacter(valueNode, Constants.SYMBOL_PER_MILLE, true);
+                    symbols.setPerMill(value.charAt(0));
+                    break;
+                }
 
-			case Constants.SYMBOL_ZERO_DIGIT: {
-				String value = getFormattingCharacter(valueNode, Constants.SYMBOL_ZERO_DIGIT, true);
-				symbols.setZeroDigit(value.charAt(0));
-				break;
-			}
+                case Constants.SYMBOL_ZERO_DIGIT: {
+                    String value = getFormattingCharacter(valueNode, Constants.SYMBOL_ZERO_DIGIT, true);
+                    symbols.setZeroDigit(value.charAt(0));
+                    break;
+                }
 
-			case Constants.SYMBOL_DIGIT: {
-				String value = getFormattingCharacter(valueNode, Constants.SYMBOL_DIGIT, true);
-				symbols.setDigit(value.charAt(0));
-				break;
-			}
+                case Constants.SYMBOL_DIGIT: {
+                    String value = getFormattingCharacter(valueNode, Constants.SYMBOL_DIGIT, true);
+                    symbols.setDigit(value.charAt(0));
+                    break;
+                }
 
-			case Constants.SYMBOL_PATTERN_SEPARATOR: {
-				String value = getFormattingCharacter(valueNode, Constants.SYMBOL_PATTERN_SEPARATOR, true);
-				symbols.setPatternSeparator(value.charAt(0));
-				break;
-			}
+                case Constants.SYMBOL_PATTERN_SEPARATOR: {
+                    String value = getFormattingCharacter(valueNode, Constants.SYMBOL_PATTERN_SEPARATOR, true);
+                    symbols.setPatternSeparator(value.charAt(0));
+                    break;
+                }
 
-			default: {
-				final String msg = String.format(Constants.ERR_MSG_INVALID_OPTIONS_UNKNOWN_PROPERTY,
-						Constants.FUNCTION_FORMAT_NUMBER, fieldName);
-				throw new EvaluateRuntimeException(msg);
-			}
-			} // SWITCH
-		} // WHILE
+                default: {
+                    final String msg = String.format(Constants.ERR_MSG_INVALID_OPTIONS_UNKNOWN_PROPERTY,
+                        Constants.FUNCTION_FORMAT_NUMBER, fieldName);
+                    throw new EvaluateRuntimeException(msg);
+                }
+            } // SWITCH
+        } // WHILE
 
-		return symbols;
-	}
+        return symbols;
+    }
 
-	private String getFormattingCharacter(JsonNode valueNode, String propertyName, boolean isChar) {
-		// Create the variable to return
-		String formattingChar = null;
+    private String getFormattingCharacter(JsonNode valueNode, String propertyName, boolean isChar) {
+        // Create the variable to return
+        String formattingChar = null;
 
-		// Make sure that we have a valid node and that its content is textual
-		if (valueNode != null && valueNode.isTextual()) {
-			// Read the value
-			String value = valueNode.textValue();
-			if (value != null && !value.isEmpty()) {
+        // Make sure that we have a valid node and that its content is textual
+        if (valueNode != null && valueNode.isTextual()) {
+            // Read the value
+            String value = valueNode.textValue();
+            if (value != null && !value.isEmpty()) {
 
-				// If the target property requires a single char, check the length
-				if (isChar) {
-					if (value.length() == 1) {
-						formattingChar = value;
-					} else {
-						final String msg = String.format(Constants.ERR_MSG_INVALID_OPTIONS_SINGLE_CHAR,
-								Constants.FUNCTION_FORMAT_NUMBER, propertyName);
-						throw new EvaluateRuntimeException(msg);
-					}
-				} else {
-					formattingChar = value;
-				}
-			} else {
-				final String msgTemplate;
-				if (isChar) {
-					msgTemplate = Constants.ERR_MSG_INVALID_OPTIONS_SINGLE_CHAR;
-				} else {
-					msgTemplate = Constants.ERR_MSG_INVALID_OPTIONS_STRING;
-				}
-				final String msg = String.format(msgTemplate, Constants.FUNCTION_FORMAT_NUMBER, propertyName);
-				throw new EvaluateRuntimeException(msg);
-			}
-		} else {
-			final String msgTemplate;
-			if (isChar) {
-				msgTemplate = Constants.ERR_MSG_INVALID_OPTIONS_SINGLE_CHAR;
-			} else {
-				msgTemplate = Constants.ERR_MSG_INVALID_OPTIONS_STRING;
-			}
-			final String msg = String.format(msgTemplate, Constants.FUNCTION_FORMAT_NUMBER, propertyName);
-			throw new EvaluateRuntimeException(msg);
-		}
+                // If the target property requires a single char, check the length
+                if (isChar) {
+                    if (value.length() == 1) {
+                        formattingChar = value;
+                    } else {
+                        final String msg = String.format(Constants.ERR_MSG_INVALID_OPTIONS_SINGLE_CHAR,
+                            Constants.FUNCTION_FORMAT_NUMBER, propertyName);
+                        throw new EvaluateRuntimeException(msg);
+                    }
+                } else {
+                    formattingChar = value;
+                }
+            } else {
+                final String msgTemplate;
+                if (isChar) {
+                    msgTemplate = Constants.ERR_MSG_INVALID_OPTIONS_SINGLE_CHAR;
+                } else {
+                    msgTemplate = Constants.ERR_MSG_INVALID_OPTIONS_STRING;
+                }
+                final String msg = String.format(msgTemplate, Constants.FUNCTION_FORMAT_NUMBER, propertyName);
+                throw new EvaluateRuntimeException(msg);
+            }
+        } else {
+            final String msgTemplate;
+            if (isChar) {
+                msgTemplate = Constants.ERR_MSG_INVALID_OPTIONS_SINGLE_CHAR;
+            } else {
+                msgTemplate = Constants.ERR_MSG_INVALID_OPTIONS_STRING;
+            }
+            final String msg = String.format(msgTemplate, Constants.FUNCTION_FORMAT_NUMBER, propertyName);
+            throw new EvaluateRuntimeException(msg);
+        }
 
-		return formattingChar;
-	}
+        return formattingChar;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 3;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 3;
+    }
 
-	@Override
-	public int getMinArgs() {
-		return 1; // account for context variable
-	}
+    @Override
+    public int getMinArgs() {
+        return 1; // account for context variable
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a number (or context variable), a string, an optional object, returns
-		// a string
-		return "<n-so?:s>";
-	}
+    @Override
+    public String getSignature() {
+        // accepts a number (or context variable), a string, an optional object, returns
+        // a string
+        return "<n-so?:s>";
+    }
 }

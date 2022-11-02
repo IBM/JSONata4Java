@@ -29,12 +29,13 @@ package com.api.jsonata4java.expressions;
  * Ideally we'd prevent expressions like this from parsing in the first place.
  */
 public class PathUsedOutsideOfPredicateException extends EvaluateRuntimeException {
-	private static final long serialVersionUID = 5132735269556205679L;
 
-	/**
-	 * Constructor
-	 */
-	public PathUsedOutsideOfPredicateException() {
-		super("Path statement used outside of predicate");
-	}
+    private static final long serialVersionUID = 5132735269556205679L;
+
+    /**
+     * Constructor
+     */
+    public PathUsedOutsideOfPredicateException() {
+        super("Path statement used outside of predicate");
+    }
 }

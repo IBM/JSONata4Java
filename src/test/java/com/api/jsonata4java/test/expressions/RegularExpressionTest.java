@@ -25,9 +25,7 @@ package com.api.jsonata4java.test.expressions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
-
 import com.api.jsonata4java.expressions.RegularExpression;
 
 /**
@@ -37,23 +35,23 @@ import com.api.jsonata4java.expressions.RegularExpression;
  */
 public class RegularExpressionTest {
 
-	@Test
-	public void testToString() {
-		assertEquals("c.*f", new RegularExpression("/c.*f/").toString());
-		assertEquals("^.*$", new RegularExpression("/^.*$/").toString());
-	}
+    @Test
+    public void testToString() {
+        assertEquals("c.*f", new RegularExpression("/c.*f/").toString());
+        assertEquals("^.*$", new RegularExpression("/^.*$/").toString());
+    }
 
-	@Test
-	public void find() {
-		assertTrue(new RegularExpression("/^.*$/").getPattern().matcher("asdfgh").find());
-		assertTrue(new RegularExpression("/^ab.*ef$/").getPattern().matcher("abcdef").find());
-		assertTrue(new RegularExpression("/c.*f/").getPattern().matcher("abcdefgh").find());
-	}
+    @Test
+    public void find() {
+        assertTrue(new RegularExpression("/^.*$/").getPattern().matcher("asdfgh").find());
+        assertTrue(new RegularExpression("/^ab.*ef$/").getPattern().matcher("abcdef").find());
+        assertTrue(new RegularExpression("/c.*f/").getPattern().matcher("abcdefgh").find());
+    }
 
-	@Test
-	public void findCaseInsensitive() {
-		assertFalse(new RegularExpression("/^ab.*ef$/").getPattern().matcher("ABCdef").find());	
-		assertTrue(new RegularExpression(RegularExpression.Type.CASEINSENSITIVE, "/^ab.*ef$/")
-				.getPattern().matcher("ABCdef").find());		
-	}
+    @Test
+    public void findCaseInsensitive() {
+        assertFalse(new RegularExpression("/^ab.*ef$/").getPattern().matcher("ABCdef").find());
+        assertTrue(new RegularExpression(RegularExpression.Type.CASEINSENSITIVE, "/^ab.*ef$/")
+            .getPattern().matcher("ABCdef").find());
+    }
 }

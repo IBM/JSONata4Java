@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.util.Objects;
-
 import com.api.jsonata4java.JSONataUtils;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
@@ -54,158 +53,158 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class PadFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 5849324073360601941L;
+    private static final long serialVersionUID = 5849324073360601941L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_PAD);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_PAD);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_PAD);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_PAD);
-	public static String ERR_ARG4BADTYPE = String.format(Constants.ERR_MSG_ARG4_BAD_TYPE, Constants.FUNCTION_PAD);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_PAD);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_PAD);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_PAD);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_PAD);
+    public static String ERR_ARG4BADTYPE = String.format(Constants.ERR_MSG_ARG4_BAD_TYPE, Constants.FUNCTION_PAD);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argString = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString != null && argString.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argString = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argString = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argString != null && argString.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 2 || argCount == 3) {
-			if (!useContext) {
-				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			final JsonNode argWidth = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
+        // Make sure that we have the right number of arguments
+        if (argCount == 2 || argCount == 3) {
+            if (!useContext) {
+                argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            final JsonNode argWidth = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
 
-			// Make sure that the first argument is a string
-			if (argString == null) {
-				return null;
-			}
-			if (argString.isTextual()) {
-				// Read the string from the argument
-				final String str = argString.textValue();
+            // Make sure that the first argument is a string
+            if (argString == null) {
+                return null;
+            }
+            if (argString.isTextual()) {
+                // Read the string from the argument
+                final String str = argString.textValue();
 
-				// Now read the width argument
-				int width = 0;
-				if (argWidth != null && argWidth.isNumber()) {
-					width = argWidth.asInt();
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-				}
+                // Now read the width argument
+                int width = 0;
+                if (argWidth != null && argWidth.isNumber()) {
+                    width = argWidth.asInt();
+                } else {
+                    throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                }
 
-				// Check to see if we have an optional padding character and read
-				// it if we do
-				String padStr = " ";
-				if (argCount == 3) {
-					final JsonNode argChar = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-							useContext ? 1 : 2);
-					if (argChar != null && argChar.isTextual()) {
-						padStr = argChar.asText();
-//						if (padStr.length() > 2) {
-//							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
-//						}
-					} else {
-						throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
-					}
-				}
+                // Check to see if we have an optional padding character and read
+                // it if we do
+                String padStr = " ";
+                if (argCount == 3) {
+                    final JsonNode argChar = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                        useContext ? 1 : 2);
+                    if (argChar != null && argChar.isTextual()) {
+                        padStr = argChar.asText();
+                        //						if (padStr.length() > 2) {
+                        //							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
+                        //						}
+                    } else {
+                        throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
+                    }
+                }
 
-				// Generate the result.. padding to the left or right depending
-				// on the width argument
-				if (width < 0) {
-					result = new TextNode(leftPad(str, -width, padStr));
-				} else {
-					result = new TextNode(rightPad(str, width, padStr));
-				}
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(
-					argCount == 0 ? ERR_ARG1BADTYPE : argCount == 1 ? ERR_ARG1BADTYPE : ERR_ARG4BADTYPE);
-		}
+                // Generate the result.. padding to the left or right depending
+                // on the width argument
+                if (width < 0) {
+                    result = new TextNode(leftPad(str, -width, padStr));
+                } else {
+                    result = new TextNode(rightPad(str, width, padStr));
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(
+                argCount == 0 ? ERR_ARG1BADTYPE : argCount == 1 ? ERR_ARG1BADTYPE : ERR_ARG4BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public static String leftPad(final String str, final int size, String padStr) {
-		if (str == null) {
-			return null;
-		}
-		if (padStr == null) {
-			padStr = " ";
-		}
-		
-		String strData = Objects.requireNonNull(str).intern();
-		int strLen = strData.codePointCount(0, strData.length());
+    public static String leftPad(final String str, final int size, String padStr) {
+        if (str == null) {
+            return null;
+        }
+        if (padStr == null) {
+            padStr = " ";
+        }
 
-		String padData = Objects.requireNonNull(padStr).intern();
-		int padLen = padData.codePointCount(0, padData.length());
+        String strData = Objects.requireNonNull(str).intern();
+        int strLen = strData.codePointCount(0, strData.length());
 
-		if (padLen == 0) {
-			padStr = " ";
-		}
-		final int pads = size - strLen;
-		if (pads <= 0) {
-			return str;
-		}
-		String padding = "";
-		for (int i=0;i<pads+1;i++) {
-			padding += padStr;
-		}
-		return JSONataUtils.substr(padding, 0, pads).concat(str);
-	}
+        String padData = Objects.requireNonNull(padStr).intern();
+        int padLen = padData.codePointCount(0, padData.length());
 
-	public static String rightPad(final String str, final int size, String padStr) {
-		if (str == null) {
-			return null;
-		}
-		if (padStr == null) {
-			padStr = " ";
-		}
-		
-		String strData = Objects.requireNonNull(str).intern();
-		int strLen = strData.codePointCount(0, strData.length());
+        if (padLen == 0) {
+            padStr = " ";
+        }
+        final int pads = size - strLen;
+        if (pads <= 0) {
+            return str;
+        }
+        String padding = "";
+        for (int i = 0; i < pads + 1; i++) {
+            padding += padStr;
+        }
+        return JSONataUtils.substr(padding, 0, pads).concat(str);
+    }
 
-		String padData = Objects.requireNonNull(padStr).intern();
-		int padLen = padData.codePointCount(0, padData.length());
+    public static String rightPad(final String str, final int size, String padStr) {
+        if (str == null) {
+            return null;
+        }
+        if (padStr == null) {
+            padStr = " ";
+        }
 
-		if (padLen == 0) {
-			padStr = " ";
-		}
-		final int pads = size - strLen;
-		if (pads <= 0) {
-			return str;
-		}
-		String padding = "";
-		for (int i=0;i<pads+1;i++) {
-			padding += padStr;
-		}
-		return str.concat(JSONataUtils.substr(padding, 0, pads));
-	}
+        String strData = Objects.requireNonNull(str).intern();
+        int strLen = strData.codePointCount(0, strData.length());
 
-	@Override
-	public int getMaxArgs() {
-		return 3;
-	}
+        String padData = Objects.requireNonNull(padStr).intern();
+        int padLen = padData.codePointCount(0, padData.length());
 
-	@Override
-	public int getMinArgs() {
-		return 1; // account for context variable
-	}
+        if (padLen == 0) {
+            padStr = " ";
+        }
+        final int pads = size - strLen;
+        if (pads <= 0) {
+            return str;
+        }
+        String padding = "";
+        for (int i = 0; i < pads + 1; i++) {
+            padding += padStr;
+        }
+        return str.concat(JSONataUtils.substr(padding, 0, pads));
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a string (or context variable), a number, an optional string, returns
-		// a string
-		return "<s-ns?:s>";
-	}
+    @Override
+    public int getMaxArgs() {
+        return 3;
+    }
+
+    @Override
+    public int getMinArgs() {
+        return 1; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a string (or context variable), a number, an optional string, returns
+        // a string
+        return "<s-ns?:s>";
+    }
 }

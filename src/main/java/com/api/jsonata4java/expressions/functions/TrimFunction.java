@@ -54,67 +54,67 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class TrimFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -311691648827361039L;
+    private static final long serialVersionUID = -311691648827361039L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TRIM);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_TRIM);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_TRIM);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TRIM);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_TRIM);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_TRIM);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argString = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString != null && argString.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argString = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argString = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argString != null && argString.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argString != null) {
-				if (argString.isTextual()) {
-					final String str = argString.textValue();
-					result = new TextNode(str.trim().replaceAll("\\s+", " "));
-				} else {
-					if (useContext) {
-						throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-					}
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
-			}
-		} else {
-			if (argCount != 0) {
-				throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-			}
-		}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argString != null) {
+                if (argString.isTextual()) {
+                    final String str = argString.textValue();
+                    result = new TextNode(str.trim().replaceAll("\\s+", " "));
+                } else {
+                    if (useContext) {
+                        throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+                    }
+                    throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                }
+            }
+        } else {
+            if (argCount != 0) {
+                throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a string (or context variable), returns a string
-		return "<s-:s>";
-	}
+    @Override
+    public String getSignature() {
+        // accepts a string (or context variable), returns a string
+        return "<s-:s>";
+    }
 }

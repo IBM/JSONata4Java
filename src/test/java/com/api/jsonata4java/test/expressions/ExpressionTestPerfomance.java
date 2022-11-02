@@ -23,7 +23,6 @@
 package com.api.jsonata4java.test.expressions;
 
 import org.junit.Test;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -49,10 +48,10 @@ public class ExpressionTestPerfomance {
     public void testWithBigInput() throws Exception {
 
         Jsonata4JavaTestMapper mapper = new Jsonata4JavaTestMapper("{"
-                + "\"output\": [list.complex.{"
-                + "\"name\": $"
-                + "}]"
-                + "}");
+            + "\"output\": [list.complex.{"
+            + "\"name\": $"
+            + "}]"
+            + "}");
 
         System.out.println("generating big JSON");
         long startMillis = System.currentTimeMillis();
@@ -78,11 +77,11 @@ public class ExpressionTestPerfomance {
     public void testWithBigInput_withParentPath() throws Exception {
 
         Jsonata4JavaTestMapper mapper = new Jsonata4JavaTestMapper("{"
-                + "\"output\": [list.complex.{"
-                + "\"id\": %.id,"
-                + "\"name\": $"
-                + "}]"
-                + "}");
+            + "\"output\": [list.complex.{"
+            + "\"id\": %.id,"
+            + "\"name\": $"
+            + "}]"
+            + "}");
 
         System.out.println("generating big JSON");
         long startMillis = System.currentTimeMillis();

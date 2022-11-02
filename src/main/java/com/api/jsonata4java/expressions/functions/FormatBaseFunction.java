@@ -46,100 +46,101 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class FormatBaseFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 822669293636254300L;
+    private static final long serialVersionUID = 822669293636254300L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_FORMAT_BASE);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_FORMAT_BASE);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_FORMAT_BASE);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
-			Constants.FUNCTION_FORMAT_BASE);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_FORMAT_BASE);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_FORMAT_BASE);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_FORMAT_BASE);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
+        Constants.FUNCTION_FORMAT_BASE);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argNumber = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argNumber != null && argNumber.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argNumber = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argNumber = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argNumber != null && argNumber.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1 || argCount == 2) {
-			if (!useContext) {
-				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1 || argCount == 2) {
+            if (!useContext) {
+                argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
 
-			// Make sure that the first argument is a number
-			if (argNumber == null) {
-				return null;
-			}
-			if (argNumber.isNumber()) {
-				// Read the number from the argument
-				Double d = argNumber.asDouble();
-				Long l = Math.round(d);
-				if (Math.abs((double)l -d) == 0.5 && l % 2 == 1) {
-					l--;
-				}
-				final int number = (int)l.longValue();
+            // Make sure that the first argument is a number
+            if (argNumber == null) {
+                return null;
+            }
+            if (argNumber.isNumber()) {
+                // Read the number from the argument
+                Double d = argNumber.asDouble();
+                Long l = Math.round(d);
+                if (Math.abs((double) l - d) == 0.5 && l % 2 == 1) {
+                    l--;
+                }
+                final int number = (int) l.longValue();
 
-				// Check to see if we have an radix argument and read it if we do
-				int radix = 10;
-				if (argCount == 2) {
-					final JsonNode argRadix = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-							useContext ? 0 : 1);
-					if (argRadix != null) {
-						if (argRadix.isNumber()) {
-							d = argRadix.asDouble();
-							l = Math.round(d);
-							if (Math.abs((double)l - d) == 0.5 && l % 2 == 1) {
-								l--;
-							}
-							radix = (int)l.longValue();
+                // Check to see if we have an radix argument and read it if we do
+                int radix = 10;
+                if (argCount == 2) {
+                    final JsonNode argRadix = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                        useContext ? 0 : 1);
+                    if (argRadix != null) {
+                        if (argRadix.isNumber()) {
+                            d = argRadix.asDouble();
+                            l = Math.round(d);
+                            if (Math.abs((double) l - d) == 0.5 && l % 2 == 1) {
+                                l--;
+                            }
+                            radix = (int) l.longValue();
 
-							// Make sure that the radix specified is valid
-							if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX) {
-								throw new EvaluateRuntimeException(Constants.ERR_MSG_INVALID_RADIX);
-							}
-						} else {
-							throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-						}
-					}
-				}
+                            // Make sure that the radix specified is valid
+                            if (radix < Character.MIN_RADIX || radix > Character.MAX_RADIX) {
+                                throw new EvaluateRuntimeException(Constants.ERR_MSG_INVALID_RADIX);
+                            }
+                        } else {
+                            throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                        }
+                    }
+                }
 
-				// Convert the number to a string in the specified base
-				result = new TextNode(Integer.toString(number, radix));
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
-		}
+                // Convert the number to a string in the specified base
+                result = new TextNode(Integer.toString(number, radix));
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a number (or context variable), an optional number, returns a string
-		return "<n-n?:s>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a number (or context variable), an optional number, returns a string
+        return "<n-n?:s>";
+    }
 }

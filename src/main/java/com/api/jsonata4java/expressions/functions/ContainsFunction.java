@@ -59,94 +59,96 @@ import com.fasterxml.jackson.databind.node.POJONode;
  */
 public class ContainsFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -5078993065631549515L;
+    private static final long serialVersionUID = -5078993065631549515L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_CONTAINS);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_CONTAINS);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_CONTAINS);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_CONTAINS);
-	public static ObjectMapper s_objectMapper = new ObjectMapper();
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_CONTAINS);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_CONTAINS);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_CONTAINS);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_CONTAINS);
+    public static ObjectMapper s_objectMapper = new ObjectMapper();
 
-		// Retrieve the number of arguments
-		JsonNode argString = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString != null && argString.isNull() == false) {
-				// check to see if there is a valid context value
-				if (!argString.isTextual()) {
-	            // handle Object
-	            if (argString.isObject()) {
-	               argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-	            } else {
-	               throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-	            }
-				} else {
-				   argCount++;
-				}
-			} else {
-				useContext = false;
-			}
-		}
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 2) {
-			if (!useContext) {
-				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argString == null) {
-				return null;
-			}
-			if (!argString.isTextual()) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-			final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, (useContext ? 0:1));
+        // Retrieve the number of arguments
+        JsonNode argString = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argString = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argString != null && argString.isNull() == false) {
+                // check to see if there is a valid context value
+                if (!argString.isTextual()) {
+                    // handle Object
+                    if (argString.isObject()) {
+                        argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+                    } else {
+                        throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+                    }
+                } else {
+                    argCount++;
+                }
+            } else {
+                useContext = false;
+            }
+        }
 
-			if (!argString.isTextual()) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-			final String str = argString.textValue();
-			// Make sure argPattern is not null
-			if (argPattern != null) {
-				// Check to see if the pattern is just a string
-				if (argPattern.isTextual()) {
-					// Do a simple String::contains
-					result = str.contains(argPattern.textValue()) ? BooleanNode.TRUE : BooleanNode.FALSE;
-				} else if (argPattern instanceof POJONode) {
-					// Match against a regular expression
-					final RegularExpression regex = ((RegularExpression) ((POJONode) argPattern).getPojo());
-					result = regex.getPattern().matcher(str).find() ? BooleanNode.TRUE : BooleanNode.FALSE;
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-				}
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount < 2 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
-		}
+        // Make sure that we have the right number of arguments
+        if (argCount == 2) {
+            if (!useContext) {
+                argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argString == null) {
+                return null;
+            }
+            if (!argString.isTextual()) {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+            final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, (useContext ? 0 : 1));
 
-		return result;
-	}
+            if (!argString.isTextual()) {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+            final String str = argString.textValue();
+            // Make sure argPattern is not null
+            if (argPattern != null) {
+                // Check to see if the pattern is just a string
+                if (argPattern.isTextual()) {
+                    // Do a simple String::contains
+                    result = str.contains(argPattern.textValue()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+                } else if (argPattern instanceof POJONode) {
+                    // Match against a regular expression
+                    final RegularExpression regex = ((RegularExpression) ((POJONode) argPattern).getPojo());
+                    result = regex.getPattern().matcher(str).find() ? BooleanNode.TRUE : BooleanNode.FALSE;
+                } else {
+                    throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount < 2 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
+        }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1; // account for context variable
-	}
+        return result;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a string (or context variable), a string or function, returns a
-		// boolean
-		return "<s-(sf):b>";
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
+
+    @Override
+    public int getMinArgs() {
+        return 1; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a string (or context variable), a string or function, returns a
+        // boolean
+        return "<s-(sf):b>";
+    }
 
 }

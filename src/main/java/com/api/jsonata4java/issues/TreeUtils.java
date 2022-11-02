@@ -1,7 +1,6 @@
 package com.api.jsonata4java.issues;
 
 import java.util.List;
-
 import org.antlr.v4.runtime.misc.Utils;
 import org.antlr.v4.runtime.tree.Tree;
 import org.antlr.v4.runtime.tree.Trees;
@@ -14,7 +13,8 @@ public class TreeUtils {
     public static final String Indents = "  ";
     private static int level;
 
-    private TreeUtils() {}
+    private TreeUtils() {
+    }
 
     /**
      * Pretty print out a whole tree.
@@ -29,7 +29,8 @@ public class TreeUtils {
     }
 
     private static String process(final Tree t, final List<String> ruleNames) {
-        if (t.getChildCount() == 0) return Utils.escapeWhitespace(Trees.getNodeText(t, ruleNames), false);
+        if (t.getChildCount() == 0)
+            return Utils.escapeWhitespace(Trees.getNodeText(t, ruleNames), false);
         StringBuilder sb = new StringBuilder();
         sb.append(lead(level));
         level++;

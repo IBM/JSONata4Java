@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.time.Instant;
-
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
@@ -49,50 +48,51 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class NowFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 5607559377364554518L;
+    private static final long serialVersionUID = 5607559377364554518L;
 
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_NOW);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_NOW);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		int argCount = getArgumentCount(ctx);
+        // Retrieve the number of arguments
+        int argCount = getArgumentCount(ctx);
 
-		JsonNode picture = JsonNodeFactory.instance.nullNode();
-		if (argCount >= 1) {
-			picture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-		}
-		JsonNode timezone = JsonNodeFactory.instance.nullNode();
-		if (argCount == 2) {
-			timezone = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
-		}
-		String pictureStr = null;
-		if (picture != null && picture.isNull() == false) {
-			pictureStr = picture.asText();
-		}
-		String timezoneStr = null;
-		if (timezone != null && timezone.isNull() == false) {
-			timezoneStr = timezone.asText();
-		}
-		result = new TextNode(DateTimeUtils.formatDateTime(Instant.now().toEpochMilli(), pictureStr, timezoneStr));
+        JsonNode picture = JsonNodeFactory.instance.nullNode();
+        if (argCount >= 1) {
+            picture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+        }
+        JsonNode timezone = JsonNodeFactory.instance.nullNode();
+        if (argCount == 2) {
+            timezone = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
+        }
+        String pictureStr = null;
+        if (picture != null && picture.isNull() == false) {
+            pictureStr = picture.asText();
+        }
+        String timezoneStr = null;
+        if (timezone != null && timezone.isNull() == false) {
+            timezoneStr = timezone.asText();
+        }
+        result = new TextNode(DateTimeUtils.formatDateTime(Instant.now().toEpochMilli(), pictureStr, timezoneStr));
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a number (or context variable), returns a number
-		return "<s?s?:s>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0;
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a number (or context variable), returns a number
+        return "<s?s?:s>";
+    }
 }
