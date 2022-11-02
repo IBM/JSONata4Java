@@ -58,7 +58,6 @@ public class TestLogFormatter extends Formatter implements Serializable {
 	 * %{BASE16NUM:threadid}
 	 * ...\s*%{NOTSPACE:package}\.%{WORD:class}\s*%{NOTSPACE:level}\s%{NOTSPACE:method}\s%{GREEDYDATA:message}
 	 */
-	@SuppressWarnings("deprecation")
     @Override
 	public String format(LogRecord r) {
 		String className;
