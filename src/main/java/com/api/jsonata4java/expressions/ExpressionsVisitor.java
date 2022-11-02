@@ -698,7 +698,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             output = arr;
 
             for (JsonNode lhsE : lhs) {
-                // _environment.addChildParentLink(lhs, _environment.peekContext());
                 JsonNode rhsE = resolvePath(lhsE, rhsCtx);
                 if (rhsE != null) {
                     arr.addAsSelectionGroup(rhsE);
@@ -784,8 +783,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             } else if (input.isObject()) {
                 for (Iterator<String> it = ((ObjectNode) input).fieldNames(); it.hasNext();) {
                     String key = it.next();
-                    JsonNode childNode = ((ObjectNode) input).get(key);
-                    traverseDescendants(childNode, results);
+                    traverseDescendants(((ObjectNode) input).get(key), results);
                 }
             }
         } // else don't process null

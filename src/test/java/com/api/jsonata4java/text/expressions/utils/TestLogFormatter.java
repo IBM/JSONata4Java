@@ -40,67 +40,67 @@ import java.util.logging.LogRecord;
 
 public class TestLogFormatter extends Formatter implements Serializable {
 
-	private static final long serialVersionUID = -8273377732120306686L;
+    private static final long serialVersionUID = -8273377732120306686L;
 
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-	// private final DateFormat WLP_DATE_FORMATTER = new SimpleDateFormat("MM/dd/yy
-	// H:mm:ss:SSS z");
-	private final DateFormat WLP_DATE_FORMATTER = new SimpleDateFormat("H:mm:ss:SSS");
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+    // private final DateFormat WLP_DATE_FORMATTER = new SimpleDateFormat("MM/dd/yy
+    // H:mm:ss:SSS z");
+    private final DateFormat WLP_DATE_FORMATTER = new SimpleDateFormat("H:mm:ss:SSS");
 
-	/**
-	 * Aim to match the format of the WLP trace log
-	 * 
-	 * e.g. [12/18/14 21:15:31:077 UTC] 00000018 id=
-	 * com.ibm.ws.kernel.feature.internal.FeatureManager I CWWKF0007I: Feature
-	 * update started.
-	 * 
-	 * Which is parsed in logstash as follows: \[%{DATA:timestamp}\]
-	 * %{BASE16NUM:threadid}
-	 * ...\s*%{NOTSPACE:package}\.%{WORD:class}\s*%{NOTSPACE:level}\s%{NOTSPACE:method}\s%{GREEDYDATA:message}
-	 */
+    /**
+     * Aim to match the format of the WLP trace log
+     * 
+     * e.g. [12/18/14 21:15:31:077 UTC] 00000018 id=
+     * com.ibm.ws.kernel.feature.internal.FeatureManager I CWWKF0007I: Feature
+     * update started.
+     * 
+     * Which is parsed in logstash as follows: \[%{DATA:timestamp}\]
+     * %{BASE16NUM:threadid}
+     * ...\s*%{NOTSPACE:package}\.%{WORD:class}\s*%{NOTSPACE:level}\s%{NOTSPACE:method}\s%{GREEDYDATA:message}
+     */
     @Override
-	public String format(LogRecord r) {
-		String className;
-		try {
-			className = Class.forName(r.getSourceClassName()).getSimpleName();
-		} catch (ClassNotFoundException e) {
-			className = "UNKNOWN";
-		}
-		String date = WLP_DATE_FORMATTER.format(new Date(r.getMillis()));
-		StringBuilder sb = new StringBuilder();
-		sb.append('[');
-		sb.append(date);
-		sb.append("] ");
-		sb.append(r.getThreadID());
-		sb.append("    ");
-		sb.append(className);
-		sb.append(' ');
-		sb.append(r.getLevel().getName());
-		sb.append(' ');
-		sb.append(r.getSourceMethodName());
-		sb.append(' ');
-		sb.append(formatMessage(r));
-		sb.append(LINE_SEPARATOR);
+    public String format(LogRecord r) {
+        String className;
+        try {
+            className = Class.forName(r.getSourceClassName()).getSimpleName();
+        } catch (ClassNotFoundException e) {
+            className = "UNKNOWN";
+        }
+        String date = WLP_DATE_FORMATTER.format(new Date(r.getMillis()));
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        sb.append(date);
+        sb.append("] ");
+        sb.append(r.getThreadID());
+        sb.append("    ");
+        sb.append(className);
+        sb.append(' ');
+        sb.append(r.getLevel().getName());
+        sb.append(' ');
+        sb.append(r.getSourceMethodName());
+        sb.append(' ');
+        sb.append(formatMessage(r));
+        sb.append(LINE_SEPARATOR);
 
-		if (null != r.getThrown()) {
-			sb.append("	Throwable occurred: ");
-			sb.append(LINE_SEPARATOR);
-			Throwable t = r.getThrown();
-			PrintWriter pw = null;
-			try {
-				StringWriter sw = new StringWriter();
-				pw = new PrintWriter(sw);
-				t.printStackTrace(pw);
-				for (String line : sw.toString().split("\n")) {
-					sb.append(line);
-					sb.append(LINE_SEPARATOR);
-				}
-			} finally {
-				if (pw != null) {
-					pw.close();
-				}
-			}
-		}
-		return sb.toString();
-	}
+        if (null != r.getThrown()) {
+            sb.append("	Throwable occurred: ");
+            sb.append(LINE_SEPARATOR);
+            Throwable t = r.getThrown();
+            PrintWriter pw = null;
+            try {
+                StringWriter sw = new StringWriter();
+                pw = new PrintWriter(sw);
+                t.printStackTrace(pw);
+                for (String line : sw.toString().split("\n")) {
+                    sb.append(line);
+                    sb.append(LINE_SEPARATOR);
+                }
+            } finally {
+                if (pw != null) {
+                    pw.close();
+                }
+            }
+        }
+        return sb.toString();
+    }
 }
