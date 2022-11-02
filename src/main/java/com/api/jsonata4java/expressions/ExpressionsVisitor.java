@@ -703,9 +703,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     arr.addAsSelectionGroup(rhsE);
                 }
             }
-            // added for Issue#30
-            // output = unwrapArray(output);
-
         } else {
             // the LHS is just an object
             _environment.pushContext(lhs);
@@ -773,12 +770,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
      */
     void traverseDescendants(JsonNode input, ArrayNode results) {
         if (input != null) {
-            if (input.isArray() == false) {
+            if (!input.isArray()) {
                 // put this element into the results
                 results.add(input);
             }
-            // now process the "descendants" (array elements, or nodes from keys of an
-            // object)
+            // now process the "descendants" (array elements, or nodes from keys of an object)
             if (input.isArray()) {
                 for (Iterator<JsonNode> it = ((ArrayNode) input).iterator(); it.hasNext();) {
                     JsonNode member = it.next();
@@ -808,8 +804,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 
         if (!keepArray) {
             if (result != null && result instanceof SelectorArrayNode) {
-//					&& ((SelectorArrayNode) result).getSelectionGroups().size() == 1) {
-//				result = ((SelectorArrayNode) result).getSelectionGroups().get(0);
                 SelectorArrayNode san = (SelectorArrayNode) result;
                 if (san.size() == 1 && san.selectionGroups.size() == 1) {
                     JsonNode test = san.selectionGroups.get(0);
@@ -2422,16 +2416,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             lhs = visit(lhsCtx);
         }
         if (lhs != null && lhs.isNull() == false) {
-            /**
-             * // @@@ trace
-             * String lhscontent = lhs.toString();
-             * if (lhscontent.length() > 300) {
-             * lhscontent = lhscontent.substring(0, 300) + "...";
-             * }
-             * System.out.println("@@@ visitPath: lhs = \"" + lhscontent + "\"");
-             * //@@@ trace
-             * 
-             */
             // reject path entries that are numbers or values
             switch (lhs.getNodeType()) {
                 case NUMBER: {
@@ -2474,20 +2458,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                         // null (i.e. *no match*)
                         result = null;
                     } else {
-//						if (lastStep && lastStepCons && rhs.size() == 1 && rhs.get(0).isArray() && rhs.get(0) instanceof SelectorArrayNode == false) {
-//							result = rhs.get(0);
-//						} else {
-//							result = new SelectorArrayNode(JsonNodeFactory.instance);
-//							for (JsonNode elt: ((SelectorArrayNode)rhs).getSelectionGroups()) {
-//								if (elt.isArray() == false) {
-//									((SelectorArrayNode)result).addAsSelectionGroup(elt);
-//								} else {
-//									for (JsonNode elt2: (ArrayNode)elt) {
-//										((SelectorArrayNode)result).addAsSelectionGroup(elt2);
-//									}
-//								}
-//							}
-//						}
                         if ((firstStepCons && firstStep) || (lastStep && lastStepCons)) {
                             List<JsonNode> cells = ((SelectorArrayNode) rhs).getSelectionGroups();
                             result = new ArrayNode(JsonNodeFactory.instance);
@@ -2508,16 +2478,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                             firstStepCons = false;
                         } else {
                             result = rhs;
-
-//							if (keepArray) {
-//								result = rhs;
-//							} else {
-//								if (rhs.size() == 1) {
-//									result = rhs.get(0);
-//								} else {
-//									result = rhs;
-//								}
-//							}
                         }
                     }
                 } else {
@@ -2529,23 +2489,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         if (LOG.isLoggable(Level.FINEST)) {
             LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
         }
-        /**
-         * // @@@ trace
-         * String resultcontent = result == null ? "null" : result.toString();
-         * if (resultcontent != null && resultcontent.length() > 300) {
-         * resultcontent = resultcontent.substring(0, 300) + "...";
-         * }
-         * System.out.println("@@@ visitPath: <- result = \"" + (result == null ? "null"
-         * : resultcontent) + "\"");
-         * //@@@ trace
-         */
         return result;
     }
 
     @Override
     public JsonNode visitParent_path(Parent_pathContext ctx) {
-        // System.out.println("@@@ !!! @@@ visitParent_path: Parent_pathContext = \"" +
-        // ctx.toString() + "\"");
         final String METHOD = "visitParent_path";
         if (LOG.isLoggable(Level.FINEST)) {
             LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
@@ -2557,23 +2505,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         if (LOG.isLoggable(Level.FINEST)) {
             LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
         }
-        /**
-         * // @@@ trace
-         * String resultcontent = result == null ? "null" : result.toString();
-         * if (resultcontent != null && resultcontent.length() > 300) {
-         * resultcontent = resultcontent.substring(0, 300) + "...";
-         * }
-         * System.out.println("@@@ visitParent_path: <- result = \"" + (result == null ?
-         * "null" : resultcontent) + "\"");
-         * // @@@ trace
-         */
         return result;
     }
 
     @Override
     public JsonNode visitParent_path_solitary(MappingExpressionParser.Parent_path_solitaryContext ctx) {
-        // System.out.println("@@@ !!! @@@ visitParent_path_solitary: Parent_pathContext
-        // = \"" + ctx.toString() + "\"");
         final String METHOD = "visitParent_path_solitary";
         if (LOG.isLoggable(Level.FINEST)) {
             LOG.entering(CLASS, METHOD, new Object[] { ctx.getText(), ctx.depth() });
@@ -2585,17 +2521,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         if (LOG.isLoggable(Level.FINEST)) {
             LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
         }
-        /**
-         * // @@@ trace
-         * String resultcontent = result == null ? "null" : result.toString();
-         * if (resultcontent != null && resultcontent.length() > 300) {
-         * resultcontent = resultcontent.substring(0, 300) + "...";
-         * }
-         * System.out.println(
-         * "@@@ visitParent_path_solitary: <- result = \"" + (result == null ? "null" :
-         * resultcontent) + "\"");
-         * // @@@ trace
-         */
         return result;
     }
 
@@ -2604,17 +2529,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         if (ctx.getChildCount() >= 3 && (/* ctx.getChildCount() is odd */ ctx.getChildCount() % 2 == 1)) {
             final int depth = (ctx.getChildCount() - 1) / 2;
             final JsonNode parentNode = _environment.getParentNode(depth);
-            /**
-             * System.out.println(
-             *        "@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child() = "
-             *                + ctx.getChild((2 * depth)).getClass().getSimpleName());
-             */
             if (parentNode != null && ctx.getChildCount() == ((2 * depth) + 1)
                     && (ctx.getChild(2 * depth) instanceof ExprContext)) {
-                /**
-                 * System.out.println("@@@ !!! @@@ determineParentPath(" + depth + "): ctx.child = \""
-                 *        + ctx.getChild(2 * depth).getChild(0).toString() + "\"");
-                 */
                 _environment.pushContext(parentNode);
                 result = resolvePath(parentNode, (ExprContext) ctx.getChild((2 * depth)));
                 _environment.popContext();
@@ -2634,9 +2550,6 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         }
         JsonNode result = null;
 
-        // [{"a":{"b":1}}, {"a":{"b":2}}].a
-//		final ExprContext lhsCtx = ctx.expr(); // e.g. $$.a.b.c
-        // reset the stack
         int stackSize = _environment.sizeContext();
         Deque<JsonNode> tmpStack = new LinkedList<JsonNode>();
         JsonNode tmpNode = null;
@@ -2647,11 +2560,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             }
         }
         try {
-//		if (lhsCtx == null) {
             result = _environment.peekContext();
-//		} else {
-//			result = visit(lhsCtx);
-//		}
         } catch (Exception e) {
             throw e;
         } finally {
