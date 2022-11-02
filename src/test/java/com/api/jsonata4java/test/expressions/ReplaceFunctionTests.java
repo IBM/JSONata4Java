@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.utils.Constants;
 
 /**
@@ -86,137 +83,312 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class ReplaceFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = -382714591856328657L;
+    private static final long serialVersionUID = -382714591856328657L;
 
-	private static final String  ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, 
-			Constants.FUNCTION_REPLACE);
-	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_REPLACE);
-	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_REPLACE);
-	private static final String ERR_MSG_ARG3_BAD_TYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
-			Constants.FUNCTION_REPLACE);
-	private static final String ERR_MSG_ARG4_BAD_TYPE = String.format(Constants.ERR_MSG_ARG4_BAD_TYPE,
-			Constants.FUNCTION_REPLACE);
-	private static final String ERR_MSG_ARG2_EMPTY_STR = String.format(Constants.ERR_MSG_ARG2_EMPTY_STR,
-			Constants.FUNCTION_REPLACE);
+    private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
+        Constants.FUNCTION_REPLACE);
+    private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_REPLACE);
+    private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_REPLACE);
+    private static final String ERR_MSG_ARG3_BAD_TYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
+        Constants.FUNCTION_REPLACE);
+    private static final String ERR_MSG_ARG4_BAD_TYPE = String.format(Constants.ERR_MSG_ARG4_BAD_TYPE,
+        Constants.FUNCTION_REPLACE);
+    private static final String ERR_MSG_ARG2_EMPTY_STR = String.format(Constants.ERR_MSG_ARG2_EMPTY_STR,
+        Constants.FUNCTION_REPLACE);
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$replace()", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace({}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace({}, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(' ', {})", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', {}, ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', ' ', {})", null, ERR_MSG_ARG3_BAD_TYPE }, //
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$replace()", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace({})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace({}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace({}, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', {})", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', {}, ' ')", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', ' ', {})", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
 
-				{ "$replace([])", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace([], ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace([], ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(' ', [])", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', [], ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', ' ', [])", null, ERR_MSG_ARG3_BAD_TYPE }, //
+            {
+                "$replace([])", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace([], ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace([], ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', [])", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', [], ' ')", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', ' ', [])", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
 
-				{ "$replace({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace({\"hello\": 1}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace({\"hello\": 1}, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(' ', {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', {\"hello\": 1}, ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', ' ', {\"hello\": 1})", null, ERR_MSG_ARG3_BAD_TYPE }, //
+            {
+                "$replace({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace({\"hello\": 1}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace({\"hello\": 1}, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', {\"hello\": 1}, ' ')", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', ' ', {\"hello\": 1})", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
 
-				{ "$replace([\"hello\", 1])", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace([\"hello\", 1], ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace([\"hello\", 1], ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(' ', [\"hello\", 1])", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', [\"hello\", 1], ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', ' ', [\"hello\", 1])", null, ERR_MSG_ARG3_BAD_TYPE }, //
+            {
+                "$replace([\"hello\", 1])", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace([\"hello\", 1], ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace([\"hello\", 1], ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', [\"hello\", 1])", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', [\"hello\", 1], ' ')", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', ' ', [\"hello\", 1])", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
 
-				{ "$replace(true)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(true, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(true, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(' ', true)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', true, ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', ' ', true)", null, ERR_MSG_ARG3_BAD_TYPE }, //
+            {
+                "$replace(true)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(true, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(true, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', true)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', true, ' ')", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', ' ', true)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
 
-				{ "$replace(null)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(null, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', null, ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', ' ', null)", null, ERR_MSG_ARG3_BAD_TYPE }, //
+            {
+                "$replace(null)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(null, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', null, ' ')", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', ' ', null)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
 
-				{ "$replace(5)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(5, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(' ', 5)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', 5, ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', ' ', 5)", null, ERR_MSG_ARG3_BAD_TYPE }, //
+            {
+                "$replace(5)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(5, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', 5)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', 5, ' ')", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', ' ', 5)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
 
-				{ "$replace(-5)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(-5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(-5, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(' ', -5)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', -5, ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', ' ', -5)", null, ERR_MSG_ARG3_BAD_TYPE }, //
+            {
+                "$replace(-5)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(-5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(-5, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', -5)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', -5, ' ')", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', ' ', -5)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
 
-				{ "$replace(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(10/3.0, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(10/3.0, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(' ', 10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', 10/3.0, ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', ' ', 10/3.0)", null, ERR_MSG_ARG3_BAD_TYPE }, //
+            {
+                "$replace(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(10/3.0, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(10/3.0, ' ', ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', 10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', 10/3.0, ' ')", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', ' ', 10/3.0)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
 
-				// jsontata 1.8.2 complains about argument 2 because it assumes use of context
-				{ "$replace(a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE}, // jsonata 1.8.2 ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(a.b.c, ' ')", null, ERR_BAD_CONTEXT}, // jsonata 1.8.2 MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(a.b.c, ' ', ' ')", null, null}, // jsonata 1.8.2 ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$replace(' ', a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', a.b.c, ' ')", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$replace(' ', ' ', a.b.c)", null, ERR_MSG_ARG3_BAD_TYPE }, //
+            // jsontata 1.8.2 complains about argument 2 because it assumes use of context
+            {
+                "$replace(a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, // jsonata 1.8.2 ERR_MSG_ARG1_BAD_TYPE }, //
+            {
+                "$replace(a.b.c, ' ')", null, ERR_BAD_CONTEXT
+            }, // jsonata 1.8.2 MSG_ARG1_BAD_TYPE }, //
+            {
+                "$replace(a.b.c, ' ', ' ')", null, null
+            }, // jsonata 1.8.2 ERR_MSG_ARG1_BAD_TYPE }, //
+            {
+                "$replace(' ', a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', a.b.c, ' ')", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$replace(' ', ' ', a.b.c)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
 
-				{ "$replace('', '', '')", null, ERR_MSG_ARG2_EMPTY_STR }, //
-				{ "$replace(' ', ' ', ' ')", "\" \"", null }, //
-				{ "$replace('foo bar', 'o', 'a')", "\"faa bar\"", null }, //
-				{ "$replace('foo bar', 'o', 'aa')", "\"faaaa bar\"", null }, //
-				{ "$replace('foo bar', 'o', 'a', 0)", "\"foo bar\"", null }, //
-				{ "$replace('foo bar', 'o', 'a', 1)", "\"fao bar\"", null }, //
-				{ "$replace('foo bar', 'o', 'a', 2)", "\"faa bar\"", null }, //
-				{ "$replace('foo bar', 'o', 'a', {})", null, ERR_MSG_ARG4_BAD_TYPE }, //
-				{ "$replace('foo bar', 'o', 'a', [])", null, ERR_MSG_ARG4_BAD_TYPE }, //
-				{ "$replace('foo bar', 'o', 'a', true)", null, ERR_MSG_ARG4_BAD_TYPE }, //
-				{ "$replace('foo bar', 'o', 'a', null)", null, ERR_MSG_ARG4_BAD_TYPE }, //
-				{ "$replace('foo bar', 'o', 'a', -1)", null, ERR_MSG_ARG4_BAD_TYPE }, //
-				{ "$replace('foox123xfuox456xfiox789xfoo', /x?f[a-z]ox?/, '---')", "\"---123---456---789---\"", null }, //
-				{ "$replace('foox123xfuox456xfiox789xfoo', /x?f[a-z]ox?/, '---')", "\"---123---456---789---\"", null }, //
-		        { "$replace('foo_123_fuo_456_fio_789_foo', /_?f[a-z]o_?/, '---')", "\"---123---456---789---\"", null }, //
-		        { "$replace('foo_123_fuo_?f[a-z]o_?456_fio_789_foo', /_?f[a-z]o_?/, '---')", "\"---123---?f[a-z]o_?456---789---\"", null }, //
-		        { "$replace('foo_123_fuo_?f[a-z]o_?456_fio_789_foo', '_?f[a-z]o_?', '---')", "\"foo_123_fuo---456_fio_789_foo\"", null }, //
-		        { "$replace('a-b---+c--d', /-+/, '_', 2)", "\"a_b_+c--d\"", null }, //
-		        { "$replace('a-b---+c--d', '-+', '_', 2)", "\"a-b--_c--d\"", null }, //
-		        { "$replace('fooa123aAafuoAa456aaAfioAaAa789afoo', /a+/i, '--')", "\"foo--123--fuo--456--fio--789--foo\"", null }, //
-		        { "$replace('fooa123aAafuoAa456aaAfioAaAa789afoo', /a+/i, '--', 4)", "\"foo--123--fuo--456--fioAaAa789afoo\"", null }, //
-		        { "$replace('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/, '$1---$2')", "\"1234sjdffjf\\n5678jkfjf\\n9999fg grrs\"", null }, //
-		        { "$replace('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m, '$1---$2')", "\"1234---sjdffjf\\n5678---jkfjf\\n9999---fg grrs\"", null }, //
-		        { "$replace('1234sjdffjf\\njkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m, '$1---$2')", "\"1234---sjdffjf\\njkfjf\\n9999---fg grrs\"", null }, //
-		    	// JSNOata test suite group "regex" case012
-		        { "$replace(\"265USD\", /([0-9]+)USD/, \"$$$1\")", "\"$265\"", null }, //
-		    	// JSNOata test suite group "regex" case013
-		        { "$replace(\"265USD\", /([0-9]+)USD/, \"$w\")", "\"$w\"", null }, //
-		});
-	}
+            {
+                "$replace('', '', '')", null, ERR_MSG_ARG2_EMPTY_STR
+            }, //
+            {
+                "$replace(' ', ' ', ' ')", "\" \"", null
+            }, //
+            {
+                "$replace('foo bar', 'o', 'a')", "\"faa bar\"", null
+            }, //
+            {
+                "$replace('foo bar', 'o', 'aa')", "\"faaaa bar\"", null
+            }, //
+            {
+                "$replace('foo bar', 'o', 'a', 0)", "\"foo bar\"", null
+            }, //
+            {
+                "$replace('foo bar', 'o', 'a', 1)", "\"fao bar\"", null
+            }, //
+            {
+                "$replace('foo bar', 'o', 'a', 2)", "\"faa bar\"", null
+            }, //
+            {
+                "$replace('foo bar', 'o', 'a', {})", null, ERR_MSG_ARG4_BAD_TYPE
+            }, //
+            {
+                "$replace('foo bar', 'o', 'a', [])", null, ERR_MSG_ARG4_BAD_TYPE
+            }, //
+            {
+                "$replace('foo bar', 'o', 'a', true)", null, ERR_MSG_ARG4_BAD_TYPE
+            }, //
+            {
+                "$replace('foo bar', 'o', 'a', null)", null, ERR_MSG_ARG4_BAD_TYPE
+            }, //
+            {
+                "$replace('foo bar', 'o', 'a', -1)", null, ERR_MSG_ARG4_BAD_TYPE
+            }, //
+            {
+                "$replace('foox123xfuox456xfiox789xfoo', /x?f[a-z]ox?/, '---')", "\"---123---456---789---\"", null
+            }, //
+            {
+                "$replace('foox123xfuox456xfiox789xfoo', /x?f[a-z]ox?/, '---')", "\"---123---456---789---\"", null
+            }, //
+            {
+                "$replace('foo_123_fuo_456_fio_789_foo', /_?f[a-z]o_?/, '---')", "\"---123---456---789---\"", null
+            }, //
+            {
+                "$replace('foo_123_fuo_?f[a-z]o_?456_fio_789_foo', /_?f[a-z]o_?/, '---')", "\"---123---?f[a-z]o_?456---789---\"", null
+            }, //
+            {
+                "$replace('foo_123_fuo_?f[a-z]o_?456_fio_789_foo', '_?f[a-z]o_?', '---')", "\"foo_123_fuo---456_fio_789_foo\"", null
+            }, //
+            {
+                "$replace('a-b---+c--d', /-+/, '_', 2)", "\"a_b_+c--d\"", null
+            }, //
+            {
+                "$replace('a-b---+c--d', '-+', '_', 2)", "\"a-b--_c--d\"", null
+            }, //
+            {
+                "$replace('fooa123aAafuoAa456aaAfioAaAa789afoo', /a+/i, '--')", "\"foo--123--fuo--456--fio--789--foo\"", null
+            }, //
+            {
+                "$replace('fooa123aAafuoAa456aaAfioAaAa789afoo', /a+/i, '--', 4)", "\"foo--123--fuo--456--fioAaAa789afoo\"", null
+            }, //
+            {
+                "$replace('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/, '$1---$2')", "\"1234sjdffjf\\n5678jkfjf\\n9999fg grrs\"", null
+            }, //
+            {
+                "$replace('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m, '$1---$2')", "\"1234---sjdffjf\\n5678---jkfjf\\n9999---fg grrs\"", null
+            }, //
+            {
+                "$replace('1234sjdffjf\\njkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m, '$1---$2')", "\"1234---sjdffjf\\njkfjf\\n9999---fg grrs\"", null
+            }, //
+            // JSNOata test suite group "regex" case012
+            {
+                "$replace(\"265USD\", /([0-9]+)USD/, \"$$$1\")", "\"$265\"", null
+            }, //
+            // JSNOata test suite group "regex" case013
+            {
+                "$replace(\"265USD\", /([0-9]+)USD/, \"$w\")", "\"$w\"", null
+            }, //
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 }

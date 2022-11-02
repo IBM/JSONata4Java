@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.utils.Constants;
 
 /**
@@ -70,85 +67,182 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class SplitFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = -6212117204138504697L;
+    private static final long serialVersionUID = -6212117204138504697L;
 
-	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
-			Constants.FUNCTION_SPLIT);
-	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_SPLIT);
-	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_SPLIT);
-	private static final String ERR_MSG_ARG3_BAD_TYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
-			Constants.FUNCTION_SPLIT);
+    private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
+        Constants.FUNCTION_SPLIT);
+    private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_SPLIT);
+    private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_SPLIT);
+    private static final String ERR_MSG_ARG3_BAD_TYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
+        Constants.FUNCTION_SPLIT);
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$split()", null, ERR_BAD_CONTEXT }, //
-				{ "$split({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split({}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(' ', {})", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$split(' ', ' ', {})", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$split([])", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split([], ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(' ', [])", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$split(' ', ' ', [])", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$split({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split({\"hello\": 1}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(' ', {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$split(' ', ' ', {\"hello\": 1})", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$split([\"hello\", 1])", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split([\"hello\", 1], ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(' ', [\"hello\", 1])", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$split(' ', ' ', [\"hello\", 1])", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$split(true)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(true, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(' ', true)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$split(' ', ' ', true)", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$split(null)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$split(' ', ' ', null)", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$split(5)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(-5)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(-5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(' ', ' ', -5)", null, ERR_MSG_ARG3_BAD_TYPE }, //
-				{ "$split(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(10/3.0, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$split(' ', ' ', 10/3.0)", "[]", null }, //
-				{ "$split(a.b.c)", null, ERR_BAD_CONTEXT }, //
-				{ "$split(a.b.c, ' ')", null, null }, //
-				{ "$split(' ')", null, ERR_BAD_CONTEXT }, //
-				{ "$split(' ', ' ')", "[]", null }, //
-				{ "$split('so many words', ' ')", "[ \"so\", \"many\", \"words\" ]", null }, //
-				{ "$split('so many words', ' ', 2)", "[ \"so\", \"many\" ]", null }, //
-				{ "$split('foo', '')", "[ \"f\", \"o\", \"o\" ]", null }, //
-				{ "$split('', '')", "[]", null },  //
-				{ "$split('this     is   a simple  test', /\\s+/)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null },
-				{ "$split('this@_@is@_@a@_@simple@_@test', '@_@')", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null },
-				{ "$split('this     is   a +simple  test', ' +')", "[\"this     is   a\",\"simple  test\"]", null },
-				{ "$split('thisOOOOOisOOOaOsimpleOOtest', /O+/)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null },
-				{ "$split('thisOoOooisOoOaOsimpleOotest', /O+/i)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null },
-				// $split() seems to work out equally with and without /m
-				// This seems to hold for original JSONata as well as for Java regular expressions
-				{ "$split('this   is a  simple   test\\nwith a    second     line.', /[\\s]+/)",
-					"[ \"this\", \"is\", \"a\", \"simple\", \"test\", \"with\", \"a\", \"second\", \"line.\" ]", null },
-				{ "$split('this   is a  simple   test\\nwith a    second     line.', /[\\s]+/m)",
-						"[ \"this\", \"is\", \"a\", \"simple\", \"test\", \"with\", \"a\", \"second\", \"line.\" ]", null },
-		});
-	}
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$split()", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$split({})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split({}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(' ', {})", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$split(' ', ' ', {})", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$split([])", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split([], ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(' ', [])", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$split(' ', ' ', [])", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$split({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split({\"hello\": 1}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(' ', {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$split(' ', ' ', {\"hello\": 1})", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$split([\"hello\", 1])", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split([\"hello\", 1], ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(' ', [\"hello\", 1])", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$split(' ', ' ', [\"hello\", 1])", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$split(true)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(true, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(' ', true)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$split(' ', ' ', true)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$split(null)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$split(' ', ' ', null)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$split(5)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(-5)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(-5, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(' ', ' ', -5)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$split(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(10/3.0, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$split(' ', ' ', 10/3.0)", "[]", null
+            }, //
+            {
+                "$split(a.b.c)", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$split(a.b.c, ' ')", null, null
+            }, //
+            {
+                "$split(' ')", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$split(' ', ' ')", "[]", null
+            }, //
+            {
+                "$split('so many words', ' ')", "[ \"so\", \"many\", \"words\" ]", null
+            }, //
+            {
+                "$split('so many words', ' ', 2)", "[ \"so\", \"many\" ]", null
+            }, //
+            {
+                "$split('foo', '')", "[ \"f\", \"o\", \"o\" ]", null
+            }, //
+            {
+                "$split('', '')", "[]", null
+            }, //
+            {
+                "$split('this     is   a simple  test', /\\s+/)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null
+            },
+            {
+                "$split('this@_@is@_@a@_@simple@_@test', '@_@')", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null
+            },
+            {
+                "$split('this     is   a +simple  test', ' +')", "[\"this     is   a\",\"simple  test\"]", null
+            },
+            {
+                "$split('thisOOOOOisOOOaOsimpleOOtest', /O+/)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null
+            },
+            {
+                "$split('thisOoOooisOoOaOsimpleOotest', /O+/i)", "[ \"this\", \"is\", \"a\", \"simple\", \"test\" ]", null
+            },
+            // $split() seems to work out equally with and without /m
+            // This seems to hold for original JSONata as well as for Java regular expressions
+            {
+                "$split('this   is a  simple   test\\nwith a    second     line.', /[\\s]+/)",
+                "[ \"this\", \"is\", \"a\", \"simple\", \"test\", \"with\", \"a\", \"second\", \"line.\" ]", null
+            },
+            {
+                "$split('this   is a  simple   test\\nwith a    second     line.', /[\\s]+/m)",
+                "[ \"this\", \"is\", \"a\", \"simple\", \"test\", \"with\", \"a\", \"second\", \"line.\" ]", null
+            },
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 }

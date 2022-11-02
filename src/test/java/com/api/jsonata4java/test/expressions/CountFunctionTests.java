@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.functions.CountFunction;
 
 /**
@@ -45,33 +42,45 @@ import com.api.jsonata4java.expressions.functions.CountFunction;
 @RunWith(Parameterized.class)
 public class CountFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = 7061882983195426346L;
+    private static final long serialVersionUID = 7061882983195426346L;
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] {
-				// $count function
-				{ "$count(null)", "1", null }, //
-				{ "$count([])", "0", null }, //
-				{ "$count([1,2,3])", "3", null }, //
-				{ "$count({\"a\":{\"b\":1}}.a.b)", "1", null }, //
-				{ "$count()", null, CountFunction.ERR_BAD_CONTEXT }, //
-				{ "$count([], [])", null, CountFunction.ERR_ARG2BADTYPE }, //
-		});
-	}
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            // $count function
+            {
+                "$count(null)", "1", null
+            }, //
+            {
+                "$count([])", "0", null
+            }, //
+            {
+                "$count([1,2,3])", "3", null
+            }, //
+            {
+                "$count({\"a\":{\"b\":1}}.a.b)", "1", null
+            }, //
+            {
+                "$count()", null, CountFunction.ERR_BAD_CONTEXT
+            }, //
+            {
+                "$count([], [])", null, CountFunction.ERR_ARG2BADTYPE
+            }, //
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 
 }

@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.util.Objects;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
@@ -54,178 +53,179 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class SubstringAfterFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 2374800721189099530L;
+    private static final long serialVersionUID = 2374800721189099530L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
-			Constants.FUNCTION_SUBSTRING_AFTER);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_SUBSTRING_AFTER);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_SUBSTRING_AFTER);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
-			Constants.FUNCTION_SUBSTRING_AFTER);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
+        Constants.FUNCTION_SUBSTRING_AFTER);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_SUBSTRING_AFTER);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_SUBSTRING_AFTER);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE,
+        Constants.FUNCTION_SUBSTRING_AFTER);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argString = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString != null && argCount <= 1) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argString = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argString = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argString != null && argCount <= 1) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1 || argCount == 2) {
-			if (!useContext) {
-				/**
-				 * need to peek at the expression context since Function_callContext evaluates
-				 * to ""
-				 */
-				ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
-				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-				if (argString == null) {
-					if (exprCtx instanceof Function_callContext || exprCtx instanceof Function_declContext) {
-						argString = new TextNode("");
-					}
-					if (exprCtx instanceof Var_recallContext) {
-						String varName = ((Var_recallContext)exprCtx).VAR_ID().getText();
-						DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(varName);
-						if (declFct != null) {
-							argString = new TextNode("");
-						} else {
-							Function fct = expressionVisitor.getJsonataFunction(varName);
-							if (fct != null) {
-								argString = new TextNode("");
-							} else {
-								argString = null;
-							}
-						}
-					}
-				}
-			}
-			if (argString == null || (argString.isNull() && useContext)) {
-				return null;
-			}
-			if (argCount == 1) {
-				if (argString == null || argString.isTextual()) {
-					return null; // throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-				}
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-			// else argCount == 2
-			JsonNode argChars = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
-			// check validity of 2nd argument first
-			if (argChars == null) {
-				if (argString.isTextual()) {
-					// just return the string value of argString
-					return new TextNode(argString.textValue());
-				} else {
-					// invalid argString
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
-			}
-			if (argString != null) {
-				if (!argString.isTextual()) {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
-				if (!argChars.isTextual()) {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-				}
-				final String str = argString.textValue();
-				final String chars = argChars.textValue();
+        // Make sure that we have the right number of arguments
+        if (argCount == 1 || argCount == 2) {
+            if (!useContext) {
+                /**
+                 * need to peek at the expression context since Function_callContext evaluates
+                 * to ""
+                 */
+                ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
+                argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+                if (argString == null) {
+                    if (exprCtx instanceof Function_callContext || exprCtx instanceof Function_declContext) {
+                        argString = new TextNode("");
+                    }
+                    if (exprCtx instanceof Var_recallContext) {
+                        String varName = ((Var_recallContext) exprCtx).VAR_ID().getText();
+                        DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(varName);
+                        if (declFct != null) {
+                            argString = new TextNode("");
+                        } else {
+                            Function fct = expressionVisitor.getJsonataFunction(varName);
+                            if (fct != null) {
+                                argString = new TextNode("");
+                            } else {
+                                argString = null;
+                            }
+                        }
+                    }
+                }
+            }
+            if (argString == null || (argString.isNull() && useContext)) {
+                return null;
+            }
+            if (argCount == 1) {
+                if (argString == null || argString.isTextual()) {
+                    return null; // throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+                }
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+            // else argCount == 2
+            JsonNode argChars = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
+            // check validity of 2nd argument first
+            if (argChars == null) {
+                if (argString.isTextual()) {
+                    // just return the string value of argString
+                    return new TextNode(argString.textValue());
+                } else {
+                    // invalid argString
+                    throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                }
+            }
+            if (argString != null) {
+                if (!argString.isTextual()) {
+                    throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                }
+                if (!argChars.isTextual()) {
+                    throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                }
+                final String str = argString.textValue();
+                final String chars = argChars.textValue();
 
-				// Find chars in str
-				final int index = str.indexOf(chars);
-				if (index != -1) {
-					if ((index+chars.length()) < str.length()) {
-						result = new TextNode(substr(str, index+chars.length()));
-					} else {
-						result = new TextNode("");
-					}
-				} else {
-					// argChars is not present... just return argString
-					result = new TextNode(str);
-				}
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG3BADTYPE);
-		}
+                // Find chars in str
+                final int index = str.indexOf(chars);
+                if (index != -1) {
+                    if ((index + chars.length()) < str.length()) {
+                        result = new TextNode(substr(str, index + chars.length()));
+                    } else {
+                        result = new TextNode("");
+                    }
+                } else {
+                    // argChars is not present... just return argString
+                    result = new TextNode(str);
+                }
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG3BADTYPE);
+        }
 
-		return result;
-	}
-	
-	/**
-	 * 
-	 * @param str
-	 * @param start  Location at which to begin extracting characters. If a negative
-	 *               number is given, it is treated as strLength - start where
-	 *               strLength is the length of the string. For example,
-	 *               str.substr(-3) is treated as str.substr(str.length - 3)
-	 * @return A new string containing the extracted section of the given string. If
-	 *         length is 0 or a negative number, an empty string is returned.
-	 */
-	private static String substr(String str, Integer start) {
+        return result;
+    }
 
-		Integer length = null;
-		// below has to convert start and length for emojis and unicode
-		int origLen = str.length();
-		
-		String strData = Objects.requireNonNull(str).intern();
-		int strLen = strData.codePointCount(0, strData.length());
-		// If start is negative, substr() uses it as a character index from the
-		// end of the string; the index of the last character is -1.
-		start = strData.offsetByCodePoints(0, start >= 0 ? start : ((strLen + start) < 0 ? 0 : strLen + start));
-		// If start is negative and abs(start) is larger than the length of the
-		// string, substr() uses 0 as the start index.
-		if (start < 0) {
-			start = 0;
-		}
-		// If length is omitted, substr() extracts characters to the end of the
-		// string.
-		if (length == null) {
-			length = strData.length();
-		}
-		
-		length = strData.offsetByCodePoints(0, length);
+    /**
+     * 
+     * @param str
+     * @param start  Location at which to begin extracting characters. If a negative
+     *               number is given, it is treated as strLength - start where
+     *               strLength is the length of the string. For example,
+     *               str.substr(-3) is treated as str.substr(str.length - 3)
+     * @return A new string containing the extracted section of the given string. If
+     *         length is 0 or a negative number, an empty string is returned.
+     */
+    private static String substr(String str, Integer start) {
 
-		if (start >= 0) {
-			// If start is positive and is greater than or equal to the length of
-			// the string, substr() returns an empty string.
-			if (start >= origLen) {
-				return "";
-			}
-		}
+        Integer length = null;
+        // below has to convert start and length for emojis and unicode
+        int origLen = str.length();
 
-		// collect length characters (unless it reaches the end of the string
-		// first, in which case it will return fewer)
-		int end = start + length;
-		if (end > origLen) {
-			end = origLen;
-		}
+        String strData = Objects.requireNonNull(str).intern();
+        int strLen = strData.codePointCount(0, strData.length());
+        // If start is negative, substr() uses it as a character index from the
+        // end of the string; the index of the last character is -1.
+        start = strData.offsetByCodePoints(0, start >= 0 ? start : ((strLen + start) < 0 ? 0 : strLen + start));
+        // If start is negative and abs(start) is larger than the length of the
+        // string, substr() uses 0 as the start index.
+        if (start < 0) {
+            start = 0;
+        }
+        // If length is omitted, substr() extracts characters to the end of the
+        // string.
+        if (length == null) {
+            length = strData.length();
+        }
 
-		return strData.substring(start, end);
-	}
-	
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1; // account for context variable
-	}
+        length = strData.offsetByCodePoints(0, length);
 
-	@Override
-	public String getSignature() {
-		// accepts a string (or context variable), a string, returns a string
-		return "<s-s:s>";
-	}
+        if (start >= 0) {
+            // If start is positive and is greater than or equal to the length of
+            // the string, substr() returns an empty string.
+            if (start >= origLen) {
+                return "";
+            }
+        }
+
+        // collect length characters (unless it reaches the end of the string
+        // first, in which case it will return fewer)
+        int end = start + length;
+        if (end > origLen) {
+            end = origLen;
+        }
+
+        return strData.substring(start, end);
+    }
+
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
+
+    @Override
+    public int getMinArgs() {
+        return 1; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a string (or context variable), a string, returns a string
+        return "<s-s:s>";
+    }
 }

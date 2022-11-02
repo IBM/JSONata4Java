@@ -36,50 +36,51 @@ import java.nio.file.Path;
  * @author Martin Bluemel
  */
 public enum TesterUIJsonataExample {
-	NONE("-"),
-	// Example "Invoice" from the original JSONata Exerciser
-	INVOICE("Invoice"),
-	// Example "Address" from the original JSONata Exerciser
-	ADDRESS("Address"),
-	// Example "Schema" from the original JSONata Exerciser
-	SCHEMA("Schema"),
-	// Derived from Example "Address" from the Exerciser but with input XML
-	XMLADDRESS("XML Address");
 
-	private final String uiName;
+        NONE("-"),
+        // Example "Invoice" from the original JSONata Exerciser
+        INVOICE("Invoice"),
+        // Example "Address" from the original JSONata Exerciser
+        ADDRESS("Address"),
+        // Example "Schema" from the original JSONata Exerciser
+        SCHEMA("Schema"),
+        // Derived from Example "Address" from the Exerciser but with input XML
+        XMLADDRESS("XML Address");
 
-	private static final String PATH_EXAMPLES = "src/test/resources/exerciser";
+    private final String uiName;
 
-	private TesterUIJsonataExample(final String uiName) {
-		this.uiName = uiName;
-	}
+    private static final String PATH_EXAMPLES = "src/test/resources/exerciser";
 
-	public String toString() {
-		return uiName;
-	}
+    private TesterUIJsonataExample(final String uiName) {
+        this.uiName = uiName;
+    }
 
-	public Path getPathInput() {
-		final File jsonFile = new File(PATH_EXAMPLES, this.uiName.toLowerCase() + ".json");
-		if (jsonFile.exists()) {
-			return jsonFile.toPath();
-		}
-		return new File(PATH_EXAMPLES, this.name().toLowerCase() + ".xml").toPath();
-	}
+    public String toString() {
+        return uiName;
+    }
 
-	public Path getPathJsonata() {
-		return new File(PATH_EXAMPLES, this.name().toLowerCase() + ".jsonata").toPath();
-	}
+    public Path getPathInput() {
+        final File jsonFile = new File(PATH_EXAMPLES, this.uiName.toLowerCase() + ".json");
+        if (jsonFile.exists()) {
+            return jsonFile.toPath();
+        }
+        return new File(PATH_EXAMPLES, this.name().toLowerCase() + ".xml").toPath();
+    }
 
-	public static TesterUIJsonataExample fromContent(String input, String jsonata) throws IOException {
-		for (final TesterUIJsonataExample example : TesterUIJsonataExample.values()) {
-			if (example == NONE) {
-				continue;
-			}
-			if (TesterUI.readFile(example.getPathInput()).trim().equals(input.trim())
-					&& TesterUI.readFile(example.getPathJsonata()).trim().equals(jsonata.trim())) {
-				return example;
-			}
-		}
-		return TesterUIJsonataExample.NONE;
-	}
+    public Path getPathJsonata() {
+        return new File(PATH_EXAMPLES, this.name().toLowerCase() + ".jsonata").toPath();
+    }
+
+    public static TesterUIJsonataExample fromContent(String input, String jsonata) throws IOException {
+        for (final TesterUIJsonataExample example : TesterUIJsonataExample.values()) {
+            if (example == NONE) {
+                continue;
+            }
+            if (TesterUI.readFile(example.getPathInput()).trim().equals(input.trim())
+                && TesterUI.readFile(example.getPathJsonata()).trim().equals(jsonata.trim())) {
+                return example;
+            }
+        }
+        return TesterUIJsonataExample.NONE;
+    }
 }

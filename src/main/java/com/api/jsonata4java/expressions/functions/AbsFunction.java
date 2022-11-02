@@ -52,88 +52,89 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class AbsFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -7061181042065058523L;
+    private static final long serialVersionUID = -7061181042065058523L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_ABS);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_ABS);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_ABS);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_ABS);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_ABS);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_ABS);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argNumber = null;
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argNumber != null && argNumber.isNull() == false) {
-				argCount++;
-				if (!argNumber.isNumber()) {
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argNumber = null;
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argNumber = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argNumber != null && argNumber.isNull() == false) {
+                argCount++;
+                if (!argNumber.isNumber()) {
+                    throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                }
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argNumber == null) {
-				return null;
-			}
-			// Check the type of the argument
-			if (argNumber.isNumber()) {
-				if (argNumber.isInt()) {
-					int number = argNumber.intValue();
-					result = new IntNode(Math.abs(number));
-				} else if (argNumber.isLong()) {
-					long number = argNumber.longValue();
-					if (number == Long.MIN_VALUE) {
-						result = new LongNode(Long.MAX_VALUE);
-					} else {
-						result = new LongNode(Math.abs(number));
-					}
-				} else if (argNumber.isFloat()) {
-					float number = argNumber.floatValue();
-					result = new FloatNode(Math.abs(number));
-				} else if (argNumber.isDouble()) {
-					double number = argNumber.doubleValue();
-					result = new DoubleNode(Math.abs(number));
-				}
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			if (ctx.getParent() instanceof Fct_chainContext) {
-				if (argNumber == null) {
-					return null;
-				}
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-		}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argNumber == null) {
+                return null;
+            }
+            // Check the type of the argument
+            if (argNumber.isNumber()) {
+                if (argNumber.isInt()) {
+                    int number = argNumber.intValue();
+                    result = new IntNode(Math.abs(number));
+                } else if (argNumber.isLong()) {
+                    long number = argNumber.longValue();
+                    if (number == Long.MIN_VALUE) {
+                        result = new LongNode(Long.MAX_VALUE);
+                    } else {
+                        result = new LongNode(Math.abs(number));
+                    }
+                } else if (argNumber.isFloat()) {
+                    float number = argNumber.floatValue();
+                    result = new FloatNode(Math.abs(number));
+                } else if (argNumber.isDouble()) {
+                    double number = argNumber.doubleValue();
+                    result = new DoubleNode(Math.abs(number));
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            if (ctx.getParent() instanceof Fct_chainContext) {
+                if (argNumber == null) {
+                    return null;
+                }
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a number (or context variable), returns a number
-		return "<n-:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a number (or context variable), returns a number
+        return "<n-:n>";
+    }
 
 }

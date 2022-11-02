@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.util.Iterator;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -49,83 +48,84 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class MergeFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -99966498930256770L;
+    private static final long serialVersionUID = -99966498930256770L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MERGE);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MERGE);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_MERGE);
-	public static String ERR_ARG1_MUST_BE_OBJECT_ARRAY = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS,
-			Constants.FUNCTION_MERGE);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MERGE);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MERGE);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_MERGE);
+    public static String ERR_ARG1_MUST_BE_OBJECT_ARRAY = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS,
+        Constants.FUNCTION_MERGE);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		ObjectNode result = JsonNodeFactory.instance.objectNode();
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        ObjectNode result = JsonNodeFactory.instance.objectNode();
 
-		// Retrieve the number of arguments
-		JsonNode argArray = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argArray = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argArray != null && argArray.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argArray = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argArray = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argArray != null && argArray.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			String key = null;
-			if (argArray == null) {
-				return null;
-			}
-			if (argArray.isArray()) {
-				ArrayNode array = (ArrayNode) argArray;
-				for (int i = 0; i < array.size(); i++) {
-					JsonNode obj = array.get(i);
-					if (obj.isObject()) {
-						ObjectNode cell = (ObjectNode) obj;
-						for (Iterator<String> it = cell.fieldNames(); it.hasNext();) {
-							key = it.next();
-							result.set(key, cell.get(key));
-						}
-					} else {
-						throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_OBJECT_ARRAY);
-					}
-				}
-			} else {
-				if (argArray.isObject()) {
-					result = (ObjectNode) argArray;
-				} else {
-					/*
-					 * The input argument is not an array. Throw a suitable exception
-					 */
-					throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
-		}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            String key = null;
+            if (argArray == null) {
+                return null;
+            }
+            if (argArray.isArray()) {
+                ArrayNode array = (ArrayNode) argArray;
+                for (int i = 0; i < array.size(); i++) {
+                    JsonNode obj = array.get(i);
+                    if (obj.isObject()) {
+                        ObjectNode cell = (ObjectNode) obj;
+                        for (Iterator<String> it = cell.fieldNames(); it.hasNext();) {
+                            key = it.next();
+                            result.set(key, cell.get(key));
+                        }
+                    } else {
+                        throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_OBJECT_ARRAY);
+                    }
+                }
+            } else {
+                if (argArray.isObject()) {
+                    result = (ObjectNode) argArray;
+                } else {
+                    /*
+                     * The input argument is not an array. Throw a suitable exception
+                     */
+                    throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                }
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts an array of objects, returns an object
-		return "<a<o>:o>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 1;
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts an array of objects, returns an object
+        return "<a<o>:o>";
+    }
 }

@@ -48,123 +48,124 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class LookupFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -8369209972416470426L;
+    private static final long serialVersionUID = -8369209972416470426L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_LOOKUP);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_LOOKUP);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_LOOKUP);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_LOOKUP);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_LOOKUP);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_LOOKUP);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_LOOKUP);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_LOOKUP);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argObject = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argObject = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argObject != null && argObject.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argObject = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argObject = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argObject != null && argObject.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount >= 1 && argCount <= 3) {
-			if (!useContext) {
-				argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argObject == null) {
-				return null;
-			}
-			if (argCount == 2) {
-				JsonNode keyObj = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-						useContext ? 0 : 1);
-				if (keyObj == null || !keyObj.isTextual()) {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-				}
-				final String key = keyObj.asText();
-				SelectorArrayNode array = new SelectorArrayNode(JsonNodeFactory.instance);
-				// Check the type of the argument
-				if (argObject.isObject()) {
-					ObjectNode obj = (ObjectNode) argObject;
-					captureKeyValues(obj, key, array);
-					if (array.size() != 1) {
-						result = array;
-					} else {
-						// make singleton
-						result = array.get(0);
-					}
-				} else {
-					if (argObject.isArray()) {
-						findObjects((ArrayNode)argObject, key, array);
-						if (array.size() == 0) {
-						   result = null;
-						} else if (array.size() != 1) {
-							result = array;
-						} else {
-							// make singleton
-							result = array.get(0);
-						}
-					} else {
-						/*
-						 * The input argument is not an array. Throw a suitable exception
-						 */
-						throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-					}
-				}
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
-		}
+        // Make sure that we have the right number of arguments
+        if (argCount >= 1 && argCount <= 3) {
+            if (!useContext) {
+                argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argObject == null) {
+                return null;
+            }
+            if (argCount == 2) {
+                JsonNode keyObj = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                    useContext ? 0 : 1);
+                if (keyObj == null || !keyObj.isTextual()) {
+                    throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                }
+                final String key = keyObj.asText();
+                SelectorArrayNode array = new SelectorArrayNode(JsonNodeFactory.instance);
+                // Check the type of the argument
+                if (argObject.isObject()) {
+                    ObjectNode obj = (ObjectNode) argObject;
+                    captureKeyValues(obj, key, array);
+                    if (array.size() != 1) {
+                        result = array;
+                    } else {
+                        // make singleton
+                        result = array.get(0);
+                    }
+                } else {
+                    if (argObject.isArray()) {
+                        findObjects((ArrayNode) argObject, key, array);
+                        if (array.size() == 0) {
+                            result = null;
+                        } else if (array.size() != 1) {
+                            result = array;
+                        } else {
+                            // make singleton
+                            result = array.get(0);
+                        }
+                    } else {
+                        /*
+                         * The input argument is not an array. Throw a suitable exception
+                         */
+                        throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                    }
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
+        }
 
-		if (result != null && result.isArray() && result.size() == 0) {
-			result = null;
-		}
-		return result;
-	}
-	
-	static void findObjects(ArrayNode array, String key, ArrayNode result) {
-		for (int i=0;i<array.size(); i++) {
-			JsonNode arrayNode = array.get(i);
-			if (arrayNode != null) {
-				if (arrayNode.isArray()) {
-					ArrayNode subResult = new ArrayNode(JsonNodeFactory.instance);
-					findObjects((ArrayNode)arrayNode, key, subResult);
-					// if (subResult.size() != 0) {
-						result.add(subResult);
-					// }
-				} else if (arrayNode.isObject()) {
-					captureKeyValues((ObjectNode)arrayNode, key, result);
-				}
-			}
-		}
-	}
-	static void captureKeyValues(ObjectNode obj, String key, ArrayNode result) {
-		JsonNode value = obj.get(key);
-		if (value != null) {
-			result.add(value);
-		}
-	}
+        if (result != null && result.isArray() && result.size() == 0) {
+            result = null;
+        }
+        return result;
+    }
 
+    static void findObjects(ArrayNode array, String key, ArrayNode result) {
+        for (int i = 0; i < array.size(); i++) {
+            JsonNode arrayNode = array.get(i);
+            if (arrayNode != null) {
+                if (arrayNode.isArray()) {
+                    ArrayNode subResult = new ArrayNode(JsonNodeFactory.instance);
+                    findObjects((ArrayNode) arrayNode, key, subResult);
+                    // if (subResult.size() != 0) {
+                    result.add(subResult);
+                    // }
+                } else if (arrayNode.isObject()) {
+                    captureKeyValues((ObjectNode) arrayNode, key, result);
+                }
+            }
+        }
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1; // account for context variable
-	}
+    static void captureKeyValues(ObjectNode obj, String key, ArrayNode result) {
+        JsonNode value = obj.get(key);
+        if (value != null) {
+            result.add(value);
+        }
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts an anything (or context variable), a string, returns anything
-		return "<x-s:x>";
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
+
+    @Override
+    public int getMinArgs() {
+        return 1; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts an anything (or context variable), a string, returns anything
+        return "<x-s:x>";
+    }
 }

@@ -35,109 +35,110 @@ import com.fasterxml.jackson.databind.node.LongNode;
 
 public class SumFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -4281182554968881670L;
+    private static final long serialVersionUID = -4281182554968881670L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SUM);
-	public static final String ERR_ARG1ARRTYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
-			Constants.FUNCTION_SUM);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SUM);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SUM);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SUM);
+    public static final String ERR_ARG1ARRTYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
+        Constants.FUNCTION_SUM);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SUM);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SUM);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 
-		// Retrieve the number of arguments
-		JsonNode argArray = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argArray = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argArray != null && argArray.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argArray = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argArray = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argArray != null && argArray.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-				FunctionUtils.validateArguments(ERR_ARG1ARRTYPE, expressionVisitor, ctx, 0, getSignature());
-			}
-			// if arg is an array, sum its values
-			if (argArray == null) {
-				return null;
-			} else if (argArray.isArray()) {
-				ArrayNode arr = (ArrayNode) argArray;
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+                FunctionUtils.validateArguments(ERR_ARG1ARRTYPE, expressionVisitor, ctx, 0, getSignature());
+            }
+            // if arg is an array, sum its values
+            if (argArray == null) {
+                return null;
+            } else if (argArray.isArray()) {
+                ArrayNode arr = (ArrayNode) argArray;
 
-				// if ALL of the array members are integral, return as a LongNode
-				// if ANY of the array members are floats, return as a DoubleNode
-				// this is important since floating point math has rounding errors
-				// (e.g. 64.1-0.1 = 63.99999999999999, not 64.0)
-				// provided we return sums of integrals as a long, customers can
-				// expect = to work reliably when comparing sums of integrals
-				// against another integral
-				boolean shouldReturnAsLong = true;
-				for (JsonNode a : arr) {
-					if (a.isFloatingPointNumber() || a.isDouble()) {
-						shouldReturnAsLong = false;
-					} else if (!a.isIntegralNumber()) {
-						// also complain if any non-numeric types are included in the
-						// array
-						throw new EvaluateRuntimeException(ERR_ARG1ARRTYPE);
-					}
-				}
+                // if ALL of the array members are integral, return as a LongNode
+                // if ANY of the array members are floats, return as a DoubleNode
+                // this is important since floating point math has rounding errors
+                // (e.g. 64.1-0.1 = 63.99999999999999, not 64.0)
+                // provided we return sums of integrals as a long, customers can
+                // expect = to work reliably when comparing sums of integrals
+                // against another integral
+                boolean shouldReturnAsLong = true;
+                for (JsonNode a : arr) {
+                    if (a.isFloatingPointNumber() || a.isDouble()) {
+                        shouldReturnAsLong = false;
+                    } else if (!a.isIntegralNumber()) {
+                        // also complain if any non-numeric types are included in the
+                        // array
+                        throw new EvaluateRuntimeException(ERR_ARG1ARRTYPE);
+                    }
+                }
 
-				if (shouldReturnAsLong) {
-					long sum = 0;
-					for (JsonNode a : arr) {
-						sum += a.asLong();
-					}
-					return new LongNode(sum);
-				} else {
-					double sum = 0.0d;
-					for (JsonNode a : arr) {
-						sum += a.asDouble();
-					}
-					return new DoubleNode(sum);
-				}
+                if (shouldReturnAsLong) {
+                    long sum = 0;
+                    for (JsonNode a : arr) {
+                        sum += a.asLong();
+                    }
+                    return new LongNode(sum);
+                } else {
+                    double sum = 0.0d;
+                    for (JsonNode a : arr) {
+                        sum += a.asDouble();
+                    }
+                    return new DoubleNode(sum);
+                }
 
-			} else if (argArray.isIntegralNumber()) {
-				return new LongNode(argArray.asLong());
-			} else if (argArray.isFloatingPointNumber() || argArray.isDouble()) {
-				return new DoubleNode(argArray.asDouble());
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1ARRTYPE);
-			}
+            } else if (argArray.isIntegralNumber()) {
+                return new LongNode(argArray.asLong());
+            } else if (argArray.isFloatingPointNumber() || argArray.isDouble()) {
+                return new DoubleNode(argArray.asDouble());
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1ARRTYPE);
+            }
 
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
-		}
-	}
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
+        }
+    }
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		for (double i = 0; i < 100; i++) {
-			System.out.println((0.1 + i) + "-" + 0.1 + " = " + ((0.1 + i) - 0.1));
-		}
+        for (double i = 0; i < 100; i++) {
+            System.out.println((0.1 + i) + "-" + 0.1 + " = " + ((0.1 + i) - 0.1));
+        }
 
-		// System.out.println(10.0d==10l);
+        // System.out.println(10.0d==10l);
 
-	}
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// takes an array of numbers, returns a number
-		return "<a<n>:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // takes an array of numbers, returns a number
+        return "<a<n>:n>";
+    }
 
 }

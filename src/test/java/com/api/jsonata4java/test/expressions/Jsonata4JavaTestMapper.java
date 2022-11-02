@@ -3,7 +3,6 @@ package com.api.jsonata4java.test.expressions;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-
 import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
@@ -25,17 +24,17 @@ public class Jsonata4JavaTestMapper {
         this.expressions = parseMappingDescription();
     }
 
-	private final Expressions expressions;
+    private final Expressions expressions;
 
-	private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public String map(final String in) {
         return map(in, false);
     }
 
-	public String map(final String in, final boolean beautify) {
-	    try {
-	        final JsonNode outputRootNode = map(mapper.readTree(in));
+    public String map(final String in, final boolean beautify) {
+        try {
+            final JsonNode outputRootNode = map(mapper.readTree(in));
             if (beautify) {
                 return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(outputRootNode);
             } else {
@@ -44,7 +43,7 @@ public class Jsonata4JavaTestMapper {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-	}
+    }
 
     public JsonNode map(final JsonNode inputRootNode) {
         try {
@@ -54,13 +53,13 @@ public class Jsonata4JavaTestMapper {
         }
     }
 
-	private Expressions parseMappingDescription() {
-		try {
-			return Expressions.parse(this.mappingDescription);
-		} catch (ParseException | IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    private Expressions parseMappingDescription() {
+        try {
+            return Expressions.parse(this.mappingDescription);
+        } catch (ParseException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static String readFile(final File file) {
         try {

@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.utils.Constants;
 
 /**
@@ -53,38 +50,58 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class RandomFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = 5173172444319908151L;
+    private static final long serialVersionUID = 5173172444319908151L;
 
-	private static String ERR_ARG1BADTYPE = String
-            .format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_RANDOM);
+    private static String ERR_ARG1BADTYPE = String
+        .format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_RANDOM);
 
-	@Parameter(0)
-	public String expression;
-	
-	@Parameter(1)
-	public String expectedResultJsonString;
-	
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
-	
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] {
-            {"$random({})",     null,   ERR_ARG1BADTYPE}, //
-            {"$random([])",     null,   ERR_ARG1BADTYPE}, //
-            {"$random(1)",      null,   ERR_ARG1BADTYPE}, //
-            {"$random(-1)",     null,   ERR_ARG1BADTYPE}, //
-            {"$random(10/3.0)", null,   ERR_ARG1BADTYPE}, //
-            {"$random('1')",    null,   ERR_ARG1BADTYPE}, //
-            {"$random(a.b.c)",  null,   ERR_ARG1BADTYPE}, //
-            {"$random(null)",   null,   ERR_ARG1BADTYPE}, //
-            {"$random() >= 0",  "true", null}, //
-            {"$random() < 1",   "true", null} //
-		});
-	}
-	
+    @Parameter(0)
+    public String expression;
+
+    @Parameter(1)
+    public String expectedResultJsonString;
+
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
+
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$random({})", null, ERR_ARG1BADTYPE
+            }, //
+            {
+                "$random([])", null, ERR_ARG1BADTYPE
+            }, //
+            {
+                "$random(1)", null, ERR_ARG1BADTYPE
+            }, //
+            {
+                "$random(-1)", null, ERR_ARG1BADTYPE
+            }, //
+            {
+                "$random(10/3.0)", null, ERR_ARG1BADTYPE
+            }, //
+            {
+                "$random('1')", null, ERR_ARG1BADTYPE
+            }, //
+            {
+                "$random(a.b.c)", null, ERR_ARG1BADTYPE
+            }, //
+            {
+                "$random(null)", null, ERR_ARG1BADTYPE
+            }, //
+            {
+                "$random() >= 0", "true", null
+            }, //
+            {
+                "$random() < 1", "true", null
+            } //
+        });
+    }
+
     @Test
     public void runTest() throws Exception {
-    	test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
     }
 }

@@ -52,100 +52,101 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class NumberFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 5495142821729936220L;
+    private static final long serialVersionUID = 5495142821729936220L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_NUMBER);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_NUMBER);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_NUMBER);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_NUMBER);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_NUMBER);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_NUMBER);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argString = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString != null && argString.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argString = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argString = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argString != null && argString.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1 || useContext) {
-			if (!useContext) {
-				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argString == null) {
-				return null;
-			}
-			// Check the type of the argument
-			if (argString.isObject()) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			} else if (argString.isTextual()) {
-				/*
-				 * For consistency with the JavaScript implementation of JSONata, we limit the
-				 * size of the numbers that we handle to be within the range Double.MAX_VALUE
-				 * and -Double.MAX_VALUE. If we did not do this we would need to implement a lot
-				 * of extra code to handle BigInteger and BigDecimal. The
-				 * NumberUtils::convertNumberToValueNode will check whether the number is within
-				 * the valid range and throw a suitable exception if it is not.
-				 */
-				result = NumberUtils.convertNumberToValueNode(argString.asText());
-			} else if (argString.isNumber()) {
-				if (!argString.isIntegralNumber()) {
-					// Math.ceil only accepts a double
-					Double ceil = argString.doubleValue();
-					if (ceil - ceil.longValue() == 0.0d) {
-						// Create the node to return
-						result = new LongNode(ceil.longValue());
-					} else {
-						result = new DoubleNode(ceil);
-					}
-				} else {
-					if (argString.isLong()) {
-						double ceil = argString.doubleValue();
+        // Make sure that we have the right number of arguments
+        if (argCount == 1 || useContext) {
+            if (!useContext) {
+                argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argString == null) {
+                return null;
+            }
+            // Check the type of the argument
+            if (argString.isObject()) {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            } else if (argString.isTextual()) {
+                /*
+                 * For consistency with the JavaScript implementation of JSONata, we limit the
+                 * size of the numbers that we handle to be within the range Double.MAX_VALUE
+                 * and -Double.MAX_VALUE. If we did not do this we would need to implement a lot
+                 * of extra code to handle BigInteger and BigDecimal. The
+                 * NumberUtils::convertNumberToValueNode will check whether the number is within
+                 * the valid range and throw a suitable exception if it is not.
+                 */
+                result = NumberUtils.convertNumberToValueNode(argString.asText());
+            } else if (argString.isNumber()) {
+                if (!argString.isIntegralNumber()) {
+                    // Math.ceil only accepts a double
+                    Double ceil = argString.doubleValue();
+                    if (ceil - ceil.longValue() == 0.0d) {
+                        // Create the node to return
+                        result = new LongNode(ceil.longValue());
+                    } else {
+                        result = new DoubleNode(ceil);
+                    }
+                } else {
+                    if (argString.isLong()) {
+                        double ceil = argString.doubleValue();
 
-						// Create the node to return
-						result = new LongNode((long) ceil);						
-					} else {
-						// The argument is already an integer... simply return the
-						// node
-						result = argString;
-					}
-				}
-			} else if (argString.isArray()) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			} else if (argString.isBoolean()) {
-				result = argString.asBoolean() ? new LongNode(1) : new LongNode(0);
-			} else {
-				// The argument is a neither a number or a string. Throw a
-				// suitable exception.
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-		}
-		
-		return result;
-	}
+                        // Create the node to return
+                        result = new LongNode((long) ceil);
+                    } else {
+                        // The argument is already an integer... simply return the
+                        // node
+                        result = argString;
+                    }
+                }
+            } else if (argString.isArray()) {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            } else if (argString.isBoolean()) {
+                result = argString.asBoolean() ? new LongNode(1) : new LongNode(0);
+            } else {
+                // The argument is a neither a number or a string. Throw a
+                // suitable exception.
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+        }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+        return result;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a number or string or boolean (or context variable), returns a number
-		return "<(nsb)-:n>";
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
+
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a number or string or boolean (or context variable), returns a number
+        return "<(nsb)-:n>";
+    }
 }

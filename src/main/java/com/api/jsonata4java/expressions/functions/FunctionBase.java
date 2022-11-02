@@ -23,37 +23,36 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.io.Serializable;
-
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 
 public abstract class FunctionBase implements Serializable {
 
-	private static final long serialVersionUID = -2198474650471622735L;
+    private static final long serialVersionUID = -2198474650471622735L;
 
-	/**
-	 * The getFunctionName method retrieves the name of the function from the
-	 * context
-	 *
-	 * @param ctx The Function_callContext for the function.
-	 * @return String The name of the function.
-	 */
-	public String getFunctionName(Function_callContext ctx) {
-		return ctx.VAR_ID().getText();
-	}
+    /**
+     * The getFunctionName method retrieves the name of the function from the
+     * context
+     *
+     * @param ctx The Function_callContext for the function.
+     * @return String The name of the function.
+     */
+    public String getFunctionName(Function_callContext ctx) {
+        return ctx.VAR_ID().getText();
+    }
 
-	/**
-	 * The getArgumentCount method counts the number of expressions in the
-	 * expression list.
-	 *
-	 * @param ctx The Function_callContext for the function.
-	 * @return int The number of arguments for the function
-	 */
-	static public int getArgumentCount(Function_callContext ctx) {
-		if (ctx.emptyValues() != null)
-			return 0; // no variables
-		if (ctx.exprValues().exprList() == null)
-			return 0;
+    /**
+     * The getArgumentCount method counts the number of expressions in the
+     * expression list.
+     *
+     * @param ctx The Function_callContext for the function.
+     * @return int The number of arguments for the function
+     */
+    static public int getArgumentCount(Function_callContext ctx) {
+        if (ctx.emptyValues() != null)
+            return 0; // no variables
+        if (ctx.exprValues().exprList() == null)
+            return 0;
 
-		return ctx.exprValues().exprList().expr().size();
-	}
+        return ctx.exprValues().exprList().expr().size();
+    }
 }

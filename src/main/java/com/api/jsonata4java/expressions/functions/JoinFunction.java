@@ -24,7 +24,6 @@ package com.api.jsonata4java.expressions.functions;
 
 import java.util.Iterator;
 import java.util.StringJoiner;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -57,101 +56,102 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class JoinFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 2812768105036850665L;
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_JOIN);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_JOIN);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_JOIN);
-	public static String ERR_MSG_ARG1_ARR_STR = String.format(Constants.ERR_MSG_ARG1_ARR_STR, Constants.FUNCTION_JOIN);
+    private static final long serialVersionUID = 2812768105036850665L;
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_JOIN);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_JOIN);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_JOIN);
+    public static String ERR_MSG_ARG1_ARR_STR = String.format(Constants.ERR_MSG_ARG1_ARR_STR, Constants.FUNCTION_JOIN);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argArray = null;
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argArray = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argArray != null && argArray.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argArray = null;
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argArray = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argArray != null && argArray.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1 || argCount == 2) {
-			if (!useContext) {
-				argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argArray == null) {
-				return null;
-			}
-			if (!argArray.isArray()) {
-			   if (!argArray.isTextual()) {
-			      throw new EvaluateRuntimeException(ERR_MSG_ARG1_ARR_STR);
-			   }
-			   ArrayNode newArray = JsonNodeFactory.instance.arrayNode();
-			   newArray.add(argArray);
-			   argArray = newArray;
-			}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1 || argCount == 2) {
+            if (!useContext) {
+                argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argArray == null) {
+                return null;
+            }
+            if (!argArray.isArray()) {
+                if (!argArray.isTextual()) {
+                    throw new EvaluateRuntimeException(ERR_MSG_ARG1_ARR_STR);
+                }
+                ArrayNode newArray = JsonNodeFactory.instance.arrayNode();
+                newArray.add(argArray);
+                argArray = newArray;
+            }
 
-			// Read the separator argument, if present
-			String separator = "";
-			if (argCount == 2) {
-				final JsonNode argSeparator = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-						useContext ? 0 : 1);
-				if (argSeparator != null) {
-					if (argSeparator.isTextual()) {
-						separator = argSeparator.textValue();
-					} else {
-						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-					}
-				}
-			}
+            // Read the separator argument, if present
+            String separator = "";
+            if (argCount == 2) {
+                final JsonNode argSeparator = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                    useContext ? 0 : 1);
+                if (argSeparator != null) {
+                    if (argSeparator.isTextual()) {
+                        separator = argSeparator.textValue();
+                    } else {
+                        throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                    }
+                }
+            }
 
-			// Join the elements of the array argument
-			StringJoiner stringJoiner = new StringJoiner(separator);
-			Iterator<JsonNode> elements = ((ArrayNode) argArray).elements();
-			while (elements.hasNext()) {
-				JsonNode element = elements.next();
-				if (element.isTextual()) {
-					stringJoiner.add(element.asText());
-				} else if (element.isArray()){
-				   for (Iterator<JsonNode>it = ((ArrayNode)element).iterator();it.hasNext();) {
-				      stringJoiner.add(it.next().textValue());
-				   }
-				} else {
-					throw new EvaluateRuntimeException(ERR_MSG_ARG1_ARR_STR);
-				}
-			} // WHILE
+            // Join the elements of the array argument
+            StringJoiner stringJoiner = new StringJoiner(separator);
+            Iterator<JsonNode> elements = ((ArrayNode) argArray).elements();
+            while (elements.hasNext()) {
+                JsonNode element = elements.next();
+                if (element.isTextual()) {
+                    stringJoiner.add(element.asText());
+                } else if (element.isArray()) {
+                    for (Iterator<JsonNode> it = ((ArrayNode) element).iterator(); it.hasNext();) {
+                        stringJoiner.add(it.next().textValue());
+                    }
+                } else {
+                    throw new EvaluateRuntimeException(ERR_MSG_ARG1_ARR_STR);
+                }
+            } // WHILE
 
-			// Create the result from the joined string
-			result = new TextNode(stringJoiner.toString());
-		} else {
-			if (argCount != 0 && argArray == null) {
-				return null;
-			}
-			throw new EvaluateRuntimeException(
-					argCount == 0 ? ERR_BAD_CONTEXT : argCount == 1 ? ERR_MSG_ARG1_ARR_STR : ERR_ARG3BADTYPE);
-		}
+            // Create the result from the joined string
+            result = new TextNode(stringJoiner.toString());
+        } else {
+            if (argCount != 0 && argArray == null) {
+                return null;
+            }
+            throw new EvaluateRuntimeException(
+                argCount == 0 ? ERR_BAD_CONTEXT : argCount == 1 ? ERR_MSG_ARG1_ARR_STR : ERR_ARG3BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts an array of strings, an optional string, returns a string
-		return "<a<s>s?:s>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts an array of strings, an optional string, returns a string
+        return "<a<s>s?:s>";
+    }
 }

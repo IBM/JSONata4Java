@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
-
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.functions.Function;
 import com.api.jsonata4java.expressions.utils.Constants;
@@ -275,7 +274,7 @@ public class FrameEnvironment implements Serializable {
         }
         if (i >= depth && parentNode == null) {
             throw new EvaluateRuntimeException(
-                    "The object representing the 'parent' cannot be derived from this expression");
+                "The object representing the 'parent' cannot be derived from this expression");
         }
         return parentNode;
     }

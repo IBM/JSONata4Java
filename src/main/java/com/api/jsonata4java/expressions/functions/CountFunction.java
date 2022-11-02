@@ -34,59 +34,60 @@ import com.fasterxml.jackson.databind.node.LongNode;
 
 public class CountFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 3915063625097748434L;
+    private static final long serialVersionUID = 3915063625097748434L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_COUNT);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_COUNT);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_COUNT);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_COUNT);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 
-		// Retrieve the number of arguments
-		JsonNode arg = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			arg = FunctionUtils.getContextVariable(expressionVisitor);
-			if (arg != null && arg.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode arg = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            arg = FunctionUtils.getContextVariable(expressionVisitor);
+            if (arg != null && arg.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			// if arg is an array, return its length. Any other type of input
-			// returns 1 unless the argument is undefined which returns 0.
-			if (arg == null) {
-				return new LongNode(0);
-			} else if (arg.isArray()) {
-				return new LongNode(((ArrayNode) arg).size());
-			} else {
-				return new LongNode(1);
-			}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            // if arg is an array, return its length. Any other type of input
+            // returns 1 unless the argument is undefined which returns 0.
+            if (arg == null) {
+                return new LongNode(0);
+            } else if (arg.isArray()) {
+                return new LongNode(((ArrayNode) arg).size());
+            } else {
+                return new LongNode(1);
+            }
 
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-		}
-	}
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+        }
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// takes an array, returns a number
-		return "<a:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // takes an array, returns a number
+        return "<a:n>";
+    }
 
 }

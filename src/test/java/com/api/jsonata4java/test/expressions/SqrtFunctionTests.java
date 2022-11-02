@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.utils.Constants;
 
 /**
@@ -56,56 +53,99 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class SqrtFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = -5513416069993702347L;
+    private static final long serialVersionUID = -5513416069993702347L;
 
-	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SQRT);
-	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_SQRT);
-	private static final String ERR_MSG_FUNC_CANNOT_BE_APPLIED = String
-			.format(Constants.ERR_MSG_FUNC_CANNOT_BE_APPLIED_NEG_NUM, Constants.FUNCTION_SQRT, "-1.0");
-	private static final String ERR_MSG_NUMBER_OUT_OF_RANGE = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE,
-			"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+    private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SQRT);
+    private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_SQRT);
+    private static final String ERR_MSG_FUNC_CANNOT_BE_APPLIED = String
+        .format(Constants.ERR_MSG_FUNC_CANNOT_BE_APPLIED_NEG_NUM, Constants.FUNCTION_SQRT, "-1.0");
+    private static final String ERR_MSG_NUMBER_OUT_OF_RANGE = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE,
+        "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$sqrt()", null, ERR_BAD_CONTEXT }, //
-				{ "$sqrt({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$sqrt([])", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$sqrt('1')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$sqrt(true)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$sqrt(null)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$sqrt(-1)", null, ERR_MSG_FUNC_CANNOT_BE_APPLIED }, //
-				{ "$sqrt(a.b.c)", null, null }, //
-				{ "$sqrt(1)", "1", null}, // jsonata 1.8.2 Double.toString(Math.sqrt(1)), null }, //
-				{ "$sqrt(2147483647)", Double.toString(Math.sqrt(2147483647)), null }, //
-				{ "$sqrt(21474836471234)", Double.toString(Math.sqrt(21474836471234D)), null }, //
-				{ "$sqrt(1.0)", "1", null}, // jsonata 1.8.2 Double.toString(Math.sqrt(1.0)), null }, //
-				{ "$sqrt(1.23456)", Double.toString(Math.sqrt(1.23456)), null }, //
-				{ "$sqrt(1.234567890123)", Double.toString(Math.sqrt(1.234567890123)), null }, //
-				{ "$sqrt(10/3.0)", Double.toString(Math.sqrt(10 / 3.0)), null }, //
-				{ "$sqrt(9223372036854775807)", Double.toString(Math.sqrt(Long.MAX_VALUE)), null }, // // Long.MAX_VALUE
-				{ "$sqrt(9223372036854775809)", Double.toString(Math.sqrt(9223372036854775809D)), null }, //
-				{ "$sqrt(9223372036854775899.5)", Double.toString(Math.sqrt(9223372036854775899.5)), null }, //
-				{ "$sqrt(9223372036854775809123456789)", Double.toString(Math.sqrt(9223372036854775809123456789D)), //
-						null }, //
-				{ "$sqrt(9223372036854775809123456789.5)", Double.toString(Math.sqrt(9223372036854775809123456789.5)), //
-						null }, //
-				{ "$sqrt(1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890)",
-						null, ERR_MSG_NUMBER_OUT_OF_RANGE } //
-		});
-	}
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$sqrt()", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$sqrt({})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$sqrt([])", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$sqrt('1')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$sqrt(true)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$sqrt(null)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$sqrt(-1)", null, ERR_MSG_FUNC_CANNOT_BE_APPLIED
+            }, //
+            {
+                "$sqrt(a.b.c)", null, null
+            }, //
+            {
+                "$sqrt(1)", "1", null
+            }, // jsonata 1.8.2 Double.toString(Math.sqrt(1)), null }, //
+            {
+                "$sqrt(2147483647)", Double.toString(Math.sqrt(2147483647)), null
+            }, //
+            {
+                "$sqrt(21474836471234)", Double.toString(Math.sqrt(21474836471234D)), null
+            }, //
+            {
+                "$sqrt(1.0)", "1", null
+            }, // jsonata 1.8.2 Double.toString(Math.sqrt(1.0)), null }, //
+            {
+                "$sqrt(1.23456)", Double.toString(Math.sqrt(1.23456)), null
+            }, //
+            {
+                "$sqrt(1.234567890123)", Double.toString(Math.sqrt(1.234567890123)), null
+            }, //
+            {
+                "$sqrt(10/3.0)", Double.toString(Math.sqrt(10 / 3.0)), null
+            }, //
+            {
+                "$sqrt(9223372036854775807)", Double.toString(Math.sqrt(Long.MAX_VALUE)), null
+            }, // // Long.MAX_VALUE
+            {
+                "$sqrt(9223372036854775809)", Double.toString(Math.sqrt(9223372036854775809D)), null
+            }, //
+            {
+                "$sqrt(9223372036854775899.5)", Double.toString(Math.sqrt(9223372036854775899.5)), null
+            }, //
+            {
+                "$sqrt(9223372036854775809123456789)", Double.toString(Math.sqrt(9223372036854775809123456789D)), //
+                null
+            }, //
+            {
+                "$sqrt(9223372036854775809123456789.5)", Double.toString(Math.sqrt(9223372036854775809123456789.5)), //
+                null
+            }, //
+            {
+                "$sqrt(1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890)",
+                null, ERR_MSG_NUMBER_OUT_OF_RANGE
+            } //
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 }

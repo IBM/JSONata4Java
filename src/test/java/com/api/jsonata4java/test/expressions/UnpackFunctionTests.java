@@ -23,7 +23,6 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.functions.UnpackFunction;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -46,28 +44,32 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 @RunWith(Parameterized.class)
 public class UnpackFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = 1984254969713743695L;
+    private static final long serialVersionUID = 1984254969713743695L;
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public JsonNode expectedResultJson;
+    @Parameter(1)
+    public JsonNode expectedResultJson;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { 
-			{ "$unpack()", null, UnpackFunction.ERR_BAD_CONTEXT }, //
-			{ "$unpack(\"41b1999a\", \"b32f\")", JsonNodeFactory.instance.numberNode(22.200000762939453f), null } //
-		});
-	}
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$unpack()", null, UnpackFunction.ERR_BAD_CONTEXT
+            }, //
+            {
+                "$unpack(\"41b1999a\", \"b32f\")", JsonNodeFactory.instance.numberNode(22.200000762939453f), null
+            } //
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJson, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJson, expectedRuntimeExceptionMessage, null);
+    }
 
 }

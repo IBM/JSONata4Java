@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.utils.Constants;
 
 /**
@@ -52,59 +49,114 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class MaxFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = 6903650980833036471L;
+    private static final long serialVersionUID = 6903650980833036471L;
 
-	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_MAX);
-	private static final String ERR_MSG_ARG1_ARR_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
-			Constants.FUNCTION_MAX);
-	private static final String ERR_MSG_NUMBER_OUT_OF_RANGE = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE,
-			"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
+    private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_MAX);
+    private static final String ERR_MSG_ARG1_ARR_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
+        Constants.FUNCTION_MAX);
+    private static final String ERR_MSG_NUMBER_OUT_OF_RANGE = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE,
+        "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890");
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$max()", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$max({})", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max('1')", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(true)", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(null)", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(1)", "1", null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(-1)", "-1", null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(1.0)", "1", null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(-1.0)", "-1", null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max([])", null, null}, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max([1, {}])", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max([1, []])", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max([1, 'foo'])", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max([1, true])", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max([1, null])", null, ERR_MSG_ARG1_ARR_TYPE }, //
-				{ "$max(a.b.c)", null, null }, //
-				{ "$max([5,1,3,7,4])", "7", null }, //
-				{ "$max([5.2 , 1.0, 3 , 7, 4])", "7", null }, //
-				{ "$max([5.2 , 1.0, 3 , 7.0, 4])", "7", null}, // jsonata 1.8.2 "7.0", null }, //
-				{ "$max([10/3.0, 1, 3])", Double.toString(10 / 3.0), null }, //
-				{ "$max([9223372036854775807])", Long.toString(Long.MAX_VALUE), null }, // // Long.MAX_VALUE
-				{ "$max([-9223372036854775808])", Long.toString(Long.MIN_VALUE), null}, // jsonata 1.8.2 Double.toString(Long.MIN_VALUE), null }, // // Long.MIN_VALUE
-				{ "$max([9223372036854775809])",  Long.toString(Long.MAX_VALUE), null}, // jsonata 1.8.2Double.toString(9223372036854775809D), null }, //
-				{ "$max([9223372036854775899.5])", Long.toString(Long.MAX_VALUE), null}, // jsonata 1.8.2 Double.toString(9223372036854775899.5), null }, //
-				{ "$max([9223372036854775809123456789])", Double.toString(9223372036854775809123456789D), null }, //
-				{ "$max([9223372036854775809123456789.5])", Double.toString(9223372036854775809123456789.5), null }, //
-				{ "$max([1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890])",
-						null, ERR_MSG_NUMBER_OUT_OF_RANGE }, //
-		});
-	}
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$max()", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$max({})", null, ERR_MSG_ARG1_ARR_TYPE
+            }, //
+            {
+                "$max('1')", null, ERR_MSG_ARG1_ARR_TYPE
+            }, //
+            {
+                "$max(true)", null, ERR_MSG_ARG1_ARR_TYPE
+            }, //
+            {
+                "$max(null)", null, ERR_MSG_ARG1_ARR_TYPE
+            }, //
+            {
+                "$max(1)", "1", null
+            }, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
+            {
+                "$max(-1)", "-1", null
+            }, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
+            {
+                "$max(1.0)", "1", null
+            }, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
+            {
+                "$max(-1.0)", "-1", null
+            }, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
+            {
+                "$max([])", null, null
+            }, // jsonata 1.8.2 null, ERR_MSG_ARG1_ARR_TYPE }, //
+            {
+                "$max([1, {}])", null, ERR_MSG_ARG1_ARR_TYPE
+            }, //
+            {
+                "$max([1, []])", null, ERR_MSG_ARG1_ARR_TYPE
+            }, //
+            {
+                "$max([1, 'foo'])", null, ERR_MSG_ARG1_ARR_TYPE
+            }, //
+            {
+                "$max([1, true])", null, ERR_MSG_ARG1_ARR_TYPE
+            }, //
+            {
+                "$max([1, null])", null, ERR_MSG_ARG1_ARR_TYPE
+            }, //
+            {
+                "$max(a.b.c)", null, null
+            }, //
+            {
+                "$max([5,1,3,7,4])", "7", null
+            }, //
+            {
+                "$max([5.2 , 1.0, 3 , 7, 4])", "7", null
+            }, //
+            {
+                "$max([5.2 , 1.0, 3 , 7.0, 4])", "7", null
+            }, // jsonata 1.8.2 "7.0", null }, //
+            {
+                "$max([10/3.0, 1, 3])", Double.toString(10 / 3.0), null
+            }, //
+            {
+                "$max([9223372036854775807])", Long.toString(Long.MAX_VALUE), null
+            }, // // Long.MAX_VALUE
+            {
+                "$max([-9223372036854775808])", Long.toString(Long.MIN_VALUE), null
+            }, // jsonata 1.8.2 Double.toString(Long.MIN_VALUE), null }, // // Long.MIN_VALUE
+            {
+                "$max([9223372036854775809])", Long.toString(Long.MAX_VALUE), null
+            }, // jsonata 1.8.2Double.toString(9223372036854775809D), null }, //
+            {
+                "$max([9223372036854775899.5])", Long.toString(Long.MAX_VALUE), null
+            }, // jsonata 1.8.2 Double.toString(9223372036854775899.5), null }, //
+            {
+                "$max([9223372036854775809123456789])", Double.toString(9223372036854775809123456789D), null
+            }, //
+            {
+                "$max([9223372036854775809123456789.5])", Double.toString(9223372036854775809123456789.5), null
+            }, //
+            {
+                "$max([1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890])",
+                null, ERR_MSG_NUMBER_OUT_OF_RANGE
+            }, //
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 }

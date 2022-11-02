@@ -33,70 +33,71 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class ReverseFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 30158285512902502L;
+    private static final long serialVersionUID = 30158285512902502L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_REVERSE);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_REVERSE);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_REVERSE);
-	public static String ERR_ARG1_MUST_BE_ARRAY = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY,
-			Constants.FUNCTION_REVERSE);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_REVERSE);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_REVERSE);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_REVERSE);
+    public static String ERR_ARG1_MUST_BE_ARRAY = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY,
+        Constants.FUNCTION_REVERSE);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		ArrayNode result = JsonNodeFactory.instance.arrayNode();
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        ArrayNode result = JsonNodeFactory.instance.arrayNode();
 
-		// Retrieve the number of arguments
-		JsonNode argArray = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argArray = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argArray != null && argArray.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argArray = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argArray = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argArray != null && argArray.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			// if arg is an array, return its length. Any other type of
-			// input returns 1.
-			if (argArray == null) {
-				return null; // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			} else if (argArray.isArray()) {
-				ArrayNode array = (ArrayNode) argArray;
-				for (int i = array.size() - 1; i >= 0; i--) {
-					result.add(array.get(i));
-				}
-			} else {
-				if (argArray.isNull()) {
-					result.add(argArray);
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY);
-				}
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
-		}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            // if arg is an array, return its length. Any other type of
+            // input returns 1.
+            if (argArray == null) {
+                return null; // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            } else if (argArray.isArray()) {
+                ArrayNode array = (ArrayNode) argArray;
+                for (int i = array.size() - 1; i >= 0; i--) {
+                    result.add(array.get(i));
+                }
+            } else {
+                if (argArray.isNull()) {
+                    result.add(argArray);
+                } else {
+                    throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_ARRAY);
+                }
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts an array, returns an array
-		return "<a:a>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 1;
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts an array, returns an array
+        return "<a:a>";
+    }
 }

@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.utils.Constants;
 
 /**
@@ -63,48 +60,90 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class TrimFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = -5903069783676478079L;
+    private static final long serialVersionUID = -5903069783676478079L;
 
-	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_TRIM);
-	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_TRIM);
+    private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_TRIM);
+    private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_TRIM);
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$trim()", null, null }, // 1.8.2 not ERR_BAD_CONTEXT
-				{ "$trim({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$trim([])", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$trim({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$trim([\"hello\", 1])", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$trim(1)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$trim(-22.2)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$trim(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$trim(null)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$trim(\"\", \"\")", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$trim(a.b.c)", null, null }, //
-				{ "$trim(\"\")", "\"\"", null }, //
-				{ "$trim(\" Hello World \")", "\"Hello World\"", null }, //
-				{ "$trim(\"\tHello World\t\")", "\"Hello World\"", null }, //
-				{ "$trim(\"\r\nHello World\r\n\")", "\"Hello World\"", null }, //
-				{ "$trim(\" Hello   World \")", "\"Hello World\"", null }, //
-				{ "$trim(\" Hello\tWorld \")", "\"Hello World\"", null }, //
-				{ "$trim(\" Hello\r\nWorld \")", "\"Hello World\"", null }, //
-				{ "$trim(\" Hello\t\r\nWorld \")", "\"Hello World\"", null }, //
-				{ "$trim(\" Hello\t   World \")", "\"Hello World\"", null } });
-	}
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$trim()", null, null
+            }, // 1.8.2 not ERR_BAD_CONTEXT
+            {
+                "$trim({})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$trim([])", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$trim({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$trim([\"hello\", 1])", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$trim(1)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$trim(-22.2)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$trim(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$trim(null)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$trim(\"\", \"\")", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$trim(a.b.c)", null, null
+            }, //
+            {
+                "$trim(\"\")", "\"\"", null
+            }, //
+            {
+                "$trim(\" Hello World \")", "\"Hello World\"", null
+            }, //
+            {
+                "$trim(\"\tHello World\t\")", "\"Hello World\"", null
+            }, //
+            {
+                "$trim(\"\r\nHello World\r\n\")", "\"Hello World\"", null
+            }, //
+            {
+                "$trim(\" Hello   World \")", "\"Hello World\"", null
+            }, //
+            {
+                "$trim(\" Hello\tWorld \")", "\"Hello World\"", null
+            }, //
+            {
+                "$trim(\" Hello\r\nWorld \")", "\"Hello World\"", null
+            }, //
+            {
+                "$trim(\" Hello\t\r\nWorld \")", "\"Hello World\"", null
+            }, //
+            {
+                "$trim(\" Hello\t   World \")", "\"Hello World\"", null
+            }
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 }

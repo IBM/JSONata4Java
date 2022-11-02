@@ -49,75 +49,76 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class FloorFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 6322299733236324819L;
+    private static final long serialVersionUID = 6322299733236324819L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_FLOOR);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FLOOR);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_FLOOR);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_FLOOR);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FLOOR);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_FLOOR);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argNumber = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argNumber != null && argNumber.isNull() == false) {
-				if (!argNumber.isNumber()) {
-					throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-				}
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argNumber = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argNumber = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argNumber != null && argNumber.isNull() == false) {
+                if (!argNumber.isNumber()) {
+                    throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+                }
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argNumber == null) {
-				return null;
-			}
-			// Check the type of the argument
-			if (argNumber.isNumber()) {
-				if (argNumber.isFloatingPointNumber() || argNumber.isDouble()) {
-					// Math.floor only accepts a double
-					double floor = Math.floor(argNumber.doubleValue());
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argNumber == null) {
+                return null;
+            }
+            // Check the type of the argument
+            if (argNumber.isNumber()) {
+                if (argNumber.isFloatingPointNumber() || argNumber.isDouble()) {
+                    // Math.floor only accepts a double
+                    double floor = Math.floor(argNumber.doubleValue());
 
-					// Create the node to return
-					result = new LongNode((long) floor);
-				} else {
-					// The argument is already an integer... simply return the
-					// node
-					result = argNumber;
-				}
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-		}
+                    // Create the node to return
+                    result = new LongNode((long) floor);
+                } else {
+                    // The argument is already an integer... simply return the
+                    // node
+                    result = argNumber;
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a number (or context variable), returns a number
-		return "<n-:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a number (or context variable), returns a number
+        return "<n-:n>";
+    }
 }
