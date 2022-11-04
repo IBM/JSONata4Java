@@ -187,11 +187,38 @@ public class FunctionChainingTests {
 
     @Test
     public void testChainWith2() throws Exception {
+        test("(\n"
+            + "    $replaceX := function($urn) {\n"
+            + "      $replace($urn, /[Oo]/, \"0\")"
+            + "    };\n"
+            + "{\n"
+            + "    \"contacts\": [\n"
+            + "        (groups.members.name\n"
+            + "            ~> $sort()"
+            + "            ~> $distinct()\n"
+            + "        ).$replaceX($)\n"
+            + "    ]\n"
+            + "})",
+            "{\n"
+                + "  \"contacts\": [\n"
+                + "    \"Eugene\",\n"
+                + "    \"J0e\",\n"
+                + "    \"Kenta\",\n"
+                + "    \"0laf\",\n"
+                + "    \"Wladimir\"\n"
+                + "  ]\n"
+                + "}",
+            null,
+            INPUT_JSON_01);
+    }
+
+    @Test
+    public void testChainWith2swap() throws Exception {
         test("{\n"
             + "    \"contacts\": [\n"
             + "        groups.members.name\n"
-            + "            ~> $distinct()\n"
             + "            ~> $sort()\n"
+            + "            ~> $distinct()\n"
             + "    ]\n"
             + "}",
             "{\n"
