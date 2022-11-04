@@ -43,6 +43,7 @@ import com.api.jsonata4java.test.expressions.BooleanFunctionTests;
 import com.api.jsonata4java.test.expressions.CeilFunctionTests;
 import com.api.jsonata4java.test.expressions.ContainsFunctionTests;
 import com.api.jsonata4java.test.expressions.CountFunctionTests;
+import com.api.jsonata4java.test.expressions.DistinctFunctionTests;
 import com.api.jsonata4java.test.expressions.ExpressionsTests;
 import com.api.jsonata4java.test.expressions.FloorFunctionTests;
 import com.api.jsonata4java.test.expressions.FormatBaseFunctionTests;
@@ -365,6 +366,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
         runComponentTest(CeilFunctionTests.data());
         runComponentTest(ContainsFunctionTests.data());
         runComponentTest(CountFunctionTests.data());
+        runComponentTest(DistinctFunctionTests.data());
         runComponentTest(ExpressionsTests.data());
         runComponentTest(FloorFunctionTests.data());
         runComponentTest(FormatBaseFunctionTests.data());

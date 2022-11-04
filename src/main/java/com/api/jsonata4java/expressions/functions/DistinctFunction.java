@@ -23,10 +23,9 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.util.Iterator;
+import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -55,43 +54,38 @@ public class DistinctFunction extends FunctionBase implements Function {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_EACH);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_EACH);
-    public static String ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS = String
-        .format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_EACH);
+    public static String ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_EACH);
 
-    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-        JsonNode result = JsonNodeFactory.instance.nullNode();
+    public JsonNode invoke(final ExpressionsVisitor expressionVisitor, final Function_callContext ctx) {
+
+        ArrayNode result = JsonNodeFactory.instance.arrayNode();
+        // Retrieve the number of arguments
+        JsonNode arg = JsonNodeFactory.instance.nullNode();
         boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-        JsonNode inputNode = null;
-        ExprValuesContext valuesCtx = ctx.exprValues();
-        ExprListContext exprList = valuesCtx.exprList();
         int argCount = getArgumentCount(ctx);
         if (useContext) {
-            // pop context var from stack
-            inputNode = FunctionUtils.getContextVariable(expressionVisitor);
-            if (inputNode != null && inputNode.isNull() == false) {
+            arg = FunctionUtils.getContextVariable(expressionVisitor);
+            if (arg != null && arg.isNull() == false) {
                 argCount++;
             } else {
                 useContext = false;
             }
         }
+
         if (argCount <= 1) {
             if (!useContext) {
-                inputNode = expressionVisitor.visit(exprList.expr(0));
+                arg = expressionVisitor.visit(ctx.exprValues().exprList().expr(0));
             }
 
-            if (inputNode == null) {
-                return null; // signal no match
-            }
-
-            if (!inputNode.isArray() || ((ArrayNode) inputNode).size() < 1) {
-                result = inputNode;
-            } else { // isArray()==true
+            if (arg == null || !arg.isArray()) {
+                return JsonNodeFactory.instance.nullNode();
+            } else if (((ArrayNode) arg).size() > 0) {
                 // run through the array to find distinct members to fill the resultArray
                 // expect something that evaluates to an element, object or array
-                ArrayNode newResult = ((inputNode instanceof SelectorArrayNode) ? new SelectorArrayNode(JsonNodeFactory.instance) : JsonNodeFactory.instance.arrayNode());
-                ArrayNode array = (ArrayNode) inputNode;
-                if (inputNode instanceof SelectorArrayNode) {
-                    array = (SelectorArrayNode) inputNode;
+                ArrayNode newResult = ((arg instanceof SelectorArrayNode) ? new SelectorArrayNode(JsonNodeFactory.instance) : JsonNodeFactory.instance.arrayNode());
+                ArrayNode array = (ArrayNode) arg;
+                if (arg instanceof SelectorArrayNode) {
+                    array = (SelectorArrayNode) arg;
                 }
                 JsonNode node1, node2;
                 boolean foundMatch = false;
@@ -111,6 +105,8 @@ public class DistinctFunction extends FunctionBase implements Function {
                 }
                 result = newResult;
             }
+        } else {
+            throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
         }
         return result;
     }
