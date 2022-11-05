@@ -77,33 +77,41 @@ public class DistinctFunction extends FunctionBase implements Function {
                 arg = expressionVisitor.visit(ctx.exprValues().exprList().expr(0));
             }
 
-            if (arg == null || !arg.isArray()) {
+            if (arg == null) {
                 return JsonNodeFactory.instance.nullNode();
-            } else if (((ArrayNode) arg).size() > 0) {
-                // run through the array to find distinct members to fill the resultArray
-                // expect something that evaluates to an element, object or array
-                ArrayNode newResult = ((arg instanceof SelectorArrayNode) ? new SelectorArrayNode(JsonNodeFactory.instance) : JsonNodeFactory.instance.arrayNode());
-                ArrayNode array = (ArrayNode) arg;
-                if (arg instanceof SelectorArrayNode) {
-                    array = (SelectorArrayNode) arg;
-                }
-                JsonNode node1, node2;
-                boolean foundMatch = false;
-                for (Iterator<JsonNode> it = array.iterator(); it.hasNext();) {
-                    node1 = it.next();
-                    for (Iterator<JsonNode> it2 = newResult.iterator(); it2.hasNext();) {
-                        node2 = it2.next();
-                        if (node1 != null && node1.equals(node2)) {
-                            foundMatch = true;
-                            break;
+            } else if (arg instanceof ArrayNode) {
+                if (((ArrayNode) arg).size() == 0) {
+                    return JsonNodeFactory.instance.arrayNode();
+                } else {
+                    // run through the array to find distinct members to fill the resultArray
+                    // expect something that evaluates to an element, object or array
+                    ArrayNode newResult = ((arg instanceof SelectorArrayNode) ? new SelectorArrayNode(JsonNodeFactory.instance) : JsonNodeFactory.instance.arrayNode());
+                    ArrayNode array = (ArrayNode) arg;
+                    if (arg instanceof SelectorArrayNode) {
+                        array = (SelectorArrayNode) arg;
+                    }
+                    JsonNode node1, node2;
+                    boolean foundMatch = false;
+                    for (Iterator<JsonNode> it = array.iterator(); it.hasNext();) {
+                        node1 = it.next();
+                        for (Iterator<JsonNode> it2 = newResult.iterator(); it2.hasNext();) {
+                            node2 = it2.next();
+                            if (node1 != null && node1.equals(node2)) {
+                                foundMatch = true;
+                                break;
+                            }
                         }
+                        if (!foundMatch) {
+                            newResult.add(node1);
+                        }
+                        foundMatch = false;
                     }
-                    if (!foundMatch) {
-                        newResult.add(node1);
-                    }
-                    foundMatch = false;
+                    result = newResult;
                 }
-                result = newResult;
+            } else {
+                // allow to work with any input
+                result.add(arg);
+                return result;
             }
         } else {
             throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
