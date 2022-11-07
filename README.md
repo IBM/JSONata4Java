@@ -8,13 +8,13 @@ JSONata was created by Andrew Coleman to provide many of the features that XPath
 * [JSONata Documentation](http://docs.jsonata.org/overview.html)
 * [JavaScript JSONata github repository](https://github.com/jsonata-js/jsonata)
 
-JSONata4Java is an attempt to port the jsonata.js 1.8.4 capabilities to Java 11. 
+JSONata4Java is an attempt to port the jsonata.js 1.8.4 capabilities to Java 1.8. 
 The easiest way to use this library is to include it as a dependency in your Maven pom.xml using these line&colon;
 ```
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>2.2.0</version>
+  <version>2.2.1</version>
 </dependency>
 ```
 
@@ -23,10 +23,13 @@ You can also opt to clone this repository using the command line below and build
 git clone https://github.com/IBM/JSONata4Java.git
 ```
 
-### Java 11 Version needed for new Antlr 4.11.1 (Also updated project file to Eclipse 2022-09)
+### Java 1.8 Version needed for new Antlr 4.11.1 (Also updated project file to Eclipse 2022-09)
 
 The code was created using IBM Semeru Runtime Open Edition 11.0.16.1 (build 11.0.16.1+1). You can import the project into Eclipse 2022-09 or newer. 
 You can download the Java JDK 11 from https://developer.ibm.com/languages/java/semeru-runtimes/downloads/?license=IBM 
+ 
+
+However, the build dependencies are set to allow use with Java 1.8
 
 
 ### Building the jar files
@@ -41,8 +44,8 @@ you can right click on the pom.xml file and select **Run as... / Maven build...*
 Alternatively, you can run from the command line in the JSONata4Java directory&colon; **mvn clean install -Dgpg.skip**
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two&colon;
-* **JSONata4Java-2.2.0-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-2.2.0.jar** (only the JSONata4Java code)
+* **JSONata4Java-2.2.1-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-2.2.1.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
@@ -93,7 +96,7 @@ that in JSONata4Java we use different parser technology and we use the original 
       Original JSONata evaluates `$replace("abcdefghijklmno", /(ijk)/, "$x$")` to `"abcdefgh$x$lmno"`  
       In JSONata4Java you should write `$replace("abcdefghijklmno", /(ijk)/, "$x$$")` to `"abcdefgh$x$lmno"`
       in order to achieve the same - which is compatible to original JSONata anyway. 
-  
+  k
 **Please note&colon;** that in JSONata4Java <= 1.7.9 we already provided (non documented) regular expressions support for functions&colon;
 - $replace()
 - $split()
