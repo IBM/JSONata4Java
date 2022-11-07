@@ -77,9 +77,13 @@ public class DistinctFunction extends FunctionBase implements Function {
                 arg = expressionVisitor.visit(ctx.exprValues().exprList().expr(0));
             }
 
-            if (arg == null) {
-                return JsonNodeFactory.instance.nullNode();
-            } else if (arg instanceof ArrayNode) {
+            if (arg == null || arg.isNull()) {
+                if (useContext) {
+                    throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                } else {
+                    return null;
+                }
+            } else if (arg.isArray()) {
                 if (((ArrayNode) arg).size() == 0) {
                     return JsonNodeFactory.instance.arrayNode();
                 } else {

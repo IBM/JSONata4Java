@@ -49,6 +49,7 @@ import com.api.jsonata4java.test.expressions.FloorFunctionTests;
 import com.api.jsonata4java.test.expressions.FormatBaseFunctionTests;
 import com.api.jsonata4java.test.expressions.FormatNumberFunctionTests;
 import com.api.jsonata4java.test.expressions.FromMillisFunctionTests;
+import com.api.jsonata4java.test.expressions.FunctionChainingTests;
 import com.api.jsonata4java.test.expressions.InvalidSyntaxTest;
 import com.api.jsonata4java.test.expressions.JoinFunctionTests;
 import com.api.jsonata4java.test.expressions.JsonataDotOrgTests;
@@ -63,11 +64,13 @@ import com.api.jsonata4java.test.expressions.NowFunctionTests;
 import com.api.jsonata4java.test.expressions.NumberFunctionTests;
 import com.api.jsonata4java.test.expressions.NumericCoercionTests;
 import com.api.jsonata4java.test.expressions.PadFunctionTests;
+import com.api.jsonata4java.test.expressions.PathExpressionParentTests;
 import com.api.jsonata4java.test.expressions.PowerFunctionTests;
 import com.api.jsonata4java.test.expressions.RandomFunctionTests;
 import com.api.jsonata4java.test.expressions.ReplaceFunctionTests;
 import com.api.jsonata4java.test.expressions.RoundFunctionTests;
 import com.api.jsonata4java.test.expressions.SingletonArrayHandlingTests;
+import com.api.jsonata4java.test.expressions.SortFunctionTests;
 import com.api.jsonata4java.test.expressions.SplitFunctionTests;
 import com.api.jsonata4java.test.expressions.SqrtFunctionTests;
 import com.api.jsonata4java.test.expressions.StringFunctionTests;
@@ -390,6 +393,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
         runComponentTest(RoundFunctionTests.data());
         // issue 80
         runComponentTest(SingletonArrayHandlingTests.data());
+        runComponentTest(SortFunctionTests.data());
         runComponentTest(SplitFunctionTests.data());
         runComponentTest(SqrtFunctionTests.data());
         runComponentTest(StringFunctionTests.data());
@@ -414,7 +418,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
         runJsonataTest(JsonataDotOrgTests.data());
 
         runJunitTests(new BasicExpressionsTests());
-        runJunitTests(new com.api.jsonata4java.test.expressions.PathExpressionParentTests());
+        runJunitTests(new FunctionChainingTests());
+        runJunitTests(new PathExpressionParentTests());
     }
 
     private void runJunitTests(final Object testCase) {
