@@ -59,13 +59,12 @@ public class DistinctFunction extends FunctionBase implements Function {
     public JsonNode invoke(final ExpressionsVisitor expressionVisitor, final Function_callContext ctx) {
 
         ArrayNode result = JsonNodeFactory.instance.arrayNode();
-        // Retrieve the number of arguments
-        JsonNode arg = JsonNodeFactory.instance.nullNode();
         boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        JsonNode inputNode = JsonNodeFactory.instance.nullNode();
         int argCount = getArgumentCount(ctx);
         if (useContext) {
-            arg = FunctionUtils.getContextVariable(expressionVisitor);
-            if (arg != null && arg.isNull() == false) {
+            inputNode = FunctionUtils.getContextVariable(expressionVisitor);
+            if (inputNode != null && inputNode.isNull() == false) {
                 argCount++;
             } else {
                 useContext = false;
@@ -74,25 +73,25 @@ public class DistinctFunction extends FunctionBase implements Function {
 
         if (argCount <= 1) {
             if (!useContext) {
-                arg = expressionVisitor.visit(ctx.exprValues().exprList().expr(0));
+                inputNode = expressionVisitor.visit(ctx.exprValues().exprList().expr(0));
             }
 
-            if (arg == null || arg.isNull()) {
+            if (inputNode == null || inputNode.isNull()) {
                 if (useContext) {
                     throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
                 } else {
                     return null;
                 }
-            } else if (arg.isArray()) {
-                if (((ArrayNode) arg).size() == 0) {
+            } else if (inputNode.isArray()) {
+                if (((ArrayNode) inputNode).size() == 0) {
                     return JsonNodeFactory.instance.arrayNode();
                 } else {
                     // run through the array to find distinct members to fill the resultArray
                     // expect something that evaluates to an element, object or array
-                    ArrayNode newResult = ((arg instanceof SelectorArrayNode) ? new SelectorArrayNode(JsonNodeFactory.instance) : JsonNodeFactory.instance.arrayNode());
-                    ArrayNode array = (ArrayNode) arg;
-                    if (arg instanceof SelectorArrayNode) {
-                        array = (SelectorArrayNode) arg;
+                    ArrayNode newResult = ((inputNode instanceof SelectorArrayNode) ? new SelectorArrayNode(JsonNodeFactory.instance) : JsonNodeFactory.instance.arrayNode());
+                    ArrayNode array = (ArrayNode) inputNode;
+                    if (inputNode instanceof SelectorArrayNode) {
+                        array = (SelectorArrayNode) inputNode;
                     }
                     JsonNode node1, node2;
                     boolean foundMatch = false;
@@ -114,7 +113,7 @@ public class DistinctFunction extends FunctionBase implements Function {
                 }
             } else {
                 // allow to work with any input
-                result.add(arg);
+                result.add(inputNode);
                 return result;
             }
         } else {
