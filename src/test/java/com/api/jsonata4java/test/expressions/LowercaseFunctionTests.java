@@ -75,51 +75,21 @@ public class LowercaseFunctionTests implements Serializable {
     @Parameters(name = "{index}: {0} -> {1} ({2})")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            {
-                "$lowercase()", null, ERR_BAD_CONTEXT
-            }, //
-            {
-                "$lowercase({})", null, ERR_MSG_ARG1_BAD_TYPE
-            }, //
-            {
-                "$lowercase([])", null, ERR_MSG_ARG1_BAD_TYPE
-            }, //
-            {
-                "$lowercase({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE
-            }, //
-            {
-                "$lowercase([\"hello\", 1])", null, ERR_MSG_ARG1_BAD_TYPE
-            }, //
-            {
-                "$lowercase(1)", null, ERR_MSG_ARG1_BAD_TYPE
-            }, //
-            {
-                "$lowercase(-22.2)", null, ERR_MSG_ARG1_BAD_TYPE
-            }, //
-            {
-                "$lowercase(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE
-            }, //
-            {
-                "$lowercase(null)", null, ERR_MSG_ARG1_BAD_TYPE
-            }, //
-            {
-                "$lowercase(\"\", \"\")", null, ERR_MSG_ARG2_BAD_TYPE
-            }, //
-            {
-                "$lowercase(a.b.c)", null, null
-            }, //
-            {
-                "$lowercase(\"\")", "\"\"", null
-            }, //
-            {
-                "$lowercase(\"Hello World\")", "\"hello world\"", null
-            }, //
-            {
-                "$lowercase(\"hello world\")", "\"hello world\"", null
-            }, //
-            {
-                "$lowercase(\"!@#$%^&*()\")", "\"!@#$%^&*()\"", null
-            }
+            { "$lowercase()", null, ERR_BAD_CONTEXT }, //
+            { "$lowercase({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
+            { "$lowercase([])", null, ERR_MSG_ARG1_BAD_TYPE }, //
+            { "$lowercase({\"hello\": 1})", null, ERR_MSG_ARG1_BAD_TYPE }, //
+            { "$lowercase([\"hello\", 1])", null, ERR_MSG_ARG1_BAD_TYPE }, //
+            { "$lowercase(1)", null, ERR_MSG_ARG1_BAD_TYPE }, //
+            { "$lowercase(-22.2)", null, ERR_MSG_ARG1_BAD_TYPE }, //
+            { "$lowercase(10/3.0)", null, ERR_MSG_ARG1_BAD_TYPE }, //
+            { "$lowercase(null)", null, ERR_MSG_ARG1_BAD_TYPE }, //
+            { "$lowercase(\"\", \"\")", null, ERR_MSG_ARG2_BAD_TYPE }, //
+            { "$lowercase(a.b.c)", null, null }, //
+            { "$lowercase(\"\")", "\"\"", null }, //
+            { "$lowercase(\"Hello World\")", "\"hello world\"", null }, //
+            { "$lowercase(\"hello world\")", "\"hello world\"", null }, //
+            { "$lowercase(\"!@#$%^&*()\")", "\"!@#$%^&*()\"", null } //
         });
     }
 

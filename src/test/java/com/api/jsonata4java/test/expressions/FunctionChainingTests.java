@@ -102,6 +102,103 @@ public class FunctionChainingTests {
         + "}";
 
     @Test
+    public void test_lowercase() throws Exception {
+        test("{\n"
+            + "    \"contacts\": [\n"
+            + "        (groups.members.name\n"
+            + "            ~> $distinct()\n"
+            + "        ).($string()\n"
+            + "             ~> $lowercase()"
+            + "        )\n"
+            + "    ]\n"
+            + "}",
+            "{\n"
+                + "  \"contacts\": [\n"
+                + "    \"olaf\",\n"
+                + "    \"wladimir\",\n"
+                + "    \"eugene\",\n"
+                + "    \"joe\",\n"
+                + "    \"kenta\"\n"
+                + "  ]\n"
+                + "}",
+            null,
+            INPUT_JSON_01);
+    }
+
+    @Test
+    public void test_contains() throws Exception {
+        test("{\n"
+            + "    \"contacts\": [\n"
+            + "        (groups.members.name\n"
+            + "            ~> $distinct()\n"
+            + "        ).($string()\n"
+            + "             ~> $contains(/la/)"
+            + "        )\n"
+            + "    ]\n"
+            + "}",
+            "{\n"
+                + "  \"contacts\": [\n"
+                + "    true,\n"
+                + "    true,\n"
+                + "    false,\n"
+                + "    false,\n"
+                + "    false\n"
+                + "  ]\n"
+                + "}",
+            null,
+            INPUT_JSON_01);
+    }
+
+    @Test
+    public void test_replace() throws Exception {
+        test("{\n"
+            + "    \"contacts\": [\n"
+            + "        (groups.members.name\n"
+            + "            ~> $distinct()\n"
+            + "        ).($string()\n"
+            + "             ~> $replace(/la/, \"OO\")"
+            + "        )\n"
+            + "    ]\n"
+            + "}",
+            "{\n"
+                + "  \"contacts\": [\n"
+                + "    \"OOOf\",\n"
+                + "    \"WOOdimir\",\n"
+                + "    \"Eugene\",\n"
+                + "    \"Joe\",\n"
+                + "    \"Kenta\"\n"
+                + "  ]\n"
+                + "}",
+            null,
+            INPUT_JSON_01);
+    }
+
+    @Test
+    public void test_uppercase() throws Exception {
+        test("{\n"
+            + "    \"contacts\": [\n"
+            + "        (groups.members.name\n"
+            + "            ~> $distinct()\n"
+            + "        ).("
+            + "             $string()\n"
+            + "             ~> $uppercase()"
+            + "        )\n"
+            + "    ]\n"
+            + "}",
+            "{\n"
+                + "  \"contacts\": [\n"
+                + "    \"OLAF\",\n"
+                + "    \"WLADIMIR\",\n"
+                + "    \"EUGENE\",\n"
+                + "    \"JOE\",\n"
+                + "    \"KENTA\"\n"
+                + "  ]\n"
+                + "}",
+            null,
+            INPUT_JSON_01);
+    }
+
+    @Test
     public void testFunctionNesting2SortDistinctInCustomFunction() throws Exception {
         test("(\n"
             + "    $root := root;\n"

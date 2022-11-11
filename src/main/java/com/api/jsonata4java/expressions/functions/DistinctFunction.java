@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.util.Iterator;
-import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -54,15 +53,16 @@ public class DistinctFunction extends FunctionBase implements Function {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_EACH);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_EACH);
-    public static String ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_EACH);
+    public static String ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS = String
+        .format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_EACH);
 
-    public JsonNode invoke(final ExpressionsVisitor expressionVisitor, final Function_callContext ctx) {
-
-        ArrayNode result = JsonNodeFactory.instance.arrayNode();
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        JsonNode result = JsonNodeFactory.instance.nullNode();
         boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-        JsonNode inputNode = JsonNodeFactory.instance.nullNode();
+        JsonNode inputNode = null;
         int argCount = getArgumentCount(ctx);
         if (useContext) {
+            // pop context var from stack
             inputNode = FunctionUtils.getContextVariable(expressionVisitor);
             if (inputNode != null && inputNode.isNull() == false) {
                 argCount++;
@@ -70,54 +70,43 @@ public class DistinctFunction extends FunctionBase implements Function {
                 useContext = false;
             }
         }
-
         if (argCount <= 1) {
             if (!useContext) {
                 inputNode = expressionVisitor.visit(ctx.exprValues().exprList().expr(0));
             }
 
-            if (inputNode == null || inputNode.isNull()) {
-                if (useContext) {
-                    throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-                } else {
-                    return null;
-                }
-            } else if (inputNode.isArray()) {
-                if (((ArrayNode) inputNode).size() == 0) {
-                    return JsonNodeFactory.instance.arrayNode();
-                } else {
-                    // run through the array to find distinct members to fill the resultArray
-                    // expect something that evaluates to an element, object or array
-                    ArrayNode newResult = ((inputNode instanceof SelectorArrayNode) ? new SelectorArrayNode(JsonNodeFactory.instance) : JsonNodeFactory.instance.arrayNode());
-                    ArrayNode array = (ArrayNode) inputNode;
-                    if (inputNode instanceof SelectorArrayNode) {
-                        array = (SelectorArrayNode) inputNode;
-                    }
-                    JsonNode node1, node2;
-                    boolean foundMatch = false;
-                    for (Iterator<JsonNode> it = array.iterator(); it.hasNext();) {
-                        node1 = it.next();
-                        for (Iterator<JsonNode> it2 = newResult.iterator(); it2.hasNext();) {
-                            node2 = it2.next();
-                            if (node1 != null && node1.equals(node2)) {
-                                foundMatch = true;
-                                break;
-                            }
-                        }
-                        if (!foundMatch) {
-                            newResult.add(node1);
-                        }
-                        foundMatch = false;
-                    }
-                    result = newResult;
-                }
-            } else {
-                // allow to work with any input
-                result.add(inputNode);
-                return result;
+            if (inputNode == null) {
+                return null; // signal no match
             }
-        } else {
-            throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+
+            if (!inputNode.isArray() || ((ArrayNode) inputNode).size() < 1) {
+                result = inputNode;
+            } else { // isArray()==true
+                // run through the array to find distinct members to fill the resultArray
+                // expect something that evaluates to an element, object or array
+                ArrayNode newResult = ((inputNode instanceof SelectorArrayNode) ? new SelectorArrayNode(JsonNodeFactory.instance) : JsonNodeFactory.instance.arrayNode());
+                ArrayNode array = (ArrayNode) inputNode;
+                if (inputNode instanceof SelectorArrayNode) {
+                    array = (SelectorArrayNode) inputNode;
+                }
+                JsonNode node1, node2;
+                boolean foundMatch = false;
+                for (Iterator<JsonNode> it = array.iterator(); it.hasNext();) {
+                    node1 = it.next();
+                    for (Iterator<JsonNode> it2 = newResult.iterator(); it2.hasNext();) {
+                        node2 = it2.next();
+                        if (node1 != null && node1.equals(node2)) {
+                            foundMatch = true;
+                            break;
+                        }
+                    }
+                    if (!foundMatch) {
+                        newResult.add(node1);
+                    }
+                    foundMatch = false;
+                }
+                result = newResult;
+            }
         }
         return result;
     }

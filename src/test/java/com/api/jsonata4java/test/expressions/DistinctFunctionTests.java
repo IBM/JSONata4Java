@@ -55,7 +55,7 @@ public class DistinctFunctionTests implements Serializable {
     @Parameters(name = "{index}: {0} -> {1} ({2})")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            { "$distinct(null)", null, null },
+            { "$distinct(null)", "null", null },
             { "$distinct([])", "[]", null },
             { "$distinct([1])", "[1]", null },
             { "$distinct([1,2,3,4])", "[1,2,3,4]", null },
