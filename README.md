@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>2.2.1</version>
+  <version>2.2.2</version>
 </dependency>
 ```
 
@@ -44,8 +44,8 @@ you can right click on the pom.xml file and select **Run as... / Maven build...*
 Alternatively, you can run from the command line in the JSONata4Java directory&colon; **mvn clean install -Dgpg.skip**
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two&colon;
-* **JSONata4Java-2.2.1-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-2.2.1.jar** (only the JSONata4Java code)
+* **JSONata4Java-2.2.2-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-2.2.2.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
@@ -57,6 +57,28 @@ against the same JSON as is used at the https://try.jsonata.org site.
 
 ### New Features ###
 Many thanks to **Martin Bluemel** for adding these new features&colon;  
+
+**Improved Chaining**&colon;
+JSONata4Java basically does support function chaining now. However, it does not yet 
+support the "function name only" syntax for function chaining (the one without paratheses). 
+So we recommend using a syntax like below&colon;
+
+```
+$map(Customer, function($v, $i, $a) { $v ~> $uppercase() ~> $trim() } )
+```
+rather than  
+```
+$map(Customer, function($v, $i, $a) { $v ~> $uppercase ~> $trim } )
+```
+for the JSON%&colon;
+```
+{
+  "Customer": [
+    "    paul   ",
+    "  berverly     "
+  ]
+}
+```
 
 **Parent Operator (%)**&colon;  
 JSONata4Java now supports the parent (%) operator. This allows 
