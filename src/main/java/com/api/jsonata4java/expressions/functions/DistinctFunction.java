@@ -25,8 +25,6 @@ package com.api.jsonata4java.expressions.functions;
 import java.util.Iterator;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
-import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprValuesContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -62,8 +60,6 @@ public class DistinctFunction extends FunctionBase implements Function {
         JsonNode result = JsonNodeFactory.instance.nullNode();
         boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
         JsonNode inputNode = null;
-        ExprValuesContext valuesCtx = ctx.exprValues();
-        ExprListContext exprList = valuesCtx.exprList();
         int argCount = getArgumentCount(ctx);
         if (useContext) {
             // pop context var from stack
@@ -76,7 +72,7 @@ public class DistinctFunction extends FunctionBase implements Function {
         }
         if (argCount <= 1) {
             if (!useContext) {
-                inputNode = expressionVisitor.visit(exprList.expr(0));
+                inputNode = expressionVisitor.visit(ctx.exprValues().exprList().expr(0));
             }
 
             if (inputNode == null) {

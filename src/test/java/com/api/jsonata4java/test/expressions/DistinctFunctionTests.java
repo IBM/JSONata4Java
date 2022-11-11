@@ -37,28 +37,11 @@ import org.junit.runners.Parameterized.Parameters;
  * instead providing the "input" inlined with the expression itself (e.g. ["a",
  * "b"][0]=="a"). Separate test cases verify that variable access works as
  * expected.
- * 
- * From http://docs.jsonata.org/string-functions.html:
- * 
- * $string(arg)
- * 
- * Casts the arg parameter to a string using the following casting rules
- * 
- * Strings are unchanged Functions are converted to an empty string Numeric
- * infinity and NaN throw an error because they cannot be represented as a JSON
- * number All other values are converted to a JSON string using the
- * JSON.stringify function If arg is not specified (i.e. this function is
- * invoked with no arguments), then the context value is used as the value of
- * arg.
- * 
- * Examples
- * 
- * $string(5)=="5" [1..5].$string()==["1", "2", "3", "4", "5"]
  */
 @RunWith(Parameterized.class)
-public class StringFunctionTests implements Serializable {
+public class DistinctFunctionTests implements Serializable {
 
-    private static final long serialVersionUID = -312249015654495365L;
+    private static final long serialVersionUID = 7061882983195426346L;
 
     @Parameter(0)
     public String expression;
@@ -72,16 +55,13 @@ public class StringFunctionTests implements Serializable {
     @Parameters(name = "{index}: {0} -> {1} ({2})")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
-            { "$string()", null, null }, // jsonata 1.8.2 StringFunction.ERR_BAD_CONTEXT }, //
-            { "$string({})", "\"{}\"", null }, //
-            { "$string([])", "\"[]\"", null }, //
-            { "$string({\"hello\": 1})", "\"{\\\"hello\\\":1}\"", null }, //
-            { "$string($string([\"hello\", 1]))", "\"[\\\"hello\\\",1]\"", null }, //
-            { "$string(1)", "\"1\"", null }, //
-            { "$string(-22.2)", "\"-22.2\"", null }, //
-            { "$string(10/3.0)", "\"3.33333333333333\"", null }, // jsonata 1.8.2 "\"3.3333333333333335\"", null }, //
-            { "$string(xxxx)", null, null }, //
-            { "$string(null)", "\"null\"", null } //
+            { "$distinct(null)", "null", null },
+            { "$distinct([])", "[]", null },
+            { "$distinct([1])", "[1]", null },
+            { "$distinct([1,2,3,4])", "[1,2,3,4]", null },
+            { "$distinct([1,2,3,3,3,1,3,4,4])", "[1,2,3,4]", null },
+            { "$distinct([{\"a\":\"x\"},{\"a\":\"x\"},{\"b\":\"x\"},{\"a\":\"x\"},{\"a\":\"y\"},{\"a\":\"x\"},{\"b\":\"y\"}])",
+                "[{\"a\":\"x\"},{\"b\":\"x\"},{\"a\":\"y\"},{\"b\":\"y\"}]", null }
         });
     }
 
