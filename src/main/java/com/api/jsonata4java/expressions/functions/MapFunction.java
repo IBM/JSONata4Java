@@ -87,8 +87,6 @@ public class MapFunction extends FunctionBase implements Function {
         //      		((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
         //            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
         JsonNode arrNode = null;
-        ExprValuesContext valuesCtx = ctx.exprValues();
-        ExprListContext exprList = valuesCtx.exprList();
         int argCount = getArgumentCount(ctx);
         if (useContext) {
             // pop context var from stack
@@ -101,6 +99,7 @@ public class MapFunction extends FunctionBase implements Function {
         }
 
         if (argCount == 2) {
+            final ExprListContext exprList = ctx.exprValues().exprList();
             if (!useContext) {
                 arrNode = expressionVisitor.visit(exprList.expr(0));
             }
