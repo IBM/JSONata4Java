@@ -1772,7 +1772,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                             throw new EvaluateRuntimeException("key resolved to null");
                         }
                     }
-                    value = visit(ctx.getChild(i + 2));
+                    // #228 return the element associated with the key
+                    // further processing is handled upstream for the 
+                    // fieldList's i+2 child
+                    value = elt; // was visit(ctx.getChild(i + 2));
+
                     if (value != null) {
                         resultObject.set(key, value);
                     }
@@ -2214,7 +2218,17 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                             .computeIfAbsent(e.getKey(), ignore -> factory.arrayNode()).add(e.getValue()));
                         _environment.popContext();
                     }
-                    grouping.forEach((k, v) -> object.set(k, unwrapArray(v)));
+                    // #228 now process the fieldList child#2 to get the expected value
+                    // grouping.forEach((k, v) -> object.set(k, unwrapArray(v)));
+                    // replaced with below
+                    grouping.forEach((k, v) -> {
+                  	  _environment.pushContext(v);
+                  	  final JsonNode valueX = visit(ctx.fieldList().getChild(2));
+                  	  _environment.popContext();
+                  	  object.set(k, unwrapArray(valueX));
+                    });
+                    // end replacement
+                   
                 } else {
                     _environment.pushContext(context);
                     final JsonNode fieldList = visit(ctx.fieldList());
