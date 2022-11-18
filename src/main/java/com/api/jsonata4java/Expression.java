@@ -181,7 +181,8 @@ public class Expression implements Serializable {
 	 *                    function declarations
 	 * @return the result from executing the Expression's parsed expression and
 	 *         variable assignments or registered functions specified in the list of
-	 *         bindings
+	 *         bindings. A null will be returned if no match is found (note a JSON null will 
+	 *         result in a JsonNode of type NullNode)
 	 * @throws ParseException
 	 */
 	public JsonNode evaluate(JsonNode rootContext, List<Binding> bindings) throws ParseException {
@@ -206,7 +207,8 @@ public class Expression implements Serializable {
 	 *                    to variable expressions or function declarations
 	 * @return the result from executing the Expression's parsed expression and
 	 *         variable assignments or registered functions specified in the
-	 *         bindings object
+	 *         bindings object. A null will be returned if no match is found (note a 
+	 *         JSON null will result in a JsonNode of type NullNode)
 	 * @throws ParseException
 	 * @throws IOException
 	 */
