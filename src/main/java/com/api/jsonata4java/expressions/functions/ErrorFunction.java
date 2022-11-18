@@ -48,71 +48,72 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  */
 public class ErrorFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -9207780239312306404L;
+    private static final long serialVersionUID = -9207780239312306404L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_LOWERCASE);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_LOWERCASE);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_LOWERCASE);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_LOWERCASE);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_LOWERCASE);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_LOWERCASE);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argString = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString != null && argString.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argString = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argString = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argString != null && argString.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argString == null) {
-			   throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-			if (argString.isTextual()) {
-				final String str = argString.textValue();
-				throw new EvaluateRuntimeException(str);
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else if (argCount == 2) {
-         if (!useContext) {
-         	throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-         }
-         ParseTree value = ctx.exprValues().exprList();
-         result = expressionVisitor.visit(value);
-         if (result != null && result.isTextual()) {
-            throw new EvaluateRuntimeException(result.textValue());
-         } else {
-            throw new EvaluateRuntimeException("$error() function evaluated");
-         }
-	   }else {
-			throw new EvaluateRuntimeException(argCount == 0 ? "$error() function evaluated" : ERR_ARG2BADTYPE);
-		}
-	}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argString == null) {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+            if (argString.isTextual()) {
+                final String str = argString.textValue();
+                throw new EvaluateRuntimeException(str);
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else if (argCount == 2) {
+            if (!useContext) {
+                throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+            }
+            ParseTree value = ctx.exprValues().exprList();
+            result = expressionVisitor.visit(value);
+            if (result != null && result.isTextual()) {
+                throw new EvaluateRuntimeException(result.textValue());
+            } else {
+                throw new EvaluateRuntimeException("$error() function evaluated");
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? "$error() function evaluated" : ERR_ARG2BADTYPE);
+        }
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a string (or context variable), returns a string
-		return "<s-:x>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a string (or context variable), returns a string
+        return "<s-:x>";
+    }
 }

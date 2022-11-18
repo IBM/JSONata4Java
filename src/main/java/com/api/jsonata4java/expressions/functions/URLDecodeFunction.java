@@ -24,7 +24,6 @@ package com.api.jsonata4java.expressions.functions;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -50,76 +49,77 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class URLDecodeFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 5640755636698159607L;
+    private static final long serialVersionUID = 5640755636698159607L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_URL_DECODE);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_URL_DECODE);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_URL_DECODE);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_URL_DECODE);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_URL_DECODE);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_URL_DECODE);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argString = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString != null && argString.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argString = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argString = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argString != null && argString.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argString == null) {
-				return null;
-			}
-			if (argString.isTextual()) {
-				final String str = argString.textValue();
-				char testChar = ' ';
-				for (int i=0;i<str.length();i++) {
-					testChar = str.charAt(i);
-					if (testChar > 0xFF) {
-						throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_DECODE+": \""+str.substring(i,i+1)+"\"");
-					}
-				}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argString == null) {
+                return null;
+            }
+            if (argString.isTextual()) {
+                final String str = argString.textValue();
+                char testChar = ' ';
+                for (int i = 0; i < str.length(); i++) {
+                    testChar = str.charAt(i);
+                    if (testChar > 0xFF) {
+                        throw new EvaluateRuntimeException("Malformed URL passed to " + Constants.FUNCTION_URL_DECODE + ": \"" + str.substring(i, i + 1) + "\"");
+                    }
+                }
 
-				try {
-					result = new TextNode(URLDecoder.decode(str,"UTF-8"));
-				} catch (UnsupportedEncodingException e) {
-					throw new EvaluateRuntimeException(e.getLocalizedMessage());
-				} catch (IllegalArgumentException iae) {
-					throw new EvaluateRuntimeException("Malformed URL passed to "+Constants.FUNCTION_URL_DECODE+": \""+str+"\"");
-				}
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-		}
+                try {
+                    result = new TextNode(URLDecoder.decode(str, "UTF-8"));
+                } catch (UnsupportedEncodingException e) {
+                    throw new EvaluateRuntimeException(e.getLocalizedMessage());
+                } catch (IllegalArgumentException iae) {
+                    throw new EvaluateRuntimeException("Malformed URL passed to " + Constants.FUNCTION_URL_DECODE + ": \"" + str + "\"");
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a string (or context variable), returns a number
-		return "<s-:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a string (or context variable), returns a number
+        return "<s-:n>";
+    }
 }

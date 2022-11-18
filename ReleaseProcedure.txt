@@ -1,12 +1,14 @@
 Change the pom.xml version number (1 place)
 Change the README.md for the version number (3 places)
 update tester.sh for version (1 place)
+update testerui.sh for version (1 place)
+update testerui.cmd for version (1 place)
 launch maven builder: JSONata4Java (deploy)
 
 Note the Closing staging repository with ID value ([OSSRH-46644] JSONata4Java)
 https://issues.sonatype.org/browse/OSSRH-46644
 
-Goto https://oss.sonatype.org/#welcome
+Goto https://s01.oss.sonatype.org/
 Login
 Select Staging Repositories on left margin
 Find the ID value and click it

@@ -60,4 +60,4 @@ mode MODE_BACK_QUOTE;
 fragment INT :   '0' | [1-9] [0-9]* ; // no leading zeros
 
 fragment BACK_QUOTE : '`';
-fragment NOT_BACK_QUOTE : ~['`'];
+fragment NOT_BACK_QUOTE : ~[`];

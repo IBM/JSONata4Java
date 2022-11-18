@@ -48,6 +48,8 @@ expr:
  | ARR_OPEN exprOrSeqList? ARR_CLOSE                      # array_constructor
  | OBJ_OPEN fieldList? OBJ_CLOSE					      # object_constructor
  | expr '.' expr                                          # path
+ | (('%' '.')+ expr)                                      # parent_path
+ | '%'                                                    # parent_path_solitary
  | expr ARR_OPEN ARR_CLOSE                                # to_array
  | expr ARR_OPEN expr ARR_CLOSE                           # array
  | expr OBJ_OPEN fieldList? OBJ_CLOSE                     # object
@@ -62,10 +64,13 @@ expr:
  | expr op='&' expr                                       # concat_op
  | expr op=('<'|'<='|'>'|'>='|'!='|'=') expr              # comp_op
  | expr 'in' expr                                         # membership
- | expr 'and' expr                                        #logand
+ | expr 'and' expr                                        # logand
  | expr 'or' expr                                         # logor
  | expr '?' expr (':' expr)?                              # conditional
  | expr CHAIN expr                                        # fct_chain
+ | regularExpression                                      # regular_expression
+ | regularExpressionCaseInsensitive                       # regular_expression_caseinsensitive
+ | regularExpressionMultiline                             # regular_expression_multiline
  | '(' (expr (';' (expr)?)*)? ')'                         # parens
  | VAR_ID                                                 # var_recall
  | NUMBER                                                 # number
@@ -82,6 +87,11 @@ seq : expr '..' expr ;
 
 exprOrSeq : seq | expr ;
 exprOrSeqList : exprOrSeq (',' exprOrSeq)* ;
+
+regularExpressionCaseInsensitive : '/' regexPattern '/' 'i';
+regularExpressionMultiline : '/' regexPattern '/' 'm';
+regularExpression : '/' regexPattern '/';
+regexPattern : (~DIV | '\\' DIV)*;
 
 // =======================
 // = LEXER RULES
@@ -135,13 +145,16 @@ LE  : '<=' ;
 GT  : '>' ;
 GE  : '>=' ;
 CONCAT : '&';
+CIRCUMFLEX : '^';
+PIPE : '|';
+UNDER : '_';
 AND : 'and';
 OR : 'or';
 
 VAR_ID : '$' ID ;
 
 ID
-	: [a-zA-Z] [a-zA-Z0-9_]*
+	: [\p{L}] [\p{L}0-9_]*
 	| BACK_QUOTE ~[`]* BACK_QUOTE;
 
 

@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.utils.Constants;
 
 /**
@@ -55,74 +52,145 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class FloorFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = 1165627971424557932L;
+    private static final long serialVersionUID = 1165627971424557932L;
 
-	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_FLOOR);
-	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_FLOOR);
-	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_FLOOR);
-	private static final String ERR_MSG_NUMBER_OUT_OF_RANGE = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE,
-			"1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890.5");
+    private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_FLOOR);
+    private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_FLOOR);
+    private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_FLOOR);
+    private static final String ERR_MSG_NUMBER_OUT_OF_RANGE = String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE,
+        "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890.5");
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$floor()", null, ERR_BAD_CONTEXT }, //
-				{ "$floor({})", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$floor([])", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$floor('1')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$floor(true)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$floor(null)", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$floor(a.b.c)", null, null }, //
-				{ "$floor(a.b.c,\"a\")", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$floor(1)", Long.toString(1), null }, //
-				{ "$floor(-1)", Long.toString(-1), null }, //
-				{ "$floor(2147483647)", Long.toString(2147483647), null }, //
-				{ "$floor(-2147483640)", Long.toString(-2147483640), null }, //
-				{ "$floor(21474836471234)", Long.toString((long) Math.floor(21474836471234D)), null }, //
-				{ "$floor(-21474836471234)", Long.toString((long) Math.floor(-21474836471234D)), null }, //
-				{ "$floor(0)", Long.toString(0), null }, //
-				{ "$floor(0.0)", Long.toString((long) Math.floor(0.0)), null }, //
-				{ "$floor(1.0)", Long.toString((long) Math.floor(1.0)), null }, //
-				{ "$floor(-1.0)", Long.toString((long) Math.floor(-1.0)), null }, //
-				{ "$floor(1.23456)", Long.toString((long) Math.floor(1.23456)), null }, //
-				{ "$floor(-1.23456)", Long.toString((long) Math.floor(-1.23456)), null }, //
-				{ "$floor(1.234567890123)", Long.toString((long) Math.floor(1.234567890123)), null }, //
-				{ "$floor(-1.234567890123)", Long.toString((long) Math.floor(-1.234567890123)), null }, //
-				{ "$floor(10/3.0)", Long.toString((long) Math.floor(10 / 3.0)), null }, //
-				{ "$floor(-10/3.0)", Long.toString((long) Math.floor(-10 / 3.0)), null }, //
-				{ "$floor(9223372036854775807)", Long.toString((long) Math.floor(9223372036854775807D)), null }, // //
-																																					// Long.MAX_VALUE
-				{ "$floor(-9223372036854775808)", Long.toString((long) Math.floor(-9223372036854775808D)), null }, // //
-																																					// Long.MIN_VALUE
-				{ "$floor(9223372036854775809)", Long.toString((long) Math.floor(9223372036854775809D)), null }, //
-				{ "$floor(9223372036854775899.5)", Long.toString((long) Math.floor(9223372036854775899.5)), null }, //
-				{ "$floor(9223372036854775809123456789)", Long.toString((long) Math.floor(9223372036854775809123456789D)),
-						null }, //
-				{ "$floor(-9223372036854775809123456789)", Long.toString((long) Math.floor(-9223372036854775809123456789D)),
-						null }, //
-				{ "$floor(-9223372036854775899.5)", Long.toString((long) Math.floor(-9223372036854775899.5)), null }, //
-				{ "$floor(9223372036854775809123456789.5)",
-						Long.toString((long) Math.floor(9223372036854775809123456789.5)), null }, //
-				{ "$floor(-9223372036854775809123456789.5)",
-						Long.toString((long) Math.floor(-9223372036854775809123456789.5)), null }, //
-				{ "$floor(1234567890123456789012.5)", Long.toString((long) Math.floor(1234567890123456789012.5)), null }, //
-				{ "$floor(1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890.5)",
-						null, ERR_MSG_NUMBER_OUT_OF_RANGE } //
-		});
-	}
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$floor()", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$floor({})", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$floor([])", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$floor('1')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$floor(true)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$floor(null)", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$floor(a.b.c)", null, null
+            }, //
+            {
+                "$floor(a.b.c,\"a\")", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$floor(1)", Long.toString(1), null
+            }, //
+            {
+                "$floor(-1)", Long.toString(-1), null
+            }, //
+            {
+                "$floor(2147483647)", Long.toString(2147483647), null
+            }, //
+            {
+                "$floor(-2147483640)", Long.toString(-2147483640), null
+            }, //
+            {
+                "$floor(21474836471234)", Long.toString((long) Math.floor(21474836471234D)), null
+            }, //
+            {
+                "$floor(-21474836471234)", Long.toString((long) Math.floor(-21474836471234D)), null
+            }, //
+            {
+                "$floor(0)", Long.toString(0), null
+            }, //
+            {
+                "$floor(0.0)", Long.toString((long) Math.floor(0.0)), null
+            }, //
+            {
+                "$floor(1.0)", Long.toString((long) Math.floor(1.0)), null
+            }, //
+            {
+                "$floor(-1.0)", Long.toString((long) Math.floor(-1.0)), null
+            }, //
+            {
+                "$floor(1.23456)", Long.toString((long) Math.floor(1.23456)), null
+            }, //
+            {
+                "$floor(-1.23456)", Long.toString((long) Math.floor(-1.23456)), null
+            }, //
+            {
+                "$floor(1.234567890123)", Long.toString((long) Math.floor(1.234567890123)), null
+            }, //
+            {
+                "$floor(-1.234567890123)", Long.toString((long) Math.floor(-1.234567890123)), null
+            }, //
+            {
+                "$floor(10/3.0)", Long.toString((long) Math.floor(10 / 3.0)), null
+            }, //
+            {
+                "$floor(-10/3.0)", Long.toString((long) Math.floor(-10 / 3.0)), null
+            }, //
+            {
+                "$floor(9223372036854775807)", Long.toString((long) Math.floor(9223372036854775807D)), null
+            }, // //
+            // Long.MAX_VALUE
+            {
+                "$floor(-9223372036854775808)", Long.toString((long) Math.floor(-9223372036854775808D)), null
+            }, // //
+            // Long.MIN_VALUE
+            {
+                "$floor(9223372036854775809)", Long.toString((long) Math.floor(9223372036854775809D)), null
+            }, //
+            {
+                "$floor(9223372036854775899.5)", Long.toString((long) Math.floor(9223372036854775899.5)), null
+            }, //
+            {
+                "$floor(9223372036854775809123456789)", Long.toString((long) Math.floor(9223372036854775809123456789D)),
+                null
+            }, //
+            {
+                "$floor(-9223372036854775809123456789)", Long.toString((long) Math.floor(-9223372036854775809123456789D)),
+                null
+            }, //
+            {
+                "$floor(-9223372036854775899.5)", Long.toString((long) Math.floor(-9223372036854775899.5)), null
+            }, //
+            {
+                "$floor(9223372036854775809123456789.5)",
+                Long.toString((long) Math.floor(9223372036854775809123456789.5)), null
+            }, //
+            {
+                "$floor(-9223372036854775809123456789.5)",
+                Long.toString((long) Math.floor(-9223372036854775809123456789.5)), null
+            }, //
+            {
+                "$floor(1234567890123456789012.5)", Long.toString((long) Math.floor(1234567890123456789012.5)), null
+            }, //
+            {
+                "$floor(1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890.5)",
+                null, ERR_MSG_NUMBER_OUT_OF_RANGE
+            } //
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 }

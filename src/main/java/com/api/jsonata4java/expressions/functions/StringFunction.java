@@ -56,98 +56,98 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class StringFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -7591450668292230141L;
+    private static final long serialVersionUID = -7591450668292230141L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_STRING);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_STRING);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_STRING);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_STRING);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode arg = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			arg = FunctionUtils.getContextVariable(expressionVisitor);
-			// $string only reads context if no parameters are passed and can print NullNodes
-			if (arg != null && argCount == 0) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode arg = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            arg = FunctionUtils.getContextVariable(expressionVisitor);
+            // $string only reads context if no parameters are passed and can print NullNodes
+            if (arg != null && argCount == 0) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount >= 1 && argCount <= 2) {
-			if (!useContext) {
-				/**
-				 * need to peek at the expression context since Function_callContext evaluates
-				 * to ""
-				 */
-				ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
-				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-				if (arg == null) {
-					if (exprCtx instanceof Function_callContext || exprCtx instanceof Function_declContext) {
-						arg = new TextNode("");
-					}
-					if (exprCtx instanceof Var_recallContext) {
-						String varName = ((Var_recallContext)exprCtx).VAR_ID().getText();
-						DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(varName);
-						if (declFct != null) {
-							arg = new TextNode("");
-						} else {
-							Function fct = expressionVisitor.getJsonataFunction(varName);
-							if (fct != null) {
-								arg = new TextNode("");
-							} else {
-								arg = null;
-							}
-						}
-					}
-				}
-			}
-			if (arg == null || (arg.isNull() && useContext)) {
-				return null;
-			}
-			boolean prettify = false;
-			if (argCount == 2) {
-				JsonNode arg2 = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
-				if (arg2 != null && arg2.isBoolean()) {
-					prettify = BooleanUtils.convertJsonNodeToBoolean(arg2);
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-				}
-			}
-			String asString = ExpressionsVisitor.castString(arg, prettify);
-			if (asString == null) {
-				result = null;
-			} else {
-				result = new TextNode(asString);
-			}
-		} else {
-			if (argCount == 0) {
-				return null;
-			}
-			throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-		}
-		return result;
-	}
+        // Make sure that we have the right number of arguments
+        if (argCount >= 1 && argCount <= 2) {
+            if (!useContext) {
+                /**
+                 * need to peek at the expression context since Function_callContext evaluates
+                 * to ""
+                 */
+                ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
+                arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+                if (arg == null) {
+                    if (exprCtx instanceof Function_callContext || exprCtx instanceof Function_declContext) {
+                        arg = new TextNode("");
+                    }
+                    if (exprCtx instanceof Var_recallContext) {
+                        String varName = ((Var_recallContext) exprCtx).VAR_ID().getText();
+                        DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(varName);
+                        if (declFct != null) {
+                            arg = new TextNode("");
+                        } else {
+                            Function fct = expressionVisitor.getJsonataFunction(varName);
+                            if (fct != null) {
+                                arg = new TextNode("");
+                            } else {
+                                arg = null;
+                            }
+                        }
+                    }
+                }
+            }
+            if (arg == null || (arg.isNull() && useContext)) {
+                return null;
+            }
+            boolean prettify = false;
+            if (argCount == 2) {
+                JsonNode arg2 = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
+                if (arg2 != null && arg2.isBoolean()) {
+                    prettify = BooleanUtils.convertJsonNodeToBoolean(arg2);
+                } else {
+                    throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                }
+            }
+            String asString = ExpressionsVisitor.castString(arg, prettify);
+            if (asString == null) {
+                result = null;
+            } else {
+                result = new TextNode(asString);
+            }
+        } else {
+            if (argCount == 0) {
+                return null;
+            }
+            throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+        }
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
 
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts any value or context, an optional boolean, and returns a string
-		return "<x-b?:s>";
-	}
+    @Override
+    public String getSignature() {
+        // accepts any value or context, an optional boolean, and returns a string
+        return "<x-b?:s>";
+    }
 }

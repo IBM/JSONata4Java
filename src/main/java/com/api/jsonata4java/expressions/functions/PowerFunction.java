@@ -52,99 +52,100 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class PowerFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -2132805330360026544L;
+    private static final long serialVersionUID = -2132805330360026544L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_POWER);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_POWER);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_POWER);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_POWER);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_POWER);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_POWER);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_POWER);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_POWER);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argNumber = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argNumber = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argNumber != null && argNumber.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argNumber = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argNumber = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argNumber != null && argNumber.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 2) {
-			if (!useContext) {
-				argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			final JsonNode argExponent = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-					useContext ? 0 : 1);
+        // Make sure that we have the right number of arguments
+        if (argCount == 2) {
+            if (!useContext) {
+                argNumber = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            final JsonNode argExponent = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                useContext ? 0 : 1);
 
-			// Make sure that we have the base argument
-			if (argNumber == null) {
-				return null;
-			}
-			if (argNumber.isNumber()) {
-				/*
-				 * We do not need to check whether the base and exponent arguments specified are
-				 * within the acceptable range of Double.MAX_VALUE and -Double.MAX_VALUE. This
-				 * will already have been done in the ExpressionsVisitor::visitNumber method.
-				 * 
-				 * Make that we have the exponent argument.
-				 */
-				if (argExponent != null) {
-					if (argExponent.isNumber()) {
-						// Calculate the result and create the node to return
-						Double power = Math.pow(argNumber.doubleValue(), argExponent.doubleValue());
+            // Make sure that we have the base argument
+            if (argNumber == null) {
+                return null;
+            }
+            if (argNumber.isNumber()) {
+                /*
+                 * We do not need to check whether the base and exponent arguments specified are
+                 * within the acceptable range of Double.MAX_VALUE and -Double.MAX_VALUE. This
+                 * will already have been done in the ExpressionsVisitor::visitNumber method.
+                 * 
+                 * Make that we have the exponent argument.
+                 */
+                if (argExponent != null) {
+                    if (argExponent.isNumber()) {
+                        // Calculate the result and create the node to return
+                        Double power = Math.pow(argNumber.doubleValue(), argExponent.doubleValue());
 
-						if (power.isInfinite() == false // != Double.POSITIVE_INFINITY && power != Double.NEGATIVE_INFINITY
-								&& power.isNaN() == false) {
-							if (power - power.longValue() ==  0.0) {
-							   result = new LongNode(power.longValue());
-							} else {
-							   result = new DoubleNode(power);
-							}
-						} else {
-							/*
-							 * The result cannot be represented as a number. Throw a suitable exception.
-							 */
-							final String msg = String.format(Constants.ERR_MSG_POWER_FUNC_RESULT_NOT_NUMBER,
-									argNumber.asText(), argExponent.asText());
-							throw new EvaluateRuntimeException(msg);
-						}
-					} else {
-						throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-					}
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-				}
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(
-					argCount == 0 ? ERR_ARG1BADTYPE : argCount == 1 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
-		}
+                        if (power.isInfinite() == false // != Double.POSITIVE_INFINITY && power != Double.NEGATIVE_INFINITY
+                            && power.isNaN() == false) {
+                            if (power - power.longValue() == 0.0) {
+                                result = new LongNode(power.longValue());
+                            } else {
+                                result = new DoubleNode(power);
+                            }
+                        } else {
+                            /*
+                             * The result cannot be represented as a number. Throw a suitable exception.
+                             */
+                            final String msg = String.format(Constants.ERR_MSG_POWER_FUNC_RESULT_NOT_NUMBER,
+                                argNumber.asText(), argExponent.asText());
+                            throw new EvaluateRuntimeException(msg);
+                        }
+                    } else {
+                        throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                    }
+                } else {
+                    throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(
+                argCount == 0 ? ERR_ARG1BADTYPE : argCount == 1 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a number (or context variable), a number, returns a number
-		return "<n-n:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 1; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a number (or context variable), a number, returns a number
+        return "<n-n:n>";
+    }
 }

@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
@@ -41,99 +40,100 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class AverageFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -7174236646821690495L;
+    private static final long serialVersionUID = -7174236646821690495L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_AVERAGE);
-	public static final String ERR_ARG_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
-			Constants.FUNCTION_AVERAGE);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_AVERAGE);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_AVERAGE);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_AVERAGE);
+    public static final String ERR_ARG_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
+        Constants.FUNCTION_AVERAGE);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_AVERAGE);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_AVERAGE);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 
-		// Retrieve the number of arguments
-		JsonNode arg = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			arg = FunctionUtils.getContextVariable(expressionVisitor);
-			ParserRuleContext prc = ctx.getParent();
-			if ((prc != null && prc instanceof Fct_chainContext) || (arg != null && arg.isNull() == false)) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode arg = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            arg = FunctionUtils.getContextVariable(expressionVisitor);
+            ParserRuleContext prc = ctx.getParent();
+            if ((prc != null && prc instanceof Fct_chainContext) || (arg != null && arg.isNull() == false)) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (arg == null) {
-				return null;
-			} else if (useContext == false){
-				FunctionUtils.validateArguments(ERR_ARG_TYPE, expressionVisitor, ctx, 0, getSignature());
-			}
-			if (arg.isArray()) {
-				ArrayNode arr = (ArrayNode) arg;
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (arg == null) {
+                return null;
+            } else if (useContext == false) {
+                FunctionUtils.validateArguments(ERR_ARG_TYPE, expressionVisitor, ctx, 0, getSignature());
+            }
+            if (arg.isArray()) {
+                ArrayNode arr = (ArrayNode) arg;
 
-				if (arr.size() == 0) { // avoid divide by 0 errors
-					return null;
-				}
+                if (arr.size() == 0) { // avoid divide by 0 errors
+                    return null;
+                }
 
-				double sum = 0;
-				for (JsonNode a : arr) {
-					if (a.isNumber()) {
-						sum += a.asDouble(); // asDouble() won't throw an exception
-												// even if non-numeric (that's why we do
-												// the isNumber() check above)
-					} else {
-						// also complain if any non-numeric types are included in the
-						// array
-						throw new EvaluateRuntimeException(ERR_ARG_TYPE);
-					}
-				}
+                double sum = 0;
+                for (JsonNode a : arr) {
+                    if (a.isNumber()) {
+                        sum += a.asDouble(); // asDouble() won't throw an exception
+                                             // even if non-numeric (that's why we do
+                                             // the isNumber() check above)
+                    } else {
+                        // also complain if any non-numeric types are included in the
+                        // array
+                        throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+                    }
+                }
 
-				Double avg = sum / arr.size();
-				if (avg - avg.longValue() ==  0.0) {
-				   return new LongNode(avg.longValue());
-				} else {
-				   return new DoubleNode(avg);
-				}
-			} else if (arg.isNumber()) {
-				if (arg.isLong()) {
-					return arg;
-				} else {
-					Double avg = arg.asDouble();
-					if (avg - avg.longValue() ==  0.0) {
-					   return new LongNode(avg.longValue());
-					} else {
-					   return new DoubleNode(avg);
-					}
-				}
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG_TYPE);
-			}
+                Double avg = sum / arr.size();
+                if (avg - avg.longValue() == 0.0) {
+                    return new LongNode(avg.longValue());
+                } else {
+                    return new DoubleNode(avg);
+                }
+            } else if (arg.isNumber()) {
+                if (arg.isLong()) {
+                    return arg;
+                } else {
+                    Double avg = arg.asDouble();
+                    if (avg - avg.longValue() == 0.0) {
+                        return new LongNode(avg.longValue());
+                    } else {
+                        return new DoubleNode(avg);
+                    }
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+            }
 
-		} else {
-			throw new EvaluateRuntimeException(
-					argCount == 0 ? (useContext ? ERR_BAD_CONTEXT : ERR_ARG1BADTYPE) : ERR_ARG2BADTYPE);
-		}
-	}
+        } else {
+            throw new EvaluateRuntimeException(
+                argCount == 0 ? (useContext ? ERR_BAD_CONTEXT : ERR_ARG1BADTYPE) : ERR_ARG2BADTYPE);
+        }
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts an array of numbers (or context variable), returns a number
-		return "<a<n>:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 1;
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts an array of numbers (or context variable), returns a number
+        return "<a<n>:n>";
+    }
 }

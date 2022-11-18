@@ -22,14 +22,12 @@
 
 package com.api.jsonata4java.expressions;
 
-import java.lang.Exception;
-
 public class ParseException extends Exception {
 
-	private static final long serialVersionUID = 2683449090362342981L;
+    private static final long serialVersionUID = 2683449090362342981L;
 
-	public ParseException(String message) {
-		super(message);
-	}
+    public ParseException(String message) {
+        super(message);
+    }
 
 }

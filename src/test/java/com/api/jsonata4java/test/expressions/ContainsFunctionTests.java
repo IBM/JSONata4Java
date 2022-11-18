@@ -23,17 +23,14 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-
 import com.api.jsonata4java.expressions.utils.Constants;
 
 /**
@@ -65,70 +62,215 @@ import com.api.jsonata4java.expressions.utils.Constants;
 @RunWith(Parameterized.class)
 public class ContainsFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = -8188414859745251903L;
+    private static final long serialVersionUID = -8188414859745251903L;
 
-	private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
-			Constants.FUNCTION_CONTAINS);
-	private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_CONTAINS);
-	private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_CONTAINS);
+    private static final String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
+        Constants.FUNCTION_CONTAINS);
+    private static final String ERR_MSG_ARG1_BAD_TYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_CONTAINS);
+    private static final String ERR_MSG_ARG2_BAD_TYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_CONTAINS);
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { { "$contains()", null, ERR_BAD_CONTEXT }, //
-				{ "$contains(a.b.c)", null, ERR_BAD_CONTEXT }, //
-				{ "$contains(a.b.c,\"a\")", null, null }, //
-				{ "$contains({})", null, ERR_BAD_CONTEXT }, //
-				{ "$contains({}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$contains(' ', {})", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains([])", null, ERR_BAD_CONTEXT }, //
-				{ "$contains([], ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$contains(' ', [])", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains({\"hello\": 1})", null, ERR_BAD_CONTEXT }, //
-				{ "$contains({\"hello\": 1}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$contains(' ', {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains([\"hello\", 1])", null, ERR_BAD_CONTEXT }, //
-				{ "$contains([\"hello\", 1], ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$contains(' ', [\"hello\", 1])", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains(true)", null, ERR_BAD_CONTEXT }, //
-				{ "$contains(true, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$contains(' ', true)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains(null)", null, ERR_BAD_CONTEXT }, //
-				{ "$contains(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$contains(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains(1)", null, ERR_BAD_CONTEXT }, //
-				{ "$contains(1, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$contains(' ', 1)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains(-1)", null, ERR_BAD_CONTEXT }, //
-				{ "$contains(-1, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$contains(' ', -1)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains(10/3.0)", null, ERR_BAD_CONTEXT }, //
-				{ "$contains(10/3.0, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$contains(' ',  10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains(null)", null, ERR_BAD_CONTEXT }, //
-				{ "$contains(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE }, //
-				{ "$contains(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains(a.b.c)", null, ERR_BAD_CONTEXT }, //
-				{ "$contains(' ', a.b.c)", "\"\"", ERR_MSG_ARG2_BAD_TYPE }, //
-				{ "$contains(a.b.c, ' ')", null, null }, //
-				{ "$contains('',  ' ')", "false", null }, //
-				{ "$contains('abracadabra',  ' ')", "false", null }, //
-				{ "$contains('abracadabra', 'bra')", "true", null }
-		});
-	}
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            {
+                "$contains()", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains(a.b.c)", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains(a.b.c,\"a\")", null, null
+            }, //
+            {
+                "$contains({})", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains({}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$contains(' ', {})", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains([])", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains([], ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$contains(' ', [])", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains({\"hello\": 1})", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains({\"hello\": 1}, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$contains(' ', {\"hello\": 1})", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains([\"hello\", 1])", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains([\"hello\", 1], ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$contains(' ', [\"hello\", 1])", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains(true)", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains(true, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$contains(' ', true)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains(null)", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$contains(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains(1)", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains(1, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$contains(' ', 1)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains(-1)", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains(-1, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$contains(' ', -1)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains(10/3.0)", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains(10/3.0, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$contains(' ',  10/3.0)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains(null)", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains(null, ' ')", null, ERR_MSG_ARG1_BAD_TYPE
+            }, //
+            {
+                "$contains(' ', null)", null, ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains(a.b.c)", null, ERR_BAD_CONTEXT
+            }, //
+            {
+                "$contains(' ', a.b.c)", "\"\"", ERR_MSG_ARG2_BAD_TYPE
+            }, //
+            {
+                "$contains(a.b.c, ' ')", null, null
+            }, //
+            {
+                "$contains('',  ' ')", "false", null
+            }, //
+            {
+                "$contains('abracadabra',  ' ')", "false", null
+            }, //
+            {
+                "$contains('abracadabra', 'bra')", "true", null
+            },
+            {
+                "$contains(\"abracadabra\", \"bra\")", "true", null
+            },
+            {
+                "$contains(\"abracadabra\", /.*bra.*/)", "true", null
+            },
+            {
+                "$contains(\"abracadabra\", /bra/)", "true", null
+            },
+            {
+                "$contains(\"abracadabra\", /^abracadabra$/)", "true", null
+            },
+            {
+                "$contains(\"abra/cadabra\", /^abra\\/cadabra$/)", "true", null
+            },
+            {
+                "$contains(\"abracadabra\", /[abcdr]*/)", "true", null
+            },
+            {
+                "$contains(\"abra cadabra\", /^abra\\scadabra$/)", "true", null,
+            },
+            {
+                "$contains(\"abra   cadabra\", /^abra\\s*cadabra$/)", "true", null,
+            },
+            {
+                "$contains(\"abra   cadabra\", /^abra\\040*cadabra$/)", "true", null,
+            },
+            {
+                "$contains(\"abra   cadabra\", /^abra\\x20*cadabra$/)", "true", null,
+            },
+            {
+                "($compute := function($val1, $val2) { $val1 + $val2}; $contains($string($compute(120000 / 3 / 2, 10000)), /30+/))", "true", null
+            },
+            {
+                "$contains('Hello World', /wo/i)", "true", null
+            },
+            {
+                "$contains('Hello World Games\\nHello Europe Games', /World/)", "true", null
+            },
+            {
+                "$contains('12xyzabc3def', /[0-9]+/)", "true", null
+            },
+            {
+                "$contains('12xyz\\nabc\\n3def', /[0-9]+/)", "true", null
+            },
+            {
+                "$contains('12xyz\\nabc\\n3def', /^[0-9]+.*$/)", "false", null
+            },
+            {
+                "$contains('12xyz\\nabc\\n3def', /^[0-9]+.*$/m)", "true", null
+            },
+            {
+                "$contains('12xyz\\nabc\\n3def', /[0-9]+/)", "true", null
+            },
+            {
+                "$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /([0-9]+)/)", "true", null
+            },
+            {
+                "$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /(^[0-9]+)/)", "true", null
+            },
+            {
+                "$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/)", "false", null
+            },
+            {
+                "$contains('1234sjdffjf\\n5678jkfjf\\n9999fg grrs', /^([0-9]+)(.*)$/m)", "true", null
+            },
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 }

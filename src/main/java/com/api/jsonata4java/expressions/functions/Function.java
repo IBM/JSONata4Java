@@ -23,18 +23,17 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.io.Serializable;
-
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public interface Function extends Serializable {
-	
-	public int getMaxArgs();
 
-	public int getMinArgs();
-	
-	public String getSignature();
-	
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx);
+    public int getMaxArgs();
+
+    public int getMinArgs();
+
+    public String getSignature();
+
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx);
 }

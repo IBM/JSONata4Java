@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.util.Iterator;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
@@ -50,120 +49,122 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class KeysFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -6908272736871289545L;
+    private static final long serialVersionUID = -6908272736871289545L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_KEYS);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_KEYS);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_KEYS);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_KEYS);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_KEYS);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_KEYS);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		ObjectNode result = new ObjectNode(JsonNodeFactory.instance);
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        ObjectNode result = new ObjectNode(JsonNodeFactory.instance);
 
-		// Retrieve the number of arguments
-		JsonNode argObject = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argObject = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argObject != null && argObject.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argObject = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argObject = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argObject != null && argObject.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argObject == null) {
-				return null;
-			}
-			// Check the type of the argument
-			String key = "";
-			if (argObject.isObject()) {
-				ObjectNode obj = (ObjectNode) argObject;
-				for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
-					key = it.next();
-					if (result.get(key) == null) {
-						result.put(key,true);
-					}
-				}
-			} else {
-				if (argObject.isArray()) {
-					findObjects((ArrayNode)argObject,result);
-				} else {
-					/*
-					 * The input argument is not an array. Throw a suitable exception
-					 */
-					return null;
-					// throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-				}
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-		}
-		if (result.size() == 0) {
-			return null;
-		}
-		SelectorArrayNode output = new SelectorArrayNode(JsonNodeFactory.instance);
-		for (Iterator<String>it = result.fieldNames(); it.hasNext(); ) {
-			output.add(it.next());
-		}
-		return ExpressionsVisitor.unwrapArray(output);
-	}
-	
-	static void findObjects(ArrayNode array,ObjectNode result) {
-		for (int i=0;i<array.size(); i++) {
-			JsonNode arrayNode = array.get(i);
-			if (arrayNode != null) {
-				if (arrayNode.isArray()) {
-					// Not implemented in jsonata.js
-					// findObjects((ArrayNode)arrayNode,result);
-				} else if (arrayNode.isObject()) {
-					captureKeys((ObjectNode)arrayNode,result);
-				}
-			}
-		}
-	}
-	static void captureKeys(ObjectNode argObject, ObjectNode result) {
-//		JsonNode value = null;
-		String key = null;
-		ObjectNode obj = (ObjectNode) argObject;
-		for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
-			key = it.next();
-			if (result.get(key) == null) {
-				result.put(key,true);
-			}
-//			value = obj.get(key);
-//			if (value != null) {
-//				if (value.isArray()) {
-//					ArrayNode subArray = JsonNodeFactory.instance.arrayNode();
-//					findObjects((ArrayNode)value,subArray);
-//					if (subArray.size() > 0) {
-//						result.add(subArray);
-//					}
-//				} else if (value.isObject()) {
-//					// not implemented in jsonata.js
-//				}
-//			}
-		}
-	}
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argObject = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argObject == null) {
+                return null;
+            }
+            // Check the type of the argument
+            String key = "";
+            if (argObject.isObject()) {
+                ObjectNode obj = (ObjectNode) argObject;
+                for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
+                    key = it.next();
+                    if (result.get(key) == null) {
+                        result.put(key, true);
+                    }
+                }
+            } else {
+                if (argObject.isArray()) {
+                    findObjects((ArrayNode) argObject, result);
+                } else {
+                    /*
+                     * The input argument is not an array. Throw a suitable exception
+                     */
+                    return null;
+                    // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                }
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+        }
+        if (result.size() == 0) {
+            return null;
+        }
+        SelectorArrayNode output = new SelectorArrayNode(JsonNodeFactory.instance);
+        for (Iterator<String> it = result.fieldNames(); it.hasNext();) {
+            output.add(it.next());
+        }
+        return ExpressionsVisitor.unwrapArray(output);
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    static void findObjects(ArrayNode array, ObjectNode result) {
+        for (int i = 0; i < array.size(); i++) {
+            JsonNode arrayNode = array.get(i);
+            if (arrayNode != null) {
+                if (arrayNode.isArray()) {
+                    // Not implemented in jsonata.js
+                    // findObjects((ArrayNode)arrayNode,result);
+                } else if (arrayNode.isObject()) {
+                    captureKeys((ObjectNode) arrayNode, result);
+                }
+            }
+        }
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts an object (or context variable), returns an array of strings
-		return "<x-:a<s>>";
-	}
+    static void captureKeys(ObjectNode argObject, ObjectNode result) {
+        //		JsonNode value = null;
+        String key = null;
+        ObjectNode obj = (ObjectNode) argObject;
+        for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
+            key = it.next();
+            if (result.get(key) == null) {
+                result.put(key, true);
+            }
+            //			value = obj.get(key);
+            //			if (value != null) {
+            //				if (value.isArray()) {
+            //					ArrayNode subArray = JsonNodeFactory.instance.arrayNode();
+            //					findObjects((ArrayNode)value,subArray);
+            //					if (subArray.size() > 0) {
+            //						result.add(subArray);
+            //					}
+            //				} else if (value.isObject()) {
+            //					// not implemented in jsonata.js
+            //				}
+            //			}
+        }
+    }
+
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
+
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts an object (or context variable), returns an array of strings
+        return "<x-:a<s>>";
+    }
 }

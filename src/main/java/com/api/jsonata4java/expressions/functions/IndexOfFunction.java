@@ -34,72 +34,73 @@ import com.fasterxml.jackson.databind.node.LongNode;
 
 public class IndexOfFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 1821794638528005180L;
+    private static final long serialVersionUID = 1821794638528005180L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_INDEX_OF);
-	public static final String ERR_ARG1_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY,
-			Constants.FUNCTION_INDEX_OF);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_INDEX_OF);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_INDEX_OF);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_INDEX_OF);
+    public static final String ERR_ARG1_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY,
+        Constants.FUNCTION_INDEX_OF);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_INDEX_OF);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_INDEX_OF);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
 
-		// Retrieve the number of arguments
-		JsonNode arg = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			arg = FunctionUtils.getContextVariable(expressionVisitor);
-			if (arg != null && arg.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode arg = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            arg = FunctionUtils.getContextVariable(expressionVisitor);
+            if (arg != null && arg.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 2) {
-			if (!useContext) {
-				arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			JsonNode searchVar = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
+        // Make sure that we have the right number of arguments
+        if (argCount == 2) {
+            if (!useContext) {
+                arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            JsonNode searchVar = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
 
-			// if arg is an array, search for the variable and return its index. Any other
-			// type of input
-			// returns -1.
-			if (arg == null || searchVar == null) {
-				return new LongNode(-1);
-			} else if (arg.isArray()) {
-				ArrayNode array = (ArrayNode) arg;
-				// poor man's forEach
-				JsonNode val = null;
-				for (int i = 0; i < array.size(); i++) {
-					val = array.get(i);
-					if (val != null && val.equals(searchVar)) {
-						return new LongNode(i);
-					}
-				}
-			}
-		} else {
-			throw new EvaluateRuntimeException(
-					argCount == 0 ? ERR_BAD_CONTEXT : argCount == 1 ? ERR_ARG2BADTYPE : ERR_ARG3BADTYPE);
-		}
-		return new LongNode(-1);
-	}
+            // if arg is an array, search for the variable and return its index. Any other
+            // type of input
+            // returns -1.
+            if (arg == null || searchVar == null) {
+                return new LongNode(-1);
+            } else if (arg.isArray()) {
+                ArrayNode array = (ArrayNode) arg;
+                // poor man's forEach
+                JsonNode val = null;
+                for (int i = 0; i < array.size(); i++) {
+                    val = array.get(i);
+                    if (val != null && val.equals(searchVar)) {
+                        return new LongNode(i);
+                    }
+                }
+            }
+        } else {
+            throw new EvaluateRuntimeException(
+                argCount == 0 ? ERR_BAD_CONTEXT : argCount == 1 ? ERR_ARG2BADTYPE : ERR_ARG3BADTYPE);
+        }
+        return new LongNode(-1);
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
 
-	@Override
-	public String getSignature() {
-		// takes an array, and anything returns a number
-		return "<a-x:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 1; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // takes an array, and anything returns a number
+        return "<a-x:n>";
+    }
 
 }

@@ -22,8 +22,8 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.io.IOException;
 import com.api.jsonata4java.Expression;
-import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ParseException;
@@ -31,8 +31,6 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
-
-import java.io.IOException;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -46,69 +44,68 @@ import java.io.IOException;
  */
 public class EvalFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -7591450668292230141L;
+    private static final long serialVersionUID = -7591450668292230141L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_STRING);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_STRING);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_STR_OR_EXPR, Constants.FUNCTION_STRING);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_STRING);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_STRING);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_STR_OR_EXPR, Constants.FUNCTION_STRING);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
+        JsonNode context = null;
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            context = FunctionUtils.getContextVariable(expressionVisitor);
+            // $string only reads context if no parameters are passed and can print NullNodes
+            if (context != null && argCount == 0) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		JsonNode context = null;
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			context = FunctionUtils.getContextVariable(expressionVisitor);
-			// $string only reads context if no parameters are passed and can print NullNodes
-			if (context != null && argCount == 0) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        String expression = "{}";
+        if (argCount >= 1 && argCount <= 2) {
+            if (!useContext) {
+                JsonNode arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+                if (arg != null && arg.isTextual()) {
+                    expression = arg.asText();
+                }
+            }
+            if (argCount == 2) {
+                context = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
+            }
+            try {
+                Expression expr = Expression.jsonata(expression);
+                result = expr.evaluate(context);
+            } catch (ParseException | IOException e) {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            if (argCount == 0) {
+                return null;
+            }
+            throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+        }
+        return result;
+    }
 
-		String expression = "{}";
-		if (argCount >= 1 && argCount <= 2) {
-			if (!useContext) {
-				JsonNode arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-				if (arg != null && arg.isTextual()) {
-					expression = arg.asText();
-				}
-			}
-			if (argCount == 2) {
-				context = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
-			}
-			try {
-				Expression expr = Expression.jsonata(expression);
-				result = expr.evaluate(context);
-			} catch (EvaluateException | ParseException | IOException e) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			if (argCount == 0) {
-				return null;
-			}
-			throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-		}
-		return result;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
 
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
-
-	@Override
-	public String getSignature() {
-		// accepts any value or context, an optional boolean, and returns a string
-		return "<x-b?:s>";
-	}
+    @Override
+    public String getSignature() {
+        // accepts any value or context, an optional boolean, and returns a string
+        return "<x-b?:s>";
+    }
 }

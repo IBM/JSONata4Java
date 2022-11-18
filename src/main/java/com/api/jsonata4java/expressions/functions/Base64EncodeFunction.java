@@ -24,7 +24,6 @@ package com.api.jsonata4java.expressions.functions;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -52,78 +51,79 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class Base64EncodeFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -3753166255449207544L;
+    private static final long serialVersionUID = -3753166255449207544L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
-			Constants.FUNCTION_BASE64_ENCODE);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
-			Constants.FUNCTION_BASE64_ENCODE);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
-			Constants.FUNCTION_BASE64_ENCODE);
-	public static String ERR_RUNTIME_ERROR = String.format(Constants.ERR_MSG_RUNTIME_ERROR,
-			Constants.FUNCTION_BASE64_ENCODE);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
+        Constants.FUNCTION_BASE64_ENCODE);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
+        Constants.FUNCTION_BASE64_ENCODE);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE,
+        Constants.FUNCTION_BASE64_ENCODE);
+    public static String ERR_RUNTIME_ERROR = String.format(Constants.ERR_MSG_RUNTIME_ERROR,
+        Constants.FUNCTION_BASE64_ENCODE);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argString = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString != null && argString.isNull() == false) {
-				// check to see if there is a valid context value
-				if (!argString.isTextual()) {
-					throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-				}
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
-		if (argCount == 0) {
-			throw new EvaluateRuntimeException(ERR_BAD_CONTEXT); // return null;
-		}
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argString == null) {
-				return null;
-			}
-			if (argString.isTextual()) {
-				final String str = argString.textValue();
+        // Retrieve the number of arguments
+        JsonNode argString = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argString = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argString != null && argString.isNull() == false) {
+                // check to see if there is a valid context value
+                if (!argString.isTextual()) {
+                    throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+                }
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
+        if (argCount == 0) {
+            throw new EvaluateRuntimeException(ERR_BAD_CONTEXT); // return null;
+        }
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argString == null) {
+                return null;
+            }
+            if (argString.isTextual()) {
+                final String str = argString.textValue();
 
-				try {
-					result = new TextNode(Base64.getEncoder().encodeToString(str.getBytes("utf-8")));
-				} catch (UnsupportedEncodingException e) {
-					throw new EvaluateRuntimeException(ERR_RUNTIME_ERROR);
-				}
-			} else {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
-		}
+                try {
+                    result = new TextNode(Base64.getEncoder().encodeToString(str.getBytes("utf-8")));
+                } catch (UnsupportedEncodingException e) {
+                    throw new EvaluateRuntimeException(ERR_RUNTIME_ERROR);
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a string (or context variable), returns a string
-		return "<s-:s>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a string (or context variable), returns a string
+        return "<s-:s>";
+    }
 }

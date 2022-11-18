@@ -1,0 +1,362 @@
+{
+  "NotificationData" : {
+    "notificationType" : "DEPARTUREPREP",
+    "notificationLanguage" : "ES",
+    "emailaddress" : [ "MAROJAS44@GMAIL.COM", "MAROJAS44@GMAIL.COM", "MAROJAS44@GMAIL.COM", "MAROJAS44@GMAIL.COM", "MAROJAS44@GMAIL.COM", "MAROJAS44@GMAIL.COM", "MAROJAS44@GMAIL.COM", "MAROJAS44@GMAIL.COM" ],
+    "dynamicData" : {
+      "currentDatetime" : "Wednesday, December 15, 2021 11:13 AM",
+      "currentDatetimeStd" : "2021-12-15T11:13:46.731-05:00",
+      "reservation" : "ALNJMP",
+      "reservationDetails" : {
+        "issueDate" : "2021-10-03",
+        "ticketStatus" : "3",
+        "ticketType" : "eTicket"
+      },
+      "passengers" : [ {
+        "givenName" : "MANUELMR",
+        "surname" : "ROJAS",
+        "frequentFlyerNumber" : "266336503",
+        "type" : "ADT",
+        "key" : "1.1",
+        "nvPair" : [ {
+          "name" : "bagsAllowedCount",
+          "value" : ""
+        } ]
+      }, {
+        "givenName" : "ROSARIOMRS",
+        "surname" : "ROJAS",
+        "type" : "ADT",
+        "key" : "2.2",
+        "nvPair" : [ {
+          "name" : "bagsAllowedCount",
+          "value" : ""
+        } ]
+      } ],
+      "flights" : [ {
+        "operatingAirlineCode" : "CM",
+        "flightNumber" : "827",
+        "isFinalDestination" : "false",
+        "fareFamily" : "Economy Classic",
+        "status" : "26",
+        "departure" : [ {
+          "date" : "2021-12-27",
+          "time" : "7:11 AM",
+          "datetimeStd" : "2021-12-27T07:11:00.000-05:00",
+          "airportCode" : "BAQ",
+          "city" : "Barranquilla",
+          "nvPair" : [ {
+            "name" : "countryCode",
+            "value" : "CO"
+          } ]
+        } ],
+        "arrival" : [ {
+          "date" : "2021-12-27",
+          "time" : "8:34 AM",
+          "datetimeStd" : "2021-12-27T08:34:00.000-05:00",
+          "airportCode" : "PTY",
+          "city" : "Panama",
+          "nvPair" : [ {
+            "name" : "countryCode",
+            "value" : "PA"
+          } ]
+        } ],
+        "flightDuration" : "1h 23m",
+        "layover" : "10h 20m",
+        "key" : "3",
+        "nvPair" : [ {
+          "name" : "bookingClass",
+          "value" : "E"
+        } ]
+      }, {
+        "operatingAirlineCode" : "CM",
+        "flightNumber" : "285",
+        "isFinalDestination" : "true",
+        "status" : "26",
+        "departure" : [ {
+          "date" : "2021-12-27",
+          "time" : "6:54 PM",
+          "datetimeStd" : "2021-12-27T18:54:00.000-05:00",
+          "airportCode" : "PTY",
+          "city" : "Panama",
+          "nvPair" : [ {
+            "name" : "countryCode",
+            "value" : "PA"
+          } ]
+        } ],
+        "arrival" : [ {
+          "date" : "2021-12-27",
+          "time" : "10:25 PM",
+          "datetimeStd" : "2021-12-27T22:25:00.000-05:00",
+          "airportCode" : "MCO",
+          "city" : "Orlando",
+          "nvPair" : [ {
+            "name" : "countryCode",
+            "value" : "US"
+          } ]
+        } ],
+        "flightDuration" : "3h 31m",
+        "key" : "4",
+        "nvPair" : [ {
+          "name" : "bookingClass",
+          "value" : "E"
+        } ]
+      } ]
+    },
+    "message" : {
+      "restrictions" : [ {
+        "countryCode" : "PS",
+        "countryName" : {
+          "en" : "",
+          "es" : "",
+          "pt" : ""
+        },
+        "url" : ""
+      }, {
+        "countryCode" : "US",
+        "countryName" : {
+          "en" : "United States",
+          "es" : "Estados Unidos",
+          "pt" : "Estados Unidos"
+        },
+        "url" : ""
+      } ]
+    }
+  },
+  "UUID" : "5644006e-8c9b-4f3d-9c8f-af976eff5199",
+  "LangURLs" : [ {
+    "Lang" : "EN",
+    "LangURL" : ""
+  }, {
+    "Lang" : "ES",
+    "LangURL" : ""
+  }, {
+    "Lang" : "PT",
+    "LangURL" : ""
+  } ],
+  "dateTranslation" : {
+    "es" : [ {
+      "key" : "monday",
+      "value" : "Lunes"
+    }, {
+      "key" : "tuesday",
+      "value" : "Martes"
+    }, {
+      "key" : "wednesday",
+      "value" : "Miércoles"
+    }, {
+      "key" : "thursday",
+      "value" : "Jueves"
+    }, {
+      "key" : "friday",
+      "value" : "Viernes"
+    }, {
+      "key" : "saturday",
+      "value" : "Sábado"
+    }, {
+      "key" : "sunday",
+      "value" : "Domingo"
+    }, {
+      "key" : "mon",
+      "value" : "Lun"
+    }, {
+      "key" : "tue",
+      "value" : "Mar"
+    }, {
+      "key" : "wed",
+      "value" : "Mié"
+    }, {
+      "key" : "thu",
+      "value" : "Jue"
+    }, {
+      "key" : "fri",
+      "value" : "Vie"
+    }, {
+      "key" : "sat",
+      "value" : "Sab"
+    }, {
+      "key" : "sun",
+      "value" : "Dom"
+    }, {
+      "key" : "january",
+      "value" : "Enero"
+    }, {
+      "key" : "february",
+      "value" : "Febrero"
+    }, {
+      "key" : "march",
+      "value" : "Marzo"
+    }, {
+      "key" : "april",
+      "value" : "Abril"
+    }, {
+      "key" : "june",
+      "value" : "Junio"
+    }, {
+      "key" : "july",
+      "value" : "Julio"
+    }, {
+      "key" : "august",
+      "value" : "Agosto"
+    }, {
+      "key" : "september",
+      "value" : "Septiembre"
+    }, {
+      "key" : "october",
+      "value" : "Octubre"
+    }, {
+      "key" : "november",
+      "value" : "Noviembre"
+    }, {
+      "key" : "december",
+      "value" : "Diciembre"
+    }, {
+      "key" : "jan",
+      "value" : "Ene"
+    }, {
+      "key" : "feb",
+      "value" : "Feb"
+    }, {
+      "key" : "mar",
+      "value" : "Mar"
+    }, {
+      "key" : "apr",
+      "value" : "Abr"
+    }, {
+      "key" : "may",
+      "value" : "May"
+    }, {
+      "key" : "jun",
+      "value" : "Jun"
+    }, {
+      "key" : "jul",
+      "value" : "Jul"
+    }, {
+      "key" : "aug",
+      "value" : "Ago"
+    }, {
+      "key" : "sep",
+      "value" : "Sep"
+    }, {
+      "key" : "oct",
+      "value" : "Oct"
+    }, {
+      "key" : "nov",
+      "value" : "Nov"
+    }, {
+      "key" : "dec",
+      "value" : "Dic"
+    } ],
+    "pt" : [ {
+      "key" : "monday",
+      "value" : "Segunda-feira"
+    }, {
+      "key" : "tuesday",
+      "value" : "Terça"
+    }, {
+      "key" : "wednesday",
+      "value" : "Quarta-feira"
+    }, {
+      "key" : "thursday",
+      "value" : "Quinta-feira"
+    }, {
+      "key" : "friday",
+      "value" : "Sexta-feira"
+    }, {
+      "key" : "saturday",
+      "value" : "Sábado"
+    }, {
+      "key" : "sunday",
+      "value" : "Domingo"
+    }, {
+      "key" : "mon",
+      "value" : "Seg"
+    }, {
+      "key" : "tue",
+      "value" : "Ter"
+    }, {
+      "key" : "wed",
+      "value" : "Qua"
+    }, {
+      "key" : "thu",
+      "value" : "Qui"
+    }, {
+      "key" : "fri",
+      "value" : "Sex"
+    }, {
+      "key" : "sat",
+      "value" : "Sáb"
+    }, {
+      "key" : "sun",
+      "value" : "Dom"
+    }, {
+      "key" : "january",
+      "value" : "Janeiro"
+    }, {
+      "key" : "february",
+      "value" : "Fevereiro"
+    }, {
+      "key" : "march",
+      "value" : "Marcha"
+    }, {
+      "key" : "april",
+      "value" : "Abril"
+    }, {
+      "key" : "june",
+      "value" : "Junho"
+    }, {
+      "key" : "july",
+      "value" : "Julho"
+    }, {
+      "key" : "august",
+      "value" : "Agosto"
+    }, {
+      "key" : "september",
+      "value" : "Setembro"
+    }, {
+      "key" : "october",
+      "value" : "Outubro"
+    }, {
+      "key" : "november",
+      "value" : "Novembro"
+    }, {
+      "key" : "december",
+      "value" : "Dezembro"
+    }, {
+      "key" : "jan",
+      "value" : "Jan"
+    }, {
+      "key" : "feb",
+      "value" : "Fev"
+    }, {
+      "key" : "mar",
+      "value" : "Mar"
+    }, {
+      "key" : "apr",
+      "value" : "Abr"
+    }, {
+      "key" : "may",
+      "value" : "Maio"
+    }, {
+      "key" : "jun",
+      "value" : "Jun"
+    }, {
+      "key" : "jul",
+      "value" : "Jul"
+    }, {
+      "key" : "aug",
+      "value" : "Ago"
+    }, {
+      "key" : "sep",
+      "value" : "Set"
+    }, {
+      "key" : "oct",
+      "value" : "Oct"
+    }, {
+      "key" : "nov",
+      "value" : "Nov"
+    }, {
+      "key" : "dec",
+      "value" : "Dez"
+    } ]
+  }
+}

@@ -46,91 +46,92 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  */
 public class MaxFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -3758102612931930899L;
+    private static final long serialVersionUID = -3758102612931930899L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MAX);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MAX);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_MAX);
-	public static final String ERR_ARG_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
-			Constants.FUNCTION_MAX);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MAX);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MAX);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_MAX);
+    public static final String ERR_ARG_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
+        Constants.FUNCTION_MAX);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argArray = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argArray = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argArray != null && argArray.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argArray = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argArray = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argArray != null && argArray.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 1) {
-			if (!useContext) {
-				argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argArray == null) {
-				return null;
-			}
-			if (argArray.isArray() == false) {
-				argArray = ExpressionsVisitor.ensureArray(argArray);
-			}
-			// Convert the input node to an ArrayNode and make check that the
-			// array is not empty
-			ArrayNode items = (ArrayNode) argArray;
-			if (items.size() > 0) {
-				JsonNode max = null;
-				for (JsonNode item : items) {
-					if (item.isNumber()) {
-						// Check whether the current item is more than the
-						// current max
-						if (max == null || item.asDouble() > max.asDouble()) {
-							max = item;
-						}
-					} else {
-						/*
-						 * The input array contains an item that is not a number. Throw a suitable
-						 * exception
-						 */
-						throw new EvaluateRuntimeException(ERR_ARG_TYPE);
-					}
-				} // FOR
+        // Make sure that we have the right number of arguments
+        if (argCount == 1) {
+            if (!useContext) {
+                argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argArray == null) {
+                return null;
+            }
+            if (argArray.isArray() == false) {
+                argArray = ExpressionsVisitor.ensureArray(argArray);
+            }
+            // Convert the input node to an ArrayNode and make check that the
+            // array is not empty
+            ArrayNode items = (ArrayNode) argArray;
+            if (items.size() > 0) {
+                JsonNode max = null;
+                for (JsonNode item : items) {
+                    if (item.isNumber()) {
+                        // Check whether the current item is more than the
+                        // current max
+                        if (max == null || item.asDouble() > max.asDouble()) {
+                            max = item;
+                        }
+                    } else {
+                        /*
+                         * The input array contains an item that is not a number. Throw a suitable
+                         * exception
+                         */
+                        throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+                    }
+                } // FOR
 
-				// Return the node that represents the maximum value
-				result = max;
-			} else {
-				/*
-				 * The input array is empty. Single with undefined
-				 */
-				// throw new EvaluateRuntimeException(ERR_ARG_TYPE);
-				return null;
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
-		}
+                // Return the node that represents the maximum value
+                result = max;
+            } else {
+                /*
+                 * The input array is empty. Single with undefined
+                 */
+                // throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+                return null;
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 1;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 1;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts an array of numbers, returns a number
-		return "<a<n>:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts an array of numbers, returns a number
+        return "<a<n>:n>";
+    }
 }

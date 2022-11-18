@@ -23,7 +23,6 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.time.Instant;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
@@ -47,40 +46,41 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class MillisFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 8331126644236032696L;
+    private static final long serialVersionUID = 8331126644236032696L;
 
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MILLIS);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MILLIS);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		int argCount = getArgumentCount(ctx);
+        // Retrieve the number of arguments
+        int argCount = getArgumentCount(ctx);
 
-		// Make sure that we have the right number of arguments
-		if (argCount == 0) {
-			long millis = Instant.now().toEpochMilli();
-			result = new LongNode(millis);
-		} else {
-			throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-		}
+        // Make sure that we have the right number of arguments
+        if (argCount == 0) {
+            long millis = Instant.now().toEpochMilli();
+            result = new LongNode(millis);
+        } else {
+            throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 0;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0;
-	}
+    @Override
+    public int getMaxArgs() {
+        return 0;
+    }
 
-	@Override
-	public String getSignature() {
-		// returns a number
-		return "<:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0;
+    }
+
+    @Override
+    public String getSignature() {
+        // returns a number
+        return "<:n>";
+    }
 }

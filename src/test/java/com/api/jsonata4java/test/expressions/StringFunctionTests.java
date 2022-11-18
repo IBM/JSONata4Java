@@ -23,11 +23,9 @@
 package com.api.jsonata4java.test.expressions;
 
 import static com.api.jsonata4java.text.expressions.utils.Utils.test;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -60,36 +58,36 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class StringFunctionTests implements Serializable {
 
-	private static final long serialVersionUID = -312249015654495365L;
+    private static final long serialVersionUID = -312249015654495365L;
 
-	@Parameter(0)
-	public String expression;
+    @Parameter(0)
+    public String expression;
 
-	@Parameter(1)
-	public String expectedResultJsonString;
+    @Parameter(1)
+    public String expectedResultJsonString;
 
-	@Parameter(2)
-	public String expectedRuntimeExceptionMessage;
+    @Parameter(2)
+    public String expectedRuntimeExceptionMessage;
 
-	@Parameters(name = "{index}: {0} -> {1} ({2})")
-	public static Collection<Object[]> data() {
-		return Arrays.asList(new Object[][] { 
-				{ "$string()", null, null}, // jsonata 1.8.2 StringFunction.ERR_BAD_CONTEXT }, //
-				{ "$string({})", "\"{}\"", null }, //
-				{ "$string([])", "\"[]\"", null }, //
-				{ "$string({\"hello\": 1})", "\"{\\\"hello\\\":1}\"", null }, //
-				{ "$string($string([\"hello\", 1]))", "\"[\\\"hello\\\",1]\"", null }, //
-				{ "$string(1)", "\"1\"", null }, //
-				{ "$string(-22.2)", "\"-22.2\"", null }, //
-				{ "$string(10/3.0)", "\"3.33333333333333\"", null}, // jsonata 1.8.2 "\"3.3333333333333335\"", null }, //
-				{ "$string(xxxx)", null, null }, //
-				{ "$string(null)", "\"null\"", null } //
-		});
-	}
+    @Parameters(name = "{index}: {0} -> {1} ({2})")
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+            { "$string()", null, null }, // jsonata 1.8.2 StringFunction.ERR_BAD_CONTEXT }, //
+            { "$string({})", "\"{}\"", null }, //
+            { "$string([])", "\"[]\"", null }, //
+            { "$string({\"hello\": 1})", "\"{\\\"hello\\\":1}\"", null }, //
+            { "$string($string([\"hello\", 1]))", "\"[\\\"hello\\\",1]\"", null }, //
+            { "$string(1)", "\"1\"", null }, //
+            { "$string(-22.2)", "\"-22.2\"", null }, //
+            { "$string(10/3.0)", "\"3.33333333333333\"", null }, // jsonata 1.8.2 "\"3.3333333333333335\"", null }, //
+            { "$string(xxxx)", null, null }, //
+            { "$string(null)", "\"null\"", null } //
+        });
+    }
 
-	@Test
-	public void runTest() throws Exception {
-		test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
-	}
+    @Test
+    public void runTest() throws Exception {
+        test(this.expression, expectedResultJsonString, expectedRuntimeExceptionMessage, null);
+    }
 
 }

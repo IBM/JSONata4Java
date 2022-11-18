@@ -23,15 +23,13 @@
 package com.api.jsonata4java.expressions.suites;
 
 import java.io.Serializable;
-
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-
 import com.api.jsonata4java.test.expressions.AbsFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64DecodeFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64EncodeFunctionTests;
-import com.api.jsonata4java.test.expressions.BasicExpressionsTest;
+import com.api.jsonata4java.test.expressions.BasicExpressionsTests;
 import com.api.jsonata4java.test.expressions.BooleanFunctionTests;
 import com.api.jsonata4java.test.expressions.CeilFunctionTests;
 import com.api.jsonata4java.test.expressions.ContainsFunctionTests;
@@ -60,7 +58,6 @@ import com.api.jsonata4java.test.expressions.RandomFunctionTests;
 import com.api.jsonata4java.test.expressions.ReplaceFunctionTests;
 import com.api.jsonata4java.test.expressions.RoundFunctionTests;
 import com.api.jsonata4java.test.expressions.SingletonArrayHandlingTests;
-// import com.api.jsonata4java.test.expressions.SingletonArrayHandlingTests;
 import com.api.jsonata4java.test.expressions.SplitFunctionTests;
 import com.api.jsonata4java.test.expressions.SqrtFunctionTests;
 import com.api.jsonata4java.test.expressions.StringFunctionTests;
@@ -80,57 +77,57 @@ import com.api.jsonata4java.text.expressions.utils.JsonMergeUtilsTest;
 /* @deprecated these tests have been incorporated in the AgnosticTestSuit */
 
 @RunWith(Suite.class)
-@SuiteClasses({ 
-	AbsFunctionTests.class, //
-	Base64DecodeFunctionTests.class, //
-	Base64EncodeFunctionTests.class, //
-	BasicExpressionsTest.class, //
-	BooleanFunctionTests.class, //
-	CeilFunctionTests.class, //
-	ContainsFunctionTests.class, //
-	CountFunctionTests.class, //
-	ExpressionsTests.class, //
-	FloorFunctionTests.class, //
-	FormatBaseFunctionTests.class, //
-	FormatNumberFunctionTests.class, //
-	FromMillisFunctionTests.class, //
-	InvalidSyntaxTest.class, //
-	JoinFunctionTests.class, //
-	JsonMergeUtilsTest.class, //
-	JsonataDotOrgTests.class, //
-	LengthFunctionTests.class, //
-	LowercaseFunctionTests.class, //
-	MatchFunctionTests.class, //
-	MaxFunctionTests.class, //
-	MillisFunctionTests.class, //
-	MinFunctionTests.class, //
-	NotFunctionTests.class, //
-	NowFunctionTests.class, //
-	NumberFunctionTests.class, //
-	NumericCoercionTests.class, //
-	PadFunctionTests.class, //
-	PathExpressionSyntaxTests.class, //
-	PathExpressionTests.class, //
-	PowerFunctionTests.class, //
-	RandomFunctionTests.class, //
-	ReplaceFunctionTests.class, //
-	RoundFunctionTests.class, //
-	SingletonArrayHandlingTests.class, //
-	SplitFunctionTests.class, //
-	SqrtFunctionTests.class, //
-	StringFunctionTests.class, //
-	SubstringAfterFunctionTests.class, //
-	SubstringBeforeFunctionTests.class, //
-	SubstringFunctionTests.class, //
-	SumFunctionTests.class, //
-	ToMillisFunctionTests.class, //
-	TrimFunctionTests.class, //
-	UnpackFunctionTests.class, //
-	UppercaseFunctionTests.class, //
-	TestBindingReference.class //
+@SuiteClasses({
+    AbsFunctionTests.class, //
+    Base64DecodeFunctionTests.class, //
+    Base64EncodeFunctionTests.class, //
+    BasicExpressionsTests.class, //
+    BooleanFunctionTests.class, //
+    CeilFunctionTests.class, //
+    ContainsFunctionTests.class, //
+    CountFunctionTests.class, //
+    ExpressionsTests.class, //
+    FloorFunctionTests.class, //
+    FormatBaseFunctionTests.class, //
+    FormatNumberFunctionTests.class, //
+    FromMillisFunctionTests.class, //
+    InvalidSyntaxTest.class, //
+    JoinFunctionTests.class, //
+    JsonMergeUtilsTest.class, //
+    JsonataDotOrgTests.class, //
+    LengthFunctionTests.class, //
+    LowercaseFunctionTests.class, //
+    MatchFunctionTests.class, //
+    MaxFunctionTests.class, //
+    MillisFunctionTests.class, //
+    MinFunctionTests.class, //
+    NotFunctionTests.class, //
+    NowFunctionTests.class, //
+    NumberFunctionTests.class, //
+    NumericCoercionTests.class, //
+    PadFunctionTests.class, //
+    PathExpressionSyntaxTests.class, //
+    PathExpressionTests.class, //
+    PowerFunctionTests.class, //
+    RandomFunctionTests.class, //
+    ReplaceFunctionTests.class, //
+    RoundFunctionTests.class, //
+    SingletonArrayHandlingTests.class, //
+    SplitFunctionTests.class, //
+    SqrtFunctionTests.class, //
+    StringFunctionTests.class, //
+    SubstringAfterFunctionTests.class, //
+    SubstringBeforeFunctionTests.class, //
+    SubstringFunctionTests.class, //
+    SumFunctionTests.class, //
+    ToMillisFunctionTests.class, //
+    TrimFunctionTests.class, //
+    UnpackFunctionTests.class, //
+    UppercaseFunctionTests.class, //
+    TestBindingReference.class //
 })
 
 public class ComponentTestSuite implements Serializable {
 
-	private static final long serialVersionUID = 2033074749160537540L;
+    private static final long serialVersionUID = 2033074749160537540L;
 }

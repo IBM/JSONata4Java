@@ -40,27 +40,33 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 
 public class DateTimeUtils implements Serializable {
 
-	private static final long serialVersionUID = 365963860104380193L;
+    private static final long serialVersionUID = 365963860104380193L;
 
-	private static String[] few = {"Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
-    "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"};
-    private static String[] ordinals = {"Zeroth", "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth", "Tenth",
-    "Eleventh", "Twelfth", "Thirteenth", "Fourteenth", "Fifteenth", "Sixteenth", "Seventeenth", "Eighteenth", "Nineteenth"};
-    private static String[] decades = {"Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety", "Hundred"};
-    private static String[] magnitudes = {"Thousand", "Million", "Billion", "Trillion"};
+    private static String[] few = {
+        "Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+        "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+    };
+    private static String[] ordinals = {
+        "Zeroth", "First", "Second", "Third", "Fourth", "Fifth", "Sixth", "Seventh", "Eighth", "Ninth", "Tenth",
+        "Eleventh", "Twelfth", "Thirteenth", "Fourteenth", "Fifteenth", "Sixteenth", "Seventeenth", "Eighteenth", "Nineteenth"
+    };
+    private static String[] decades = {
+        "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety", "Hundred"
+    };
+    private static String[] magnitudes = {
+        "Thousand", "Million", "Billion", "Trillion"
+    };
 
     public static String numberToWords(int value, boolean ordinal) {
-        return lookup(value, false, ordinal); 
+        return lookup(value, false, ordinal);
     }
 
     private static String lookup(int num, boolean prev, boolean ord) {
@@ -86,12 +92,12 @@ public class DateTimeUtils implements Serializable {
                 words += "th";
             }
         } else {
-            int mag = (int)Math.floor(Math.log10(num) / 3);
+            int mag = (int) Math.floor(Math.log10(num) / 3);
             if (mag > magnitudes.length) {
                 mag = magnitudes.length; // the largest word
             }
-            int factor = (int)Math.pow(10, mag * 3);
-            int mant = (int)Math.floor(num / factor);
+            int factor = (int) Math.pow(10, mag * 3);
+            int mant = (int) Math.floor(num / factor);
             int remainder = num - mant * factor;
             words = (prev ? ", " : "") + lookup(mant, false, false) + " " + magnitudes[mag - 1];
             if (remainder > 0) {
@@ -105,30 +111,30 @@ public class DateTimeUtils implements Serializable {
 
     private static Map<String, Integer> wordValues = new HashMap<>();
     static {
-        for(int i=0; i<few.length; i++){
+        for (int i = 0; i < few.length; i++) {
             wordValues.put(few[i].toLowerCase(), i);
         }
-        for(int i=0; i<ordinals.length; i++) {
+        for (int i = 0; i < ordinals.length; i++) {
             wordValues.put(ordinals[i].toLowerCase(), i);
         }
-        for(int i=0; i<decades.length; i++) {
+        for (int i = 0; i < decades.length; i++) {
             String lword = decades[i].toLowerCase();
-            wordValues.put(lword, (i + 2)*10);
-            wordValues.put(lword.substring(0, lword.length()-1) + "ieth", wordValues.get(lword));
+            wordValues.put(lword, (i + 2) * 10);
+            wordValues.put(lword.substring(0, lword.length() - 1) + "ieth", wordValues.get(lword));
         }
         wordValues.put("hundreth", 100);
-        for(int i=0; i<magnitudes.length; i++){
+        for (int i = 0; i < magnitudes.length; i++) {
             String lword = magnitudes[i].toLowerCase();
-            int val = (int)Math.pow(10, (i+1)*3);
+            int val = (int) Math.pow(10, (i + 1) * 3);
             wordValues.put(lword, val);
-            wordValues.put(lword+"th", val);
+            wordValues.put(lword + "th", val);
         }
     }
 
     private static int wordsToNumber(String text) {
         String[] parts = text.split(",\\s|\\sand\\s|[\\s\\-]");
         Integer[] values = new Integer[parts.length];
-        for (int i=0; i<parts.length; i++) {
+        for (int i = 0; i < parts.length; i++) {
             values[i] = wordValues.get(parts[i]);
         }
         Stack<Integer> segs = new Stack<>();
@@ -149,6 +155,7 @@ public class DateTimeUtils implements Serializable {
     }
 
     private static class RomanNumeral {
+
         private int value;
         private String letters;
 
@@ -197,7 +204,7 @@ public class DateTimeUtils implements Serializable {
     }
 
     private static String decimalToRoman(int value) {
-        for (int i=0; i<romanNumerals.length; i++) {
+        for (int i = 0; i < romanNumerals.length; i++) {
             RomanNumeral numeral = romanNumerals[i];
             if (value >= numeral.getValue()) {
                 return numeral.getLetters() + decimalToRoman(value - numeral.getValue());
@@ -209,7 +216,7 @@ public class DateTimeUtils implements Serializable {
     private static int romanToDecimal(String roman) {
         int decimal = 0;
         int max = 1;
-        for (int i = roman.length()-1; i>=0; i--){
+        for (int i = roman.length() - 1; i >= 0; i--) {
             String digit = Character.toString(roman.charAt(i));
             int value = romanValues.get(digit);
             if (value < max) {
@@ -226,10 +233,10 @@ public class DateTimeUtils implements Serializable {
         Vector<String> letters = new Vector<>();
         char aCode = aChar.charAt(0);
         while (value > 0) {
-            letters.insertElementAt(Character.toString((char)((value - 1)%26 + aCode)), 0);
+            letters.insertElementAt(Character.toString((char) ((value - 1) % 26 + aCode)), 0);
             value = (value - 1) / 26;
         }
-        return letters.stream().reduce("", (a, b) -> a+b);
+        return letters.stream().reduce("", (a, b) -> a + b);
     }
 
     private static String formatInteger(int value, String picture) {
@@ -238,23 +245,19 @@ public class DateTimeUtils implements Serializable {
     }
 
     enum formats {
-        DECIMAL("decimal"),
-        LETTERS("letters"),
-        ROMAN("roman"),
-        WORDS("words"),
-        SEQUENCE("sequence");
+
+            DECIMAL("decimal"), LETTERS("letters"), ROMAN("roman"), WORDS("words"), SEQUENCE("sequence");
 
         public String value;
 
-        private formats(String value){
+        private formats(String value) {
             this.value = value;
         }
     }
 
     enum tcase {
-        UPPER("upper"),
-        LOWER("lower"),
-        TITLE("title");
+
+            UPPER("upper"), LOWER("lower"), TITLE("title");
 
         public String value;
 
@@ -264,6 +267,7 @@ public class DateTimeUtils implements Serializable {
     }
 
     private static class Format {
+
         @SuppressWarnings("unused")
         public String type = "integer";
         public formats primary = formats.DECIMAL;
@@ -278,6 +282,7 @@ public class DateTimeUtils implements Serializable {
     }
 
     private static class GroupingSeparator {
+
         public int position;
         public String character;
 
@@ -288,7 +293,8 @@ public class DateTimeUtils implements Serializable {
     }
 
     private static Map<String, String> suffix123 = createSuffixMap();
-    private static Map<String, String> createSuffixMap(){
+
+    private static Map<String, String> createSuffixMap() {
         Map<String, String> suffix = new HashMap<>();
         suffix.put("1", "st");
         suffix.put("2", "nd");
@@ -326,14 +332,14 @@ public class DateTimeUtils implements Serializable {
                 }
                 if (format.zeroCode != 0x30) {
                     char[] chars = formattedInteger.toCharArray();
-                    for (int i=0; i<chars.length; i++) {
-                        chars[i] = (char)(chars[i] + format.zeroCode - 0x30);
+                    for (int i = 0; i < chars.length; i++) {
+                        chars[i] = (char) (chars[i] + format.zeroCode - 0x30);
                     }
                     formattedInteger = new String(chars);
                 }
                 if (format.regular) {
                     int n = (formattedInteger.length() - 1) / format.groupingSeparators.elementAt(0).position;
-                    for (int i=n; i>0; i--) {
+                    for (int i = n; i > 0; i--) {
                         int pos = formattedInteger.length() - i * format.groupingSeparators.elementAt(0).position;
                         formattedInteger = formattedInteger.substring(0, pos) + format.groupingSeparators.elementAt(0).character + formattedInteger.substring(pos);
                     }
@@ -346,9 +352,9 @@ public class DateTimeUtils implements Serializable {
                 }
 
                 if (format.ordinal) {
-                    String lastDigit = formattedInteger.substring(formattedInteger.length()-1);
+                    String lastDigit = formattedInteger.substring(formattedInteger.length() - 1);
                     String suffix = suffix123.get(lastDigit);
-                    if (suffix == null || (formattedInteger.length() > 1 && formattedInteger.charAt(formattedInteger.length() -2) == '1')) {
+                    if (suffix == null || (formattedInteger.length() > 1 && formattedInteger.charAt(formattedInteger.length() - 2) == '1')) {
                         suffix = "th";
                     }
                     formattedInteger += suffix;
@@ -364,10 +370,13 @@ public class DateTimeUtils implements Serializable {
         return formattedInteger;
     }
 
-    private static int[] decimalGroups = {0x30, 0x0660, 0x06F0, 0x07C0, 0x0966, 0x09E6, 0x0A66, 0x0AE6, 0x0B66, 0x0BE6, 0x0C66, 0x0CE6, 0x0D66, 0x0DE6, 0x0E50, 0x0ED0, 0x0F20, 0x1040, 0x1090, 0x17E0, 0x1810, 0x1946, 0x19D0, 0x1A80, 0x1A90, 0x1B50, 0x1BB0, 0x1C40, 0x1C50, 0xA620, 0xA8D0, 0xA900, 0xA9D0, 0xA9F0, 0xAA50, 0xABF0, 0xFF10};
+    private static int[] decimalGroups = {
+        0x30, 0x0660, 0x06F0, 0x07C0, 0x0966, 0x09E6, 0x0A66, 0x0AE6, 0x0B66, 0x0BE6, 0x0C66, 0x0CE6, 0x0D66, 0x0DE6, 0x0E50, 0x0ED0, 0x0F20, 0x1040, 0x1090, 0x17E0, 0x1810,
+        0x1946, 0x19D0, 0x1A80, 0x1A90, 0x1B50, 0x1BB0, 0x1C40, 0x1C50, 0xA620, 0xA8D0, 0xA900, 0xA9D0, 0xA9F0, 0xAA50, 0xABF0, 0xFF10
+    };
 
     @SuppressWarnings("unused")
-	private static Format analyseIntegerPicture(String picture) {
+    private static Format analyseIntegerPicture(String picture) {
         Format format = new Format();
         String primaryFormat, formatModifier;
         int semicolon = picture.lastIndexOf(";");
@@ -375,7 +384,7 @@ public class DateTimeUtils implements Serializable {
             primaryFormat = picture;
         } else {
             primaryFormat = picture.substring(0, semicolon);
-            formatModifier = picture.substring(semicolon+1);
+            formatModifier = picture.substring(semicolon + 1);
             if (formatModifier.charAt(0) == 'o') {
                 format.ordinal = true;
             }
@@ -468,7 +477,7 @@ public class DateTimeUtils implements Serializable {
 
         String sepChar = separators.elementAt(0).character;
         for (int i = 1; i < separators.size(); i++) {
-            if(!separators.elementAt(i).character.equals(sepChar)) {
+            if (!separators.elementAt(i).character.equals(sepChar)) {
                 return 0;
             }
         }
@@ -486,6 +495,7 @@ public class DateTimeUtils implements Serializable {
     }
 
     private static Map<Character, String> defaultPresentationModifiers = createDefaultPresentationModifiers();
+
     private static Map<Character, String> createDefaultPresentationModifiers() {
         Map<Character, String> map = new HashMap<>();
         map.put('Y', "1");
@@ -511,14 +521,15 @@ public class DateTimeUtils implements Serializable {
     }
 
     private static class PictureFormat {
+
         @SuppressWarnings("unused")
-		String type;
+        String type;
         Vector<SpecPart> parts = new Vector<>();
 
         public PictureFormat(String type) {
             this.type = type;
         }
-        
+
         public void addLiteral(String picture, int start, int end) {
             if (end > start) {
                 String literal = picture.substring(start, end);
@@ -529,6 +540,7 @@ public class DateTimeUtils implements Serializable {
     }
 
     private static class SpecPart {
+
         String type;
         String value;
         char component;
@@ -568,10 +580,10 @@ public class DateTimeUtils implements Serializable {
                 format.addLiteral(picture, start, pos);
                 start = pos;
                 pos = picture.indexOf("]", start);
-                if(pos == -1) {
+                if (pos == -1) {
                     throw new EvaluateRuntimeException(Constants.ERR_MSG_NO_CLOSING_BRACKET);
                 }
-                String marker = picture.substring(start+1, pos);
+                String marker = picture.substring(start + 1, pos);
                 marker = String.join("", marker.split("\\s+"));
                 SpecPart def = new SpecPart("marker", marker.charAt(0));
                 int comma = marker.lastIndexOf(",");
@@ -584,7 +596,7 @@ public class DateTimeUtils implements Serializable {
                         min = widthMod;
                     } else {
                         min = widthMod.substring(0, dash);
-                        max = widthMod.substring(dash+1);
+                        max = widthMod.substring(dash + 1);
                     }
                     def.width = new ImmutablePair<Integer, Integer>(parseWidth(min), parseWidth(max));
                     presMod = marker.substring(1, comma);
@@ -594,7 +606,7 @@ public class DateTimeUtils implements Serializable {
                 if (presMod.length() == 1) {
                     def.presentation1 = presMod;
                 } else if (presMod.length() > 1) {
-                    char lastChar = presMod.charAt(presMod.length() -1 );
+                    char lastChar = presMod.charAt(presMod.length() - 1);
                     if ("atco".indexOf(lastChar) != -1) {
                         def.presentation2 = lastChar;
                         if (lastChar == 'o') {
@@ -664,9 +676,13 @@ public class DateTimeUtils implements Serializable {
         }
     }
 
-    private static String[] days = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-    private static String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-    
+    private static String[] days = {
+        "", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    };
+    private static String[] months = {
+        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+    };
+
     private static PictureFormat iso8601Spec = null;
 
     public static String formatDateTime(long millis, String picture, String timezone) {
@@ -708,18 +724,18 @@ public class DateTimeUtils implements Serializable {
         if ("YMDdFWwXxHhms".indexOf(markerSpec.component) != -1) {
             if (markerSpec.component == 'Y') {
                 if (markerSpec.n != -1) {
-                    componentValue = "" + (int)(Integer.parseInt(componentValue) % Math.pow(10, markerSpec.n));
+                    componentValue = "" + (int) (Integer.parseInt(componentValue) % Math.pow(10, markerSpec.n));
                 }
             }
             if (markerSpec.names != null) {
                 if (markerSpec.component == 'M' || markerSpec.component == 'x') {
-                    componentValue = months[Integer.parseInt(componentValue)-1];
+                    componentValue = months[Integer.parseInt(componentValue) - 1];
                 } else if (markerSpec.component == 'F') {
                     componentValue = days[Integer.parseInt(componentValue)];
                 } else {
                     throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_NAME_MODIFIER, markerSpec.component));
                 }
-                if(markerSpec.names == tcase.UPPER) {
+                if (markerSpec.names == tcase.UPPER) {
                     componentValue = componentValue.toUpperCase();
                 } else if (markerSpec.names == tcase.LOWER) {
                     componentValue = componentValue.toLowerCase();
@@ -764,7 +780,7 @@ public class DateTimeUtils implements Serializable {
 
     private static String getDateTimeFragment(LocalDateTime date, Character component) {
         String componentValue = "";
-        switch(component) {
+        switch (component) {
             case 'Y': // year
                 componentValue = "" + date.getYear();
                 break;
@@ -848,7 +864,7 @@ public class DateTimeUtils implements Serializable {
 
             Map<Character, Integer> components = new HashMap<>();
             for (int i = 1; i <= matcher.groupCount(); i++) {
-                MatcherPart mpart = matchSpec.parts.get(i-1);
+                MatcherPart mpart = matchSpec.parts.get(i - 1);
                 try {
                     components.put(mpart.component, mpart.parse(matcher.group(i)));
                 } catch (UnsupportedOperationException e) {
@@ -865,7 +881,7 @@ public class DateTimeUtils implements Serializable {
 
             for (char part : "YXMxWwdD".toCharArray()) {
                 mask <<= 1;
-                if(components.get(part) != null) {
+                if (components.get(part) != null) {
                     mask += 1;
                 }
             }
@@ -877,9 +893,10 @@ public class DateTimeUtils implements Serializable {
             mask = 0;
             for (char part : "PHhmsf".toCharArray()) {
                 mask <<= 1;
-                if(components.get(part) != null) {
+                if (components.get(part) != null) {
                     mask += 1;
-                };
+                }
+                ;
             }
 
             boolean timeA = isType(tmA, mask);
@@ -889,11 +906,11 @@ public class DateTimeUtils implements Serializable {
             String timeComps = timeB ? "Phmsf" : "Hmsf";
             String comps = dateComps + timeComps;
 
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
 
             boolean startSpecified = false;
             boolean endSpecified = false;
-            for(char part : comps.toCharArray()) {
+            for (char part : comps.toCharArray()) {
                 if (components.get(part) == null) {
                     if (startSpecified) {
                         components.put(part, "MDd".indexOf(part) != -1 ? 1 : 0);
@@ -903,12 +920,12 @@ public class DateTimeUtils implements Serializable {
                     }
                 } else {
                     startSpecified = true;
-                    if(endSpecified) {
+                    if (endSpecified) {
                         throw new EvaluateRuntimeException(Constants.ERR_MSG_MISSING_FORMAT);
                     }
                 }
             }
-            if(components.get('M') != null && components.get('M') > 0) {
+            if (components.get('M') != null && components.get('M') > 0) {
                 components.put('M', components.get('M') - 1);
             } else {
                 components.put('M', 0);
@@ -916,7 +933,7 @@ public class DateTimeUtils implements Serializable {
             if (dateB) {
                 LocalDateTime firstJan = LocalDateTime.of(components.get('Y'), Month.JANUARY, 1, 0, 0);
                 firstJan = firstJan.withDayOfYear(components.get('d'));
-                components.put('M', firstJan.getMonthValue()-1);
+                components.put('M', firstJan.getMonthValue() - 1);
                 components.put('D', firstJan.getDayOfMonth());
             }
             if (dateC) {
@@ -935,7 +952,8 @@ public class DateTimeUtils implements Serializable {
                     components.put('H', components.get('H') + 12);
                 }
             }
-            LocalDateTime cal = LocalDateTime.of(components.get('Y'), components.get('M')+1, components.get('D'), components.get('H'), components.get('m'), components.get('s'), components.get('f')*1000000);
+            LocalDateTime cal = LocalDateTime.of(components.get('Y'), components.get('M') + 1, components.get('D'), components.get('H'), components.get('m'), components.get('s'),
+                components.get('f') * 1000000);
             long millis = cal.toInstant(ZoneOffset.UTC).toEpochMilli();
             if (components.get('Z') != null) {
                 millis -= components.get('Z') * 60 * 1000;
@@ -955,12 +973,13 @@ public class DateTimeUtils implements Serializable {
         PictureMatcher matcher = new PictureMatcher();
         for (final SpecPart part : formatSpec.parts) {
             MatcherPart res;
-            if (part.type.equals("literal")){
+            if (part.type.equals("literal")) {
                 Pattern p = Pattern.compile("[.*+?^${}()|\\[\\]\\\\]");
                 Matcher m = p.matcher(part.value);
-                
+
                 String regex = m.replaceAll("\\\\$0");
                 res = new MatcherPart(regex) {
+
                     public int parse(String value) {
                         throw new UnsupportedOperationException();
                     }
@@ -976,6 +995,7 @@ public class DateTimeUtils implements Serializable {
                     regex += part.integerFormat.groupingSeparators.get(0).character + "[0-9]+";
                 }
                 res = new MatcherPart(regex) {
+
                     public int parse(String value) {
                         if (part.component == 'z') {
                             value = value.substring(3);
@@ -983,7 +1003,7 @@ public class DateTimeUtils implements Serializable {
                         int offsetHours = 0, offsetMinutes = 0;
                         if (separator) {
                             offsetHours = Integer.parseInt(value.substring(0, value.indexOf(part.integerFormat.groupingSeparators.get(0).character)));
-                            offsetMinutes = Integer.parseInt(value.substring(value.indexOf(part.integerFormat.groupingSeparators.get(0).character)+1));
+                            offsetMinutes = Integer.parseInt(value.substring(value.indexOf(part.integerFormat.groupingSeparators.get(0).character) + 1));
                         } else {
                             int numdigits = value.length() - 1;
                             if (numdigits <= 2) {
@@ -1004,13 +1024,13 @@ public class DateTimeUtils implements Serializable {
                 if (part.component == 'M' || part.component == 'x') {
                     for (int i = 0; i < months.length; i++) {
                         if (part.width != null && part.width.getRight() != null) {
-                            lookup.put(months[i].substring(0, part.width.getRight()), i+1);
+                            lookup.put(months[i].substring(0, part.width.getRight()), i + 1);
                         } else {
-                            lookup.put(months[i], i+1);
+                            lookup.put(months[i], i + 1);
                         }
                     }
                 } else if (part.component == 'F') {
-                    for (int i=1; i< days.length; i++) {
+                    for (int i = 1; i < days.length; i++) {
                         if (part.width != null && part.width.getRight() != null) {
                             lookup.put(days[i].substring(0, part.width.getRight()), i);
                         } else {
@@ -1026,6 +1046,7 @@ public class DateTimeUtils implements Serializable {
                     throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_NAME_MODIFIER, part.component));
                 }
                 res = new MatcherPart(regex) {
+
                     public int parse(String value) {
                         return lookup.get(value);
                     }
@@ -1044,6 +1065,7 @@ public class DateTimeUtils implements Serializable {
             case LETTERS: {
                 String regex = isUpper ? "[A-Z]+" : "[a-z]+";
                 matcher = new MatcherPart(regex) {
+
                     public int parse(String value) {
                         return lettersToDecimal(value, isUpper ? 'A' : 'a');
                     }
@@ -1053,19 +1075,21 @@ public class DateTimeUtils implements Serializable {
             case ROMAN: {
                 String regex = isUpper ? "[MDCLXVI]+" : "[mdclxvi]+";
                 matcher = new MatcherPart(regex) {
+
                     public int parse(String value) {
                         return romanToDecimal(isUpper ? value : value.toUpperCase());
                     }
                 };
                 break;
             }
-            case WORDS:{
+            case WORDS: {
                 Set<String> words = new HashSet<>();
                 words.addAll(wordValues.keySet());
                 words.add("and");
                 words.add("[\\-, ]");
                 String regex = "(?:" + String.join("|", words.toArray(new String[words.size()])) + ")+";
                 matcher = new MatcherPart(regex) {
+
                     public int parse(String value) {
                         return wordsToNumber(value.toLowerCase());
                     }
@@ -1078,6 +1102,7 @@ public class DateTimeUtils implements Serializable {
                     regex += "(?:th|st|nd|rd)";
                 }
                 matcher = new MatcherPart(regex) {
+
                     public int parse(String value) {
                         String digits = value;
                         if (formatSpec.ordinal) {
@@ -1086,14 +1111,14 @@ public class DateTimeUtils implements Serializable {
                         if (formatSpec.regular) {
                             digits = String.join("", digits.split(","));
                         } else {
-                            for(GroupingSeparator sep : formatSpec.groupingSeparators) {
+                            for (GroupingSeparator sep : formatSpec.groupingSeparators) {
                                 digits = String.join("", digits.split(sep.character));
                             }
                         }
                         if (formatSpec.zeroCode != 0x30) {
                             char[] chars = digits.toCharArray();
-                            for (int i=0; i < chars.length ; i++) {
-                                chars[i] = (char)(chars[i] - formatSpec.zeroCode + 0x30);
+                            for (int i = 0; i < chars.length; i++) {
+                                chars[i] = (char) (chars[i] - formatSpec.zeroCode + 0x30);
                             }
                             digits = new String(chars);
                         }
@@ -1120,18 +1145,20 @@ public class DateTimeUtils implements Serializable {
     }
 
     private static class PictureMatcher {
+
         Vector<MatcherPart> parts = new Vector<>();
     }
 
     private static abstract class MatcherPart {
+
         String regex;
         char component;
+
         public abstract int parse(String value);
 
         public MatcherPart(String regex) {
             this.regex = regex;
         }
     }
-
 
 }

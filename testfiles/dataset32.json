@@ -1,0 +1,32 @@
+[
+  {
+    "id": 19976,
+    "buys": [
+      {
+        "listings": 1,
+        "unit_price": 9837,
+        "quantity": 186
+      },
+      {
+        "listings": 1,
+        "unit_price": 9836,
+        "quantity": 16
+      }
+    ]
+  },
+  {
+    "id": 19976,
+    "buys": [
+      {
+        "listings": 1,
+        "unit_price": 9837,
+        "quantity": 186
+      },
+      {
+        "listings": 1,
+        "unit_price": 9836,
+        "quantity": 16
+      }
+    ]
+  }
+]

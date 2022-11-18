@@ -24,7 +24,6 @@ package com.api.jsonata4java.expressions.functions;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.JS4JDate;
@@ -52,104 +51,105 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class ToMillisFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = 4484749083861634204L;
+    private static final long serialVersionUID = 4484749083861634204L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TO_MILLIS);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_TO_MILLIS);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_TO_MILLIS);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TO_MILLIS);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_TO_MILLIS);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_TO_MILLIS);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argTimestamp = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argTimestamp = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argTimestamp != null && argTimestamp.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argTimestamp = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argTimestamp = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argTimestamp != null && argTimestamp.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount >= 1 && argCount <= 2) {
-			if (!useContext) {
-				argTimestamp = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
+        // Make sure that we have the right number of arguments
+        if (argCount >= 1 && argCount <= 2) {
+            if (!useContext) {
+                argTimestamp = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
 
-			JsonNode picture = JsonNodeFactory.instance.nullNode();
-			if (argCount == 2) {
-				picture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
-			}
-			// if arg is an array, return its length. Any other type of
-			// input returns 1.
-			if (argTimestamp == null) {
-				return null;
-			}
-			// Check the type of the argument
-			if (argTimestamp.isTextual()) {
-				try {
-					/*
-					 * The string passed to us might contain an ISO 8601 format string that
-					 * specifies an offset element. The java.time.Instant class will throw a
-					 * DateTimeParseException when attempting to parse these strings. We need to use
-					 * the java.time.OffsetDateTime class instead.
-					 */
-					Long millis;
-					if (picture != null && !picture.isNull()) {
-						millis = DateTimeUtils.parseDateTime(argTimestamp.asText(), picture.asText());
-					} else {
-						millis = OffsetDateTime.parse(argTimestamp.asText()).toInstant().toEpochMilli();
-					}
-					if (millis == null) {
-						result = null;
-					} else {
-						result = new LongNode(millis);
-					}
-				} catch (DateTimeParseException e) {
-					/*
-					 * The string argument does not contain a valid ISO 8601 format datetime string.
-					 * Throw a suitable exception.
-					 */
-					JS4JDate testDate = new JS4JDate();
-					try {
-						testDate = new JS4JDate(argTimestamp.asText());
-					} catch (Exception e1) {
-						final String msg = String.format(Constants.ERR_MSG_TO_MILLIS_ISO_8601_FORMAT,
-								argTimestamp.asText());
-						throw new EvaluateRuntimeException(msg);							
-					}
-					Long millis = testDate.getTime();
-					result = new LongNode(millis);
-				}
-			} else {
-				// The argument is a neither a number or a string. Throw a suitable
-				// exception.
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-		}
+            JsonNode picture = JsonNodeFactory.instance.nullNode();
+            if (argCount == 2) {
+                picture = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 1);
+            }
+            // if arg is an array, return its length. Any other type of
+            // input returns 1.
+            if (argTimestamp == null) {
+                return null;
+            }
+            // Check the type of the argument
+            if (argTimestamp.isTextual()) {
+                try {
+                    /*
+                     * The string passed to us might contain an ISO 8601 format string that
+                     * specifies an offset element. The java.time.Instant class will throw a
+                     * DateTimeParseException when attempting to parse these strings. We need to use
+                     * the java.time.OffsetDateTime class instead.
+                     */
+                    Long millis;
+                    if (picture != null && !picture.isNull()) {
+                        millis = DateTimeUtils.parseDateTime(argTimestamp.asText(), picture.asText());
+                    } else {
+                        millis = OffsetDateTime.parse(argTimestamp.asText()).toInstant().toEpochMilli();
+                    }
+                    if (millis == null) {
+                        result = null;
+                    } else {
+                        result = new LongNode(millis);
+                    }
+                } catch (DateTimeParseException e) {
+                    /*
+                     * The string argument does not contain a valid ISO 8601 format datetime string.
+                     * Throw a suitable exception.
+                     */
+                    JS4JDate testDate = new JS4JDate();
+                    try {
+                        testDate = new JS4JDate(argTimestamp.asText());
+                    } catch (Exception e1) {
+                        final String msg = String.format(Constants.ERR_MSG_TO_MILLIS_ISO_8601_FORMAT,
+                            argTimestamp.asText());
+                        throw new EvaluateRuntimeException(msg);
+                    }
+                    Long millis = testDate.getTime();
+                    result = new LongNode(millis);
+                }
+            } else {
+                // The argument is a neither a number or a string. Throw a suitable
+                // exception.
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 2;
-	}
-	@Override
-	public int getMinArgs() {
-		return 0; // account for context variable
-	}
+    @Override
+    public int getMaxArgs() {
+        return 2;
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a string (or context variable), an optional string, returns a number
-		return "<s-s?:n>";
-	}
+    @Override
+    public int getMinArgs() {
+        return 0; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a string (or context variable), an optional string, returns a number
+        return "<s-s?:n>";
+    }
 }

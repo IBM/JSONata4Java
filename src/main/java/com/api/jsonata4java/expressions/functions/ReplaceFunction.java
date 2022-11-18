@@ -22,13 +22,16 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.util.regex.Pattern;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.POJONode;
 import com.fasterxml.jackson.databind.node.TextNode;
 
 /**
@@ -68,142 +71,164 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * 
  * Examples
  * 
- * $replace("John Smith and John Jones", "John", "Mr")=="Mr Smith and Mr
- * Jones" $replace("John Smith and John Jones", "John", "Mr", 1)=="Mr Smith
- * and John Jones" $replace("abracadabra", "a.*?a", "*")=="*c*bra"
- * $replace("John Smith", "(\w+)\s(\w+)", "$2, $1")=="Smith, John"
- * $replace("265USD", "([0-9]+)USD", "$$$1")=="$265"
+ * $replace("John Smith and John Jones", "John", "Mr")=="Mr Smith and Mr Jones"
+ * $replace("John Smith and John Jones", "John", "Mr", 1)=="Mr Smith and John
+ * Jones" $replace("abracadabra", "a.*?a", "*")=="*c*bra" $replace("John Smith",
+ * "(\w+)\s(\w+)", "$2, $1")=="Smith, John" $replace("265USD", "([0-9]+)USD",
+ * "$$$1")=="$265"
  * 
  */
 public class ReplaceFunction extends FunctionBase implements Function {
 
-	private static final long serialVersionUID = -647444066483284969L;
+    private static final long serialVersionUID = -647444066483284969L;
 
-	public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_REPLACE);
-	public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_REPLACE);
-	public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_REPLACE);
-	public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_REPLACE);
-	public static String ERR_ARG4BADTYPE = String.format(Constants.ERR_MSG_ARG4_BAD_TYPE, Constants.FUNCTION_REPLACE);
-	public static String ERR_ARG5BADTYPE = String.format(Constants.ERR_MSG_ARG5_BAD_TYPE, Constants.FUNCTION_REPLACE);
-	public static final String ERR_MSG_ARG2_EMPTY_STR = String.format(Constants.ERR_MSG_ARG2_EMPTY_STR,
-			Constants.FUNCTION_REPLACE);
+    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_REPLACE);
+    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_REPLACE);
+    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_REPLACE);
+    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_REPLACE);
+    public static String ERR_ARG4BADTYPE = String.format(Constants.ERR_MSG_ARG4_BAD_TYPE, Constants.FUNCTION_REPLACE);
+    public static String ERR_ARG5BADTYPE = String.format(Constants.ERR_MSG_ARG5_BAD_TYPE, Constants.FUNCTION_REPLACE);
+    public static final String ERR_MSG_ARG2_EMPTY_STR = String.format(Constants.ERR_MSG_ARG2_EMPTY_STR,
+        Constants.FUNCTION_REPLACE);
 
-	public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-		// Create the variable to return
-		JsonNode result = null;
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+        // Create the variable to return
+        JsonNode result = null;
 
-		// Retrieve the number of arguments
-		JsonNode argString = JsonNodeFactory.instance.nullNode();
-		boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-		int argCount = getArgumentCount(ctx);
-		if (useContext) {
-			argString = FunctionUtils.getContextVariable(expressionVisitor);
-			if (argString != null && argString.isNull() == false) {
-				argCount++;
-			} else {
-				useContext = false;
-			}
-		}
+        // Retrieve the number of arguments
+        JsonNode argString = JsonNodeFactory.instance.nullNode();
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        int argCount = getArgumentCount(ctx);
+        if (useContext) {
+            argString = FunctionUtils.getContextVariable(expressionVisitor);
+            if (argString != null && argString.isNull() == false) {
+                argCount++;
+            } else {
+                useContext = false;
+            }
+        }
 
-		// Make sure that we have the right number of arguments
-		if (argCount >= 1 && argCount <= 4) {
-			if (!useContext) {
-				argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-			}
-			if (argString == null) {
-				if (argCount < 2) {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-				} else if (argCount == 2) {
-					throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
-				}
-				return null; // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-			if (argCount >= 2) {
-				final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-						useContext ? 0 : 1);
-				int limit = -1;
-				// Make sure that the separator is not null
-				if (argPattern != null && argPattern.isTextual()) {
-					if (argPattern.asText().isEmpty()) {
-						throw new EvaluateRuntimeException(ERR_MSG_ARG2_EMPTY_STR);
-					}
-					if (argCount >= 3) {
-						final JsonNode argReplacement = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-								useContext ? 1 : 2);
-						// Check to see if the pattern is just a string
-						if (argReplacement != null && (argReplacement.isTextual())) {
-							if (!argString.isTextual()) {
-								throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-							}
-							final String str = argString.textValue();
-							final String pattern = argPattern.textValue();
-							final String replacement = argReplacement.textValue();
+        // Make sure that we have the right number of arguments
+        if (argCount >= 1 && argCount <= 4) {
+            if (!useContext) {
+                argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+            }
+            if (argString == null) {
+                if (argCount < 2) {
+                    throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                } else if (argCount == 2) {
+                    throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+                }
+                return null; // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+            if (argCount >= 2) {
+                final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                    useContext ? 0 : 1);
+                int limit = -1;
+                // Make sure that the separator is not null
+                if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode)) {
+                    if (argPattern.asText().isEmpty()) {
+                        throw new EvaluateRuntimeException(ERR_MSG_ARG2_EMPTY_STR);
+                    }
+                    if (argCount >= 3) {
+                        final JsonNode argReplacement = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                            useContext ? 1 : 2);
+                        // Check to see if the pattern is just a string
+                        if (argReplacement != null && (argReplacement.isTextual())) {
+                            if (!argString.isTextual()) {
+                                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                            }
+                            final String str = argString.textValue();
+                            final RegularExpression regex = argPattern instanceof POJONode
+                                ? (RegularExpression) ((POJONode) argPattern).getPojo()
+                                : null;
+                            final String pattern = regex != null
+                                ? regex.toString()
+                                : argPattern.textValue();
+                            final String replacement = argReplacement.textValue();
 
-							if (argCount == 4) {
-								final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-										useContext ? 2 : 3);
+                            if (argCount == 4) {
+                                final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
+                                    useContext ? 2 : 3);
 
-								// Check to see if we have an optional limit argument we check
-								// it
-								if (argLimit != null) {
-									if (argLimit.isNumber() && argLimit.asInt() >= 0) {
-										limit = argLimit.asInt();
-									} else {
-										throw new EvaluateRuntimeException(ERR_ARG4BADTYPE);
-									}
-								}
-							}
+                                // Check to see if we have an optional limit argument we check it
+                                if (argLimit != null) {
+                                    if (argLimit.isNumber() && argLimit.asInt() >= 0) {
+                                        limit = argLimit.asInt();
+                                    } else {
+                                        throw new EvaluateRuntimeException(ERR_ARG4BADTYPE);
+                                    }
+                                }
+                            }
 
-							// Check to see if a limit was specified
-							if (limit == -1) {
-								// No limits... replace all occurrences in the string
-								result = new TextNode(str.replaceAll(pattern, replacement));
-							} else {
-								// Only perform the replace the specified number of times
-								String retString = new String(str);
-								for (int i = 0; i < limit; i++) {
-									retString = retString.replaceFirst(pattern, replacement);
-								} // FOR
-								result = new TextNode(retString);
-							}
-						} else {
-							throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
-						}
-					} else {
-						if (argPattern == null || !argPattern.isTextual()) {
-							throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-						}
-						if (!argString.isTextual()) {
-							throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-						}
-					}
-				} else {
-					throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-				}
-			} else if (!argString.isTextual()) {
-				throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-			}
-		} else {
-			throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE
-					: argCount == 1 ? ERR_ARG1BADTYPE : argCount == 2 ? ERR_ARG2BADTYPE : ERR_ARG5BADTYPE);
-		}
+                            // Check to see if a limit was specified
+                            if (limit == -1) {
+                                // No limits... replace all occurrences in the string
+                                if (regex != null) {
+                                    result = new TextNode(regex.getPattern().matcher(str).replaceAll(jsonata2JavaReplacement(replacement)));
+                                } else {
+                                    result = new TextNode(str.replaceAll(Pattern.quote(pattern), jsonata2JavaReplacement(replacement)));
+                                }
+                            } else {
+                                // Only perform the replace the specified number of times
+                                String retString = new String(str);
+                                for (int i = 0; i < limit; i++) {
+                                    if (regex != null) {
+                                        retString = regex.getPattern().matcher(retString).replaceFirst(jsonata2JavaReplacement(replacement));
+                                    } else {
+                                        retString = retString.replaceFirst(Pattern.quote(pattern), jsonata2JavaReplacement(replacement));
+                                    }
+                                } // FOR
+                                result = new TextNode(retString);
+                            }
+                        } else {
+                            throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
+                        }
+                    } else {
+                        if (argPattern == null || !argPattern.isTextual()) {
+                            throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                        }
+                        if (!argString.isTextual()) {
+                            throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                        }
+                    }
+                } else {
+                    throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                }
+            } else if (!argString.isTextual()) {
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+            }
+        } else {
+            throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE
+                : argCount == 1 ? ERR_ARG1BADTYPE : argCount == 2 ? ERR_ARG2BADTYPE : ERR_ARG5BADTYPE);
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public int getMaxArgs() {
-		return 3;
-	}
-	@Override
-	public int getMinArgs() {
-		return 1; // account for context variable
-	}
+    public static String jsonata2JavaReplacement(String in) {
+        // In JSONata and in Java the $ in the replacement test usually starts the insertion of a capturing group
+        // In order to replace a simple $ in Java you have to escape the $ with "\$"
+        // in JSONata you do this with a '$$'
+        // "\$" followed any character besides '<' and and digit into $ + this character  
+        return in.replaceAll("\\$\\$", "\\\\\\$")
+            .replaceAll("([^\\\\]|^)\\$([^0-9^<])", "$1\\\\\\$$2");
+    }
 
-	@Override
-	public String getSignature() {
-		// accepts a string (or context variable), a string or function, an optional
-		// number, returns a string
-		return "<s-(sf)(sf)n?:s>";
-	}
+    @Override
+    public int getMaxArgs() {
+        return 3;
+    }
+
+    @Override
+    public int getMinArgs() {
+        return 1; // account for context variable
+    }
+
+    @Override
+    public String getSignature() {
+        // accepts a string (or context variable), a string or function, an optional
+        // number, returns a string
+        return "<s-(sf)(sf)n?:s>";
+    }
 }
