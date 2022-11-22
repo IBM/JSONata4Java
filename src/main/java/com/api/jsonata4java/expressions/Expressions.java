@@ -140,7 +140,9 @@ public class Expressions implements Serializable {
     *                    an exception is thrown. Must be positive number or exception is thrown.
     * @param maxDepth the maximum call stack depth allowed before an exception is thrown. Must 
     *                    be a positive number or an exception is thrown.
-    * @return the JsonNode resulting from the expression evaluation against the rootContext
+    * @return the JsonNode resulting from the expression evaluation against the rootContext. 
+    *         A null will be returned if no match is found (note a JSON null will result 
+    *         in a JsonNode of type NullNode).
     * @throws EvaluateException If the given device event is invalid.
     */
     public JsonNode evaluate(JsonNode rootContext, long timeoutMS, int maxDepth) throws EvaluateException {
@@ -179,7 +181,9 @@ public class Expressions implements Serializable {
      * @param rootContext bound to root context ($$ and paths that don't start with
      *                    $event, $state or $instance) when evaluating expressions.
      *                    May be null.
-     * @return the JsonNode resulting from the expression evaluation against the rootContext
+     * @return the JsonNode resulting from the expression evaluation against the rootContext. 
+     *         A null will be returned if no match is found (note a JSON null will result 
+     *         in a JsonNode of type NullNode).
      * @throws EvaluateException If the given device event is invalid.
      */
     public JsonNode evaluate(JsonNode rootContext) throws EvaluateException {
