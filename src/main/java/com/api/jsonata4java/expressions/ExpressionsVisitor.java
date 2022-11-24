@@ -45,7 +45,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import org.apache.commons.text.StringEscapeUtils;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
-import com.api.jsonata4java.expressions.functions.Function;
+import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.generated.MappingExpressionBaseVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ArrayContext;
@@ -537,7 +537,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         return _environment;
     }
 
-    public Function getJsonataFunction(String fctName) {
+    public FunctionBase getJsonataFunction(String fctName) {
         return _environment.getJsonataFunction(fctName);
     }
 
@@ -730,7 +730,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         _environment = environment;
     }
 
-    public void setJsonataFunction(String fctName, Function fctValue) {
+    public void setJsonataFunction(String fctName, FunctionBase fctValue) {
         _environment.setJsonataFunction(fctName, fctValue);
     }
 
@@ -1657,7 +1657,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             // assume this is a variable pointing to a function
             DeclaredFunction declFct = getDeclaredFunction(fctName);
             if (declFct == null) {
-                Function function = getJsonataFunction(fctName);
+                FunctionBase function = getJsonataFunction(fctName);
                 if (function == null) {
                     function = Constants.FUNCTIONS.get(fctName);
                 }
@@ -1806,7 +1806,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 
         DeclaredFunction declFct = getDeclaredFunction(functionName);
         if (declFct == null) {
-            Function function = getJsonataFunction(functionName);
+            FunctionBase function = getJsonataFunction(functionName);
             if (function == null) {
                 function = Constants.FUNCTIONS.get(functionName);
             }
@@ -2222,13 +2222,13 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     // grouping.forEach((k, v) -> object.set(k, unwrapArray(v)));
                     // replaced with below
                     grouping.forEach((k, v) -> {
-                  	  _environment.pushContext(v);
-                  	  final JsonNode valueX = visit(ctx.fieldList().getChild(2));
-                  	  _environment.popContext();
-                  	  object.set(k, unwrapArray(valueX));
+                        _environment.pushContext(v);
+                        final JsonNode valueX = visit(ctx.fieldList().getChild(2));
+                        _environment.popContext();
+                        object.set(k, unwrapArray(valueX));
                     });
                     // end replacement
-                   
+
                 } else {
                     _environment.pushContext(context);
                     final JsonNode fieldList = visit(ctx.fieldList());
@@ -2379,7 +2379,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                         if (declFct != null) {
                             value = new TextNode("");
                         } else {
-                            Function fct = getJsonataFunction(varName);
+                            FunctionBase fct = getJsonataFunction(varName);
                             if (fct != null) {
                                 value = new TextNode("");
                             } else {
@@ -2915,7 +2915,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 
             DeclaredFunction declFct = getDeclaredFunction(functionName);
             if (declFct == null) {
-                Function function = getJsonataFunction(functionName);
+                FunctionBase function = getJsonataFunction(functionName);
                 if (function != null) {
                     setJsonataFunction(varName, function);
                     // result = function.invoke(this, ctx);
@@ -2948,7 +2948,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     result = visit(((Fct_chainContext) expr).expr(1));
                     // _environment.popContext();
                 } else {
-                    Function fct = getJsonataFunction(fctName);
+                    FunctionBase fct = getJsonataFunction(fctName);
                     if (fct != null) {
                         setJsonataFunction(varName, fct);
                         // TODO set up a Function_callContext with an ExprValuesContext and call below
@@ -2967,7 +2967,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 
                 DeclaredFunction declFct = getDeclaredFunction(functionName);
                 if (declFct == null) {
-                    Function function = getJsonataFunction(functionName);
+                    FunctionBase function = getJsonataFunction(functionName);
                     if (function != null) {
                         setJsonataFunction(varName, function);
                         // result = function.invoke(this, ctx);

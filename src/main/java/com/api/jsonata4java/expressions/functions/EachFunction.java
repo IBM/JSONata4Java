@@ -66,8 +66,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class EachFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -163606520924327240L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_EACH);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_EACH);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_EACH);
@@ -147,7 +145,7 @@ public class EachFunction extends FunctionBase {
                         }
                     }
                 } else {
-                    Function function = expressionVisitor.getJsonataFunction(varid.getText());
+                    FunctionBase function = expressionVisitor.getJsonataFunction(varid.getText());
                     if (function != null) {
                         for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
                             String key = it.next();

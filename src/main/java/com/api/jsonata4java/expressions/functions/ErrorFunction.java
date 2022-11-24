@@ -48,8 +48,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  */
 public class ErrorFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -9207780239312306404L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_LOWERCASE);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_LOWERCASE);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_LOWERCASE);

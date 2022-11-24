@@ -48,8 +48,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class LookupFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -8369209972416470426L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_LOOKUP);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_LOOKUP);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_LOOKUP);

@@ -27,9 +27,15 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public abstract class FunctionBase implements Function {
+public abstract class FunctionBase {
 
-    private static final long serialVersionUID = -2198474650471622735L;
+    public abstract int getMaxArgs();
+
+    public abstract int getMinArgs();
+
+    public abstract String getSignature();
+
+    public abstract JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx);
 
     protected class CtxEvalResult {
 
@@ -56,7 +62,7 @@ public abstract class FunctionBase implements Function {
                 useContext = false;
             }
         }
-        if (!useContext && ctx.exprValues() != null && ctx.exprValues().exprList() != null
+        if (argCount > 0 && !useContext && ctx.exprValues() != null && ctx.exprValues().exprList() != null
             && !ctx.exprValues().exprList().isEmpty()) {
             arg = expressionVisitor.visit(ctx.exprValues().exprList().expr(0));
         }

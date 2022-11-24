@@ -80,8 +80,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class ReplaceFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -647444066483284969L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_REPLACE);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_REPLACE);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_REPLACE);

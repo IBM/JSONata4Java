@@ -53,8 +53,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class SubstringBeforeFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -6295856670984055914L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
         Constants.FUNCTION_SUBSTRING_BEFORE);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
@@ -100,7 +98,7 @@ public class SubstringBeforeFunction extends FunctionBase {
                         if (declFct != null) {
                             argString = new TextNode("");
                         } else {
-                            Function fct = expressionVisitor.getJsonataFunction(varName);
+                            FunctionBase fct = expressionVisitor.getJsonataFunction(varName);
                             if (fct != null) {
                                 argString = new TextNode("");
                             } else {

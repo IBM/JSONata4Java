@@ -47,8 +47,6 @@ import com.fasterxml.jackson.databind.node.TextNode;
  */
 public class Base64DecodeFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -4107299339965670031L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
         Constants.FUNCTION_BASE64_DECODE);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,

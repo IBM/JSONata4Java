@@ -46,7 +46,7 @@ import com.api.jsonata4java.expressions.functions.FloorFunction;
 import com.api.jsonata4java.expressions.functions.FormatBaseFunction;
 import com.api.jsonata4java.expressions.functions.FormatNumberFunction;
 import com.api.jsonata4java.expressions.functions.FromMillisFunction;
-import com.api.jsonata4java.expressions.functions.Function;
+import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.functions.JoinFunction;
 import com.api.jsonata4java.expressions.functions.KeysFunction;
 import com.api.jsonata4java.expressions.functions.LengthFunction;
@@ -169,7 +169,7 @@ public class Constants implements Serializable {
     public static final String FUNCTION_SIFT = "$sift";
 
     // Collection of functions
-    public static final Map<String, Function> FUNCTIONS = new HashMap<String, Function>();
+    public static final Map<String, FunctionBase> FUNCTIONS = new HashMap<>();
 
     // Default DecimalFormatSymbols object
     public static DecimalFormatSymbols DEFAULT_DECIMAL_FORMAT_SYMBOLS = new DecimalFormatSymbols(Locale.US);

@@ -44,8 +44,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class EvalFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -7591450668292230141L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_STRING);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_STRING);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_STR_OR_EXPR, Constants.FUNCTION_STRING);

@@ -37,8 +37,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 public class SortFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -2957077099198389545L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SORT);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SORT);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SORT);

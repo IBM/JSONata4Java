@@ -50,8 +50,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  */
 public class DistinctFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -1403211347419923420L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_DISTINCT);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_DISTINCT);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_DISTINCT);

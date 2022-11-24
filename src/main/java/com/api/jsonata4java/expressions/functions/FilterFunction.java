@@ -68,8 +68,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  */
 public class FilterFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -3747166094735842514L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SPREAD);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SPREAD);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SPREAD);
@@ -137,7 +135,7 @@ public class FilterFunction extends FunctionBase {
                         }
                     }
                 } else {
-                    Function function = expressionVisitor.getJsonataFunction(varid.getText());
+                    FunctionBase function = expressionVisitor.getJsonataFunction(varid.getText());
                     if (function != null) {
                         int optionalArgs = FunctionUtils.getOptionalArgCount(function.getSignature());
                         int maxArgs = function.getMaxArgs() - optionalArgs;

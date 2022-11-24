@@ -48,8 +48,6 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class LengthFunction extends FunctionBase {
 
-    private static final long serialVersionUID = 7026173131929954208L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_LENGTH);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_LENGTH);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_LENGTH);

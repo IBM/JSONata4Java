@@ -29,7 +29,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.logging.Logger;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
-import com.api.jsonata4java.expressions.functions.Function;
+import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -45,7 +45,7 @@ public class FrameEnvironment implements Serializable {
     private Map<String, DeclaredFunction> _declFunctionMap = new HashMap<String, DeclaredFunction>();
     private FrameEnvironment _enclosingFrame = null;
     private boolean _isAsync = false;
-    private Map<String, Function> _jsonataFunctionMap = new HashMap<String, Function>();
+    private Map<String, FunctionBase> _jsonataFunctionMap = new HashMap<>();
 
     /**
      * This stack is used for storing the current "context" under which to evaluate
@@ -72,7 +72,7 @@ public class FrameEnvironment implements Serializable {
     public FrameEnvironment(FrameEnvironment enclosingFrame) {
         _enclosingFrame = enclosingFrame;
         _declFunctionMap = new HashMap<String, DeclaredFunction>();
-        _jsonataFunctionMap = new HashMap<String, Function>();
+        _jsonataFunctionMap = new HashMap<>();
         _variableMap = new HashMap<String, JsonNode>();
         if (enclosingFrame == null) {
             _timestamp = new JS4JDate();
@@ -111,8 +111,8 @@ public class FrameEnvironment implements Serializable {
         return null;
     }
 
-    public Function getJsonataFunction(String fctName) {
-        Function fct = _jsonataFunctionMap.get(fctName);
+    public FunctionBase getJsonataFunction(String fctName) {
+        FunctionBase fct = _jsonataFunctionMap.get(fctName);
         if (fct != null || _jsonataFunctionMap.containsKey(fctName)) {
             return fct;
         }
@@ -228,7 +228,7 @@ public class FrameEnvironment implements Serializable {
         _declFunctionMap.put(fctName, fctValue);
     }
 
-    public void setJsonataFunction(String fctName, Function fctValue) throws EvaluateRuntimeException {
+    public void setJsonataFunction(String fctName, FunctionBase fctValue) throws EvaluateRuntimeException {
         if (fctName == null) {
             throw new EvaluateRuntimeException("function name is null.");
         }

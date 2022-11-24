@@ -51,8 +51,6 @@ import com.fasterxml.jackson.databind.node.LongNode;
  */
 public class SqrtFunction extends FunctionBase {
 
-    private static final long serialVersionUID = -6310204343833186502L;
-
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SQRT);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SQRT);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SQRT);
