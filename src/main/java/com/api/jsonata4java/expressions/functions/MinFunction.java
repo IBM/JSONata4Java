@@ -44,9 +44,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  * $min([5,1,3,7,4])==1
  * 
  */
-public class MinFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -4819242316491072139L;
+public class MinFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MIN);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MIN);

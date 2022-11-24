@@ -49,9 +49,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $base64encode("myuser:mypass")=="bXl1c2VyOm15cGFzcw=="
  * 
  */
-public class Base64EncodeFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -3753166255449207544L;
+public class Base64EncodeFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
         Constants.FUNCTION_BASE64_ENCODE);

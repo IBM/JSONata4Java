@@ -36,9 +36,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * Complies with javascript substr (and thus JSONata $substring). See
  * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substr
  */
-public class SubstringFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 9146823646321165364L;
+public class SubstringFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SUBSTRING);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SUBSTRING);

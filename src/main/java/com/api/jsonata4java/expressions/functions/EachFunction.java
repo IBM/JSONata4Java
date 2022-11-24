@@ -64,9 +64,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * [ "Street: Hursley Park", "City: Winchester", "Postcode: SO21 2JN" ]
  * 
  */
-public class EachFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -163606520924327240L;
+public class EachFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_EACH);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_EACH);
@@ -147,7 +145,7 @@ public class EachFunction extends FunctionBase implements Function {
                         }
                     }
                 } else {
-                    Function function = expressionVisitor.getJsonataFunction(varid.getText());
+                    FunctionBase function = expressionVisitor.getJsonataFunction(varid.getText());
                     if (function != null) {
                         for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
                             String key = it.next();

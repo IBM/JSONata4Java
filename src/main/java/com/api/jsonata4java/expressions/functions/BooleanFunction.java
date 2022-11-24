@@ -48,9 +48,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  * supported) false
  * 
  */
-public class BooleanFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 5232965758998683140L;
+public class BooleanFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_BOOLEAN);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_BOOLEAN);

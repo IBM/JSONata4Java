@@ -52,9 +52,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $trim(" Hello \n World ")=="Hello World"
  *
  */
-public class TrimFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -311691648827361039L;
+public class TrimFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_TRIM);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_TRIM);

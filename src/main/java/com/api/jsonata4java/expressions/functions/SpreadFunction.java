@@ -48,9 +48,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * key/value pair in every object in the supplied array.
  * 
  */
-public class SpreadFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 8312756943927678959L;
+public class SpreadFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SPREAD);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SPREAD);

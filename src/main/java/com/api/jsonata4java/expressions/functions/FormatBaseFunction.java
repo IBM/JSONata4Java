@@ -44,9 +44,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $formatBase(100, 2)==“1100100” $formatBase(2555, 16)=="9fb"
  * 
  */
-public class FormatBaseFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 822669293636254300L;
+public class FormatBaseFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_FORMAT_BASE);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,

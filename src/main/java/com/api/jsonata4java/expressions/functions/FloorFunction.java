@@ -47,9 +47,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $floor(5)==5 $floor(5.3)==5 $floor(5.8)==5 $floor(-5.3)==-6
  * 
  */
-public class FloorFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 6322299733236324819L;
+public class FloorFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_FLOOR);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FLOOR);

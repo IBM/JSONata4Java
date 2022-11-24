@@ -51,9 +51,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $substringAfter("Hello World", " ")=="World"
  * 
  */
-public class SubstringAfterFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 2374800721189099530L;
+public class SubstringAfterFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT,
         Constants.FUNCTION_SUBSTRING_AFTER);
@@ -100,7 +98,7 @@ public class SubstringAfterFunction extends FunctionBase implements Function {
                         if (declFct != null) {
                             argString = new TextNode("");
                         } else {
-                            Function fct = expressionVisitor.getJsonataFunction(varName);
+                            FunctionBase fct = expressionVisitor.getJsonataFunction(varName);
                             if (fct != null) {
                                 argString = new TextNode("");
                             } else {

@@ -34,7 +34,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
-import com.api.jsonata4java.expressions.functions.Function;
 import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Array_constructorContext;
@@ -747,7 +746,7 @@ public class FunctionUtils implements Serializable {
      *                    by the function when invoked
      * @return the result of calling the function with the updated context
      */
-    public static JsonNode processVariablesCallFunction(ExpressionsVisitor exprVisitor, Function function,
+    public static JsonNode processVariablesCallFunction(ExpressionsVisitor exprVisitor, FunctionBase function,
         TerminalNode varid, Function_callContext ctx, JsonNode... elements) {
         ExprListContext elc = new ExprListContext(ctx.getParent(), ctx.invokingState);
         ExprValuesContext evc = new ExprValuesContext(ctx.getParent(), ctx.invokingState);
@@ -845,7 +844,7 @@ public class FunctionUtils implements Serializable {
      *                    by the function when invoked
      * @return the result of calling the function with the updated context
      */
-    public static JsonNode processFctCallVariables(ExpressionsVisitor exprVisitor, Function function, TerminalNode varid,
+    public static JsonNode processFctCallVariables(ExpressionsVisitor exprVisitor, FunctionBase function, TerminalNode varid,
         Function_callContext ctx, JsonNode value, String key, ObjectNode object) {
         ExprListContext elc = new ExprListContext(ctx.getParent(), ctx.invokingState);
         ExprValuesContext evc = new ExprValuesContext(ctx.getParent(), ctx.invokingState);
@@ -943,7 +942,7 @@ public class FunctionUtils implements Serializable {
      *                  this contains a hyphen, then it can use the context
      * @return true if the context variable should be used as the first parameter
      */
-    public static boolean useContextVariable(Function fct, Function_callContext ctx, String signature) {
+    public static boolean useContextVariable(FunctionBase fct, Function_callContext ctx, String signature) {
         if (ctx == null) { // || ctx.getParent() == null) {
             return false;
         }

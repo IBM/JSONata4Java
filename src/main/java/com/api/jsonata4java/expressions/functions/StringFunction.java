@@ -54,9 +54,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $string(5)=="5" [1..5].$string()==["1", "2", "3", "4", "5"]
  * $string([1..5])=="[1,2,3,4,5]"
  */
-public class StringFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -7591450668292230141L;
+public class StringFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_STRING);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_STRING);
@@ -98,7 +96,7 @@ public class StringFunction extends FunctionBase implements Function {
                         if (declFct != null) {
                             arg = new TextNode("");
                         } else {
-                            Function fct = expressionVisitor.getJsonataFunction(varName);
+                            FunctionBase fct = expressionVisitor.getJsonataFunction(varName);
                             if (fct != null) {
                                 arg = new TextNode("");
                             } else {

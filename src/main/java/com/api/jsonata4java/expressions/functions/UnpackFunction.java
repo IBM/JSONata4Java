@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
 @SuppressWarnings("unused")
-public class UnpackFunction extends FunctionBase implements Function {
+public class UnpackFunction extends FunctionBase {
 
     private static final long serialVersionUID = 1415132777843221239L;
 

@@ -71,9 +71,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * "Item 3 of 4: freddy@my-social.com", "Item 4 of 4:
  * frederic.smith@very-serious.com" ]
  */
-public class MapFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -3360326497787380873L;
+public class MapFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MAP);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MAP);
@@ -178,7 +176,7 @@ public class MapFunction extends FunctionBase implements Function {
                         resultArray.add(fct.invoke(expressionVisitor, evc));
                     }
                 } else {
-                    Function function = expressionVisitor.getJsonataFunction(varid.getText());
+                    FunctionBase function = expressionVisitor.getJsonataFunction(varid.getText());
                     if (function != null) {
                         int optionalArgs = FunctionUtils.getOptionalArgCount(function.getSignature());
                         int maxArgs = function.getMaxArgs() - optionalArgs;

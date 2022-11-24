@@ -51,9 +51,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * key/value pair in every object in the supplied array.
  * 
  */
-public class SiftFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -163175188711375834L;
+public class SiftFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SIFT);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SIFT);
@@ -135,7 +133,7 @@ public class SiftFunction extends FunctionBase implements Function {
                         }
                     }
                 } else {
-                    Function function = expressionVisitor.getJsonataFunction(varid.getText());
+                    FunctionBase function = expressionVisitor.getJsonataFunction(varid.getText());
                     if (function != null) {
                         for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
                             String key = it.next();

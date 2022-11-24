@@ -61,9 +61,7 @@ import com.fasterxml.jackson.databind.node.POJONode;
  * "[{"match":"John","index":0,"groups":["John"]},{"match":"John","index":15,"groups":["John"]}]
  * 
  */
-public class MatchFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 1917070534153592299L;
+public class MatchFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MATCH);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MATCH);
@@ -174,7 +172,7 @@ public class MatchFunction extends FunctionBase implements Function {
                     String fctName = fctCallCtx.VAR_ID().getText();
                     DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(fctName);
                     if (declFct == null) {
-                        Function function = expressionVisitor.getJsonataFunction(fctName);
+                        FunctionBase function = expressionVisitor.getJsonataFunction(fctName);
                         if (function != null) {
                             result = (SelectorArrayNode) function.invoke(expressionVisitor, fctCallCtx);
                         } else {

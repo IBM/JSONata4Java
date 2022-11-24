@@ -48,9 +48,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $ceil(5)==5 $ceil(5.3)==6 $ceil(5.8)==6 $ceil(-5.3)==-5
  * 
  */
-public class CeilFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -8131750091535002723L;
+public class CeilFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_CEIL);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_CEIL);

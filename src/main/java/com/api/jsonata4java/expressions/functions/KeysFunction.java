@@ -47,9 +47,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * $keys({"a":1,"b":2})==["a", "b"]
  * 
  */
-public class KeysFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -6908272736871289545L;
+public class KeysFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_KEYS);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_KEYS);

@@ -139,7 +139,7 @@ public class DeclaredFunction implements Serializable {
             // assume this is a variable pointing to a function
             DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(fctName);
             if (declFct == null) {
-                Function function = expressionVisitor.getJsonataFunction(fctName);
+                FunctionBase function = expressionVisitor.getJsonataFunction(fctName);
                 if (function == null) {
                     function = Constants.FUNCTIONS.get(fctName);
                 }

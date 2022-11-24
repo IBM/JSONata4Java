@@ -50,9 +50,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $power(2, 8)==8 $power(2, 0.5)==1.414213562373 $power(2, -2)==0.25
  * 
  */
-public class PowerFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -2132805330360026544L;
+public class PowerFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_POWER);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_POWER);

@@ -24,13 +24,13 @@ package com.api.jsonata4java;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
-import com.api.jsonata4java.expressions.functions.Function;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprListContext;
 import com.fasterxml.jackson.databind.JsonNode;

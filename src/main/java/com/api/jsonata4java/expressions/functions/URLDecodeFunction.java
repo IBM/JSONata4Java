@@ -47,9 +47,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $length("Hello World")==11
  *
  */
-public class URLDecodeFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 5640755636698159607L;
+public class URLDecodeFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_URL_DECODE);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_URL_DECODE);

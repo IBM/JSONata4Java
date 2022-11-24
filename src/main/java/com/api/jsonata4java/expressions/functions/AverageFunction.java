@@ -38,9 +38,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
 /**
  * Always returns as a DoubleNode (regardless of input)
  */
-public class AverageFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -7174236646821690495L;
+public class AverageFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_AVERAGE);
     public static final String ERR_ARG_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,

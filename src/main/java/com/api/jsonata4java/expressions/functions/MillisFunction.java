@@ -44,9 +44,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $millis()==1502700297574
  *
  */
-public class MillisFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 8331126644236032696L;
+public class MillisFunction extends FunctionBase {
 
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MILLIS);
 

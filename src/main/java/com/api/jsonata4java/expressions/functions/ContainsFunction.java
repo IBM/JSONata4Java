@@ -57,9 +57,7 @@ import com.fasterxml.jackson.databind.node.POJONode;
  * 1234" }
  * 
  */
-public class ContainsFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -5078993065631549515L;
+public class ContainsFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_CONTAINS);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_CONTAINS);

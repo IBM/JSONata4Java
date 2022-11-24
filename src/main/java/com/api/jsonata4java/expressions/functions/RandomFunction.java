@@ -43,9 +43,7 @@ import com.fasterxml.jackson.databind.node.DoubleNode;
  * 0.6558078550072
  *
  */
-public class RandomFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 8928040211817757808L;
+public class RandomFunction extends FunctionBase {
 
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_RANDOM);
 

@@ -50,9 +50,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $abs(5)==5 $abs(-5)==5
  * 
  */
-public class AbsFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -7061181042065058523L;
+public class AbsFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_ABS);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_ABS);

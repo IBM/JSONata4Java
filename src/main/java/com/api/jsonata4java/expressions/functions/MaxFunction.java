@@ -44,9 +44,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  * $max([5,1,3,7,4])==7
  * 
  */
-public class MaxFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -3758102612931930899L;
+public class MaxFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_MAX);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_MAX);

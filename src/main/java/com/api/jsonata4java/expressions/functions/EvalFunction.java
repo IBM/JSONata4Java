@@ -42,9 +42,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  $eval("[1,2,3]") 			= [1, 2, 3]
  $eval('[1,$string(2),3]') 	= [1,"2",3]
  */
-public class EvalFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -7591450668292230141L;
+public class EvalFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_STRING);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_STRING);

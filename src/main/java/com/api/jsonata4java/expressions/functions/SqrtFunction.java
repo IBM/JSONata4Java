@@ -49,9 +49,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $sqrt(4)==2 $sqrt(2)==1.414213562373
  * 
  */
-public class SqrtFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -6310204343833186502L;
+public class SqrtFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SQRT);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SQRT);

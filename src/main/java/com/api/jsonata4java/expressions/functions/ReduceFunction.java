@@ -65,9 +65,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * initial value in the aggregation (fold) process. If not supplied, the initial
  * value is the first value in the array parameter.
  */
-public class ReduceFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = 1273058819633221543L;
+public class ReduceFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_REDUCE);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_REDUCE);
@@ -147,7 +145,7 @@ public class ReduceFunction extends FunctionBase implements Function {
                         prevResult = fct.invoke(expressionVisitor, evc);
                     }
                 } else {
-                    Function function = expressionVisitor.getJsonataFunction(varid.getText());
+                    FunctionBase function = expressionVisitor.getJsonataFunction(varid.getText());
                     if (function != null) {
                         for (int i = startIndex; i < mapArray.size(); i++) {
                             Function_callContext callCtx = new Function_callContext(ctx);

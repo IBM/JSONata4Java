@@ -35,9 +35,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-public class SortFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -2957077099198389545L;
+public class SortFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SORT);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SORT);
@@ -47,52 +45,34 @@ public class SortFunction extends FunctionBase implements Function {
         Constants.FUNCTION_SORT);
 
     public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-        ArrayNode result = JsonNodeFactory.instance.arrayNode();
-        // Retrieve the number of arguments
-        JsonNode arg = JsonNodeFactory.instance.nullNode();
-        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-        int argCount = getArgumentCount(ctx);
-        if (useContext) {
-            arg = FunctionUtils.getContextVariable(expressionVisitor);
-            if (arg != null && arg.isNull() == false) {
-                argCount++;
-            } else {
-                useContext = false;
-            }
-        }
+        ArrayNode result = null;
+        final CtxEvalResult ctxEvalResult = evalContext(expressionVisitor, ctx);
+        final JsonNode arg = ctxEvalResult.arg;
+        final int argCount = ctxEvalResult.argumentCount;
+        final boolean useContext = ctxEvalResult.useContext;
 
-        // Make sure that we have the right number of arguments
-        if (argCount == 1) {
-            if (!useContext) {
-                // use the default comparator
-                arg = expressionVisitor.visit(ctx.exprValues().exprList().expr(0));
-            }
-            // if arg is an array, return its length. Any other type of input
-            // returns 1.
+        if (argCount == 0 && arg == null) {
+            // signal no match (result = null)
+        } else if (argCount == 1) {
             if (arg == null || arg.isNull()) {
                 if (useContext) {
                     throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-                } else {
-                    return null;
                 }
+                // else signal no match (result = null)
             } else if (arg.isArray()) {
-                ArrayNode array = (ArrayNode) arg;
-                for (int i = 0; i < array.size(); i++) {
-                    result.add(array.get(i));
+                result = JsonNodeFactory.instance.arrayNode();
+                final ArrayNode array = (ArrayNode) arg;
+                for (final JsonNode node : array) {
+                    result.add(node);
                 }
                 msort(result, null, expressionVisitor, ctx);
             } else {
-                // allow to work with any input
+                result = JsonNodeFactory.instance.arrayNode();
                 result.add(arg);
-                return result;
             }
         } else if (argCount == 2) {
             // use the defined function comparator
             DeclaredFunction fct = null;
-            if (!useContext) {
-                // use the default comparator
-                arg = expressionVisitor.visit(ctx.exprValues().exprList().expr(0));
-            }
             // if arg is an array, return its length. Any other type of input
             // returns 1.
             if (arg == null) {
@@ -129,14 +109,15 @@ public class SortFunction extends FunctionBase implements Function {
             // returns 1.
             if (arg.isArray()) {
                 ArrayNode array = (ArrayNode) arg;
+                result = JsonNodeFactory.instance.arrayNode();
                 for (int i = 0; i < array.size(); i++) {
                     result.add(array.get(i));
                 }
                 msort(result, fct, expressionVisitor, ctx);
             } else {
+                result = JsonNodeFactory.instance.arrayNode();
                 result.add(arg);
             }
-
         } else {
             throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
         }
@@ -156,8 +137,8 @@ public class SortFunction extends FunctionBase implements Function {
 
     @Override
     public String getSignature() {
-        // accepts an array, an optional function, returns an array
-        return "<af?:a>";
+        // accepts anything and an optional function, returns an array
+        return "<xf?:a>";
     }
 
     void msort(ArrayNode array, DeclaredFunction fct, ExpressionsVisitor exprVisitor, Function_callContext ctx) {

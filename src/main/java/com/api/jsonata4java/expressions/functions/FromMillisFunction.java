@@ -45,9 +45,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $fromMillis(1510067557121)=="2017-11-07T15:12:37.121Z"
  * 
  */
-public class FromMillisFunction extends FunctionBase implements Function {
-
-    private static final long serialVersionUID = -8678149963930460618L;
+public class FromMillisFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_FROM_MILLIS);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE,
