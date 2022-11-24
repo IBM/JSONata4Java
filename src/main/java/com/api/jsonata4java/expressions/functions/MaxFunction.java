@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  * $max([5,1,3,7,4])==7
  * 
  */
-public class MaxFunction extends FunctionBase implements Function {
+public class MaxFunction extends FunctionBase {
 
     private static final long serialVersionUID = -3758102612931930899L;
 

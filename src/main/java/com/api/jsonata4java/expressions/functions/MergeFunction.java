@@ -46,7 +46,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * $merge([{"a":1},{"b":2}])=={"a":1, "b":2}
  * 
  */
-public class MergeFunction extends FunctionBase implements Function {
+public class MergeFunction extends FunctionBase {
 
     private static final long serialVersionUID = -99966498930256770L;
 

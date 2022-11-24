@@ -46,7 +46,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $now()=="2017-05-15T15:12:59.152Z"
  *
  */
-public class NowFunction extends FunctionBase implements Function {
+public class NowFunction extends FunctionBase {
 
     private static final long serialVersionUID = 5607559377364554518L;
 

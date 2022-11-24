@@ -47,7 +47,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * $keys({"a":1,"b":2})==["a", "b"]
  * 
  */
-public class KeysFunction extends FunctionBase implements Function {
+public class KeysFunction extends FunctionBase {
 
     private static final long serialVersionUID = -6908272736871289545L;
 

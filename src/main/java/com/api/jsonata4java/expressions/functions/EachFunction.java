@@ -64,7 +64,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * [ "Street: Hursley Park", "City: Winchester", "Postcode: SO21 2JN" ]
  * 
  */
-public class EachFunction extends FunctionBase implements Function {
+public class EachFunction extends FunctionBase {
 
     private static final long serialVersionUID = -163606520924327240L;
 

@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-public class ReverseFunction extends FunctionBase implements Function {
+public class ReverseFunction extends FunctionBase {
 
     private static final long serialVersionUID = 30158285512902502L;
 

@@ -43,7 +43,7 @@ import com.fasterxml.jackson.databind.node.DoubleNode;
  * 0.6558078550072
  *
  */
-public class RandomFunction extends FunctionBase implements Function {
+public class RandomFunction extends FunctionBase {
 
     private static final long serialVersionUID = 8928040211817757808L;
 

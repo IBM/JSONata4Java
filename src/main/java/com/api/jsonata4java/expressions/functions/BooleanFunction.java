@@ -48,7 +48,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  * supported) false
  * 
  */
-public class BooleanFunction extends FunctionBase implements Function {
+public class BooleanFunction extends FunctionBase {
 
     private static final long serialVersionUID = 5232965758998683140L;
 

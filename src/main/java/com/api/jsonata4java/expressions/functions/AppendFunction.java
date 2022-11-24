@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-public class AppendFunction extends FunctionBase implements Function {
+public class AppendFunction extends FunctionBase {
 
     private static final long serialVersionUID = -1826593618672666459L;
 

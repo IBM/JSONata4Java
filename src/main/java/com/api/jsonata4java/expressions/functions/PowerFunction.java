@@ -50,7 +50,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $power(2, 8)==8 $power(2, 0.5)==1.414213562373 $power(2, -2)==0.25
  * 
  */
-public class PowerFunction extends FunctionBase implements Function {
+public class PowerFunction extends FunctionBase {
 
     private static final long serialVersionUID = -2132805330360026544L;
 

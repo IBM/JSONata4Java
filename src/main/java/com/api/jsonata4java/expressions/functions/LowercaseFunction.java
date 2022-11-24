@@ -47,7 +47,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $lowercase("Hello World")=="hello world"
  * 
  */
-public class LowercaseFunction extends FunctionBase implements Function {
+public class LowercaseFunction extends FunctionBase {
 
     private static final long serialVersionUID = 7939773729531364779L;
 

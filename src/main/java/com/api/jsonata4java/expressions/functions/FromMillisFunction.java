@@ -45,7 +45,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $fromMillis(1510067557121)=="2017-11-07T15:12:37.121Z"
  * 
  */
-public class FromMillisFunction extends FunctionBase implements Function {
+public class FromMillisFunction extends FunctionBase {
 
     private static final long serialVersionUID = -8678149963930460618L;
 

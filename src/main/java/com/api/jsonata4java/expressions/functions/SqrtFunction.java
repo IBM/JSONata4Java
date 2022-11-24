@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $sqrt(4)==2 $sqrt(2)==1.414213562373
  * 
  */
-public class SqrtFunction extends FunctionBase implements Function {
+public class SqrtFunction extends FunctionBase {
 
     private static final long serialVersionUID = -6310204343833186502L;
 

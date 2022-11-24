@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-public class ShuffleFunction extends FunctionBase implements Function {
+public class ShuffleFunction extends FunctionBase {
 
     private static final long serialVersionUID = -4503748310748165024L;
 

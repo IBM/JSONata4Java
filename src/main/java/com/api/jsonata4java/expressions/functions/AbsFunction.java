@@ -50,7 +50,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $abs(5)==5 $abs(-5)==5
  * 
  */
-public class AbsFunction extends FunctionBase implements Function {
+public class AbsFunction extends FunctionBase {
 
     private static final long serialVersionUID = -7061181042065058523L;
 

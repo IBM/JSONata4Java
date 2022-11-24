@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $formatBase(100, 2)==“1100100” $formatBase(2555, 16)=="9fb"
  * 
  */
-public class FormatBaseFunction extends FunctionBase implements Function {
+public class FormatBaseFunction extends FunctionBase {
 
     private static final long serialVersionUID = 822669293636254300L;
 

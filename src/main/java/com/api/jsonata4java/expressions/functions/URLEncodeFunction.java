@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $length("Hello World")==11
  *
  */
-public class URLEncodeFunction extends FunctionBase implements Function {
+public class URLEncodeFunction extends FunctionBase {
 
     private static final long serialVersionUID = 8101645276807747807L;
 

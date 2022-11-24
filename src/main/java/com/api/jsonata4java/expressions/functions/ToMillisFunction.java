@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * 
  * $toMillis("2017-11-07T15:07:54.972Z")==1510067274972
  */
-public class ToMillisFunction extends FunctionBase implements Function {
+public class ToMillisFunction extends FunctionBase {
 
     private static final long serialVersionUID = 4484749083861634204L;
 

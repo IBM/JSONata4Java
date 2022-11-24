@@ -65,7 +65,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * initial value in the aggregation (fold) process. If not supplied, the initial
  * value is the first value in the array parameter.
  */
-public class ReduceFunction extends FunctionBase implements Function {
+public class ReduceFunction extends FunctionBase {
 
     private static final long serialVersionUID = 1273058819633221543L;
 

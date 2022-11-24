@@ -46,7 +46,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $length("Hello World")==11
  *
  */
-public class LengthFunction extends FunctionBase implements Function {
+public class LengthFunction extends FunctionBase {
 
     private static final long serialVersionUID = 7026173131929954208L;
 

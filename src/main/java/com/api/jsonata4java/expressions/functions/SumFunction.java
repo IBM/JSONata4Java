@@ -33,7 +33,7 @@ import com.fasterxml.jackson.databind.node.DoubleNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.LongNode;
 
-public class SumFunction extends FunctionBase implements Function {
+public class SumFunction extends FunctionBase {
 
     private static final long serialVersionUID = -4281182554968881670L;
 

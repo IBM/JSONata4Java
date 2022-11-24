@@ -50,7 +50,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $number("5")==5 ["1", "2", "3", "4", "5"].$number()==[1, 2, 3, 4, 5]
  * 
  */
-public class NumberFunction extends FunctionBase implements Function {
+public class NumberFunction extends FunctionBase {
 
     private static final long serialVersionUID = 5495142821729936220L;
 

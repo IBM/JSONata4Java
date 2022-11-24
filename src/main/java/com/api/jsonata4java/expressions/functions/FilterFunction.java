@@ -66,7 +66,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * $filter(Account.Order.Product, function($v, $i, $a) { $v.Price &gt;
  * $average($a.Price) })
  */
-public class FilterFunction extends FunctionBase implements Function {
+public class FilterFunction extends FunctionBase {
 
     private static final long serialVersionUID = -3747166094735842514L;
 
@@ -79,36 +79,22 @@ public class FilterFunction extends FunctionBase implements Function {
 
     public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
         SelectorArrayNode resultArray = new SelectorArrayNode(JsonNodeFactory.instance);
-        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-        //      		((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
-        //           ); // || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
-        JsonNode arrNode = null;
-        ExprValuesContext valuesCtx = ctx.exprValues();
-        ExprListContext exprList = valuesCtx.exprList();
-        int argCount = getArgumentCount(ctx);
-        if (useContext) {
-            // pop context var from stack
-            arrNode = FunctionUtils.getContextVariable(expressionVisitor);
-            if (arrNode != null && arrNode.isNull() == false) {
-                argCount++;
-            } else {
-                useContext = false;
-            }
-        }
+        final CtxEvalResult ctxEvalResult = evalContext(expressionVisitor, ctx);
+        final JsonNode arg = ctxEvalResult.arg;
+        final int argCount = ctxEvalResult.argumentCount;
+        final boolean useContext = ctxEvalResult.useContext;
 
         if (argCount == 2) {
-            if (!useContext) {
-                arrNode = expressionVisitor.visit(exprList.expr(0));
-            }
             // expect something that evaluates to an object and either a variable
             // pointing to a function, or a function declaration
-
-            if (arrNode == null) {
+            if (arg == null) {
                 throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_FILTER));
             }
 
-            ArrayNode mapArray = (ArrayNode) ExpressionsVisitor.ensureArray(arrNode);
+            ArrayNode mapArray = (ArrayNode) ExpressionsVisitor.ensureArray(arg);
 
+            ExprValuesContext valuesCtx = ctx.exprValues();
+            ExprListContext exprList = valuesCtx.exprList();
             ExprContext varid = exprList.expr((useContext ? 0 : 1));
             if (varid instanceof Var_recallContext) {
                 TerminalNode VAR_ID = ((Var_recallContext) varid).VAR_ID();
@@ -244,7 +230,7 @@ public class FilterFunction extends FunctionBase implements Function {
     @Override
     public String getSignature() {
         // accepts anything, returns an array of objects
-        return "<af>";
+        return "<af:a>";
     }
 
     public void addObject(SelectorArrayNode result, ObjectNode obj) {

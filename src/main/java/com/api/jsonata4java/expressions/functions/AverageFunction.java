@@ -38,7 +38,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
 /**
  * Always returns as a DoubleNode (regardless of input)
  */
-public class AverageFunction extends FunctionBase implements Function {
+public class AverageFunction extends FunctionBase {
 
     private static final long serialVersionUID = -7174236646821690495L;
 

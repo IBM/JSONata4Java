@@ -61,7 +61,7 @@ import com.fasterxml.jackson.databind.node.POJONode;
  * "[{"match":"John","index":0,"groups":["John"]},{"match":"John","index":15,"groups":["John"]}]
  * 
  */
-public class MatchFunction extends FunctionBase implements Function {
+public class MatchFunction extends FunctionBase {
 
     private static final long serialVersionUID = 1917070534153592299L;
 

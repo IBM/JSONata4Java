@@ -51,7 +51,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * key/value pair in every object in the supplied array.
  * 
  */
-public class SiftFunction extends FunctionBase implements Function {
+public class SiftFunction extends FunctionBase {
 
     private static final long serialVersionUID = -163175188711375834L;
 

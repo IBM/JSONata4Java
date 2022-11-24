@@ -46,7 +46,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * $lookup({"a":1,"b":2},"b")==2
  * 
  */
-public class LookupFunction extends FunctionBase implements Function {
+public class LookupFunction extends FunctionBase {
 
     private static final long serialVersionUID = -8369209972416470426L;
 

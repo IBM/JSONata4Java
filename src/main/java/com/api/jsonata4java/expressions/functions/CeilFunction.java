@@ -48,7 +48,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $ceil(5)==5 $ceil(5.3)==6 $ceil(5.8)==6 $ceil(-5.3)==-5
  * 
  */
-public class CeilFunction extends FunctionBase implements Function {
+public class CeilFunction extends FunctionBase {
 
     private static final long serialVersionUID = -8131750091535002723L;
 

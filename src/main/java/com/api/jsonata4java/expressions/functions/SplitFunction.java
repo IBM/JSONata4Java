@@ -62,7 +62,7 @@ import com.fasterxml.jackson.databind.node.POJONode;
  * read", "[ ,.;]+")==["too", "much", "punctuation", "hard", "to", "read"]
  * 
  */
-public class SplitFunction extends FunctionBase implements Function {
+public class SplitFunction extends FunctionBase {
 
     private static final long serialVersionUID = -2639420142650255487L;
 

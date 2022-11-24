@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-public class ZipFunction extends FunctionBase implements Function {
+public class ZipFunction extends FunctionBase {
 
     private static final long serialVersionUID = -7312331981757002031L;
 

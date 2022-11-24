@@ -46,7 +46,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  * $error("Hello World") throws an exception "Hello World"
  * 
  */
-public class ErrorFunction extends FunctionBase implements Function {
+public class ErrorFunction extends FunctionBase {
 
     private static final long serialVersionUID = -9207780239312306404L;
 

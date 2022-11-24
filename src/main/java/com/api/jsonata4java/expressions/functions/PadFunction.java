@@ -51,7 +51,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * "##foo" $formatBase(35, 2) ~&GT; $pad(-8, '0')=="00100011"
  *
  */
-public class PadFunction extends FunctionBase implements Function {
+public class PadFunction extends FunctionBase {
 
     private static final long serialVersionUID = 5849324073360601941L;
 

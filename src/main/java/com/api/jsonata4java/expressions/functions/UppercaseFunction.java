@@ -47,7 +47,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $uppercase("Hello World")=="HELLO WORLD"
  *
  */
-public class UppercaseFunction extends FunctionBase implements Function {
+public class UppercaseFunction extends FunctionBase {
 
     private static final long serialVersionUID = 409516922389239227L;
 

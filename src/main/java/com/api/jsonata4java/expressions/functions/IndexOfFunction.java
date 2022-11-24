@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.LongNode;
 
-public class IndexOfFunction extends FunctionBase implements Function {
+public class IndexOfFunction extends FunctionBase {
 
     private static final long serialVersionUID = 1821794638528005180L;
 

@@ -54,7 +54,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * /[ ,.;]+/, 3) ~&GT; $join(', ')=="too, much, punctuation"
  * 
  */
-public class JoinFunction extends FunctionBase implements Function {
+public class JoinFunction extends FunctionBase {
 
     private static final long serialVersionUID = 2812768105036850665L;
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_JOIN);

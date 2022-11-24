@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $millis()==1502700297574
  *
  */
-public class MillisFunction extends FunctionBase implements Function {
+public class MillisFunction extends FunctionBase {
 
     private static final long serialVersionUID = 8331126644236032696L;
 

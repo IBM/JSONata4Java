@@ -78,7 +78,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * "$$$1")=="$265"
  * 
  */
-public class ReplaceFunction extends FunctionBase implements Function {
+public class ReplaceFunction extends FunctionBase {
 
     private static final long serialVersionUID = -647444066483284969L;
 

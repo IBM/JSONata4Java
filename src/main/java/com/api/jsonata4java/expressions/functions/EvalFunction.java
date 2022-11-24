@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.JsonNode;
  $eval("[1,2,3]") 			= [1, 2, 3]
  $eval('[1,$string(2),3]') 	= [1,"2",3]
  */
-public class EvalFunction extends FunctionBase implements Function {
+public class EvalFunction extends FunctionBase {
 
     private static final long serialVersionUID = -7591450668292230141L;
 

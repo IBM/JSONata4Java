@@ -71,7 +71,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * "Item 3 of 4: freddy@my-social.com", "Item 4 of 4:
  * frederic.smith@very-serious.com" ]
  */
-public class MapFunction extends FunctionBase implements Function {
+public class MapFunction extends FunctionBase {
 
     private static final long serialVersionUID = -3360326497787380873L;
 

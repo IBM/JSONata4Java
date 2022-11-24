@@ -47,7 +47,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * $floor(5)==5 $floor(5.3)==5 $floor(5.8)==5 $floor(-5.3)==-6
  * 
  */
-public class FloorFunction extends FunctionBase implements Function {
+public class FloorFunction extends FunctionBase {
 
     private static final long serialVersionUID = 6322299733236324819L;
 

@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $base64encode("myuser:mypass")=="bXl1c2VyOm15cGFzcw=="
  * 
  */
-public class Base64EncodeFunction extends FunctionBase implements Function {
+public class Base64EncodeFunction extends FunctionBase {
 
     private static final long serialVersionUID = -3753166255449207544L;
 

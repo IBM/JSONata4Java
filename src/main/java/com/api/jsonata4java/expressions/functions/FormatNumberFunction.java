@@ -61,7 +61,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $formatNumber(1234.5678, "①①.①①①e①", {"zero-digit": "\u245f"})=="①②.③④⑥e②"
  * 
  */
-public class FormatNumberFunction extends FunctionBase implements Function {
+public class FormatNumberFunction extends FunctionBase {
 
     private static final long serialVersionUID = 6183052815295323040L;
 

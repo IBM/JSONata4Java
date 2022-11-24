@@ -48,7 +48,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * key/value pair in every object in the supplied array.
  * 
  */
-public class SpreadFunction extends FunctionBase implements Function {
+public class SpreadFunction extends FunctionBase {
 
     private static final long serialVersionUID = 8312756943927678959L;
 

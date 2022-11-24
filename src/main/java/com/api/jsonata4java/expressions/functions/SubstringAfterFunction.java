@@ -51,7 +51,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $substringAfter("Hello World", " ")=="World"
  * 
  */
-public class SubstringAfterFunction extends FunctionBase implements Function {
+public class SubstringAfterFunction extends FunctionBase {
 
     private static final long serialVersionUID = 2374800721189099530L;
 

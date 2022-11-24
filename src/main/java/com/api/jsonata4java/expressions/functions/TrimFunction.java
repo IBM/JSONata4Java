@@ -52,7 +52,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * $trim(" Hello \n World ")=="Hello World"
  *
  */
-public class TrimFunction extends FunctionBase implements Function {
+public class TrimFunction extends FunctionBase {
 
     private static final long serialVersionUID = -311691648827361039L;
 

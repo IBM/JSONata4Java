@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
  * $min([5,1,3,7,4])==1
  * 
  */
-public class MinFunction extends FunctionBase implements Function {
+public class MinFunction extends FunctionBase {
 
     private static final long serialVersionUID = -4819242316491072139L;
 

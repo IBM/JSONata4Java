@@ -46,7 +46,6 @@ import com.api.jsonata4java.expressions.functions.ExistsFunction;
 import com.api.jsonata4java.expressions.functions.LookupFunction;
 import com.api.jsonata4java.expressions.functions.MergeFunction;
 import com.api.jsonata4java.expressions.functions.ShuffleFunction;
-import com.api.jsonata4java.expressions.functions.SortFunction;
 import com.api.jsonata4java.expressions.functions.SubstringFunction;
 import com.api.jsonata4java.expressions.functions.SumFunction;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -957,13 +956,7 @@ public class BasicExpressionsTests implements Serializable {
         simpleTest("$sort(\"a\")", "[\"a\"]");
         simpleTest("$sort([1,5,3,4,2])", "[1, 2, 3, 4, 5]");
         simpleTest("$sort([1,5,3,4,2],function($l,$r){$l>$r})", "[1, 2, 3, 4, 5]");
-
-        try {
-            Expressions.parse("$sort()").evaluate(null);
-            Assert.fail("Expected exception was not thrown");
-        } catch (EvaluateException ex) {
-            Assert.assertEquals(SortFunction.ERR_ARG1BADTYPE, ex.getMessage());
-        }
+        simpleTest("$sort()", null);
 
         simpleTest("($x:=function($l,$r){$l>$r};$sort([1,5,3,4,2],$x))", "[1, 2, 3, 4, 5]");
     }
