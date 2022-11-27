@@ -26,7 +26,6 @@ import java.io.Serializable;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
-import com.api.jsonata4java.test.expressions.AbsFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64DecodeFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64EncodeFunctionTests;
 import com.api.jsonata4java.test.expressions.BasicExpressionsTests;
@@ -78,7 +77,6 @@ import com.api.jsonata4java.text.expressions.utils.JsonMergeUtilsTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-    AbsFunctionTests.class, //
     Base64DecodeFunctionTests.class, //
     Base64EncodeFunctionTests.class, //
     BasicExpressionsTests.class, //

@@ -61,6 +61,8 @@
 		</developer>
 		<developer>
 			<name>Martin Blümel</name>
+			<email>martin.bluemel1@vodafone.com</email>
+			<organization>Vodafone Kabel Deutschland</organization>
 		</developer>
 	</developers>
 	<scm>
@@ -69,6 +71,8 @@
 		<url>https://github.com/IBM/JSONata4Java</url>
 	</scm>
 	<properties>
+        <junit.jupiter.version>5.9.1</junit.jupiter.version>
+        <junit.platform.version>1.9.1</junit.platform.version>
 		<test.unitTests>**/*Test.class</test.unitTests>
 		<test.agnostic>com/api/jsonata4java/test/expressions/agnostic/AgnosticTestSuite.class</test.agnostic>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -86,12 +90,36 @@
 		</repository>
 	</distributionManagement>
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>${junit.platform.version}</version>
+            <scope>test</scope>
+        </dependency>
 		<dependency>
 		    <groupId>org.springframework</groupId>
 		    <artifactId>spring-context</artifactId>

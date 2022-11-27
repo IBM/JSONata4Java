@@ -35,7 +35,6 @@ import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
 import com.api.jsonata4java.expressions.path.PathExpression;
 import com.api.jsonata4java.expressions.utils.JsonMergeUtils;
-import com.api.jsonata4java.test.expressions.AbsFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64DecodeFunctionTests;
 import com.api.jsonata4java.test.expressions.Base64EncodeFunctionTests;
 import com.api.jsonata4java.test.expressions.BasicExpressionsTests;
@@ -361,10 +360,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
         System.out.println("Read " + groupsRead + " groups from " + GROUPS_DIR);
         printFooter();
 
-        runComponentTest(AbsFunctionTests.data());
         runComponentTest(Base64DecodeFunctionTests.data());
         runComponentTest(Base64EncodeFunctionTests.data());
-        // runComponentTest(BasicExpressionsTest.data());
         runComponentTest(BooleanFunctionTests.data());
         runComponentTest(CeilFunctionTests.data());
         runComponentTest(ContainsFunctionTests.data());
@@ -558,9 +555,12 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> implements Serial
 
     protected void runComponentTest(Collection<Object[]> data) throws Exception {
         for (Object[] test : data) {
-            if (test.length > 0) {
+            if (test.length == 3) {
                 Utils.test(test[0] == null ? null : test[0].toString(), test[1] == null ? null : test[1].toString(),
                     test[2] == null ? null : test[2].toString(), null);
+            } else if (test.length == 4) {
+                Utils.test(test[0] == null ? null : test[0].toString(), test[1] == null ? null : test[1].toString(),
+                    test[2] == null ? null : test[2].toString(), test[3] == null ? null : test[3].toString());
             } else {
                 System.out.println("Received an empty test: " + test);
                 System.out.println("for data: " + data);
