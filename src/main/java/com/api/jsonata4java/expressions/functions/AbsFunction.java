@@ -40,8 +40,9 @@ import com.fasterxml.jackson.databind.node.LongNode;
  * If number is not specified (i.e. this function is invoked with no arguments),
  * then the context value is used as the value of number.<br>
  * <br>
- * Examples<br> 
- * $abs(5)==5 $abs(-5)==5<br>
+ * Examples:<br> 
+ * $abs(5)==5<br>
+ * $abs(-5)==5<br>
  * <p>
  * NOTE: FROM THE java.math::abs() FUNCTION JAVADOC:<br>
  * Note that if the argument is equal to the value of {@link Long#MIN_VALUE},

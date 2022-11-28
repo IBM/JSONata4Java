@@ -247,101 +247,22 @@ public class FunctionUtils implements Serializable {
                     break;
                 }
                 case STRING:
+                    token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.toString());
+                    TerminalNodeImpl tn1 = new TerminalNodeImpl(token);
+                    StringContext sc1 = new StringContext(ctx);
+                    sc1.addAnyChild(tn1);
+                    elc.addAnyChild(sc1);
+                    break;
                 default: {
                     token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.asText());
-                    TerminalNodeImpl tn = new TerminalNodeImpl(token);
-                    StringContext sc = new StringContext(ctx);
-                    sc.addAnyChild(tn);
-                    elc.addAnyChild(sc);
+                    TerminalNodeImpl tn2 = new TerminalNodeImpl(token);
+                    StringContext sc2 = new StringContext(ctx);
+                    sc2.addAnyChild(tn2);
+                    elc.addAnyChild(sc2);
                     break;
                 }
             }
         }
-        evc.addAnyChild(elc);
-        evc.addAnyChild(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__3, ")")));
-        return evc;
-    }
-
-    /**
-     * Sets up the {@link ExprValuesContext} variables for the function($v,$k)
-     * signature used in each call for pairs of values and keys
-     * 
-     * @param ctx
-     *              context to be used to create the new {@link ExprListContext} to
-     *              contain the key, value pair
-     * @param key
-     *              key used to relate the supplied value in the ExprValuesContext
-     * @param value
-     *              content to be added to the ExprValuesContext
-     * @return {@link ExprValuesContext} containing the key and value in its
-     *         parenthesized comma separated variable {@link ExprListContext}
-     */
-    public static ExprValuesContext fillExprVarContext(ExprContext ctx, String key, JsonNode value) {
-        ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-        ExprListContext elc = new ExprListContext(ctx.getParent(), ctx.invokingState);
-        evc.addAnyChild(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__1, "(")));
-        CommonToken token = null;
-        TerminalNode tn = null;
-
-        token = null;
-        switch (value.getNodeType()) {
-            case BINARY:
-            case POJO: {
-                break;
-            }
-            case BOOLEAN: {
-                token = (value.asBoolean() ? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, value.asText())
-                    : CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, value.asText()));
-                tn = new TerminalNodeImpl(token);
-                BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
-                bc.op = token;
-                bc.addAnyChild(tn);
-                elc.addAnyChild(bc);
-                break;
-            }
-            case MISSING:
-            case NULL: {
-                token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NULL, null);
-                tn = new TerminalNodeImpl(token);
-                NullContext nc = new NullContext(ctx);
-                nc.addAnyChild(tn);
-                elc.addAnyChild(nc);
-                break;
-            }
-            case NUMBER: {
-                token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER, value.asText());
-                tn = new TerminalNodeImpl(token);
-                NumberContext nc = new NumberContext(ctx);
-                nc.addAnyChild(tn);
-                elc.addAnyChild(nc);
-                break;
-            }
-            case OBJECT: {
-                // create an Object_constructorContext
-                elc.addAnyChild(getObjectConstructorContext(ctx, (ObjectNode) value));
-                break;
-            }
-            case ARRAY: {
-                elc.addAnyChild(getArrayConstructorContext(ctx, (ArrayNode) value));
-                break;
-            }
-            case STRING:
-            default: {
-                token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, value.asText());
-                tn = new TerminalNodeImpl(token);
-                StringContext sc = new StringContext(ctx);
-                sc.addAnyChild(tn);
-                elc.addAnyChild(sc);
-                break;
-            }
-        }
-
-        token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, key);
-        tn = new TerminalNodeImpl(token);
-        StringContext sc = new StringContext(ctx);
-        sc.addAnyChild(tn);
-        elc.addAnyChild(sc);
-
         evc.addAnyChild(elc);
         evc.addAnyChild(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__3, ")")));
         return evc;

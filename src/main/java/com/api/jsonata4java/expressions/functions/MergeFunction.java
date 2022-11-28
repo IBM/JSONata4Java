@@ -25,26 +25,23 @@ package com.api.jsonata4java.expressions.functions;
 import java.util.Iterator;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
-import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * From http://docs.jsonata.org/object-functions.html
- * 
- * $merge(array<object>)
- * 
  * Returns the merger of the objects in an array of objects. It is an error if
- * the input is not an array of objects.
- * 
- * Example
- * 
+ * the input is not an array of objects.<br>
+ * <br>
+ * From http://docs.jsonata.org/object-functions.html
+ *<br> 
+ * $merge(array<object>)<br> 
+ * Example:<br>
  * $merge([{"a":1},{"b":2}])=={"a":1, "b":2}
- * 
  */
 public class MergeFunction extends FunctionBase {
 
@@ -55,60 +52,56 @@ public class MergeFunction extends FunctionBase {
         Constants.FUNCTION_MERGE);
 
     public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-        // Create the variable to return
-        ObjectNode result = JsonNodeFactory.instance.objectNode();
+        JsonNode result = null;
+        final CtxEvalResult ctxEvalResult = evalContext(expressionVisitor, ctx);
+        final JsonNode arg = ctxEvalResult.arg;
+        final int argCount = ctxEvalResult.argumentCount;
 
-        // Retrieve the number of arguments
-        JsonNode argArray = JsonNodeFactory.instance.nullNode();
-        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
-        int argCount = getArgumentCount(ctx);
-        if (useContext) {
-            argArray = FunctionUtils.getContextVariable(expressionVisitor);
-            if (argArray != null && argArray.isNull() == false) {
-                argCount++;
-            } else {
-                useContext = false;
-            }
-        }
-
-        // Make sure that we have the right number of arguments
-        if (argCount == 1) {
-            if (!useContext) {
-                argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-            }
-            String key = null;
-            if (argArray == null) {
-                return null;
-            }
-            if (argArray.isArray()) {
-                ArrayNode array = (ArrayNode) argArray;
-                for (int i = 0; i < array.size(); i++) {
-                    JsonNode obj = array.get(i);
-                    if (obj.isObject()) {
-                        ObjectNode cell = (ObjectNode) obj;
-                        for (Iterator<String> it = cell.fieldNames(); it.hasNext();) {
-                            key = it.next();
-                            result.set(key, cell.get(key));
-                        }
-                    } else {
-                        throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_OBJECT_ARRAY);
-                    }
+        switch (argCount) {
+            case 0:
+                if (arg != null) {
+                    throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
                 }
-            } else {
-                if (argArray.isObject()) {
-                    result = (ObjectNode) argArray;
+                // else signal no match (result = null)
+                break;
+            case 1:
+                if (arg == null) {
+                    return null;
+                }
+                if (arg.isArray()) {
+                    result = mergeArray(arg);
+                } else if (arg.isObject()) {
+                    result = (ObjectNode) arg;
                 } else {
-                    /*
-                     * The input argument is not an array. Throw a suitable exception
-                     */
                     throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
                 }
-            }
-        } else {
-            throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG2BADTYPE);
+                break;
+            default:
+                if (ctx.getParent() instanceof Fct_chainContext) {
+                    throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                }
+                throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
         }
 
         return result;
+    }
+
+    private JsonNode mergeArray(final JsonNode arg) {
+        final ObjectNode arrayResult = JsonNodeFactory.instance.objectNode();
+        final ArrayNode array = (ArrayNode) arg;
+        for (int i = 0; i < array.size(); i++) {
+            final JsonNode obj = array.get(i);
+            if (obj.isObject()) {
+                ObjectNode cell = (ObjectNode) obj;
+                for (Iterator<String> it = cell.fieldNames(); it.hasNext();) {
+                    final String key = it.next();
+                    arrayResult.set(key, cell.get(key));
+                }
+            } else {
+                throw new EvaluateRuntimeException(ERR_ARG1_MUST_BE_OBJECT_ARRAY);
+            }
+        }
+        return arrayResult;
     }
 
     @Override

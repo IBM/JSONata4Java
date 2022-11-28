@@ -35,16 +35,11 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import com.api.jsonata4java.expressions.EvaluateException;
-import com.api.jsonata4java.expressions.Expressions;
-import com.api.jsonata4java.expressions.NonNumericArrayIndexException;
-import com.api.jsonata4java.expressions.ParseException;
 import com.api.jsonata4java.expressions.functions.AppendFunction;
 import com.api.jsonata4java.expressions.functions.AverageFunction;
 import com.api.jsonata4java.expressions.functions.CountFunction;
 import com.api.jsonata4java.expressions.functions.ExistsFunction;
 import com.api.jsonata4java.expressions.functions.LookupFunction;
-import com.api.jsonata4java.expressions.functions.MergeFunction;
 import com.api.jsonata4java.expressions.functions.ShuffleFunction;
 import com.api.jsonata4java.expressions.functions.SubstringFunction;
 import com.api.jsonata4java.expressions.functions.SumFunction;
@@ -1047,29 +1042,6 @@ public class BasicExpressionsTests implements Serializable {
         // ex.getMessage());
         // }
         // }
-
-        simpleTest("$merge([{\"a\":1,\"value\":2},{\"b\":{\"value\":{\"d\":5},\"c\":5}},{\"a\":2}])",
-            "{\"a\":2, \"value\":2, \"b\":{\"value\":{\"d\":5},\"c\":5}}");
-        simpleTest("$merge(a.b)", null);
-
-        {
-            Expressions expression = Expressions.parse("$merge()");
-            try {
-                expression.evaluate(null);
-                Assert.fail("Did not throw an expected exception");
-            } catch (EvaluateException ex) {
-                Assert.assertEquals(MergeFunction.ERR_ARG1BADTYPE, ex.getMessage());
-            }
-        }
-        {
-            Expressions expression = Expressions.parse("$merge({\"hello\":1},2)");
-            try {
-                expression.evaluate(null);
-                Assert.fail("Did not throw an expected exception");
-            } catch (EvaluateException ex) {
-                Assert.assertEquals(MergeFunction.ERR_ARG2BADTYPE, ex.getMessage());
-            }
-        }
     }
 
     @Test

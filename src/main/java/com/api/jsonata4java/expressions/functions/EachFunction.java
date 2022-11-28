@@ -41,28 +41,20 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
- * From https://docs.jsonata.org/object-functions#each
- * 
- * $each(object,function($value, $key)
- * 
  * Returns an array containing the values return by the function when applied to
- * each key/value pair in the object.
- *
- * The function parameter will get invoked with two arguments:
- *
- * function(value, name)
- *
+ * each key/value pair in the object.<br>
+ * The function parameter will get invoked with two arguments:<br>
+ * function(value, name)<br>
  * where the value parameter is the value of each name/value pair in the object
- * and name is its name. The name parameter is optional.
- *
- * Examples
- *
- * $each(Address, function($v, $k) {$k &amp; ": " &amp; $v})
- *
+ * and name is its name. The name parameter is optional.<br>
+ * <br>
+ * From https://docs.jsonata.org/object-functions#each<br>
+ * $each(object,function($value, $key)<br>
+ * <br>
+ * Examples<br>
+ * $each(Address, function($v, $k) {$k &amp; ": " &amp; $v})<br>
  * results in
- *
  * [ "Street: Hursley Park", "City: Winchester", "Postcode: SO21 2JN" ]
- * 
  */
 public class EachFunction extends FunctionBase {
 
@@ -74,18 +66,18 @@ public class EachFunction extends FunctionBase {
         .format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_OBJECTS, Constants.FUNCTION_EACH);
 
     public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
-        SelectorArrayNode resultArray = new SelectorArrayNode(JsonNodeFactory.instance);
+        SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
         boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
         //      		((ctx.getParent() instanceof MappingExpressionParser.Fct_chainContext)
         //            || (ctx.getParent() instanceof MappingExpressionParser.PathContext));
-        JsonNode objNode = null;
+        JsonNode arg = null;
         ExprValuesContext valuesCtx = ctx.exprValues();
         ExprListContext exprList = valuesCtx.exprList();
         int argCount = getArgumentCount(ctx);
         if (useContext) {
             // pop context var from stack
-            objNode = FunctionUtils.getContextVariable(expressionVisitor);
-            if (objNode != null && objNode.isNull() == false) {
+            arg = FunctionUtils.getContextVariable(expressionVisitor);
+            if (arg != null && arg.isNull() == false) {
                 argCount++;
             } else {
                 useContext = false;
@@ -93,14 +85,14 @@ public class EachFunction extends FunctionBase {
         }
         if (argCount == 2) {
             if (!useContext) {
-                objNode = expressionVisitor.visit(exprList.expr(0));
+                arg = expressionVisitor.visit(exprList.expr(0));
             }
             // expect something that evaluates to an object and a function declaration
 
-            if (objNode == null || !objNode.isObject()) {
+            if (arg == null || !arg.isObject()) {
                 throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_EACH));
             }
-            ObjectNode object = (ObjectNode) objNode;
+            ObjectNode object = (ObjectNode) arg;
 
             ExprContext varid = exprList.expr((useContext ? 0 : 1));
             if (varid instanceof Var_recallContext) {
@@ -141,7 +133,7 @@ public class EachFunction extends FunctionBase {
                         }
                         JsonNode fctResult = fct.invoke(expressionVisitor, evc);
                         if (fctResult != null) {
-                            resultArray.add(fctResult);
+                            result.add(fctResult);
                         }
                     }
                 } else {
@@ -153,7 +145,7 @@ public class EachFunction extends FunctionBase {
                             Function_callContext callCtx = new Function_callContext(ctx);
                             // note: callCtx.children should be empty unless carrying an
                             // exception
-                            resultArray.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, field));
+                            result.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, field));
                         }
                     } else {
                         throw new EvaluateRuntimeException(
@@ -199,14 +191,14 @@ public class EachFunction extends FunctionBase {
                     }
                     JsonNode fctResult = fct.invoke(expressionVisitor, evc);
                     if (fctResult != null) {
-                        resultArray.add(fctResult);
+                        result.add(fctResult);
                     }
                 }
             }
         } else {
             throw new EvaluateRuntimeException(argCount <= 1 ? ERR_BAD_CONTEXT : ERR_ARG3BADTYPE);
         }
-        return resultArray;
+        return result;
     }
 
     @Override
