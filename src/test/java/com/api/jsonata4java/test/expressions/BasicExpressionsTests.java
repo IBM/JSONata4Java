@@ -383,6 +383,7 @@ public class BasicExpressionsTests implements Serializable {
         simpleTest("12/2 ", 6, null);
         simpleTest("24 / (2 + 2) / 3", 2, null);
         simpleTest("12/2/3 / 2", 1, null);
+        
     }
 
     @Test
@@ -1070,6 +1071,14 @@ public class BasicExpressionsTests implements Serializable {
                 Assert.assertEquals(MergeFunction.ERR_ARG2BADTYPE, ex.getMessage());
             }
         }
+        
+        // issue #237
+        JsonNode payload = mapper.readTree("{ \"key1\": \"\\\"v1\\\"\" }");
+        JsonNode result1 = Expressions.parse("$each($, function($v, $k) {({ $k: $v})}) ~> $merge()").evaluate(payload);
+        JsonNode result2 = Expressions.parse("{ \"key1\": key1 }").evaluate(payload);
+        System.err.println("* " + result1.toString()+".equals("+result2.toString()+")");
+        assertTrue(result1.toString().equals(result2.toString()));
+
     }
 
     @Test
