@@ -97,8 +97,6 @@ public class Utils implements Serializable {
         throws ParseException, EvaluateException, IOException {
         Expressions expr = Expressions.parse(expression);
         JsonNode result = expr.evaluate(jsonObj);
-        System.err.print("* " + expression);
-        System.err.println(" returned " + result);
         Assert.assertEquals(mapper.writeValueAsString(expected), (mapper.writeValueAsString(result)));
     }
 
@@ -106,8 +104,6 @@ public class Utils implements Serializable {
         throws ParseException, EvaluateException, IOException {
         Expressions expr = Expressions.parse(expression);
         JsonNode result = expr.evaluate(jsonObj);
-        System.err.print("* " + expression);
-        System.err.println(" returned " + result);
         Assert.assertEquals(mapper.writeValueAsString(expected), mapper.writeValueAsString(result));
     }
 
@@ -146,7 +142,6 @@ public class Utils implements Serializable {
         if (rootContext != null)
             rootContext = ensureAllIntegralsAreLongs(rootContext);
 
-        System.err.print("* " + expression);
         Expressions e = null;
         try {
             e = Expressions.parse(expression);
@@ -158,7 +153,7 @@ public class Utils implements Serializable {
                     pe.printStackTrace();
                     throw pe;
                 }
-                System.err.println(" threw exception: " + pe.getClass().getName());
+                System.err.println("* " + expression + " threw exception: " + pe.getClass().getName());
                 return;
             }
         }
@@ -169,15 +164,13 @@ public class Utils implements Serializable {
                 Assert.fail("EvaluateException \"" + expectedEvaluateExceptionMsg
                     + "\" was not thrown but we expected it to be. Got actual=\"" + actual + "\"");
             }
-            System.err.println(" returned " + actual);
             Assert.assertEquals(expected, actual);
         } catch (EvaluateException ex) {
             if (expectedEvaluateExceptionMsg == null) {
-                System.err.println(" expected:\"" + expected + "\" but got \"" + actual + "\"");
                 throw ex;
             } else {
-                System.err.println(" got exception with message " + ex.getLocalizedMessage());
-                Assert.assertEquals("EvaluateException was thrown as expected, but its message was not as expected",
+                Assert.assertEquals("EvaluateException was thrown but expected message: "
+                    + expectedEvaluateExceptionMsg + "> got message <" + ex.getLocalizedMessage() + ">",
                     expectedEvaluateExceptionMsg, ex.getMessage());
             }
         }

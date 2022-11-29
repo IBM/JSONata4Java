@@ -25,7 +25,6 @@ package com.api.jsonata4java.expressions;
 import static com.api.jsonata4java.expressions.utils.Utils.test;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.functions.ReplaceFunction;
 
 /**

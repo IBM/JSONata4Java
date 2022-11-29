@@ -31,8 +31,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-import com.api.jsonata4java.expressions.Expressions;
-import com.api.jsonata4java.expressions.ParseException;
 
 /**
  * Check that we correctly reject invalid uses of JSONata syntax
@@ -128,7 +126,6 @@ public class InvalidSyntaxTest implements Serializable {
     @Test
     public void runTest() throws Exception {
         try {
-            System.err.println("* " + expression);
             Expressions.parse(expression);
             if (!syntaxIsValid) {
                 Assert.fail("Expected a ParseException to be thrown when attempting to parse expression '" + expression

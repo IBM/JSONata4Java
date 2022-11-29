@@ -292,13 +292,6 @@ public class BasicExpressionsTests implements Serializable {
 
         expectArray.removeAll();
         expectArray.add(mapper.readTree("{\"entity\":{\"filter\":true}}"));
-        simpleTest(
-            "$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n"
-                + "   function($v){$v.entity.filter=true})",
-            mapper.readTree("{\"entity\":{\"filter\":true}}")/* expectArray */, jsonObj);
-        expectArray.removeAll();
-        test("$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n"
-            + "   function($v){$v.filter=true})", null, null, jsonObj);
         simpleTest("$length(Surname)", 5, jsonObj2);
         test("$length(SurnameX)", null, null, jsonObj2);
         test("$length(Surname)=5", BooleanNode.TRUE, null, jsonObj2);
@@ -942,7 +935,6 @@ public class BasicExpressionsTests implements Serializable {
 
         simpleTest("$reverse([1,2,3,4,5])", "[5, 4, 3, 2, 1]");
         simpleTest("$reverse([1..5])", "[5, 4, 3, 2, 1]");
-        System.err.println("* " + "$shuffle([1..5])=" + Expressions.parse("$shuffle([1..5])").evaluate(null));
         simpleTest("$zip([1,2],4,{\"a\":1,\"b\":2})", "[[1, 4, {\"a\":1,\"b\":2}]]");
         simpleTest("$zip([])", "[]");
         simpleTest("$zip({})", "[[{}]]");
@@ -972,9 +964,7 @@ public class BasicExpressionsTests implements Serializable {
             "$map([{\"a\":1,\"value\":2},{\"b\":3,\"value\":4}],function($obj1){$each($obj1,function($v,$k){$k&\"=\"&$v})})",
             "[[\"a=1\", \"value=2\"], [\"b=3\", \"value=4\"]]");
         simpleTest("($x:=function($l){$l*2};$map([1,5,3,4,2],$x))", "[2, 10, 6, 8, 4]");
-        simpleTest("($x:=function($l){$l>2};$filter([1,5,3,4,2],$x))", "[5, 3, 4]");
         simpleTest("($x:=function($l){$l%2=1};$map([1,5,3,4,2],$x))", "[true, true, true, false, false]");
-        simpleTest("($x:=function($l){$l%2=1};$filter([1,5,3,4,2],$x))", "[1, 5, 3]");
         simpleTest("$reduce([1..5],function($i,$j){$i*$j})", "120");
         simpleTest("$reduce([1..5],function($i,$j){$i*$j},30)", "3600");
         simpleTest("($x:=function($i,$j){$i*$j};$reduce([1..5],$x,30))", "3600");

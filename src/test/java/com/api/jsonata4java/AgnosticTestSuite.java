@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
@@ -282,7 +281,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
         om.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
 
         // load and parse all the dataset json files into memory
-        printHeader("Loading datasets");
+        System.out.println("Loading datasets");
         final File datasetsDir = new File(DATASETS_DIR);
         final File[] datasetFiles = datasetsDir.listFiles(JsonFileFilter.INSTANCE);
         int filesRead = 0;
@@ -298,9 +297,8 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
             filesRead++;
         }
         System.out.println("Read " + filesRead + " datasets from " + DATASETS_DIR);
-        printFooter();
 
-        printHeader("Loading groups");
+        System.out.println("Loading groups");
         this.groups = new ArrayList<>();
         final File groupsDir = new File(GROUPS_DIR);
         final File[] groupDirs = groupsDir.listFiles(DirectoryFilter.INSTANCE);
@@ -341,7 +339,6 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
             }
         }
         System.out.println("Read " + groupsRead + " groups from " + GROUPS_DIR);
-        printFooter();
 
         runComponentTest(Base64DecodeFunctionTests.data());
         runComponentTest(Base64EncodeFunctionTests.data());
@@ -517,7 +514,6 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
     protected void runExecutionTest(Collection<Object[]> data) throws Exception {
         for (Object[] test : data) {
             try {
-                System.err.println("* " + test[0] == null ? null : test[0].toString());
                 Expressions.parse(test[0] == null ? null : test[0].toString());
                 if (!(test[1] == null ? null : (Boolean) test[1])) {
                     Assert.fail(
@@ -581,16 +577,16 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
             if (testCase.shouldSkip()) {
                 notifier.fireTestIgnored(testCase.getDescription());
             } else {
-                System.out.print("- executing test case: " + group.getGroupName() + "." + testCase.getCaseName() + "...");
                 Description testDesc = testCase.getDescription();
                 try {
                     if (testDesc.isEmpty() == false) {
                         notifier.fireTestStarted(testDesc);
                     } else {
-                        System.out.println(testDesc + " is empty");
+                        System.err.println(testDesc + " is empty");
                     }
                 } catch (Exception sbfe) {
-                    System.err.println("Error in " + testDesc + " Error: " + sbfe.getLocalizedMessage());
+                    System.err.println("FAILURE in AgnosticTestSuite test case: " + group.getGroupName() + "." + testCase.getCaseName()
+                        + ": " + testDesc + " Error: " + sbfe.getLocalizedMessage());
                 }
 
                 try {
@@ -606,28 +602,26 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 
                     JsonNode actualResult = e.evaluate(testCase.getDataset());
                     try {
-                        Assert.assertEquals(testCase.expectedResult, actualResult);
-                        System.out.println(" OK");
+                        Assert.assertEquals("FAILURE in AgnosticTestSuite test case: " + group.getGroupName() + "." + testCase.getCaseName() + "\n",
+                            testCase.expectedResult, actualResult);
                         notifier.fireTestFinished(testCase.getDescription());
                     } catch (AssertionError ex) {
                         try {
-                            Assert.assertEquals(
+                            Assert.assertEquals("FAILURE in AgnosticTestSuite test case: " + group.getGroupName() + "." + testCase.getCaseName() + "\n",
                                 _objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(testCase.expectedResult),
                                 _objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(actualResult));
-                            System.out.println(" OK");
                             notifier.fireTestFinished(testCase.getDescription());
                         } catch (AssertionError ex1) {
-                            System.err.println("\n  FAILURE");
+                            System.err.println("FAILURE in AgnosticTestSuite test case: " + group.getGroupName() + "." + testCase.getCaseName());
                             notifier.fireTestFailure(new Failure(testCase.getDescription(), ex1));
                         }
                     }
                 } catch (Throwable ex) {
                     if (testCase.expectParseOrEvaluateException
                         && (ex instanceof ParseException || ex instanceof EvaluateException)) {
-                        System.out.println(" OK");
                         notifier.fireTestFinished(testCase.getDescription());
                     } else {
-                        System.err.println("\n  FAILURE");
+                        System.err.println("FAILURE in AgnosticTestSuite test case: " + group.getGroupName() + "." + testCase.getCaseName());
                         notifier.fireTestFailure(new Failure(testCase.getDescription(), ex));
                     }
                 }
@@ -635,22 +629,6 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
         }
 
         notifier.fireTestFinished(group.getDescription());
-    }
-
-    private static String HEADER_DELIM = "-";
-    private static String HEADER_LINE = StringUtils.repeat(HEADER_DELIM, 10);
-
-    private static void printHeader(String msg) {
-        System.out.println(HEADER_LINE);
-        System.out.print(HEADER_DELIM);
-        System.out.print(' ');
-        System.out.println(msg);
-        System.out.println(HEADER_LINE);
-    }
-
-    private static void printFooter() {
-        System.out.println(HEADER_LINE);
-        System.out.println();
     }
 
     static class JsonFileFilter implements FilenameFilter {
@@ -846,7 +824,6 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
             // TODO: token:
             // If the code field is present, an optional token field may also be present
             // indicating which token token the exception should be associated with.
-
         }
 
         private boolean isWholeNumber(double n) {
@@ -898,5 +875,4 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
         }
 
     }
-
 }
