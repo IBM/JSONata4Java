@@ -20,7 +20,7 @@
  *
  */
 
-package com.api.jsonata4java.test.expressions;
+package com.api.jsonata4java.expressions;
 
 import static com.api.jsonata4java.expressions.utils.Utils.ensureAllIntegralsAreLongs;
 import static com.api.jsonata4java.expressions.utils.Utils.simpleTest;
@@ -35,16 +35,11 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import com.api.jsonata4java.expressions.EvaluateException;
-import com.api.jsonata4java.expressions.Expressions;
-import com.api.jsonata4java.expressions.NonNumericArrayIndexException;
-import com.api.jsonata4java.expressions.ParseException;
 import com.api.jsonata4java.expressions.functions.AppendFunction;
 import com.api.jsonata4java.expressions.functions.AverageFunction;
 import com.api.jsonata4java.expressions.functions.CountFunction;
 import com.api.jsonata4java.expressions.functions.ExistsFunction;
 import com.api.jsonata4java.expressions.functions.LookupFunction;
-import com.api.jsonata4java.expressions.functions.MergeFunction;
 import com.api.jsonata4java.expressions.functions.ShuffleFunction;
 import com.api.jsonata4java.expressions.functions.SubstringFunction;
 import com.api.jsonata4java.expressions.functions.SumFunction;
@@ -297,13 +292,6 @@ public class BasicExpressionsTests implements Serializable {
 
         expectArray.removeAll();
         expectArray.add(mapper.readTree("{\"entity\":{\"filter\":true}}"));
-        simpleTest(
-            "$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n"
-                + "   function($v){$v.entity.filter=true})",
-            mapper.readTree("{\"entity\":{\"filter\":true}}")/* expectArray */, jsonObj);
-        expectArray.removeAll();
-        test("$filter([{\"entity\":{\"filter\":true}},{\"entity\":{\"filter\":false}},{\"entity\":{\"missingfilter\":true}}],\n"
-            + "   function($v){$v.filter=true})", null, null, jsonObj);
         simpleTest("$length(Surname)", 5, jsonObj2);
         test("$length(SurnameX)", null, null, jsonObj2);
         test("$length(Surname)=5", BooleanNode.TRUE, null, jsonObj2);
@@ -383,7 +371,6 @@ public class BasicExpressionsTests implements Serializable {
         simpleTest("12/2 ", 6, null);
         simpleTest("24 / (2 + 2) / 3", 2, null);
         simpleTest("12/2/3 / 2", 1, null);
-
     }
 
     @Test
@@ -948,7 +935,6 @@ public class BasicExpressionsTests implements Serializable {
 
         simpleTest("$reverse([1,2,3,4,5])", "[5, 4, 3, 2, 1]");
         simpleTest("$reverse([1..5])", "[5, 4, 3, 2, 1]");
-        System.err.println("* " + "$shuffle([1..5])=" + Expressions.parse("$shuffle([1..5])").evaluate(null));
         simpleTest("$zip([1,2],4,{\"a\":1,\"b\":2})", "[[1, 4, {\"a\":1,\"b\":2}]]");
         simpleTest("$zip([])", "[]");
         simpleTest("$zip({})", "[[{}]]");
@@ -978,9 +964,7 @@ public class BasicExpressionsTests implements Serializable {
             "$map([{\"a\":1,\"value\":2},{\"b\":3,\"value\":4}],function($obj1){$each($obj1,function($v,$k){$k&\"=\"&$v})})",
             "[[\"a=1\", \"value=2\"], [\"b=3\", \"value=4\"]]");
         simpleTest("($x:=function($l){$l*2};$map([1,5,3,4,2],$x))", "[2, 10, 6, 8, 4]");
-        simpleTest("($x:=function($l){$l>2};$filter([1,5,3,4,2],$x))", "[5, 3, 4]");
         simpleTest("($x:=function($l){$l%2=1};$map([1,5,3,4,2],$x))", "[true, true, true, false, false]");
-        simpleTest("($x:=function($l){$l%2=1};$filter([1,5,3,4,2],$x))", "[1, 5, 3]");
         simpleTest("$reduce([1..5],function($i,$j){$i*$j})", "120");
         simpleTest("$reduce([1..5],function($i,$j){$i*$j},30)", "3600");
         simpleTest("($x:=function($i,$j){$i*$j};$reduce([1..5],$x,30))", "3600");
@@ -1048,37 +1032,6 @@ public class BasicExpressionsTests implements Serializable {
         // ex.getMessage());
         // }
         // }
-
-        simpleTest("$merge([{\"a\":1,\"value\":2},{\"b\":{\"value\":{\"d\":5},\"c\":5}},{\"a\":2}])",
-            "{\"a\":2, \"value\":2, \"b\":{\"value\":{\"d\":5},\"c\":5}}");
-        simpleTest("$merge(a.b)", null);
-
-        {
-            Expressions expression = Expressions.parse("$merge()");
-            try {
-                expression.evaluate(null);
-                Assert.fail("Did not throw an expected exception");
-            } catch (EvaluateException ex) {
-                Assert.assertEquals(MergeFunction.ERR_ARG1BADTYPE, ex.getMessage());
-            }
-        }
-        {
-            Expressions expression = Expressions.parse("$merge({\"hello\":1},2)");
-            try {
-                expression.evaluate(null);
-                Assert.fail("Did not throw an expected exception");
-            } catch (EvaluateException ex) {
-                Assert.assertEquals(MergeFunction.ERR_ARG2BADTYPE, ex.getMessage());
-            }
-        }
-
-        // issue #237
-        JsonNode payload = mapper.readTree("{ \"key1\": \"\\\"v1\\\"\" }");
-        JsonNode result1 = Expressions.parse("$each($, function($v, $k) {({ $k: $v})}) ~> $merge()").evaluate(payload);
-        JsonNode result2 = Expressions.parse("{ \"key1\": key1 }").evaluate(payload);
-        System.err.println("* " + result1.toString() + ".equals(" + result2.toString() + ")");
-        assertTrue(result1.toString().equals(result2.toString()));
-
     }
 
     @Test

@@ -34,6 +34,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Array_constructorContext;
@@ -47,6 +48,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprVa
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.FieldListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.IdContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
@@ -55,6 +57,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.PathCo
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.SeqContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Unary_opContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
@@ -257,91 +260,6 @@ public class FunctionUtils implements Serializable {
                 }
             }
         }
-        evc.addAnyChild(elc);
-        evc.addAnyChild(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__3, ")")));
-        return evc;
-    }
-
-    /**
-     * Sets up the {@link ExprValuesContext} variables for the function($v,$k)
-     * signature used in each call for pairs of values and keys
-     * 
-     * @param ctx
-     *              context to be used to create the new {@link ExprListContext} to
-     *              contain the key, value pair
-     * @param key
-     *              key used to relate the supplied value in the ExprValuesContext
-     * @param value
-     *              content to be added to the ExprValuesContext
-     * @return {@link ExprValuesContext} containing the key and value in its
-     *         parenthesized comma separated variable {@link ExprListContext}
-     */
-    public static ExprValuesContext fillExprVarContext(ExprContext ctx, String key, JsonNode value) {
-        ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-        ExprListContext elc = new ExprListContext(ctx.getParent(), ctx.invokingState);
-        evc.addAnyChild(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__1, "(")));
-        CommonToken token = null;
-        TerminalNode tn = null;
-
-        token = null;
-        switch (value.getNodeType()) {
-            case BINARY:
-            case POJO: {
-                break;
-            }
-            case BOOLEAN: {
-                token = (value.asBoolean() ? CommonTokenFactory.DEFAULT.create(MappingExpressionParser.TRUE, value.asText())
-                    : CommonTokenFactory.DEFAULT.create(MappingExpressionParser.FALSE, value.asText()));
-                tn = new TerminalNodeImpl(token);
-                BooleanContext bc = new MappingExpressionParser.BooleanContext(ctx);
-                bc.op = token;
-                bc.addAnyChild(tn);
-                elc.addAnyChild(bc);
-                break;
-            }
-            case MISSING:
-            case NULL: {
-                token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NULL, null);
-                tn = new TerminalNodeImpl(token);
-                NullContext nc = new NullContext(ctx);
-                nc.addAnyChild(tn);
-                elc.addAnyChild(nc);
-                break;
-            }
-            case NUMBER: {
-                token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.NUMBER, value.asText());
-                tn = new TerminalNodeImpl(token);
-                NumberContext nc = new NumberContext(ctx);
-                nc.addAnyChild(tn);
-                elc.addAnyChild(nc);
-                break;
-            }
-            case OBJECT: {
-                // create an Object_constructorContext
-                elc.addAnyChild(getObjectConstructorContext(ctx, (ObjectNode) value));
-                break;
-            }
-            case ARRAY: {
-                elc.addAnyChild(getArrayConstructorContext(ctx, (ArrayNode) value));
-                break;
-            }
-            case STRING:
-            default: {
-                token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, value.asText());
-                tn = new TerminalNodeImpl(token);
-                StringContext sc = new StringContext(ctx);
-                sc.addAnyChild(tn);
-                elc.addAnyChild(sc);
-                break;
-            }
-        }
-
-        token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, key);
-        tn = new TerminalNodeImpl(token);
-        StringContext sc = new StringContext(ctx);
-        sc.addAnyChild(tn);
-        elc.addAnyChild(sc);
-
         evc.addAnyChild(elc);
         evc.addAnyChild(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__3, ")")));
         return evc;
@@ -999,4 +917,22 @@ public class FunctionUtils implements Serializable {
         }
         return optional;
     }
+
+    public static DeclaredFunction getFunctionArgFromCtx(ExpressionsVisitor expressionVisitor, Function_callContext ctx, boolean useContext) {
+        if (ctx.exprValues() == null
+            || ctx.exprValues().exprList() == null
+            || ctx.exprValues().exprList().expr() == null
+            || ctx.exprValues().exprList().expr().size() == 0) {
+            return null;
+        }
+        final ExprContext varid = ctx.exprValues().exprList().expr(useContext ? 0 : 1);
+        if (varid instanceof Var_recallContext) {
+            return expressionVisitor.getDeclaredFunction(ctx.exprValues().exprList().expr(0).getText());
+        } else if (varid instanceof Function_declContext) {
+            final Function_declContext fctDeclCtx = (Function_declContext) ctx.exprValues().exprList().expr(useContext ? 0 : 1);
+            return new DeclaredFunction(fctDeclCtx.varList(), fctDeclCtx.exprList());
+        }
+        return null;
+    }
+
 }

@@ -21,9 +21,7 @@
  * 
  */ 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.jsonata4java</groupId>
 	<artifactId>JSONata4Java</artifactId>
@@ -61,6 +59,8 @@
 		</developer>
 		<developer>
 			<name>Martin Blümel</name>
+			<email>martin.bluemel1@vodafone.com</email>
+			<organization>Vodafone Kabel Deutschland</organization>
 		</developer>
 	</developers>
 	<scm>
@@ -69,12 +69,12 @@
 		<url>https://github.com/IBM/JSONata4Java</url>
 	</scm>
 	<properties>
-		<test.unitTests>**/*Test.class</test.unitTests>
-		<test.agnostic>com/api/jsonata4java/test/expressions/agnostic/AgnosticTestSuite.class</test.agnostic>
+		<test.unitTests>com/api/jsonata4java/**/*Test.class</test.unitTests>
+		<test.agnostic>com/api/jsonata4java/AgnosticTestSuite.class</test.agnostic>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<gpg.skip>true</gpg.skip><!-- by default skip gpg -->
+		<gpg.skip>true</gpg.skip> <!-- by default skip gpg -->
 		<antlr4.version>4.11.1</antlr4.version>
-  </properties>
+	</properties>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>ossrh</id>
@@ -86,18 +86,18 @@
 		</repository>
 	</distributionManagement>
 	<dependencies>
+	<dependency>
+    	<groupId>junit</groupId>
+    	<artifactId>junit</artifactId>
+    	<version>4.13.2</version>
+    	<scope>test</scope>
+	</dependency>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>5.3.23</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-context</artifactId>
-		    <version>5.3.23</version>
-		    <scope>test</scope>
-		</dependency>		
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4-runtime</artifactId>
@@ -110,15 +110,15 @@
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core -->
 		<dependency>
-		    <groupId>com.fasterxml.woodstox</groupId>
-		    <artifactId>woodstox-core</artifactId>
-		    <version>6.4.0</version>
+			<groupId>com.fasterxml.woodstox</groupId>
+			<artifactId>woodstox-core</artifactId>
+			<version>6.4.0</version>
 		</dependency>
-	    <dependency>
-	      <groupId>com.fasterxml.jackson.dataformat</groupId>
-	      <artifactId>jackson-dataformat-xml</artifactId>
-	      <version>2.14.0</version>
-	    </dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-xml</artifactId>
+			<version>2.14.0</version>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -211,7 +211,7 @@
 					</execution>
 				</executions>
 				<configuration>
-				    <source>1.8</source>
+					<source>1.8</source>
 					<additionalOptions>
 						<additionalOption>-Xdoclint:none</additionalOption>
 					</additionalOptions>
@@ -223,8 +223,7 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
-					<additionalClasspathElements>
-					</additionalClasspathElements>
+					<additionalClasspathElements></additionalClasspathElements>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -241,7 +240,7 @@
 							<url>https://github.com/jsonata-js/jsonata/archive/v1.8.4.zip</url>
 							<unpack>true</unpack>
 							<outputDirectory>${project.build.directory}/jsonata</outputDirectory>
-							<md5>c8f057d10e659c27a5aa79f11d961947</md5> 
+							<md5>c8f057d10e659c27a5aa79f11d961947</md5>
 							<!--
 							<url>https://github.com/jsonata-js/jsonata/archive/v1.8.3.zip</url> 
 							<md5>3db67b7aec88d9b542d42e88547a1e26</md5>  
@@ -253,7 +252,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M5</version>
+				<version>3.0.0-M7</version>
 				<configuration>
 					<testFailureIgnore>false</testFailureIgnore>
 					<reuseForks>true</reuseForks>
@@ -264,12 +263,13 @@
 					</includes>
 				</configuration>
 			</plugin>
-			<!-- Plugin to compile the g4 files ahead of the java files 
-			    See https://github.com/antlr/antlr4/blob/master/antlr4-maven-plugin/src/site/apt/examples/simple.apt.vm 
+			<!--
+				Plugin to compile the g4 files ahead of the java files 
+				See https://github.com/antlr/antlr4/blob/master/antlr4-maven-plugin/src/site/apt/examples/simple.apt.vm 
 				Except that the grammar does not need to contain the package declaration 
 				as stated in the documentation (I do not know why) To use this plugin, type: 
-				mvn antlr4:antlr4 In any case, Maven will invoke this plugin before the Java 
-				source is compiled -->
+				mvn antlr4:antlr4 In any case, Maven will invoke this plugin before the Java source is compiled
+			-->
 			<plugin>
 				<groupId>org.antlr</groupId>
 				<artifactId>antlr4-maven-plugin</artifactId>
@@ -296,7 +296,7 @@
 					</descriptorRefs>
 					<excludes>
 						<exclude>src/test/resources/*</exclude>
-					</excludes>					
+					</excludes>
 				</configuration>
 				<executions>
 					<execution>
@@ -374,11 +374,11 @@
 		</pluginManagement>
 	</build>
 	<profiles>
-        <profile>
-            <id>release</id>
-            <properties>
-                <gpg.skip>false</gpg.skip>
-            </properties>
-        </profile>
-	</profiles>	
+		<profile>
+			<id>release</id>
+			<properties>
+				<gpg.skip>false</gpg.skip>
+			</properties>
+		</profile>
+	</profiles>
 </project>

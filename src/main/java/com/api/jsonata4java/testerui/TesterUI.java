@@ -52,6 +52,7 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
 import com.api.jsonata4java.expressions.EvaluateException;
+import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -401,22 +402,31 @@ public class TesterUI {
 
     private void map() {
         JsonNode inNode = null;
-        try {
-            switch (getFormat(inputArea.getText())) {
-                case XML:
-                    inNode = xmlMapper.readTree(inputArea.getText());
-                    break;
-                default:
-                    inNode = jsonMapper.readTree(inputArea.getText());
-                    break;
-            }
-        } catch (JsonProcessingException | RuntimeException e) {
-            System.err.println("Input error: " + e.getMessage());
-            this.outputArea.setText("Input error: " + e.getMessage());
+        if (inputArea.getText().length() == 0) {
+        } else if (inputArea.getText().matches("^[ \n\t]+$")) {
+            this.outputArea.setText("Input error: Unexpected end of JSON input");
             this.inputArea.setBackground(settings.getBackgroundError());
             this.outputArea.setBackground(settings.getBackgroundError());
             return;
+        } else {
+            try {
+                switch (getFormat(inputArea.getText())) {
+                    case XML:
+                        inNode = xmlMapper.readTree(inputArea.getText());
+                        break;
+                    default:
+                        inNode = jsonMapper.readTree(inputArea.getText());
+                        break;
+                }
+            } catch (JsonProcessingException | RuntimeException e) {
+                System.err.println("Input error: " + e.getMessage());
+                this.outputArea.setText("Input error: " + e.getMessage());
+                this.inputArea.setBackground(settings.getBackgroundError());
+                this.outputArea.setBackground(settings.getBackgroundError());
+                return;
+            }
         }
+
         try {
             final JsonNode outNode = this.expressions.evaluate(inNode);
             String newOutput = jsonMapper.writerWithDefaultPrettyPrinter().writeValueAsString(outNode);
@@ -436,7 +446,12 @@ public class TesterUI {
             this.inputArea.setBackground(settings.getBackgroundInput());
             this.jsonataArea.setBackground(settings.getBackgroundJsonata());
             this.outputArea.setBackground(settings.getBackgroundOutput());
-        } catch (JsonProcessingException | EvaluateException | RuntimeException e) {
+        } catch (EvaluateException | EvaluateRuntimeException e) {
+            System.err.println("JSONata mapping error: " + e.getMessage());
+            this.outputArea.setText(e.getMessage());
+            this.jsonataArea.setBackground(settings.getBackgroundError());
+            this.outputArea.setBackground(settings.getBackgroundError());
+        } catch (JsonProcessingException | RuntimeException e) {
             System.err.println("JSONata mapping error: " + e.getMessage());
             this.outputArea.setText("JSONata mapping error: " + e.getMessage());
             this.jsonataArea.setBackground(settings.getBackgroundError());
@@ -445,7 +460,9 @@ public class TesterUI {
     }
 
     enum Format {
+
             XML, JSON
+
     };
 
     private Format getFormat(String text) {
