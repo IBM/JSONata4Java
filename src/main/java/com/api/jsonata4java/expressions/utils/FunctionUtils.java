@@ -247,18 +247,12 @@ public class FunctionUtils implements Serializable {
                     break;
                 }
                 case STRING:
-                    token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.toString());
-                    TerminalNodeImpl tn1 = new TerminalNodeImpl(token);
-                    StringContext sc1 = new StringContext(ctx);
-                    sc1.addAnyChild(tn1);
-                    elc.addAnyChild(sc1);
-                    break;
                 default: {
-                    token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.asText());
-                    TerminalNodeImpl tn2 = new TerminalNodeImpl(token);
-                    StringContext sc2 = new StringContext(ctx);
-                    sc2.addAnyChild(tn2);
-                    elc.addAnyChild(sc2);
+                    token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.toString());
+                    TerminalNodeImpl tn = new TerminalNodeImpl(token);
+                    StringContext sc = new StringContext(ctx);
+                    sc.addAnyChild(tn);
+                    elc.addAnyChild(sc);
                     break;
                 }
             }
