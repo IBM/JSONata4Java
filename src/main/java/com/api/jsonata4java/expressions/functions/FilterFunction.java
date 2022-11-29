@@ -90,7 +90,7 @@ public class FilterFunction extends FunctionBase {
                 // else signal no match (result = null)
                 break;
             case 1:
-                final DeclaredFunction fctArg = getFunctionArgFromCtx(expressionVisitor, ctx, true);
+                final DeclaredFunction fctArg = FunctionUtils.getFunctionArgFromCtx(expressionVisitor, ctx, true);
                 if (fctArg == null) {
                     // this error message might be not so precise but it is exactly what original JSONata (1.8.6) does
                     throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
@@ -232,23 +232,6 @@ public class FilterFunction extends FunctionBase {
             result = null;
         }
         return result;
-    }
-
-    private DeclaredFunction getFunctionArgFromCtx(ExpressionsVisitor expressionVisitor, Function_callContext ctx, boolean useContext) {
-        if (ctx.exprValues() == null
-            || ctx.exprValues().exprList() == null
-            || ctx.exprValues().exprList().expr() == null
-            || ctx.exprValues().exprList().expr().size() == 0) {
-            return null;
-        }
-        final ExprContext varid = ctx.exprValues().exprList().expr(useContext ? 0 : 1);
-        if (varid instanceof Var_recallContext) {
-            return expressionVisitor.getDeclaredFunction(ctx.exprValues().exprList().expr(0).getText());
-        } else if (varid instanceof Function_declContext) {
-            final Function_declContext fctDeclCtx = (Function_declContext) ctx.exprValues().exprList().expr(useContext ? 0 : 1);
-            return new DeclaredFunction(fctDeclCtx.varList(), fctDeclCtx.exprList());
-        }
-        return null;
     }
 
     @Override

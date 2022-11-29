@@ -23,13 +23,11 @@
 package com.api.jsonata4java.expressions.functions;
 
 import static com.api.jsonata4java.expressions.utils.Utils.test;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class EachFunctionTest {
 
     @Test
-    @Ignore
     public void nullInput() throws Exception {
         test("$each()", null, null, (String) null);
     }

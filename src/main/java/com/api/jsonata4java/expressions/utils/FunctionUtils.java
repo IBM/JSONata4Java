@@ -34,6 +34,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.antlr.v4.runtime.tree.TerminalNodeImpl;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
+import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Array_constructorContext;
@@ -47,6 +48,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprVa
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.FieldListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.IdContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
@@ -55,6 +57,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.PathCo
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.SeqContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Unary_opContext;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
@@ -914,4 +917,22 @@ public class FunctionUtils implements Serializable {
         }
         return optional;
     }
+
+    public static DeclaredFunction getFunctionArgFromCtx(ExpressionsVisitor expressionVisitor, Function_callContext ctx, boolean useContext) {
+        if (ctx.exprValues() == null
+            || ctx.exprValues().exprList() == null
+            || ctx.exprValues().exprList().expr() == null
+            || ctx.exprValues().exprList().expr().size() == 0) {
+            return null;
+        }
+        final ExprContext varid = ctx.exprValues().exprList().expr(useContext ? 0 : 1);
+        if (varid instanceof Var_recallContext) {
+            return expressionVisitor.getDeclaredFunction(ctx.exprValues().exprList().expr(0).getText());
+        } else if (varid instanceof Function_declContext) {
+            final Function_declContext fctDeclCtx = (Function_declContext) ctx.exprValues().exprList().expr(useContext ? 0 : 1);
+            return new DeclaredFunction(fctDeclCtx.varList(), fctDeclCtx.exprList());
+        }
+        return null;
+    }
+
 }
