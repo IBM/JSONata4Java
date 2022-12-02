@@ -28,13 +28,46 @@ import org.junit.Test;
 public class EachFunctionTest {
 
     @Test
-    public void nullInput() throws Exception {
-        test("$each()", null, null, (String) null);
+    public void eachWithFunctionInlinedWith1Arg() throws Exception {
+        test("$each(Address, function($val) {$val})",
+            "[\n"
+                + "  \"Hursley Park\",\n"
+                + "  \"Winchester\",\n"
+                + "  \"SO21 2JN\"\n"
+                + "]",
+            null,
+            "{\n"
+                + "  \"FirstName\": \"Fred\",\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "}");
     }
 
     @Test
-    public void eachKeyValuePairIntoArray() throws Exception {
-        test("$each(Address, function($v, $k) {$k & \": \" & $v})",
+    public void eachWithFunctionInlinedWith1ArgReturnNull() throws Exception {
+        test("$each(Address, function($val) {null})",
+            "[\n"
+                + "  null,\n"
+                + "  null,\n"
+                + "  null\n"
+                + "]",
+            null,
+            "{\n"
+                + "  \"FirstName\": \"Fred\",\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "}");
+    }
+
+    @Test
+    public void eachWithFunctionInlinedWith2Args() throws Exception {
+        test("$each(Address, function($val, $key) {$key & \": \" & $val})",
             "[\n"
                 + "  \"Street: Hursley Park\",\n"
                 + "  \"City: Winchester\",\n"
@@ -52,8 +85,264 @@ public class EachFunctionTest {
     }
 
     @Test
+    public void eachWithFunctionInlinedWith3Args() throws Exception {
+        test("$each(Address, function($val, $key, $obj) {{ $key & \"|\" & $val : $obj }})",
+            "[\n"
+                + "  {\n"
+                + "    \"Street|Hursley Park\": {\n"
+                + "      \"Street\": \"Hursley Park\",\n"
+                + "      \"City\": \"Winchester\",\n"
+                + "      \"Postcode\": \"SO21 2JN\"\n"
+                + "    }\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"City|Winchester\": {\n"
+                + "      \"Street\": \"Hursley Park\",\n"
+                + "      \"City\": \"Winchester\",\n"
+                + "      \"Postcode\": \"SO21 2JN\"\n"
+                + "    }\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"Postcode|SO21 2JN\": {\n"
+                + "      \"Street\": \"Hursley Park\",\n"
+                + "      \"City\": \"Winchester\",\n"
+                + "      \"Postcode\": \"SO21 2JN\"\n"
+                + "    }\n"
+                + "  }\n"
+                + "]",
+            null,
+            "{\n"
+                + "  \"FirstName\": \"Fred\",\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "}");
+    }
+
+    @Test
+    public void eachWithFunctionInlinedWith4Args() throws Exception {
+        test("$each(Address, function($val, $key, $obj, $x) {{ $key & \"|\" & $val : $obj & $x}})",
+            "[\n"
+                + "  {\n"
+                + "    \"Street|Hursley Park\": \"{\\\"Street\\\":\\\"Hursley Park\\\",\\\"City\\\":\\\"Winchester\\\",\\\"Postcode\\\":\\\"SO21 2JN\\\"}\"\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"City|Winchester\": \"{\\\"Street\\\":\\\"Hursley Park\\\",\\\"City\\\":\\\"Winchester\\\",\\\"Postcode\\\":\\\"SO21 2JN\\\"}\"\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"Postcode|SO21 2JN\": \"{\\\"Street\\\":\\\"Hursley Park\\\",\\\"City\\\":\\\"Winchester\\\",\\\"Postcode\\\":\\\"SO21 2JN\\\"}\"\n"
+                + "  }\n"
+                + "]",
+            null,
+            "{\n"
+                + "  \"FirstName\": \"Fred\",\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "}");
+    }
+
+    @Test
+    public void eachWithFunctionWith1Arg() throws Exception {
+        test("($func := function($val) {$val};\n"
+            + "$each(Address, $func))",
+            "[\n"
+                + "  \"Hursley Park\",\n"
+                + "  \"Winchester\",\n"
+                + "  \"SO21 2JN\"\n"
+                + "]",
+            null,
+            "{\n"
+                + "  \"FirstName\": \"Fred\",\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "}");
+    }
+
+    @Test
+    public void eachWithFunctionWith2Args() throws Exception {
+        test("($mapKeyValue := function($v, $k) {$k & \": \" & $v};\n"
+            + "$each(Address, $mapKeyValue))",
+            "[\n"
+                + "  \"Street: Hursley Park\",\n"
+                + "  \"City: Winchester\",\n"
+                + "  \"Postcode: SO21 2JN\"\n"
+                + "]",
+            null,
+            "{\n"
+                + "  \"FirstName\": \"Fred\",\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "})");
+    }
+
+    @Test
+    public void eachWithFunctionWith3Args() throws Exception {
+        test("($myfunc := function($val, $key, $obj) {{ $key & \"|\" & $val : $obj }};\n"
+            + "$each(Address, $myfunc))",
+            "[\n"
+                + "  {\n"
+                + "    \"Street|Hursley Park\": {\n"
+                + "      \"Street\": \"Hursley Park\",\n"
+                + "      \"City\": \"Winchester\",\n"
+                + "      \"Postcode\": \"SO21 2JN\"\n"
+                + "    }\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"City|Winchester\": {\n"
+                + "      \"Street\": \"Hursley Park\",\n"
+                + "      \"City\": \"Winchester\",\n"
+                + "      \"Postcode\": \"SO21 2JN\"\n"
+                + "    }\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"Postcode|SO21 2JN\": {\n"
+                + "      \"Street\": \"Hursley Park\",\n"
+                + "      \"City\": \"Winchester\",\n"
+                + "      \"Postcode\": \"SO21 2JN\"\n"
+                + "    }\n"
+                + "  }\n"
+                + "]",
+            null,
+            "{\n"
+                + "  \"FirstName\": \"Fred\",\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "}");
+    }
+
+    @Test
+    public void eachWithFunctionWith4Args() throws Exception {
+        test("($func := function($val, $key, $obj, $x) {{ $key & \"|\" & $val : $obj & $x}};"
+            + "$each(Address, $func))",
+            "[\n"
+                + "  {\n"
+                + "    \"Street|Hursley Park\": \"{\\\"Street\\\":\\\"Hursley Park\\\",\\\"City\\\":\\\"Winchester\\\",\\\"Postcode\\\":\\\"SO21 2JN\\\"}\"\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"City|Winchester\": \"{\\\"Street\\\":\\\"Hursley Park\\\",\\\"City\\\":\\\"Winchester\\\",\\\"Postcode\\\":\\\"SO21 2JN\\\"}\"\n"
+                + "  },\n"
+                + "  {\n"
+                + "    \"Postcode|SO21 2JN\": \"{\\\"Street\\\":\\\"Hursley Park\\\",\\\"City\\\":\\\"Winchester\\\",\\\"Postcode\\\":\\\"SO21 2JN\\\"}\"\n"
+                + "  }\n"
+                + "]",
+            null,
+            "{\n"
+                + "  \"FirstName\": \"Fred\",\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "}");
+    }
+
+    @Test
+    public void eachKeyValuePairIntoArrayWithJsonataFunction() throws Exception {
+        test("$each(Address, $uppercase))",
+            "[\n"
+                + "  \"HURSLEY PARK\",\n"
+                + "  \"WINCHESTER\",\n"
+                + "  \"SO21 2JN\"\n"
+                + "]",
+            null,
+            "{\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "})");
+    }
+
+    @Test
     public void combineWithMap() throws Exception {
         test("$map([{\"a\":1,\"value\":2},{\"b\":3,\"value\":4}],function($obj1){$each($obj1,function($v,$k){$k&\"=\"&$v})})",
             "[[\"a=1\", \"value=2\"], [\"b=3\", \"value=4\"]]", null, (String) null);
+    }
+
+    @Test
+    public void agnosticTestSuiteCase002() throws Exception {
+        test("$each(function($v, $k) {$k[$v>2]})",
+            "[\"c\", \"d\"]",
+            null,
+            "{ \"a\": 1, \"b\": 2, \"c\": 3, \"d\": 4 }");
+    }
+
+    @Test
+    public void undefindedFunction() throws Exception {
+        test("$each(Address, $xyz))",
+            null,
+            String.format(EachFunction.ERR_ARG2_FUNCTION_RESOLVE, "$xyz"),
+            "{\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "})");
+    }
+
+    @Test
+    public void nullInput() throws Exception {
+        test("$each()", null, EachFunction.ERR_ARG1BADTYPE, (String) null);
+    }
+
+    @Test
+    public void nullInputFromChain() throws Exception {
+        test("null ~> $each()", null, EachFunction.ERR_ARG1BADTYPE, (String) null);
+    }
+
+    @Test
+    public void oneArgNoFunctionArg() throws Exception {
+        test("$each(object)", null, EachFunction.ERR_ARG2BADTYPE, (String) null);
+    }
+
+    @Test
+    public void oneArgNoObjectArg() throws Exception {
+        test("$each(function($v, $k){{$k: $v}})", null, null, (String) null);
+    }
+
+    @Test
+    public void twoArgsObjectNoMatch() throws Exception {
+        test("$each(obj, function($v, $k){{$k: $v}})", null, null, (String) null);
+    }
+
+    @Test
+    public void twoArgs1stWrongType() throws Exception {
+        test("$each(2, function($v, $k){{$k: $v}})", null, EachFunction.ERR_ARG1BADTYPE, (String) null);
+    }
+
+    @Test
+    public void twoArgs2ndWrongType() throws Exception {
+        test("$each({\"key\":\"value\"}, 2)", "[]", EachFunction.ERR_ARG2BADTYPE, (String) null);
+    }
+
+    @Test
+    public void twoArgs1stNoMatch2ndWrongType() throws Exception {
+        test("$each(obj, 2)", null, EachFunction.ERR_ARG2BADTYPE, (String) null);
+    }
+
+    @Test
+    public void threeArgs() throws Exception {
+        test("$each({\"key\":\"value\"}, function($v, $k){{$k: $v}}, 2)", null, EachFunction.ERR_ARG3BADTYPE, (String) null);
+    }
+
+    @Test
+    public void threeArgs1stNoMatch() throws Exception {
+        test("$each(object, function($v, $k){{$k: $v}}, 2)", null, EachFunction.ERR_ARG3BADTYPE, (String) null);
     }
 }
