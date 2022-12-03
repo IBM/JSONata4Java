@@ -22,6 +22,7 @@
 
 package testmanually;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import com.api.jsonata4java.expressions.Jsonata4JavaTestMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,6 +35,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @author Martin Bluemel
  */
+@Ignore
 public class ExpressionTestPerfomance {
 
     private final ObjectMapper jsonMapper = new ObjectMapper();

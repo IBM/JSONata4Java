@@ -44,7 +44,6 @@ import com.api.jsonata4java.expressions.functions.AverageFunction;
 import com.api.jsonata4java.expressions.functions.CountFunction;
 import com.api.jsonata4java.expressions.functions.ExistsFunction;
 import com.api.jsonata4java.expressions.functions.LookupFunction;
-import com.api.jsonata4java.expressions.functions.MergeFunction;
 import com.api.jsonata4java.expressions.functions.ShuffleFunction;
 import com.api.jsonata4java.expressions.functions.SubstringFunction;
 import com.api.jsonata4java.expressions.functions.SumFunction;
@@ -67,7 +66,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
  * class. Retained because we might as well keep them (they execute in seconds).
  */
 @SuppressWarnings("deprecation")
-public class BasicExpressionsTests implements Serializable {
+public class BasicExpressionsTest implements Serializable {
 
     private static final long serialVersionUID = -2403728781442037506L;
 
@@ -1036,41 +1035,6 @@ public class BasicExpressionsTests implements Serializable {
         // }
 
         simpleTest("$spread([1])", "[1]");
-
-        // jsonata.js 1.8 docs only talk about objects and arrays of objects
-        // but changed code to behave like jsonata.js
-        // {
-        // try {
-        // Expressions.parse("$spread([1])").evaluate(null);
-        // Assert.fail("Did not throw an expected exception");
-        // } catch (EvaluateException ex) {
-        // Assert.assertEquals(SpreadFunction.ERR_ARG1_MUST_BE_ARRAY_OF_OBJECTS,
-        // ex.getMessage());
-        // }
-        // }
-
-        simpleTest("$merge([{\"a\":1,\"value\":2},{\"b\":{\"value\":{\"d\":5},\"c\":5}},{\"a\":2}])",
-            "{\"a\":2, \"value\":2, \"b\":{\"value\":{\"d\":5},\"c\":5}}");
-        simpleTest("$merge(a.b)", null);
-
-        {
-            Expressions expression = Expressions.parse("$merge()");
-            try {
-                expression.evaluate(null);
-                Assert.fail("Did not throw an expected exception");
-            } catch (EvaluateException ex) {
-                Assert.assertEquals(MergeFunction.ERR_ARG1BADTYPE, ex.getMessage());
-            }
-        }
-        {
-            Expressions expression = Expressions.parse("$merge({\"hello\":1},2)");
-            try {
-                expression.evaluate(null);
-                Assert.fail("Did not throw an expected exception");
-            } catch (EvaluateException ex) {
-                Assert.assertEquals(MergeFunction.ERR_ARG2BADTYPE, ex.getMessage());
-            }
-        }
 
         // issue #237
         JsonNode payload = mapper.readTree("{ \"key1\": \"\\\"v1\\\"\" }");
@@ -2131,7 +2095,6 @@ public class BasicExpressionsTests implements Serializable {
 
         // selecting empty member names
         simpleTest("[{\"\":1}, {\"\":2}].``", "[1,2]");
-
     }
 
     @Test

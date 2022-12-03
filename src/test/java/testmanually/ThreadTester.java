@@ -1,4 +1,6 @@
 package testmanually;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
@@ -6,6 +8,7 @@ import com.api.jsonata4java.expressions.Expressions;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Ignore
 public class ThreadTester {
 
     static boolean showError = false;

@@ -26,6 +26,7 @@ import static com.api.jsonata4java.expressions.utils.Utils.test;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -37,6 +38,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * Verify behavior when access special $state, $event and $instance variables.
  */
 @RunWith(Parameterized.class)
+@Ignore
 public class JsonataUnitTests implements Serializable {
 
     private static final long serialVersionUID = -862598258330086928L;

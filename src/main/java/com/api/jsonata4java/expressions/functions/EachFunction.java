@@ -101,13 +101,12 @@ public class EachFunction extends FunctionBase {
         return result;
     }
 
-    private SelectorArrayNode each(ExpressionsVisitor expressionVisitor, Function_callContext ctx, final JsonNode arg, final boolean useContext) {
-        SelectorArrayNode result;
+    private SelectorArrayNode each(final ExpressionsVisitor expressionVisitor, final Function_callContext ctx, final JsonNode arg, final boolean useContext) {
         if (!arg.isObject()) {
             throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
         }
         final ObjectNode object = (ObjectNode) arg;
-        result = new SelectorArrayNode(JsonNodeFactory.instance);
+        final SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
         final ExprContext varid = ctx.exprValues() != null
             && ctx.exprValues().exprList() != null
                 ? ctx.exprValues().exprList().expr(useContext ? 0 : 1)
@@ -138,8 +137,8 @@ public class EachFunction extends FunctionBase {
         }
     }
 
-    private void invokeJsonataFunction(ExpressionsVisitor expressionVisitor, Function_callContext ctx, SelectorArrayNode result, final ObjectNode object, final ExprContext varid,
-        final FunctionBase function) {
+    private void invokeJsonataFunction(final ExpressionsVisitor expressionVisitor, final Function_callContext ctx, final SelectorArrayNode result,
+        final ObjectNode object, final ExprContext varid, final FunctionBase function) {
         for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
             final String key = it.next();
             final JsonNode field = object.get(key);

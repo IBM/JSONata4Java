@@ -23,6 +23,7 @@
 package testmanually;
 
 import static com.api.jsonata4java.expressions.utils.Utils.test;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -30,6 +31,7 @@ import org.junit.Test;
  * 
  * @author Martin Bluemel
  */
+@Ignore
 public class MapFunctionNonParTests {
 
     //    @Test

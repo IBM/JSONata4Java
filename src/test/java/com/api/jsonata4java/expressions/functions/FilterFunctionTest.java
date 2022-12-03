@@ -28,11 +28,6 @@ import org.junit.Test;
 public class FilterFunctionTest {
 
     @Test
-    public void nullInput() throws Exception {
-        test("$filter()", null, null, (String) null);
-    }
-
-    @Test
     public void filterObjects() throws Exception {
         test(/* expression */ "{\n"
             + "    \"objs\": [\n"
@@ -53,13 +48,58 @@ public class FilterFunctionTest {
     }
 
     @Test
-    public void filterNumbers() throws Exception {
-        test("($x:=function($l){$l>2};$filter([1,5,3,4,2],$x))", "[5, 3, 4]", null, null);
+    public void filterNumbersFuncInlined() throws Exception {
+        test("$filter([1,5,3,4,2], function($n){$n>2})", "[5,3,4]", null, null);
+    }
+
+    @Test
+    public void filterNumbersFuncDeclared() throws Exception {
+        test("($x:=function($n){$n>2};$filter([1,5,3,4,2], $x))", "[5,3,4]", null, null);
+    }
+
+    @Test
+    public void filterNumbersFuncJsonata1() throws Exception {
+        test("$filter([-2,-1,0,1,2], $abs)", "[-2,-1,1,2]", null, null);
+    }
+
+    @Test
+    public void filterNumbersFuncJsonataIncompatible() throws Exception {
+        test("$filter([1,5,3,4,2], $substring)", null, "Context value is not a compatible type with argument 1 of function \"$substring\"", (String) null);
+    }
+
+    @Test
+    public void filterNumbersFuncJsonataArgNotMatch1() throws Exception {
+        test("$filter([1,5,3,4,2], $pad)", null, "Argument 1 of function $pad does not match function signature", (String) null);
+    }
+
+    @Test
+    public void filterNumbersFuncJsonataArgNotMatch2() throws Exception {
+        test("$filter([1,5,3,4,2], $split)", null, "Argument 2 of function $split does not match function signature", (String) null);
+    }
+
+    @Test
+    public void filterNumbersFuncJsonata2() throws Exception {
+        test("$filter([1,5,3,4,2], $reduce)", "[1,5,3,4,2]", null, (String) null);
     }
 
     @Test
     public void filterNumbersOdd() throws Exception {
-        test("($x:=function($l){$l%2=1};$filter([1,5,3,4,2],$x))", "[1, 5, 3]", null, null);
+        test("($x:=function($n){$n%2=1};$filter([1,5,3,4,2],$x))", "[1,5,3]", null, null);
+    }
+
+    @Test
+    public void filterNumbersByIndex() throws Exception {
+        test("$filter([10,4,45,2,13,7], function($n, $i){$i < 3})", "[10,4,45]", null, null);
+    }
+
+    @Test
+    public void filterNumbersByIndexAndCompleteArray() throws Exception {
+        test("$filter([10,4,45,2,13,7], function($n, $i, $a){$i > 0 and $a[$i - 1] >= 10})", "[4,2,7]", null, null);
+    }
+
+    @Test
+    public void filterNumbersByIndexAndCompleteArrayPlusArg() throws Exception {
+        test("$filter([10,4,45,2,13,7], function($n, $i, $a, $s){$i > 0 and $a[$i - 1] >= 10 and $s})", null, null, (String) null);
     }
 
     @Test
@@ -77,13 +117,62 @@ public class FilterFunctionTest {
     }
 
     @Test
-    public void filterMissingFunctionArg() throws Exception {
-        test("$filter([1,5,3,4,2])", null, FilterFunction.ERR_ARG2BADTYPE, (String) null);
+    public void noInput() throws Exception {
+        test("$filter()", null, FilterFunction.ERR_ARG1BADTYPE, (String) null);
     }
 
     @Test
-    public void filterMissingArrayArg() throws Exception {
-        test("($x:=function($l){$l>2};$filter($x))", null, null, (String) null);
+    public void nullInput() throws Exception {
+        test("$filter(null)", null, FilterFunction.ERR_ARG2BADTYPE, (String) null);
+    }
+
+    @Test
+    public void nullInputChain() throws Exception {
+        test("null ~> $filter()", null, FilterFunction.ERR_ARG1BADTYPE, (String) null);
+    }
+
+    @Test
+    public void missingFunctionArg() throws Exception {
+        test("$filter([1,5,3,4,2])", null, FilterFunction.ERR_ARG2BADTYPE, (String) null);
+    }
+
+    // Original JSONata FilterFunction.ERR_ARG2BADTYPE
+    // FIXME how to differ this case from chainedArrayArgNullFuncInlined()
+    @Test
+    public void missingArrayArgFuncInlined() throws Exception {
+        test("$filter(function($n){$n>2})", null, null, (String) null);
+    }
+
+    // Original JSONata FilterFunction.ERR_ARG2BADTYPE
+    // FIXME how to differ this case from chainedArrayArgNullFuncInlined()
+    @Test
+    public void missingArrayArgFuncDeclared() throws Exception {
+        test("($func:=function($n){$n>2};$filter($func))", null, null, (String) null);
+    }
+
+    @Test
+    public void filterNumbersFuncNotDeclared() throws Exception {
+        test("$filter([1,5,3,4,2], $func)", "[5,3,4]", String.format(FilterFunction.ERR_ARG2_FUNCTION_RESOLVE, "$func"), null);
+    }
+
+    @Test
+    public void filterNumbersFuncReturnsNothing() throws Exception {
+        test("$filter([1,5,3,4,2], function($n){null})", null, null, (String) null);
+    }
+
+    @Test
+    public void filterNumbersFuncReturnsNoBoolean() throws Exception {
+        test("$filter([1,5,3,4,2], function($n){\"foo\"})", null, null, (String) null);
+    }
+
+    @Test
+    public void chainedArrayArgNullFuncInlined() throws Exception {
+        test("null ~> $filter(function($n){$n>2})", null, null, (String) null);
+    }
+
+    @Test
+    public void chainedArgEmptyFuncInlined() throws Exception {
+        test("[] ~> $filter(function($n){$n>2})", null, null, (String) null);
     }
 
     @Test
@@ -100,5 +189,22 @@ public class FilterFunctionTest {
                 + "\"objects\": [\n"
                 + "  ]\n"
                 + "}");
+    }
+
+    @Test
+    public void nullArrayArg() throws Exception {
+        test("$filter(null, function($n){$n>2})", null,
+            "The expressions either side of operator \">\" must evaluate to numeric or string values",
+            (String) null);
+    }
+
+    @Test
+    public void noMatchArrayArg() throws Exception {
+        test("$filter(n, function($n){$n>2})", null, null, (String) null);
+    }
+
+    @Test
+    public void tooMuchArgs() throws Exception {
+        test("$filter([1,5,3], function($n){$n>2}, \"test\")", null, FilterFunction.ERR_ARG3BADTYPE, (String) null);
     }
 }

@@ -2,6 +2,7 @@ package testmanually;
 
 import java.io.Serializable;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import com.api.jsonata4java.Expression;
 import com.api.jsonata4java.expressions.utils.Utils;
@@ -9,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+@Ignore
 public class TestBindingReference implements Serializable {
 
     private static final long serialVersionUID = -7721819254928734600L;
