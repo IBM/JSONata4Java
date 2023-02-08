@@ -26,7 +26,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import com.api.jsonata4java.expressions.RegularExpression;
 
 /**
  * Some unit tests for helper class RegularExpression.

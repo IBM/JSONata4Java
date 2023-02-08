@@ -32,7 +32,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import com.api.jsonata4java.expressions.ParseException;
-import com.api.jsonata4java.expressions.path.PathExpression;
 
 @RunWith(Parameterized.class)
 public class PathExpressionSyntaxTests implements Serializable {

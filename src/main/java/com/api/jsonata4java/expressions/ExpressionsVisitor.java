@@ -499,6 +499,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 
     private void evaluateExit() {
         currentDepth--;
+        // should not happen but never say never...
+        if (currentDepth < 0) {
+            currentDepth = 0;
+        }
         checkRunaway();
     }
 
@@ -750,6 +754,10 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
     }
 
     public void timeboxExpression(long timeoutMS, int maxDepth) {
+        // issue 245 reset startTime for new delay measurement
+        startTime = System.currentTimeMillis();
+        // issue 245 reset currentDepth for new delay measurement
+        currentDepth = 0;
         if (timeoutMS > 0L && maxDepth > 0) {
             this.maxDepth = maxDepth;
             this.maxTime = timeoutMS;

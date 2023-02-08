@@ -32,8 +32,6 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
-import com.api.jsonata4java.expressions.path.PathExpression;
-import com.api.jsonata4java.expressions.path.PathExpressionVisitor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

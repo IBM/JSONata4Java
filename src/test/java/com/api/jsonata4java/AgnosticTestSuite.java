@@ -395,8 +395,12 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
         runJsonataTest(JsonataDotOrgTests.data());
 
         runJunitTests(new BasicExpressionsTests());
+        
         runJunitTests(new FunctionChainingTests());
+        
         runJunitTests(new PathExpressionParentTests());
+        
+        runJunitTests(new JsonataTimeoutTest());
     }
 
     private void runJunitTests(final Object testCase) {
