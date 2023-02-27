@@ -387,8 +387,9 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
     private static String sanitise(String str) {
 
         // strip any surrounding quotes
-        if ((str.startsWith("`") && str.endsWith("`")) || (str.startsWith("\"") && str.endsWith("\""))
-            || (str.startsWith("'") && str.endsWith("'"))) {
+        // issue #247 added length check
+        if (str.length() > 1 && ((str.startsWith("`") && str.endsWith("`")) || (str.startsWith("\"") && str.endsWith("\""))
+            || (str.startsWith("'") && str.endsWith("'")))) {
             str = str.substring(1, str.length() - 1);
         }
 
