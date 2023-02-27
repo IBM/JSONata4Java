@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>2.2.6</version>
+  <version>2.2.7</version>
 </dependency>
 ```
 
@@ -43,9 +43,11 @@ you can right click on the pom.xml file and select **Run as... / Maven build...*
 
 Alternatively, you can run from the command line in the JSONata4Java directory&colon; **mvn clean install -Dgpg.skip**
 
+Note: to build and deploy the jars to Maven Central you need to use a command like&colon; **mvn clean install deploy -Prelease**
+
 Once you have run the launcher, you can find the jar files in the /target directory. There are two&colon;
-* **JSONata4Java-2.2.6-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-2.2.6.jar** (only the JSONata4Java code)
+* **JSONata4Java-2.2.7-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-2.2.7.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
@@ -56,10 +58,9 @@ There is a tester.sh you can run in the project to enable you to test expression
 against the same JSON as is used at the https://try.jsonata.org site.
 
 ### Fixes ###
-Issue 245 for timeout reset on subsequent expression evaluations
-Updated pom.xml dependencies for gson vulnerability
+Issue 247 for single character strings
 
-### New Features ###
+### New Features for Version 2 ###
 Many thanks to **Martin Bluemel** for adding these new features&colon;  
 
 **Improved Chaining**&colon;
