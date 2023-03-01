@@ -219,7 +219,8 @@ public class FilterFunction extends FunctionBase {
                             }
                         }
                         JsonNode fctResult = fct.invoke(expressionVisitor, evc);
-                        if (fctResult != null && fctResult.asBoolean()) {
+                        // Issue #250 need to improve upon the asBoolean so a non-empty string is true
+                        if (fctResult != null && fctResult.asBoolean(true)) {
                             result.addAsSelectionGroup(element);
                         }
                     }
