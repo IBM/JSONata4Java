@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>2.2.8</version>
+  <version>2.2.9</version>
 </dependency>
 ```
 
@@ -46,8 +46,8 @@ Alternatively, you can run from the command line in the JSONata4Java directory&c
 Note: to build and deploy the jars to Maven Central you need to use a command like&colon; **mvn clean install deploy -Prelease**
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two&colon;
-* **JSONata4Java-2.2.8-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-2.2.8.jar** (only the JSONata4Java code)
+* **JSONata4Java-2.2.9-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-2.2.9.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
