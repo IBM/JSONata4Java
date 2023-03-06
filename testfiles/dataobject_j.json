@@ -1,0 +1,10 @@
+{
+  "member": {
+    "_id": 1,
+    "name": "John Doe",
+    "address": "123 Main St",
+    "city": "Anytown",
+    "state": "CA",
+    "zip": "12345"
+  }
+}
