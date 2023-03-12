@@ -301,6 +301,10 @@ public class EachFunctionTest {
         test("$each()", null, EachFunction.ERR_ARG1BADTYPE, (String) null);
     }
 
+    public void nullInput2() throws Exception {
+        test("$each()", null, null, (String) null);
+    }
+
     @Test
     public void nullInputFromChain() throws Exception {
         test("null ~> $each()", null, EachFunction.ERR_ARG1BADTYPE, (String) null);
@@ -344,5 +348,24 @@ public class EachFunctionTest {
     @Test
     public void threeArgs1stNoMatch() throws Exception {
         test("$each(object, function($v, $k){{$k: $v}}, 2)", null, EachFunction.ERR_ARG3BADTYPE, (String) null);
+    }
+
+    @Test
+    public void eachKeyValuePairIntoArray() throws Exception {
+        test("$each(Address, function($v, $k) {$k & \": \" & $v})",
+            "[\n"
+                + "  \"Street: Hursley Park\",\n"
+                + "  \"City: Winchester\",\n"
+                + "  \"Postcode: SO21 2JN\"\n"
+                + "]",
+            null,
+            "{\n"
+                + "  \"FirstName\": \"Fred\",\n"
+                + "  \"Address\": {\n"
+                + "    \"Street\": \"Hursley Park\",\n"
+                + "    \"City\": \"Winchester\",\n"
+                + "    \"Postcode\": \"SO21 2JN\"\n"
+                + "  }\n"
+                + "}");
     }
 }

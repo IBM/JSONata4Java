@@ -337,7 +337,7 @@ public class FunctionUtils implements Serializable {
                 }
                 case STRING:
                 default: {
-                    token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.asText());
+                    token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.toString());
                     TerminalNodeImpl tn = new TerminalNodeImpl(token);
                     StringContext sc = new MappingExpressionParser.StringContext(ctx);
                     sc.addAnyChild(tn);
@@ -465,7 +465,7 @@ public class FunctionUtils implements Serializable {
                 }
                 case STRING:
                 default: {
-                    token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, fieldObj.asText());
+                    token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, fieldObj.toString());
                     tn = new TerminalNodeImpl(token);
                     StringContext sc = new StringContext(ctx);
                     sc.addAnyChild(tn);
@@ -720,7 +720,7 @@ public class FunctionUtils implements Serializable {
                 }
                 case STRING:
                 default: {
-                    token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.asText());
+                    token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.toString());
                     TerminalNodeImpl tn = new TerminalNodeImpl(token);
                     StringContext sc = new StringContext(ctx);
                     sc.addAnyChild(tn);
@@ -815,7 +815,7 @@ public class FunctionUtils implements Serializable {
             }
             case STRING:
             default: {
-                token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.asText());
+                token = CommonTokenFactory.DEFAULT.create(MappingExpressionParser.STRING, element.toString());
                 TerminalNodeImpl tn = new TerminalNodeImpl(token);
                 StringContext sc = new StringContext(ctx);
                 sc.addAnyChild(tn);

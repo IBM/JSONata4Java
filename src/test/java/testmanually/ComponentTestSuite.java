@@ -125,6 +125,7 @@ import com.api.jsonata4java.expressions.utils.JsonMergeUtilsTest;
     TestBindingReference.class //
 })
 @Ignore
+
 public class ComponentTestSuite implements Serializable {
 
     private static final long serialVersionUID = 2033074749160537540L;

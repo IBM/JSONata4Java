@@ -23,6 +23,7 @@
 package com.api.jsonata4java.expressions.functions;
 
 import java.util.Iterator;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
@@ -73,133 +74,142 @@ public class EachFunction extends FunctionBase {
         final boolean useContext = ctxEvalResult.useContext;
         switch (argCount) {
             case 0:
-                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                if (arg != null) {
+                    throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
+                }
+                // else signal no match (result = null)
+                break;
             case 1:
                 final DeclaredFunction fctArg = FunctionUtils.getFunctionArgFromCtx(expressionVisitor, ctx, true);
                 if (fctArg == null) {
                     // this error message might be not so precise but it is exactly what original JSONata (1.8.6) does
                     throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
                 }
+                // unfortunately we can not (or at least I do not see how) differ between
+                // - context evaluates to null
+                // - no array argument specified at all
+                // so in every case we signal no match (result = null)
                 break;
             case 2:
                 // expect something that evaluates to an object and a function declaration
-                if (arg == null) {
-                    final ExprContext varid = ctx.exprValues() != null
-                        && ctx.exprValues().exprList() != null
-                            ? ctx.exprValues().exprList().expr(useContext ? 0 : 1)
-                            : null;
-                    if (!(varid instanceof Var_recallContext) && !(varid instanceof Function_declContext)) {
-                        throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
+                if (arg == null || !arg.isObject()) {
+                    throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_EACH));
+                }
+                final ObjectNode object = (ObjectNode) arg;
+                result = new SelectorArrayNode(JsonNodeFactory.instance);
+                final ExprContext varid = ctx.exprValues() != null
+                    && ctx.exprValues().exprList() != null
+                        ? ctx.exprValues().exprList().expr(useContext ? 0 : 1)
+                        : null;
+                if (varid instanceof Var_recallContext) {
+                    TerminalNode VAR_ID = ((Var_recallContext) varid).VAR_ID();
+                    String varID = varid.getText();
+                    // get the function to be executed from the functionMap and execute
+                    DeclaredFunction fct = expressionVisitor.getDeclaredFunction(varID);
+                    if (fct != null) {
+                        int varCount = fct.getVariableCount();
+                        int fctVarCount = fct.getMaxArgs();
+                        if (varCount > fctVarCount) {
+                            // only send variables function can consume
+                            varCount = fctVarCount;
+                        }
+                        for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
+                            String key = it.next();
+                            JsonNode field = object.get(key);
+                            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
+                            switch (varCount) {
+                                case 1: {
+                                    // just pass the field value
+                                    evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
+                                    break;
+                                }
+                                case 2: {
+                                    // pass the field value and key
+                                    evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
+                                    evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
+                                    break;
+                                }
+                                case 3: {
+                                    // pass the field value, key, and object
+                                    evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
+                                    evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
+                                    evc = FunctionUtils.addObjectExprVarContext(ctx, evc, object);
+                                    break;
+                                }
+                            }
+                            JsonNode fctResult = fct.invoke(expressionVisitor, evc);
+                            if (fctResult != null) {
+                                result.add(fctResult);
+                            }
+                        }
+                    } else {
+                        FunctionBase function = expressionVisitor.getJsonataFunction(varid.getText());
+                        if (function != null) {
+                            for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
+                                String key = it.next();
+                                JsonNode field = object.get(key);
+                                Function_callContext callCtx = new Function_callContext(ctx);
+                                // note: callCtx.children should be empty unless carrying an
+                                // exception
+                                result.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function, VAR_ID, callCtx, field));
+                            }
+                        } else {
+                            throw new EvaluateRuntimeException(
+                                "Expected function variable reference " + varID + " to resolve to a declared nor Jsonata function.");
+                        }
                     }
-                } else {
-                    result = each(expressionVisitor, ctx, arg, useContext);
+                } else if (varid instanceof Function_declContext) {
+                    final Function_declContext fctDeclCtx = ctx.exprValues() != null
+                        && ctx.exprValues().exprList() != null
+                            ? (Function_declContext) ctx.exprValues().exprList().expr(useContext ? 0 : 1)
+                            : null;
+                    if (fctDeclCtx != null) {
+                        // we have a declared function for each
+                        VarListContext varList = fctDeclCtx.varList();
+                        ExprListContext fctBody = fctDeclCtx.exprList();
+                        DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
+                        int varCount = fct.getVariableCount();
+                        int fctVarCount = fct.getMaxArgs();
+                        if (varCount > fctVarCount) {
+                            // only send variables function can consume
+                            varCount = fctVarCount;
+                        }
+                        for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
+                            String key = it.next();
+                            JsonNode field = object.get(key);
+                            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
+                            switch (varCount) {
+                                case 1: {
+                                    // just pass the field value
+                                    evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
+                                    break;
+                                }
+                                case 2: {
+                                    // pass the field value and key
+                                    evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
+                                    evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
+                                    break;
+                                }
+                                case 3: {
+                                    // pass the field value, key, and object
+                                    evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
+                                    evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
+                                    evc = FunctionUtils.addObjectExprVarContext(ctx, evc, object);
+                                    break;
+                                }
+                            }
+                            JsonNode fctResult = fct.invoke(expressionVisitor, evc);
+                            if (fctResult != null) {
+                                result.add(fctResult);
+                            }
+                        }
+                    }
                 }
                 break;
             default:
                 throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
         }
         return result;
-    }
-
-    private SelectorArrayNode each(final ExpressionsVisitor expressionVisitor, final Function_callContext ctx, final JsonNode arg, final boolean useContext) {
-        if (!arg.isObject()) {
-            throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
-        }
-        final ObjectNode object = (ObjectNode) arg;
-        final SelectorArrayNode result = new SelectorArrayNode(JsonNodeFactory.instance);
-        final ExprContext varid = ctx.exprValues() != null
-            && ctx.exprValues().exprList() != null
-                ? ctx.exprValues().exprList().expr(useContext ? 0 : 1)
-                : null;
-        if (varid instanceof Var_recallContext) {
-            invokeDeclaredFunction(expressionVisitor, ctx, result, object, varid);
-        } else if (varid instanceof Function_declContext) {
-            invokeFunctionInlined(expressionVisitor, ctx, result, useContext, object);
-        } else {
-            throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
-        }
-        return result;
-    }
-
-    private void invokeDeclaredFunction(ExpressionsVisitor expressionVisitor, Function_callContext ctx, SelectorArrayNode result, final ObjectNode object,
-        final ExprContext varid) {
-        final DeclaredFunction fct = expressionVisitor.getDeclaredFunction(varid.getText());
-        if (fct != null) {
-            // invoke user defined function
-            invokeFunction(expressionVisitor, ctx, result, object, fct);
-        } else {
-            final FunctionBase function = expressionVisitor.getJsonataFunction(varid.getText());
-            if (function != null) {
-                invokeJsonataFunction(expressionVisitor, ctx, result, object, varid, function);
-            } else {
-                throw new EvaluateRuntimeException(String.format(ERR_ARG2_FUNCTION_RESOLVE, varid.getText()));
-            }
-        }
-    }
-
-    private void invokeJsonataFunction(final ExpressionsVisitor expressionVisitor, final Function_callContext ctx, final SelectorArrayNode result,
-        final ObjectNode object, final ExprContext varid, final FunctionBase function) {
-        for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
-            final String key = it.next();
-            final JsonNode field = object.get(key);
-            final Function_callContext callCtx = new Function_callContext(ctx);
-            // note: callCtx.children should be empty unless carrying an exception
-            result.add(FunctionUtils.processVariablesCallFunction(expressionVisitor, function,
-                ((Var_recallContext) varid).VAR_ID(), callCtx, field));
-        }
-    }
-
-    private void invokeFunctionInlined(ExpressionsVisitor expressionVisitor, Function_callContext ctx, SelectorArrayNode result, final boolean useContext,
-        final ObjectNode object) {
-        final Function_declContext fctDeclCtx = ctx.exprValues() != null
-            && ctx.exprValues().exprList() != null
-                ? (Function_declContext) ctx.exprValues().exprList().expr(useContext ? 0 : 1)
-                : null;
-        if (fctDeclCtx != null) {
-            final VarListContext varList = fctDeclCtx.varList();
-            final ExprListContext fctBody = fctDeclCtx.exprList();
-            final DeclaredFunction fct = new DeclaredFunction(varList, fctBody);
-            invokeFunction(expressionVisitor, ctx, result, object, fct);
-        }
-    }
-
-    private void invokeFunction(ExpressionsVisitor expressionVisitor, Function_callContext ctx, SelectorArrayNode result, final ObjectNode object, final DeclaredFunction fct) {
-        final int varCount = fct.getVariableCount() > fct.getMaxArgs() ? fct.getMaxArgs() : fct.getVariableCount();
-        for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
-            final String key = it.next();
-            final JsonNode field = object.get(key);
-            ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
-            switch (varCount) {
-                case 1:
-                    // just pass the field value
-                    evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
-                    break;
-                case 2:
-                    // pass the field value and key
-                    evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
-                    evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
-                    break;
-                case 3:
-                    // pass the field value, key, and object
-                    evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
-                    evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
-                    evc = FunctionUtils.addObjectExprVarContext(ctx, evc, object);
-                    break;
-                default:
-                    // pass the field value, key, and object
-                    evc = FunctionUtils.fillExprVarContext(varCount, ctx, field);
-                    evc = FunctionUtils.addStringExprVarContext(ctx, evc, key);
-                    evc = FunctionUtils.addObjectExprVarContext(ctx, evc, object);
-                    for (int i = 3; i < varCount; i++) {
-                        evc = FunctionUtils.addStringExprVarContext(ctx, evc, "");
-                    }
-                    break;
-            }
-            final JsonNode fctResult = fct.invoke(expressionVisitor, evc);
-            if (fctResult != null) {
-                result.add(fctResult);
-            }
-        }
     }
 
     @Override

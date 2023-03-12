@@ -40,7 +40,15 @@ public class TesterUISettings {
 
     public static final File SETTINGS_FOLDER = new File(System.getProperty("user.home") + File.separator + ".jsonata4java");
     public static final File SETTINGS_FILE = new File(SETTINGS_FOLDER, "preferences.properties");
-    public static final Path DEFAULT_PATH_INPUT = Paths.get("src/test/resources/exerciser/address.json");
+    // issue #248
+    public static Path DEFAULT_PATH_INPUT = null;
+    static {
+        try {
+            DEFAULT_PATH_INPUT = Paths.get("src/test/resources/exerciser/address.json");
+        } catch (Exception e) {
+            ; // leave this as null if not found
+        }
+    }
     public static final Path DEFAULT_PATH_JSONATA = Paths.get("src/test/resources/exerciser/addressExpression.jsonata");
 
     private TesterUIJsonataExample example = TesterUIJsonataExample.ADDRESS;

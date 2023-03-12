@@ -83,11 +83,6 @@ public class FilterFunctionTest {
     }
 
     @Test
-    public void filterNumbersOdd() throws Exception {
-        test("($x:=function($n){$n%2=1};$filter([1,5,3,4,2],$x))", "[1,5,3]", null, null);
-    }
-
-    @Test
     public void filterNumbersByIndex() throws Exception {
         test("$filter([10,4,45,2,13,7], function($n, $i){$i < 3})", "[10,4,45]", null, null);
     }
@@ -124,6 +119,10 @@ public class FilterFunctionTest {
     @Test
     public void nullInput() throws Exception {
         test("$filter(null)", null, FilterFunction.ERR_ARG2BADTYPE, (String) null);
+    }
+
+    public void nullInput2() throws Exception {
+        test("$filter()", null, null, (String) null);
     }
 
     @Test
@@ -206,5 +205,25 @@ public class FilterFunctionTest {
     @Test
     public void tooMuchArgs() throws Exception {
         test("$filter([1,5,3], function($n){$n>2}, \"test\")", null, FilterFunction.ERR_ARG3BADTYPE, (String) null);
+    }
+
+    @Test
+    public void filterNumbers() throws Exception {
+        test("($x:=function($l){$l>2};$filter([1,5,3,4,2],$x))", "[5, 3, 4]", null, null);
+    }
+
+    @Test
+    public void filterNumbersOdd() throws Exception {
+        test("($x:=function($l){$l%2=1};$filter([1,5,3,4,2],$x))", "[1, 5, 3]", null, null);
+    }
+
+    @Test
+    public void filterMissingFunctionArg() throws Exception {
+        test("$filter([1,5,3,4,2])", null, FilterFunction.ERR_ARG2BADTYPE, (String) null);
+    }
+
+    @Test
+    public void filterMissingArrayArg() throws Exception {
+        test("($x:=function($l){$l>2};$filter($x))", null, null, (String) null);
     }
 }

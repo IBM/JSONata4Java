@@ -113,7 +113,12 @@ public class TesterUI {
         try {
             inputArea.setText(readFile(settings.getPathInput()));
         } catch (NoSuchFileException e) {
-            inputArea.setText(readFile(TesterUISettings.DEFAULT_PATH_INPUT));
+            // issue #248
+            try {
+                inputArea.setText(readFile(TesterUISettings.DEFAULT_PATH_INPUT));
+            } catch(Exception e1) {
+                ; // leave the inputArea empty
+            }
         }
         jsonataArea.setFont(settings.getFont());
         try {

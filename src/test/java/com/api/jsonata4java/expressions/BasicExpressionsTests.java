@@ -199,16 +199,24 @@ public class BasicExpressionsTests implements Serializable {
         + "            \"names\": [\"three\", \"four\"]\n" + "         }\n" + "      ]\n" + "    },\n" + "    {\n"
         + "      \"named\":[\"val1\",\"val2\"]\n" + "    }\n" + "]\n" + "";
 
+    static String json4 = "{\n"
+        + "  \"Account\": {\n"
+        + "    \"Account Name\": \"'\"   \n"
+        + "  }\n"
+        + "}";
+
     static JsonNodeFactory factory = JsonNodeFactory.instance;
     static ObjectMapper mapper = new ObjectMapper();
     static JsonNode jsonObj = null;
     static JsonNode jsonObj2 = null;
     static JsonNode jsonObj3 = null;
+    static JsonNode jsonObj4 = null;
     static {
         try {
             jsonObj = mapper.readTree(json);
             jsonObj2 = mapper.readTree(json2);
             jsonObj3 = mapper.readTree(json3);
+            jsonObj4 = mapper.readTree(json4);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -325,6 +333,10 @@ public class BasicExpressionsTests implements Serializable {
         expectArray.removeAll();
         expectArray.add("one");
         simpleTest("{ \"books\": [\"one\"] }.books", expectArray, jsonObj3);
+
+        // issue #247
+        simpleTest("Account.`Account Name`", "'", jsonObj4);
+
         // issue #29 and #30
         expectArray.removeAll();
         expectArray.add("one");
