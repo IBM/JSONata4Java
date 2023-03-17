@@ -23,7 +23,7 @@ You can also opt to clone this repository using the command line below and build
 git clone https://github.com/IBM/JSONata4Java.git
 ```
 
-### Java 1.8 Version needed for new Antlr 4.11.1 (Also updated project file to Eclipse 2022-09)
+### Java 1.8 Version needed for new Antlr 4.11.1 (Also updated project file to Eclipse 2022-12)
 
 The code was created using IBM Semeru Runtime Open Edition 11.0.16.1 (build 11.0.16.1+1). You can import the project into Eclipse 2022-09 or newer. 
 You can download the Java JDK 11 from https://developer.ibm.com/languages/java/semeru-runtimes/downloads/?license=IBM 
@@ -224,7 +224,7 @@ Using JSON:
   "c" : [ 1, 2, 3, 4, 5 ]
 }
 expression=$sum(c)
-evaluate returns&colon;
+evaluate returns:
 15
 ```
 
