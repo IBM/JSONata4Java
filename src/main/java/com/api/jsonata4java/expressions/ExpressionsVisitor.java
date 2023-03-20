@@ -808,7 +808,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 
         result = super.visit(tree);
 
-        if (!keepArray) {
+        if (!keepArray && tree instanceof MappingExpressionParser.To_arrayContext == false) {
             if (result != null && result instanceof SelectorArrayNode) {
                 SelectorArrayNode san = (SelectorArrayNode) result;
                 if (san.size() == 1 && san.selectionGroups.size() == 1) {

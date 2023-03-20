@@ -1,0 +1,21 @@
+{
+  "usage": {
+    "text_units": 1,
+    "text_characters": 153,
+    "features": 1
+  },
+  "language": "en",
+  "entities": [
+    {
+      "type": "Incident",
+      "text": "Incident",
+      "disambiguation": {
+        "subtype": [
+          "NONE"
+        ]
+      },
+      "count": 1,
+      "confidence": 0.999808
+    }
+  ]
+}
