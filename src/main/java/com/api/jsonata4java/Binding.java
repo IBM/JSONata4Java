@@ -23,6 +23,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullCo
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Class mapping a variable name to a variable or function declaration
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class Binding implements Serializable {
 
     private static final long serialVersionUID = -7183986949584334476L;
+    static private final ObjectMapper objectMapper = new ObjectMapper();
 
     String _varname = null;
     ExprContext _expr = null;
@@ -68,8 +70,9 @@ public class Binding implements Serializable {
      *                name of the variable to be assigned a value
      * @param value
      *                the value to be assigned to the variable name
+     * @throws ParseException 
      */
-    public Binding(String varName, JsonNode value) {
+    public Binding(String varName, JsonNode value) throws ParseException {
         if (varName.startsWith("$") == false) {
             varName = "$" + varName;
         }
@@ -78,8 +81,28 @@ public class Binding implements Serializable {
         ExprContext ctx = new ExprContext();
         ctx.children = new ArrayList<>();
         switch (value.getNodeType()) {
-            case OBJECT:
-            case ARRAY:
+            case OBJECT: {
+                try {
+                    String strValue = objectMapper.writeValueAsString(value);
+                    Expressions exprCTX = Expressions.parse(strValue);
+                    ParseTree tree = exprCTX.getTree();
+                    _expr = (ExprContext)tree;
+                } catch (IOException e) {
+                    throw new ParseException("ERROR IN BINDINGS: "+e.getLocalizedMessage());
+                }
+                break;
+            }
+            case ARRAY: {
+                try {
+                    String strValue = objectMapper.writeValueAsString(value);
+                    Expressions exprCTX = Expressions.parse(strValue);
+                    ParseTree tree = exprCTX.getTree();
+                    _expr = (ExprContext)tree;
+                } catch (IOException e) {
+                    throw new ParseException("ERROR IN BINDINGS: "+e.getLocalizedMessage());
+                }
+                break;
+            }
             case BINARY:
             case POJO: {
                 break;

@@ -47,8 +47,9 @@ public class Expression implements Serializable {
      * 
      *  @param bindingObj the json to calculate the bindings for
      *  @return the list of bindings for the provided json
+     * @throws ParseException 
      */
-    public static List<Binding> createBindings(JsonNode bindingObj) {
+    public static List<Binding> createBindings(JsonNode bindingObj) throws ParseException {
         List<Binding> bindings = new ArrayList<Binding>();
         for (Iterator<String> it = bindingObj.fieldNames(); it.hasNext();) {
             String key = it.next();
