@@ -29,7 +29,7 @@ public class Expression implements Serializable {
     private static final long serialVersionUID = -292660522621832862L;
     private static final ObjectMapper objectMapper = new ObjectMapper();
     /**
-     * Genearte a new Expression based on evaluating the supplied expression
+     * Generate a new Expression based on evaluating the supplied expression
      * 
      * @param expression
      *                   the logic to be parsed for later execution via the evaluate
