@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 public class Expression implements Serializable {
 
     private static final long serialVersionUID = -292660522621832862L;
-
+    private static final ObjectMapper objectMapper = new ObjectMapper();
     /**
      * Genearte a new Expression based on evaluating the supplied expression
      * 
@@ -61,7 +61,20 @@ public class Expression implements Serializable {
                     Binding binding = new Binding(key, expression);
                     bindings.add(binding);
                 } else {
-                    Binding binding = new Binding(key, testObj);
+                    // if the string starts with function treat as an expression
+                    expression = objectMapper.writeValueAsString(testObj).trim();
+                    while (expression.startsWith("\"") && expression.length() > 1 ) {
+                        expression = expression.substring(1);
+                    }
+                    while (expression.endsWith("\"") && expression.length() > 1) {
+                        expression = expression.substring(0,expression.length()-1);
+                    }
+                    Binding binding = null;
+                    if (expression.startsWith("function")) {
+                        binding = new Binding(key,expression);
+                    } else {
+                        binding = new Binding(key, testObj);
+                    }
                     bindings.add(binding);
 
                 }
