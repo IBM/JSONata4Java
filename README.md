@@ -248,7 +248,6 @@ This initial release of JSONata4Java has attempted to cover the large majority o
 There are a few functions that have not been implemented&colon;
 
 From&colon; https://docs.jsonata.org/control-operators we did not implement&colon;
-* ^(...) (Order-by)
 * ... ~> | ... | ...| (Transform)
 
 From&colon; https://docs.jsonata.org/numeric-functions we did not implement&colon;
