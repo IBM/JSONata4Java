@@ -2785,6 +2785,24 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
     }
 
     @Override
+    public JsonNode visitOp_orderby(MappingExpressionParser.Op_orderbyContext ctx) {
+        final String METHOD = "visitOp_orderby";
+        if (LOG.isLoggable(Level.FINEST)) {
+            LOG.entering(CLASS, METHOD, new Object[] {
+                ctx.getText(), ctx.depth()
+            });
+        }
+        JsonNode result = visit(ctx.expr());
+        if (result instanceof ArrayNode) {
+            result = new OrderByOperator().evaluate(ctx, (ArrayNode) result);
+        }
+        if (LOG.isLoggable(Level.FINEST)) {
+            LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
+        }
+        return result;
+    }
+
+    @Override
     public JsonNode visitTo_array(MappingExpressionParser.To_arrayContext ctx) {
         final String METHOD = "visitTo_array";
         if (LOG.isLoggable(Level.FINEST)) {

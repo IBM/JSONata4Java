@@ -50,6 +50,7 @@ expr:
  | expr '.' expr                                          # path
  | (('%' '.')+ expr)                                      # parent_path
  | '%'                                                    # parent_path_solitary
+ | expr '^' '(' (('>'|'<')? ID (',' ('>'|'<')? ID)*)* ')' # op_orderby
  | expr ARR_OPEN ARR_CLOSE                                # to_array
  | expr ARR_OPEN expr ARR_CLOSE                           # array
  | expr OBJ_OPEN fieldList? OBJ_CLOSE                     # object
@@ -80,7 +81,7 @@ expr:
 
 fieldList : (STRING | expr) ':' expr (',' (STRING | expr) ':' expr)*;
 exprList : expr (',' expr)* ;
-varList : '('  (VAR_ID (',' VAR_ID)*)* ')' ;
+varList : '(' (VAR_ID (',' VAR_ID)*)* ')' ;
 exprValues : '(' exprList ')' ((',' exprOrSeq)* ')')?;
 emptyValues : '(' ')' ;
 seq : expr '..' expr ;
