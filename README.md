@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>2.4.0</version>
+  <version>2.4.1</version>
 </dependency>
 ```
 
@@ -25,7 +25,7 @@ git clone https://github.com/IBM/JSONata4Java.git
 
 ### Java 1.8 Version needed for new Antlr 4.11.1 (Also updated project file to Eclipse 2022-12)
 
-The code was created using IBM Semeru Runtime Open Edition 11.0.16.1 (build 11.0.16.1+1). You can import the project into Eclipse 2022-09 or newer. 
+The code was created using IBM Semeru Runtime Open Edition 11.0.17.0 (build 11.0.17+8). You can import the project into Eclipse 2023-03 or newer. 
 You can download the Java JDK 11 from https://developer.ibm.com/languages/java/semeru-runtimes/downloads/?license=IBM 
 
 However, the build dependencies are set to allow use with Java 1.8
@@ -45,8 +45,8 @@ Alternatively, you can run from the command line in the JSONata4Java directory&c
 Note: to build and deploy the jars to Maven Central you need to use a command like&colon; **mvn clean install deploy -Prelease**
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two&colon;
-* **JSONata4Java-2.4.0-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-2.4.0.jar** (only the JSONata4Java code)
+* **JSONata4Java-2.4.1-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-2.4.1.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
@@ -58,7 +58,11 @@ against the same JSON as is used at the https://try.jsonata.org site.
 
 
 ### Fixes ###
-Issue 256 for retaining array for to_array specification 
+Issue 167 to add Synced suffixed evaluation methods to allow people running 
+in a multi-threaded environment to use evaluateSynced, etc. The non-Synced 
+methods are not thread-safe.
+
+Issue 260 to add support for timeoutMS and maxDepth to the evaluate methods in Expression.
 
 
 ### New Feature for Version 2.4 ###
