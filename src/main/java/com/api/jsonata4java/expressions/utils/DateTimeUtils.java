@@ -1017,7 +1017,7 @@ public class DateTimeUtils implements Serializable {
                     }
                 };
             } else if (part.integerFormat != null) {
-                res = generateRegex(part.integerFormat);
+                res = generateRegex(part.component,part.integerFormat);
             } else {
                 String regex = "[a-zA-Z]+";
                 final Map<String, Integer> lookup = new HashMap<>();
@@ -1058,7 +1058,7 @@ public class DateTimeUtils implements Serializable {
         return matcher;
     }
 
-    private static MatcherPart generateRegex(Format formatSpec) {
+    private static MatcherPart generateRegex(char component, Format formatSpec) {
         MatcherPart matcher;
         final boolean isUpper = formatSpec.case_type == tcase.UPPER;
         switch (formatSpec.primary) {
@@ -1098,6 +1098,25 @@ public class DateTimeUtils implements Serializable {
             }
             case DECIMAL: {
                 String regex = "[0-9]+";
+                switch(component) {
+                  case 'Y': {
+                    regex = "[0-9]{2,4}";
+                    break;
+                  }
+                  case 'M': //
+                  case 'D': //
+                  case 'H': //
+                  case 'h': //
+                  case 'm': //
+                  case 's': {
+                    regex = "[0-9]{1,2}";
+                    break;
+                  }
+                  default: {
+                    break;
+                  }
+                    
+                }
                 if (formatSpec.ordinal) {
                     regex += "(?:th|st|nd|rd)";
                 }
