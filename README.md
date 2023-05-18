@@ -23,12 +23,18 @@ You can also opt to clone this repository using the command line below and build
 git clone https://github.com/IBM/JSONata4Java.git
 ```
 
-### Java 1.8 Version needed for new Antlr 4.11.1 (Also updated project file to Eclipse 2022-12)
+### Differences with JavaScript jsonata.org ###
 
-The code was created using IBM Semeru Runtime Open Edition 11.0.17.0 (build 11.0.17+8). You can import the project into Eclipse 2023-03 or newer. 
-You can download the Java JDK 11 from https://developer.ibm.com/languages/java/semeru-runtimes/downloads/?license=IBM 
+The Java version uses ANTLR to build the parser for the language, and Java Objects are more tightly controlled that JavaScript Objects. Therefore, some things differ between the Java implementation and JavaScript implementation. For example:
+ - we require functions to be called with their arguments, even if no arguments are being passed. This is because we differentiate a variable reference with no parentheses from a function that has parentheses. 
+ - we require variables to begin with a letter or an underscore (but not a number) whereas jsonata.org allows variables to begin with numbers ([Issue 267](https://github.com/IBM/JSONata4Java/issues/267)).
+ - Arrays hold JsonNode types so can not hold references to functions, whereas jsonata.org can manage function references within an array ([Issue 268](https://github.com/IBM/JSONata4Java/issues/268)).  
 
-However, the build dependencies are set to allow use with Java 1.8
+### Java 11 and 1.8 Versions needed for new Antlr 4.11.1 (Also updated project file to Eclipse 2023-03)
+
+The code was created using IBM Semeru Runtime Open Edition 11.0.17.0 (build 11.0.17+8). You can import the project into Eclipse 2023-03 or newer. This is to allow the newer version of ANTLR to generate necessary code from the g4 file defining the language.  You can download the Java JDK 11 from https://developer.ibm.com/languages/java/semeru-runtimes/downloads/?license=IBM 
+
+** *However, the build dependencies are set to allow use with Java 1.8* **
 
 
 ### Building the jar files
@@ -40,9 +46,11 @@ you can right click on the pom.xml file and select **Run as... / Maven build...*
 
 ![Launcher Image](./images/Launcher.png)
 
-Alternatively, you can run from the command line in the JSONata4Java directory&colon; **mvn clean install -Dgpg.skip**
+Alternatively, you can run from the command line in the JSONata4Java directory&colon;  
+`mvn clean install -Dgpg.skip`
 
-Note: to build and deploy the jars to Maven Central you need to use a command like&colon; **mvn clean install deploy -Prelease**
+Note: to build and deploy the jars to Maven Central you need to use a command like&colon;  
+`mvn clean install deploy -Prelease`
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two&colon;
 * **JSONata4Java-2.4.1-jar-with-dependencies.jar** (thinks includes dependent jar files)

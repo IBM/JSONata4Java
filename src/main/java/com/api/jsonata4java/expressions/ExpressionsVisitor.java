@@ -3029,6 +3029,14 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         }
         final String varName = ctx.getText();
         JsonNode result = getVariable(varName);
+//        if (result == null) {
+//          // see if this is calling a declared function with no parameters
+//          DeclaredFunction declFct = getDeclaredFunction(varName);
+//          if (declFct != null) {
+//            ExprListContext exprListCtx = declFct.getExpressionList();
+//            result = visit(exprListCtx);
+//          }
+//        }
         lastVisited = METHOD;
         if (LOG.isLoggable(Level.FINEST)) {
             LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));

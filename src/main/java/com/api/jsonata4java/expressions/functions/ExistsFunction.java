@@ -46,7 +46,7 @@ public class ExistsFunction extends FunctionBase {
 
         // Retrieve the number of arguments
         JsonNode arg = JsonNodeFactory.instance.nullNode();
-        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        boolean useContext = false; // FunctionUtils.useContextVariable(this, ctx, getSignature());
         int argCount = getArgumentCount(ctx);
         if (useContext) {
             arg = FunctionUtils.getContextVariable(expressionVisitor);
