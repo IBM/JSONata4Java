@@ -106,11 +106,7 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-<<<<<<< Upstream, based on branch 'master' of https://github.com/IBM/JSONata4Java.git
-			<version>2.15.0</version>
-=======
 			<version>2.15.1</version>
->>>>>>> 170cea8 IBM/JSONata4Java#268
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core -->
 		<dependency>
