@@ -13,6 +13,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.node.NumericNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 
 public class OrderByOperator {
 
@@ -35,14 +37,29 @@ public class OrderByOperator {
                 for (final OrderByField sortField : sortFields) {
                     JsonNode n1 = o1.get(sortField.name);
                     JsonNode n2 = o2.get(sortField.name);
-                    if (n1 != null && n1 instanceof TextNode
-                        && n2 != null && n2 instanceof TextNode) {
-                        final int comp = ((TextNode) n1).asText().compareTo(((TextNode) n2).asText());
-                        if (comp != 0) {
-                            return sortField.order == OrderByOrder.DESC ? comp * (-1) : comp;
+                    if (n1 != null && n2 != null) {
+                        if (n1 instanceof TextNode && n2 instanceof TextNode) {
+                            final int comp = ((TextNode) n1).asText().compareTo(((TextNode) n2).asText());
+                            if (comp != 0) {
+                                return sortField.order == OrderByOrder.DESC ? comp * -1 : comp;
+                            }
                         }
-                    }
-                }
+                        if (n1 instanceof NumericNode && n2 instanceof NumericNode) {
+                            final int comp = (int) Double.compare(((NumericNode) n1).asDouble(), ((NumericNode) n2).asDouble());
+                            if (comp != 0) {
+                                return sortField.order == OrderByOrder.DESC ? comp * -1 : comp;
+                            }
+
+                        }
+                        if (n1 instanceof BooleanNode && n2 instanceof BooleanNode) {
+                            final int comp = Boolean.compare(((BooleanNode) n1).asBoolean(), ((BooleanNode) n2).asBoolean());
+                            if (comp != 0) {
+                                return sortField.order == OrderByOrder.DESC ? comp * -1 : comp;
+                            }
+
+                         }
+                     }
+				}
                 return 0;
             }
         });
