@@ -61,4 +61,11 @@ public class OpOrderByTest {
             "[{\"id\":\"1\",\"content\":\"1\"},{\"id\":\"2\",\"content\":\"1\"},{\"id\":\"2\",\"content\":\"2\"}]", null,
             "[{\"id\":\"1\",\"content\":\"1\"},{\"id\":\"2\",\"content\":\"1\"},{\"id\":\"2\",\"content\":\"2\"}]");
     }
+	
+    @Test
+    public void testOrderedNumeric() throws Exception {
+        test("$^(id, content)",
+                "[{\"id\":1,\"content\":\"1\"},{\"id\":2,\"content\":\"1\"},{\"id\":2,\"content\":\"2\"}]", null,
+                "[{\"id\":2,\"content\":\"2\"},{\"id\":2,\"content\":\"1\"},{\"id\":1,\"content\":\"1\"}]");
+     }
 }
