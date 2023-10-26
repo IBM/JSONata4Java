@@ -296,6 +296,12 @@ public class FromMillisFunctionTests implements Serializable {
                         // { "$fromMillis(1483272000000, \"Week: [w] of [xNn]\")","\"Week: 5 of December\"",null},
                         // { "$fromMillis(1533038400000, \"Week: [w] of [xNn]\")","\"Week: 1 of August\"",null},
                         // { "$fromMillis(1419940800000, \"Week: [w] of [xNn]\")","\"Week: 1 of January\"",null},
+            {
+            	"$fromMillis(1521801216617, \"[F], [D]/[M]/[Y] [h]:[m]:[s] [PN]\")", "\"friday, 23/3/2018 10:33:36 AM\"", null
+            },
+            {
+            	"$fromMillis(1521801216617, \"[F], [D]/[M]/[Y] [h]:[m]:[s] [Pn]\")", "\"friday, 23/3/2018 10:33:36 am\"", null
+            },
         });
     }
 
