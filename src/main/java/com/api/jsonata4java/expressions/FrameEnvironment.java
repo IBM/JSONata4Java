@@ -23,10 +23,7 @@
 package com.api.jsonata4java.expressions;
 
 import java.io.Serializable;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.functions.FunctionBase;
@@ -281,7 +278,7 @@ public class FrameEnvironment implements Serializable {
 
     private void initParentNodeMap() {
         if (getContextStack().peekLast() != null) {
-            _parentNodeMap = new HashMap<>();
+            _parentNodeMap = new IdentityHashMap<>();
             indexNodes(_parentNodeMap, getContextStack().peekLast());
         }
     }
