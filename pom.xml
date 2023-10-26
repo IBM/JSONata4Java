@@ -25,7 +25,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ibm.jsonata4java</groupId>
 	<artifactId>JSONata4Java</artifactId>
-	<version>2.4.4</version>
+	<version>2.4.5</version>
 	<name>JSONata4Java</name>
 	<description>Port of jsonata.js to Java to enable rules for JSON content</description>
 	<url>https://github.com/IBM/JSONata4Java</url>
