@@ -132,7 +132,7 @@ public class PathExpressionParentTests {
             + "  'XAccount': %.%.'Account Name'"
             + "}",
             "["
-                + "  {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"},"
+                + "  {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order103\",\"XAccount\":\"Account Name\"},"
                 + "  {\"XProduct\":\"Trilby hat\",\"XOrder\":\"order103\",\"XAccount\":\"Account Name\"},"
                 + "  {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"},"
                 + "  {\"XProduct\":\"Cloak\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"}"
@@ -180,7 +180,7 @@ public class PathExpressionParentTests {
             + "}",
             "{"
                 + "  \"Products\":["
-                + "    {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"},"
+                + "    {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order103\",\"XAccount\":\"Account Name\"},"
                 + "    {\"XProduct\":\"Trilby hat\",\"XOrder\":\"order103\",\"XAccount\":\"Account Name\"},"
                 + "    {\"XProduct\":\"Bowler Hat\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"},"
                 + "    {\"XProduct\":\"Cloak\",\"XOrder\":\"order104\",\"XAccount\":\"Account Name\"}"
