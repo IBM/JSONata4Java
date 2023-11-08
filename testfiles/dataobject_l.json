@@ -1,0 +1,14 @@
+{
+  "predictions": [
+    {
+      "fields": [
+        "Response_message_field"
+      ],
+      "values": [
+        [
+          "#Inventory #Signature"
+        ]
+      ]
+    }
+  ]
+}

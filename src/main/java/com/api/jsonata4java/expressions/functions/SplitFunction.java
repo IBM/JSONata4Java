@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.RegularExpression;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -64,19 +65,26 @@ import com.fasterxml.jackson.databind.node.POJONode;
  */
 public class SplitFunction extends FunctionBase {
 
-    public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SPLIT);
-    public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SPLIT);
-    public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SPLIT);
-    public static String ERR_ARG3BADTYPE = String.format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_SPLIT);
-    public static String ERR_ARG4BADTYPE = String.format(Constants.ERR_MSG_ARG4_BAD_TYPE, Constants.FUNCTION_SPLIT);
+    public static String ERR_BAD_CONTEXT = String
+        .format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SPLIT);
+    public static String ERR_ARG1BADTYPE = String
+        .format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SPLIT);
+    public static String ERR_ARG2BADTYPE = String
+        .format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SPLIT);
+    public static String ERR_ARG3BADTYPE = String
+        .format(Constants.ERR_MSG_ARG3_BAD_TYPE, Constants.FUNCTION_SPLIT);
+    public static String ERR_ARG4BADTYPE = String
+        .format(Constants.ERR_MSG_ARG4_BAD_TYPE, Constants.FUNCTION_SPLIT);
 
-    public JsonNode invoke(ExpressionsVisitor expressionVisitor, Function_callContext ctx) {
+    public JsonNode invoke(ExpressionsVisitor expressionVisitor,
+        Function_callContext ctx) {
         // Create the variable to return
         JsonNode result = null;
 
         // Retrieve the number of arguments
         JsonNode argString = JsonNodeFactory.instance.nullNode();
-        boolean useContext = FunctionUtils.useContextVariable(this, ctx, getSignature());
+        boolean useContext = FunctionUtils.useContextVariable(this, ctx,
+            getSignature());
         int argCount = getArgumentCount(ctx);
         if (useContext) {
             argString = FunctionUtils.getContextVariable(expressionVisitor);
@@ -90,7 +98,8 @@ public class SplitFunction extends FunctionBase {
         // Make sure that we have the right number of arguments
         if (argCount >= 1 && argCount <= 3) {
             if (!useContext) {
-                argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
+                argString = FunctionUtils
+                    .getValuesListExpression(expressionVisitor, ctx, 0);
             }
             if (argCount < 2) {
                 if (argString == null || argString.isTextual()) {
@@ -98,12 +107,25 @@ public class SplitFunction extends FunctionBase {
                 }
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
             }
-            // check to see if we got a textual reference
-            final JsonNode argSeparator = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-                useContext ? 0 : 1);
+            JsonNode argSeparator = null;
+            ExprContext exprCtx = ctx.exprValues().exprList()
+                .expr(useContext ? 0 : 1);
+            if ("$".equals(exprCtx.getChild(0).toString())) {
+                argSeparator = FunctionUtils.getValuesListExpression(
+                    expressionVisitor, ctx, useContext ? 1 : 2);
+                if (useContext) {
+                    // since we used context the $ reference is superfluous
+                    argCount--;
+                }
+            } else {
+                // check to see if we got a textual reference
+                argSeparator = FunctionUtils.getValuesListExpression(
+                    expressionVisitor, ctx, useContext ? 0 : 1);
+            }
             int limit = -1; // assume unlimited
             // Make sure that the separator is not null
-            if (argSeparator == null || !(argSeparator.isTextual() || argSeparator instanceof POJONode)) {
+            if (argSeparator == null || !(argSeparator.isTextual()
+                || argSeparator instanceof POJONode)) {
                 if (argString == null) {
                     if (useContext) {
                         throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
@@ -123,13 +145,15 @@ public class SplitFunction extends FunctionBase {
             final RegularExpression regex = argSeparator instanceof POJONode
                 ? (RegularExpression) ((POJONode) argSeparator).getPojo()
                 : null;
-            final String separator = regex != null ? regex.toString() : argSeparator.textValue();
+            final String separator = regex != null ? regex.toString()
+                : argSeparator.textValue();
 
             if (argCount == 3) {
-                final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
-                    useContext ? 1 : 2);
+                final JsonNode argLimit = FunctionUtils.getValuesListExpression(
+                    expressionVisitor, ctx, useContext ? 1 : 2);
 
-                // Check to see if we have an optional limit argument we check it
+                // Check to see if we have an optional limit argument we check
+                // it
                 if (argLimit != null) {
                     if (argLimit.isNumber() && argLimit.asInt() >= 0) {
                         limit = argLimit.asInt();
@@ -140,16 +164,17 @@ public class SplitFunction extends FunctionBase {
             }
 
             /*
-             * Split the string using a simple String::split... but do not specify the
-             * limit. This is because the String::split function in Java behaves differently
-             * to the Javascript String::split function... and the JSONata $split function
-             * is defined to behave like the Javascript version.
+             * Split the string using a simple String::split... but do not
+             * specify the limit. This is because the String::split function in
+             * Java behaves differently to the Javascript String::split
+             * function... and the JSONata $split function is defined to behave
+             * like the Javascript version.
              * 
-             * If the limit is zero, we do not add any strings in the output array to the
-             * ArrayNode object.
+             * If the limit is zero, we do not add any strings in the output
+             * array to the ArrayNode object.
              * 
-             * If the limit is non-zero, we add up to the specified number of strings to the
-             * ArrayNode object.
+             * If the limit is non-zero, we add up to the specified number of
+             * strings to the ArrayNode object.
              */
             result = JsonNodeFactory.instance.arrayNode();
             if (!str.isEmpty()) {
@@ -168,7 +193,8 @@ public class SplitFunction extends FunctionBase {
                 } // FOR
             }
         } else {
-            throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG4BADTYPE);
+            throw new EvaluateRuntimeException(
+                argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG4BADTYPE);
         }
 
         return result;
@@ -186,7 +212,8 @@ public class SplitFunction extends FunctionBase {
 
     @Override
     public String getSignature() {
-        // accepts a string (or context variable), a string or function, an optional
+        // accepts a string (or context variable), a string or function, an
+        // optional
         // number, returns an array of strings
         return "<s-(sf)n?:a<s>>";
     }
