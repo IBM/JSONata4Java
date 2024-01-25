@@ -30,7 +30,7 @@ The Java version uses ANTLR to build the parser for the language, and Java Objec
  - we require variables to begin with a letter or an underscore (but not a number) whereas jsonata.org allows variables to begin with numbers ([Issue 267](https://github.com/IBM/JSONata4Java/issues/267)).
  - Arrays hold JsonNode types so can not hold references to functions, whereas jsonata.org can manage function references within an array ([Issue 268](https://github.com/IBM/JSONata4Java/issues/268)).  
 
-### Java 11 and 1.8 Versions needed for new Antlr 4.11.1 (Also updated project file to Eclipse 2023-03)
+### Java 11 and 1.8 Versions needed for new Antlr 4.13.1 (Also updated project file to Eclipse 2023-12)
 
 The code was created using IBM Semeru Runtime Open Edition 11.0.17.0 (build 11.0.17+8). You can import the project into Eclipse 2023-03 or newer. This is to allow the newer version of ANTLR to generate necessary code from the g4 file defining the language.  You can download the Java JDK 11 from https://developer.ibm.com/languages/java/semeru-runtimes/downloads/?license=IBM 
 
