@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "id": "obj1",
+      "name": "obj 1",
+      "parentId": ""
+    },
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [],
+              "id": "obj4",
+              "name": "obj 4"
+            }
+          ],
+          "id": "obj3",
+          "name": "obj 3"
+        }
+      ],
+      "id": "obj2",
+      "name": "obj 2",
+      "parentId": "obj1"
+    }
+  ]
+}
