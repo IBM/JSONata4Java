@@ -26,6 +26,8 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
+
+import com.api.jsonata4java.expressions.functions.NoContextFunction;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.CommonTokenFactory;
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -666,6 +668,9 @@ public class FunctionUtils implements Serializable {
      */
     public static JsonNode processVariablesCallFunction(ExpressionsVisitor exprVisitor, FunctionBase function,
         TerminalNode varid, Function_callContext ctx, JsonNode... elements) {
+        if (function instanceof NoContextFunction)
+            return ((NoContextFunction) function).invoke(elements);
+
         ExprListContext elc = new ExprListContext(ctx.getParent(), ctx.invokingState);
         ExprValuesContext evc = new ExprValuesContext(ctx.getParent(), ctx.invokingState);
         evc.addAnyChild(new TerminalNodeImpl(CommonTokenFactory.DEFAULT.create(MappingExpressionParser.T__1, "(")));

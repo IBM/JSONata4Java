@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
-public class AppendFunction extends FunctionBase {
+public class AppendFunction extends FunctionBase implements NoContextFunction {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_APPEND);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_APPEND);
@@ -96,6 +96,16 @@ public class AppendFunction extends FunctionBase {
         }
 
         return result;
+    }
+
+    @Override
+    public JsonNode invoke(JsonNode... elements) {
+        ArrayNode a = ArrayUtils.ensureArray(elements[0]);
+        ArrayNode b = ArrayUtils.ensureArray(elements[1]);
+
+        a.addAll(b);
+
+        return a;
     }
 
     @Override
