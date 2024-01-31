@@ -46,6 +46,7 @@ import com.api.jsonata4java.expressions.functions.FloorFunction;
 import com.api.jsonata4java.expressions.functions.FormatBaseFunction;
 import com.api.jsonata4java.expressions.functions.FormatNumberFunction;
 import com.api.jsonata4java.expressions.functions.FromMillisFunction;
+import com.api.jsonata4java.expressions.functions.FromMillisZonedFunction;
 import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.functions.JoinFunction;
 import com.api.jsonata4java.expressions.functions.KeysFunction;
@@ -111,6 +112,7 @@ public class Constants implements Serializable {
     public static final String FUNCTION_REPLACE = "$replace";
     public static final String FUNCTION_NOW = "$now";
     public static final String FUNCTION_FROM_MILLIS = "$fromMillis";
+    public static final String FUNCTION_FROM_MILLIS_ZONED = "$fromMillisZoned";
     public static final String FUNCTION_FORMAT_NUMBER = "$formatNumber";
     public static final String FUNCTION_FORMAT_BASE = "$formatBase";
     public static final String FUNCTION_BASE64_ENCODE = "$base64encode";
@@ -193,6 +195,7 @@ public class Constants implements Serializable {
         FUNCTIONS.put(FUNCTION_REPLACE, new ReplaceFunction());
         FUNCTIONS.put(FUNCTION_NOW, new NowFunction());
         FUNCTIONS.put(FUNCTION_FROM_MILLIS, new FromMillisFunction());
+        FUNCTIONS.put(FUNCTION_FROM_MILLIS_ZONED, new FromMillisZonedFunction());
         FUNCTIONS.put(FUNCTION_FORMAT_NUMBER, new FormatNumberFunction());
         FUNCTIONS.put(FUNCTION_FORMAT_BASE, new FormatBaseFunction());
         FUNCTIONS.put(FUNCTION_BASE64_ENCODE, new Base64EncodeFunction());
