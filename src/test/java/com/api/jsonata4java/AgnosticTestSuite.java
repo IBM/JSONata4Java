@@ -44,6 +44,7 @@ import com.api.jsonata4java.expressions.FloorFunctionTests;
 import com.api.jsonata4java.expressions.FormatBaseFunctionTests;
 import com.api.jsonata4java.expressions.FormatNumberFunctionTests;
 import com.api.jsonata4java.expressions.FromMillisFunctionTests;
+import com.api.jsonata4java.expressions.FromMillisZonedFunctionTests;
 import com.api.jsonata4java.expressions.FunctionChainingTests;
 import com.api.jsonata4java.expressions.InvalidSyntaxTest;
 import com.api.jsonata4java.expressions.JoinFunctionTests;
@@ -352,6 +353,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
         runComponentTest(FormatBaseFunctionTests.data());
         runComponentTest(FormatNumberFunctionTests.data());
         runComponentTest(FromMillisFunctionTests.data());
+        runComponentTest(FromMillisZonedFunctionTests.data());
         runComponentTest(JoinFunctionTests.data());
         runComponentTest(LengthFunctionTests.data());
         runComponentTest(LowercaseFunctionTests.data());
