@@ -208,7 +208,7 @@ public class ReplaceFunction extends FunctionBase {
         // In JSONata and in Java the $ in the replacement test usually starts the insertion of a capturing group
         // In order to replace a simple $ in Java you have to escape the $ with "\$"
         // in JSONata you do this with a '$$'
-        // "\$" followed any character besides '<' and and digit into $ + this character  
+        // "\$" followed any character besides '<' and a digit into $ + this character  
         return in.replaceAll("\\$\\$", "\\\\\\$")
             .replaceAll("([^\\\\]|^)\\$([^0-9^<])", "$1\\\\\\$$2");
     }
