@@ -27,6 +27,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.IsoFields;
 import java.time.temporal.WeekFields;
 import java.util.Collections;
@@ -36,14 +37,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 
 public class DateTimeUtils implements Serializable {
@@ -718,6 +722,48 @@ public class DateTimeUtils implements Serializable {
         return result;
     }
 
+ 	public static String formatDateTimeFromZoneId(long millis, String picture, String zoneId)
+ 	{
+ 		String workTimezone = zoneId;
+
+ 		if (workTimezone == null)
+ 		{
+ 			workTimezone = "Z";
+ 		}
+
+ 		TimeZone zone = TimeZone.getTimeZone(workTimezone);
+ 		ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(millis), zone.toZoneId());
+
+ 		PictureFormat formatSpec;
+ 		if (picture == null)
+ 		{
+ 			if (iso8601Spec == null)
+ 			{
+ 				iso8601Spec = analyseDateTimePicture("[Y0001]-[M01]-[D01]T[H01]:[m01]:[s01].[f001][Z01:01t]");
+ 			}
+ 			formatSpec = iso8601Spec;
+ 		}
+ 		else
+ 		{
+ 			formatSpec = analyseDateTimePicture(picture);
+ 		}
+
+ 		String result = "";
+ 		for (SpecPart part : formatSpec.parts)
+ 		{
+ 			if (part.type.equals("literal"))
+ 			{
+ 				result += part.value;
+ 			}
+ 			else
+ 			{
+ 				result += formatComponent(zonedDateTime, part);
+ 			}
+ 		}
+
+ 		return result;
+ 	}
+
     private static String formatComponent(LocalDateTime date, SpecPart markerSpec, int offsetHours, int offsetMinutes) {
         String componentValue = getDateTimeFragment(date, markerSpec.component);
 
@@ -785,6 +831,119 @@ public class DateTimeUtils implements Serializable {
         return componentValue;
     }
 
+ 	private static String formatComponent(ZonedDateTime date, SpecPart markerSpec)
+ 	{
+ 		String componentValue = getDateTimeFragment(date, markerSpec.component);
+
+ 		if ("YMDdFWwXxHhms".indexOf(markerSpec.component) != -1)
+ 		{
+ 			if (markerSpec.component == 'Y')
+ 			{
+ 				if (markerSpec.n != -1)
+ 				{
+ 					componentValue = "" + (int)(Integer.parseInt(componentValue) % Math.pow(10, markerSpec.n));
+ 				}
+ 			}
+ 			if (markerSpec.names != null)
+ 			{
+ 				if (markerSpec.component == 'M' || markerSpec.component == 'x')
+ 				{
+ 					componentValue = months[Integer.parseInt(componentValue) - 1];
+ 				}
+ 				else if (markerSpec.component == 'F')
+ 				{
+ 					componentValue = days[Integer.parseInt(componentValue)];
+ 				}
+ 				else
+ 				{
+ 					throw new EvaluateRuntimeException(String.format(Constants.ERR_MSG_INVALID_NAME_MODIFIER, markerSpec.component));
+ 				}
+ 				if (markerSpec.names == tcase.UPPER)
+ 				{
+ 					componentValue = componentValue.toUpperCase();
+ 				}
+ 				else if (markerSpec.names == tcase.LOWER)
+ 				{
+ 					componentValue = componentValue.toLowerCase();
+ 				}
+ 				if (markerSpec.width != null && componentValue.length() > markerSpec.width.getRight())
+ 				{
+ 					componentValue = componentValue.substring(0, markerSpec.width.getRight());
+ 				}
+ 			}
+ 			else
+ 			{
+ 				componentValue = formatInteger(Integer.parseInt(componentValue), markerSpec.integerFormat);
+ 			}
+ 		}
+ 		else if (markerSpec.component == 'f')
+ 		{
+ 			componentValue = formatInteger(Integer.parseInt(componentValue), markerSpec.integerFormat);
+ 		}
+ 		else if (markerSpec.component == 'Z' || markerSpec.component == 'z')
+ 		{
+ 			ZoneOffset zoneOffset = ZoneOffset.from(date.getOffset());
+ 			int offsetHours = 0;
+ 			int offsetMinutes = 0;
+
+ 			if (!zoneOffset.equals(ZoneOffset.UTC))
+ 			{
+ 				String[] offsetData = zoneOffset.getId().replaceAll("\\+\\-", "").split(":");
+ 				offsetHours = Integer.parseInt(offsetData[0]);
+ 				offsetMinutes = Integer.parseInt(offsetData[1]);
+ 			}
+
+ 			int offset = offsetHours * 100 + offsetMinutes;
+ 			if (markerSpec.integerFormat.regular)
+ 			{
+ 				componentValue = formatInteger(offset, markerSpec.integerFormat);
+ 			}
+ 			else
+ 			{
+ 				int numDigits = markerSpec.integerFormat.mandatoryDigits;
+ 				if (numDigits == 1 || numDigits == 2)
+ 				{
+ 					componentValue = formatInteger(offsetHours, markerSpec.integerFormat);
+ 					if (offsetMinutes != 0)
+ 					{
+ 						componentValue += ":" + formatInteger(offsetMinutes, "00");
+ 					}
+ 				}
+ 				else if (numDigits == 3 || numDigits == 4)
+ 				{
+ 					componentValue = formatInteger(offset, markerSpec.integerFormat);
+ 				}
+ 				else
+ 				{
+ 					throw new EvaluateRuntimeException(Constants.ERR_MSG_TIMEZONE_FORMAT);
+ 				}
+ 			}
+ 			if (offset >= 0)
+ 			{
+ 				componentValue = "+" + componentValue;
+ 			}
+ 			if (markerSpec.component == 'z')
+ 			{
+ 				componentValue = "GMT" + componentValue;
+ 			}
+ 			if (offset == 0 && markerSpec.presentation2 != null && markerSpec.presentation2 == 't')
+ 			{
+ 				componentValue = "Z";
+ 			}
+ 		}
+ 		else if (markerSpec.component == 'P')
+ 		{
+ 			// §9.8.4.7 Formatting Other Components
+ 			// Formatting P for am/pm
+ 			// getDateTimeFragment() always returns am/pm lower case so check for UPPER here
+ 			if (markerSpec.names == tcase.UPPER)
+ 			{
+ 				componentValue = componentValue.toUpperCase();
+ 			}
+ 		}
+ 		return componentValue;
+ 	}
+
     private static String getDateTimeFragment(LocalDateTime date, Character component) {
         String componentValue = "";
         switch (component) {
@@ -850,6 +1009,77 @@ public class DateTimeUtils implements Serializable {
         }
         return componentValue;
     }
+
+ 	private static String getDateTimeFragment(ZonedDateTime date, Character component)
+ 	{
+ 		String componentValue = "";
+ 		switch (component)
+ 		{
+ 			case 'Y' : // year
+ 				componentValue = "" + date.getYear();
+ 				break;
+ 			case 'M' : // month in year
+ 				componentValue = "" + date.getMonthValue();
+ 				break;
+ 			case 'D' : // day in month
+ 				componentValue = "" + date.getDayOfMonth();
+ 				break;
+ 			case 'd' : // day in year
+ 				componentValue = "" + date.getDayOfYear();
+ 				break;
+ 			case 'F' : // day of week
+ 				componentValue = "" + date.getDayOfWeek().getValue();
+ 				break;
+ 			case 'W' : // week in year
+ 				componentValue = "" + date.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+ 				break;
+ 			case 'w' : // week in month
+ 				componentValue = "" + date.get(WeekFields.ISO.weekOfMonth());
+ 				break;
+ 			case 'X' :
+ 				// TODO work these out once others verified
+ 			case 'x' :
+ 				componentValue = "" + -1;
+ 				break;
+ 			case 'H' : // hour in day (24 hours)
+ 				componentValue = "" + date.getHour();
+ 				break;
+ 			case 'h' : // hour in day (12 hours)
+ 				int hour = date.getHour();
+ 				if (hour > 12)
+ 				{
+ 					hour -= 12;
+ 				}
+ 				else if (hour == 0)
+ 				{
+ 					hour = 12;
+ 				}
+ 				componentValue = "" + hour;
+ 				break;
+ 			case 'P' :
+ 				componentValue = date.getHour() < 12 ? "am" : "pm";
+ 				break;
+ 			case 'm' :
+ 				componentValue = "" + date.getMinute();
+ 				break;
+ 			case 's' :
+ 				componentValue = "" + date.getSecond();
+ 				break;
+ 			case 'f' :
+ 				componentValue = "" + date.getNano() / 1000000;
+ 				break;
+ 			case 'Z' :
+ 			case 'z' :
+ 				break;
+ 			case 'C' :
+ 				componentValue = "ISO";
+ 				break;
+ 			case 'E' :
+ 				componentValue = "ISO";
+ 				break;
+ 		}
+ 		return componentValue;
+ 	}
 
     public static Long parseDateTime(String timestamp, String picture) {
         PictureFormat formatSpec = analyseDateTimePicture(picture);
