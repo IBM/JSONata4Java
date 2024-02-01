@@ -114,8 +114,8 @@ public class TesterUISettings {
         if (storedSettings.getProperty("frame.splitpanedivlocation") != null) {
             spiltPaneDivLocation = Integer.parseInt(storedSettings.getProperty("frame.splitpanedivlocation"));
         }
-        if (storedSettings.getProperty("frame.splitpanedivlocation.rigth") != null) {
-            spiltPaneDivLocationRight = Integer.parseInt(storedSettings.getProperty("frame.splitpanedivlocation.rigth"));
+        if (storedSettings.getProperty("frame.splitpanedivlocation.right") != null) {
+            spiltPaneDivLocationRight = Integer.parseInt(storedSettings.getProperty("frame.splitpanedivlocation.right"));
         }
         if (storedSettings.getProperty("frame.scrollposition.input.y") != null) {
             scrollPositionInputY = Integer.parseInt(storedSettings.getProperty("frame.scrollposition.input.y"));
@@ -143,7 +143,7 @@ public class TesterUISettings {
         storedSettings.setProperty("frame.size.x", Integer.toString(frameSizeX));
         storedSettings.setProperty("frame.size.y", Integer.toString(frameSizeY));
         storedSettings.setProperty("frame.splitpanedivlocation", Integer.toString(spiltPaneDivLocation));
-        storedSettings.setProperty("frame.splitpanedivlocation.rigth", Integer.toString(spiltPaneDivLocationRight));
+        storedSettings.setProperty("frame.splitpanedivlocation.right", Integer.toString(spiltPaneDivLocationRight));
         storedSettings.setProperty("frame.scrollposition.input.y", Integer.toString(scrollPositionInputY));
         storedSettings.setProperty("frame.scrollposition.jsonata.y", Integer.toString(scrollPositionJsonataY));
         storedSettings.setProperty("frame.scrollposition.output.y", Integer.toString(scrollPositionOutputY));
@@ -202,8 +202,8 @@ public class TesterUISettings {
         return backgroundInput;
     }
 
-    public void setBackgroundInput(Color backgoundInput) {
-        this.backgroundInput = backgoundInput;
+    public void setBackgroundInput(Color backgroundInput) {
+        this.backgroundInput = backgroundInput;
     }
 
     public Color getBackgroundJsonata() {

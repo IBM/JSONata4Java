@@ -476,7 +476,7 @@ public class ExpressionsTests implements Serializable {
             }, //
             {
                 "-xxx", null, null
-            }, // // NOTE: Javascript JSONata engine actually throws an exception here (but it shouldn't.. this is a bug in that engine that will be fixed)
+            }, // // NOTE: JavaScript JSONata engine actually throws an exception here (but it shouldn't.. this is a bug in that engine that will be fixed)
             {
                 "-null", null, ExpressionsVisitor.ERR_NEGATE_NON_NUMERIC
             }, //

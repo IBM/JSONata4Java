@@ -84,7 +84,7 @@ public class MergeFunctionTest {
     }
 
     @Test
-    public void issue237IncosistentQuotationMarkSanitization() throws Exception {
+    public void issue237InconsistentQuotationMarkSanitization() throws Exception {
         test("$each($, function($v, $k) {({ $k: $v})}) ~> $merge()", "{\"key1\":\"\\\"v1\\\"\"}", null, "{ \"key1\": \"\\\"v1\\\"\" }");
     }
 }

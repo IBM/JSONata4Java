@@ -370,7 +370,7 @@ public class TesterUI {
     }
 
     private void showPreferences() {
-        new TesterUIPerferences(this, this.settings).open();
+        new TesterUIPreferences(this, this.settings).open();
     }
 
     private void inputChanged() {
@@ -521,7 +521,7 @@ public class TesterUI {
         }
     }
 
-    public void loadJsoanata(Path path) {
+    public void loadJsonata(Path path) {
         try {
             jsonataArea.setText(readFile(path));
         } catch (NoSuchFileException e) {

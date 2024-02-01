@@ -126,7 +126,7 @@ public class DateTimeUtils implements Serializable {
             wordValues.put(lword, (i + 2) * 10);
             wordValues.put(lword.substring(0, lword.length() - 1) + "ieth", wordValues.get(lword));
         }
-        wordValues.put("hundreth", 100);
+        wordValues.put("hundredth", 100);
         for (int i = 0; i < magnitudes.length; i++) {
             String lword = magnitudes[i].toLowerCase();
             int val = (int) Math.pow(10, (i + 1) * 3);
@@ -486,7 +486,7 @@ public class DateTimeUtils implements Serializable {
             }
         }
 
-        List<Integer> indexes = separators.stream().map(seperator -> seperator.position).collect(Collectors.toList());
+        List<Integer> indexes = separators.stream().map(separator -> separator.position).collect(Collectors.toList());
         int factor = indexes.stream()
             .reduce((a, b) -> BigInteger.valueOf(a).gcd(BigInteger.valueOf(b)).intValue())
             .get();

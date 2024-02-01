@@ -98,7 +98,7 @@ public class FunctionErrorTest {
     // arg 1 (string): {"Product Name":"Bowler Hat"}
     // arg 2 (pattern): "Bowler Hat"
     // arg 3 (replacement): {"type":"CASEINSENSITIVE","pattern":"hat"}
-    // Since the same problem occurs also if the 2nd $replace() arg is not a regular exprssion
+    // Since the same problem occurs also if the 2nd $replace() arg is not a regular expression
     // I suppose that this problem also existed before the changes for regular expression support
     @Test(expected = EvaluateException.class)
     public void testRegex_case32() throws Exception {
@@ -172,7 +172,7 @@ public class FunctionErrorTest {
         // assertEquals("$$", "\\$$".replaceAll("\\\\\\$([^<^0])", "\\$$1"));
         // "$$" -> "\$"
         // "$w" -> "\$w"
-        // preseve $<digit> and $<
+        // preserve $<digit> and $<
         assertEquals("abc\\$$1xyz", "abc$$$1xyz".replaceAll("\\$\\$", "\\\\\\$"));
         assertEquals("abc\\$wxyz", "abc$wxyz".replaceAll("\\$([^0-9^<])", "\\\\\\$$1"));
         assertEquals("abc\\$$1efg\\$wxyz", "abc$$$1efg$wxyz"

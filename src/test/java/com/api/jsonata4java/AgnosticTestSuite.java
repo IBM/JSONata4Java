@@ -186,7 +186,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
             // arg 1 (string): {"Product Name":"Bowler Hat"}
             // arg 2 (pattern): "Bowler Hat"
             // arg 3 (replacement): {"type":"CASEINSENSITIVE","pattern":"hat"}
-            // Since the same problem occurs also if the 2nd $replace() arg is not a regular exprssion
+            // Since the same problem occurs also if the 2nd $replace() arg is not a regular expression
             // I suppose that this problem also existed before the changes for regular expression support.
 
             "case034",
@@ -829,7 +829,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 
             // TODO: token:
             // If the code field is present, an optional token field may also be present
-            // indicating which token token the exception should be associated with.
+            // indicating which token the exception should be associated with.
         }
 
         private boolean isWholeNumber(double n) {

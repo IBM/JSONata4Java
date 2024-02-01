@@ -95,7 +95,7 @@ public class FilterFunction extends FunctionBase {
                     // this error message might be not so precise but it is exactly what original JSONata (1.8.6) does
                     throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
                 }
-                // unfortunately we can not (or at least I do not see how) differ between
+                // unfortunately we cannot (or at least I do not see how) differ between
                 // - context evaluates to null
                 // - no array argument specified at all
                 // so in every case we signal no match (result = null)

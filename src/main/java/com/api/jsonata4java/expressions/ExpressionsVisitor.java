@@ -1524,7 +1524,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                             result = context;
                         } else {
                             /**
-                             * can not just replace ctx child since this can be called recursively with
+                             * cannot just replace ctx child since this can be called recursively with
                              * different stack values so need to replace child[0] in the new context we
                              * create below
                              */
@@ -1848,7 +1848,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
          * The goal is to create a JsonNode representing the function declaration that
          * could be stored (e.g., keyed by a variable id in the functionMap) and
          * executed later by creating a Function_execContext and visiting the
-         * visitFunciton_exec method.
+         * visitFunction_exec method.
          */
         final String fctName = ctx.FUNCTIONID().getText();
         RuleContext expr = ctx.getRuleContext();

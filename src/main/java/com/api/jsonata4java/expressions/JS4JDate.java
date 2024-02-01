@@ -665,7 +665,7 @@ public class JS4JDate extends Date {
     * @param date
     *           the date to be transformed into the string.
     * @param strFormat
-    *           the date format to be returned. If the format is illdefined, the
+    *           the date format to be returned. If the format is ill defined, the
     *           standard JS4JDate Date format is used (CREATE_DATE_FORMAT).
     * @param strTimeZone
     *           the format of the timezone using +/-hhmm

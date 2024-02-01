@@ -329,7 +329,7 @@ public class Constants implements Serializable {
     public static final String ERR_MSG_ARG1_STR_OR_EXPR = "Argument 1 of function %s must be a json string or a jsonata expression";
     public static final String ERR_MSG_ARG2_EMPTY_STR = "Second argument of function %s cannot be an empty string";
     public static final String ERR_MSG_INVALID_RADIX = "The radix of the $formatBase function must be between 2 and 36";
-    public static final String ERR_MSG_RUNTIME_ERROR = "A runtime error occurred when invoking funtion %s";
+    public static final String ERR_MSG_RUNTIME_ERROR = "A runtime error occurred when invoking function %s";
     public static final String ERR_MSG_INVALID_OPTIONS_SINGLE_CHAR = "Argument 3 of function %s is invalid. The value of the %s property must be a single character";
     public static final String ERR_MSG_INVALID_OPTIONS_STRING = "Argument 3 of function %s is invalid. The value of the %s property must be a string";
     public static final String ERR_MSG_INVALID_OPTIONS_UNKNOWN_PROPERTY = "Argument 3 of function %s is invalid. %s is not a valid property name";
@@ -344,8 +344,8 @@ public class Constants implements Serializable {
     public static final String ERR_MSG_FCT_CHAIN_NOT_UNARY = "The symbol \"~>\" cannot be used as a unary operator";
     public static final String ERR_MSG_INVALID_PATH_ENTRY = "The literal value %s cannot be used as a step within a path expression";
     public static final String ERR_MSG_BAD_CONTEXT = "Context value is not a compatible type with argument 1 of function \"%s\"";
-    public static final String ERR_MSG_FCT_NOT_FOUND = "Can not find a declared function as second argument of function \"%s\".";
-    public static final String ERR_MSG_VARIABLE_FCT_NOT_FOUND = "Can not find a declared function for variable \"%s\" of function \"%s\".";
+    public static final String ERR_MSG_FCT_NOT_FOUND = "Cannot find a declared function as second argument of function \"%s\".";
+    public static final String ERR_MSG_VARIABLE_FCT_NOT_FOUND = "Cannot find a declared function for variable \"%s\" of function \"%s\".";
     public static final String ERR_MSG_SEQUENCE_UNSUPPORTED = "Formatting or parsing an integer as a sequence starting with %s is not supported by this implementation";
     public static final String ERR_MSG_DIFF_DECIMAL_GROUP = "In a decimal digit pattern, all digits must be from the same decimal group";
     public static final String ERR_MSG_NO_CLOSING_BRACKET = "No matching closing bracket ']' in date/time picture string";

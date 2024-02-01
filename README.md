@@ -28,7 +28,7 @@ git clone https://github.com/IBM/JSONata4Java.git
 The Java version uses ANTLR to build the parser for the language, and Java Objects are more tightly controlled that JavaScript Objects. Therefore, some things differ between the Java implementation and JavaScript implementation. For example:
  - we require functions to be called with their arguments, even if no arguments are being passed. This is because we differentiate a variable reference with no parentheses from a function that has parentheses. 
  - we require variables to begin with a letter or an underscore (but not a number) whereas jsonata.org allows variables to begin with numbers ([Issue 267](https://github.com/IBM/JSONata4Java/issues/267)).
- - Arrays hold JsonNode types so can not hold references to functions, whereas jsonata.org can manage function references within an array ([Issue 268](https://github.com/IBM/JSONata4Java/issues/268)).  
+ - Arrays hold JsonNode types so cannot hold references to functions, whereas jsonata.org can manage function references within an array ([Issue 268](https://github.com/IBM/JSONata4Java/issues/268)).  
 
 ### Java 11 and 1.8 Versions needed for new Antlr 4.13.1 (Also updated project file to Eclipse 2023-12)
 
@@ -83,7 +83,7 @@ Many thanks to **Martin Bluemel** for adding these new features&colon;
 
 **Improved Chaining**&colon;
 JSONata4Java basically does support function chaining now. However, it does not yet 
-support the "function name only" syntax for function chaining (the one without paratheses). 
+support the "function name only" syntax for function chaining (the one without parentheses). 
 So we recommend using a syntax like below&colon;
 
 ```

@@ -691,24 +691,24 @@ public class BasicExpressionsTests implements Serializable {
     @Test
     public void appAccessNoQuotes() throws Exception {
 
-        JsonNode intface = mapper.readTree("{\"a\":2}");
+        JsonNode intFace = mapper.readTree("{\"a\":2}");
 
         Expressions expression = Expressions.parse("a");
-        assertTrue("a==2", expression.evaluate(intface).asInt() == 2);
+        assertTrue("a==2", expression.evaluate(intFace).asInt() == 2);
 
         expression = Expressions.parse("a * 2.4");
-        assertTrue("a * 2.4==4.8", expression.evaluate(intface).asDouble() == 4.8);
+        assertTrue("a * 2.4==4.8", expression.evaluate(intFace).asDouble() == 4.8);
 
         expression = Expressions.parse("`a` * 2.4"); // See 185467: Expression
                                                      // language implementation
                                                      // allows associative array
                                                      // syntax...
-        assertTrue("`a` * 2.4==4.8", expression.evaluate(intface).asDouble() == 4.8);
+        assertTrue("`a` * 2.4==4.8", expression.evaluate(intFace).asDouble() == 4.8);
 
-        intface = mapper.readTree("{\"temperatureCCount\":10}");
+        intFace = mapper.readTree("{\"temperatureCCount\":10}");
         String exp = "((temperatureCCount >= 10) ? 1 : (temperatureCCount + 1))";
         expression = Expressions.parse(exp);
-        assertTrue(exp, expression.evaluate(intface).asInt() == 1);
+        assertTrue(exp, expression.evaluate(intFace).asInt() == 1);
 
     }
 
@@ -1302,7 +1302,7 @@ public class BasicExpressionsTests implements Serializable {
      * This is to check that we are lazily evaluating the 'b' and 'c' expressions.
      * 
      * @throws ParseException
-     *                           if the expression can not parse correctly
+     *                           if the expression cannot parse correctly
      * @throws EvaluateException
      *                           if the expression fail its evaluation
      * @throws IOException
@@ -1310,7 +1310,7 @@ public class BasicExpressionsTests implements Serializable {
     @Test
     public void testConditionalLazyEval() throws ParseException, EvaluateException, IOException {
         Expressions expression = Expressions.parse(
-            "(t < 0) ? \"Tempertature is less than 0\" : \"This will cause a runtime exception and should not appear \" + ($substring(temperatureStatus, temperatureStatus, 0, 1))");
+            "(t < 0) ? \"Temperature is less than 0\" : \"This will cause a runtime exception and should not appear \" + ($substring(temperatureStatus, temperatureStatus, 0, 1))");
 
         ObjectNode event = mapper.createObjectNode();
         event.set("t", new FloatNode(-42));
@@ -1320,8 +1320,8 @@ public class BasicExpressionsTests implements Serializable {
 
         JsonNode result = expression.evaluate(event);
 
-        assertTrue("should have result 'Tempertature is less than 0'",
-            result.asText().equals("Tempertature is less than 0"));
+        assertTrue("should have result 'Temperature is less than 0'",
+            result.asText().equals("Temperature is less than 0"));
 
         // now test that when we eval to false, that we explode...
         event.set("t", new FloatNode(42));
@@ -2060,7 +2060,7 @@ public class BasicExpressionsTests implements Serializable {
         // check works with arrays constructed from expressions
         simpleTest("[{\"a\": 1+1}, {\"a\":3}].a", "[2, 3]");
 
-        // check objects lacking referenced fields are ommitted (and don't get
+        // check objects lacking referenced fields are omitted (and don't get
         // added to result as null)
         simpleTest("[{\"a\":3}, {}].a", "3");
 
@@ -2117,7 +2117,7 @@ public class BasicExpressionsTests implements Serializable {
         simpleTest("[{\"b\":1}][a or true]", "{\"b\":1}"); // jsonata 1.8.2 no longer returns null);
         simpleTest("[{\"b\":1}][a and true]", null);
 
-        // check singleton array / value equivlance used in the context of
+        // check singleton array / value equivalence used in the context of
         // predicates
         // test("[{\"a\":[1]}][a=1]", "{\"a\":[1]}"); // (even tho [1]!=1
         simpleTest("[{\"a\":[1]}][a=[1]]", "{\"a\":[1]}"); // jsonata 1.8.2 no longer returns null);

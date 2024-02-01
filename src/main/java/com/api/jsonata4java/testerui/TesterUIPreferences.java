@@ -47,7 +47,7 @@ import javax.swing.filechooser.FileFilter;
  *
  * @author Martin Bluemel
  */
-public class TesterUIPerferences {
+public class TesterUIPreferences {
 
     private static final int FRAME_SIZE_X = 800;
     private static final int FRAME_SIZE_Y = 600;
@@ -80,7 +80,7 @@ public class TesterUIPerferences {
     private final JPanel buttonsPanel = new JPanel();
     private final JButton okButton = new JButton("Ok");
 
-    public TesterUIPerferences(final TesterUI ui, final TesterUISettings settings) {
+    public TesterUIPreferences(final TesterUI ui, final TesterUISettings settings) {
         this.ui = ui;
         this.settings = settings;
     }
@@ -289,7 +289,7 @@ public class TesterUIPerferences {
                 pathInput.setText(example.getPathInput().toAbsolutePath().toString());
                 ui.loadInput(example.getPathInput());
                 pathJsonata.setText(example.getPathJsonata().toAbsolutePath().toString());
-                ui.loadJsoanata(example.getPathJsonata());
+                ui.loadJsonata(example.getPathJsonata());
                 settings.setExample((TesterUIJsonataExample) examples.getSelectedItem());
             }
         });
@@ -318,7 +318,7 @@ public class TesterUIPerferences {
                 final String pathBefore = pathInput.getText();
                 changeFilePath(pathJsonata, "JSONata mapping description", ".jsonata");
                 if (!pathJsonata.getText().equals(pathBefore)) {
-                    ui.loadJsoanata(new File(pathJsonata.getText()).toPath());
+                    ui.loadJsonata(new File(pathJsonata.getText()).toPath());
                     settings.setPathJsonata(new File(pathJsonata.getText()).toPath());
                 }
             }
@@ -428,7 +428,7 @@ public class TesterUIPerferences {
         });
     }
 
-    private void uiListenerFont(TesterUIPerferences dialog) {
+    private void uiListenerFont(TesterUIPreferences dialog) {
         chooseFont.addActionListener(new ActionListener() {
 
             @Override

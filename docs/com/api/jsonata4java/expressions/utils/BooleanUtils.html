@@ -152,7 +152,7 @@ extends java.lang.Object</pre>
 <div class="block">See http://docs.jsonata.org/boolean-functions.html#booleanarg
  
  The convertJsonNodeToBoolean method converts the node passed in to a boolean
- based on the casting semnatics defined by JSONata.</div>
+ based on the casting semantics defined by JSONata.</div>
 </td>
 </tr>
 </table>
@@ -201,16 +201,32 @@ extends java.lang.Object</pre>
 <li class="blockList">
 <h4>convertJsonNodeToBoolean</h4>
 <pre>public static&nbsp;boolean&nbsp;convertJsonNodeToBoolean(com.fasterxml.jackson.databind.JsonNode&nbsp;node)</pre>
-<div class="block">See http://docs.jsonata.org/boolean-functions.html#booleanarg
- 
- The convertJsonNodeToBoolean method converts the node passed in to a boolean
- based on the casting semnatics defined by JSONata.
- 
- Boolean: unchanged string: empty false string: non-empty true number: 0 false
- number: non-zero true null: false array: empty false array: contains a member
- that casts to true true array: all members cast to false false object: empty
- false object: non-empty true function: (functions are not currently
- supported) false</div>
+<div class="block">From http://docs.jsonata.org/boolean-functions.html
+ <p>
+   $boolean(arg)
+ </p>
+ <table><caption>Casts the argument to a Boolean using the following rules</caption><thead>
+  <tr><th>Argument type</th><th>Result</th></tr>
+ </thead><tbody>
+   <tr><td>Boolean</td><td>unchanged</td></tr>
+   <tr><td>string: empty</td><td>false</td></tr>
+   <tr><td>string: non-empty</td><td>true</td></tr>
+   <tr><td>number: 0</td><td>false</td></tr>
+   <tr><td>number: non-zero</td><td>true</td></tr>
+   <tr><td>null</td><td>false</td></tr>
+   <tr><td>array: empty</td><td>false</td></tr>
+   <tr><td>array: contains a member that casts to true</td><td>true</td></tr>
+   <tr><td>array: all members cast to false</td><td>false</td></tr>
+   <tr><td>object: empty</td><td>false</td></tr>
+   <tr><td>object: non-empty</td><td>true</td></tr>
+   <tr><td>function: (functions are not currently supported)</td><td>false</td></tr>
+  </tbody>
+ </table>
+</div>
+
+The convertJsonNodeToBoolean method converts the node passed in to a boolean
+based on the casting semantics defined by JSONata.
+
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>node</code> - The node to convert to a boolean</dd>

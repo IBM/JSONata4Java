@@ -770,6 +770,15 @@ evaluate returns:
  <li>$parseInteger()</li> 
 </ul> 
 <p>We did not implement any of <a href="https://docs.jsonata.org/embedding-extending" rel="nofollow">https://docs.jsonata.org/embedding-extending</a></p> 
-<p>From: <a href="https://docs.jsonata.org/date-time" rel="nofollow">https://docs.jsonata.org/date-time</a> $fromMillis() only accepts a number, not the format picture, nor timezone $now() does not accept the picture string (e.g., $now(&quot;[Y0000]&quot;) reports an arg1 error</p>
+<p>From: <a href="https://docs.jsonata.org/date-time" rel="nofollow">https://docs.jsonata.org/date-time</a>:
+<ul>
+ <li>
+  $fromMillis() only accepts a number. Neither the format picture nor timezone arguments are accepted.
+ </li>
+ <li>
+  $now() does not accept a picture string argument (i.e., $now(&quot;[Y0000]&quot;) reports an arg1 error).
+ </li>
+</ul>
+</p>
 </body>
 </html>

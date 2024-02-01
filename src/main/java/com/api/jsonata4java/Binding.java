@@ -59,7 +59,7 @@ public class Binding implements Serializable {
                 _type = BindingType.VARIABLE;
             }
         } catch (ClassCastException cce) {
-            throw new ParseException("Can not transform expression to a variable assignment");
+            throw new ParseException("Cannot transform expression to a variable assignment");
         }
     }
 
@@ -192,7 +192,7 @@ public class Binding implements Serializable {
             }
 
         } catch (ClassCastException cce) {
-            throw new ParseException("Can not transform expression to a function declaration");
+            throw new ParseException("Cannot transform expression to a function declaration");
         }
     }
 

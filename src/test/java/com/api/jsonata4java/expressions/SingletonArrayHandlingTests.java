@@ -85,13 +85,13 @@ public class SingletonArrayHandlingTests implements Serializable {
             }, // jsonata 1.8.2 1", null }, //
             /* 7 */ {
                 "{'a':   [[1]]   }.a", "  [[1]]", null
-            }, // jsonta 1.8.2 1", null }, //
+            }, // jsonata 1.8.2 1", null }, //
             /* 8 */ {
                 "{'a':  [[[1]]]  }.a", " [[[1]]]", null
-            }, // jsonta 1.8.2 [1]", null }, //
+            }, // jsonata 1.8.2 [1]", null }, //
             /* 9 */ {
                 "{'a': [[[[1]]]] }.a", "[[[[1]]]]", null
-            }, // jsonta 1.8.2 [[1]]", null }, //
+            }, // jsonata 1.8.2 [[1]]", null }, //
 
             // some of these corner case tests are disabled until weirdness in JSONata is resolved (see https://github.com/jsonata-js/jsonata/issues/93)
             /* 10 */ {
