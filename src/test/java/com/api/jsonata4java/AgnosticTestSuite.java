@@ -829,7 +829,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
 
             // TODO: token:
             // If the code field is present, an optional token field may also be present
-            // indicating which token token the exception should be associated with.
+            // indicating which token the exception should be associated with.
         }
 
         private boolean isWholeNumber(double n) {
