@@ -172,7 +172,7 @@ public class FunctionErrorTest {
         // assertEquals("$$", "\\$$".replaceAll("\\\\\\$([^<^0])", "\\$$1"));
         // "$$" -> "\$"
         // "$w" -> "\$w"
-        // preseve $<digit> and $<
+        // preserve $<digit> and $<
         assertEquals("abc\\$$1xyz", "abc$$$1xyz".replaceAll("\\$\\$", "\\\\\\$"));
         assertEquals("abc\\$wxyz", "abc$wxyz".replaceAll("\\$([^0-9^<])", "\\\\\\$$1"));
         assertEquals("abc\\$$1efg\\$wxyz", "abc$$$1efg$wxyz"
