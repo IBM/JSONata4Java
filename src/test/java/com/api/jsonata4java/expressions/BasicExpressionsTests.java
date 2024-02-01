@@ -1310,7 +1310,7 @@ public class BasicExpressionsTests implements Serializable {
     @Test
     public void testConditionalLazyEval() throws ParseException, EvaluateException, IOException {
         Expressions expression = Expressions.parse(
-            "(t < 0) ? \"Tempertature is less than 0\" : \"This will cause a runtime exception and should not appear \" + ($substring(temperatureStatus, temperatureStatus, 0, 1))");
+            "(t < 0) ? \"Temperature is less than 0\" : \"This will cause a runtime exception and should not appear \" + ($substring(temperatureStatus, temperatureStatus, 0, 1))");
 
         ObjectNode event = mapper.createObjectNode();
         event.set("t", new FloatNode(-42));
@@ -1320,8 +1320,8 @@ public class BasicExpressionsTests implements Serializable {
 
         JsonNode result = expression.evaluate(event);
 
-        assertTrue("should have result 'Tempertature is less than 0'",
-            result.asText().equals("Tempertature is less than 0"));
+        assertTrue("should have result 'Temperature is less than 0'",
+            result.asText().equals("Temperature is less than 0"));
 
         // now test that when we eval to false, that we explode...
         event.set("t", new FloatNode(42));
