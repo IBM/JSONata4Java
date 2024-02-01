@@ -692,24 +692,24 @@ public class BasicExpressionsTests implements Serializable {
     @Test
     public void appAccessNoQuotes() throws Exception {
 
-        JsonNode intface = mapper.readTree("{\"a\":2}");
+        JsonNode intFace = mapper.readTree("{\"a\":2}");
 
         Expressions expression = Expressions.parse("a");
-        assertTrue("a==2", expression.evaluate(intface).asInt() == 2);
+        assertTrue("a==2", expression.evaluate(intFace).asInt() == 2);
 
         expression = Expressions.parse("a * 2.4");
-        assertTrue("a * 2.4==4.8", expression.evaluate(intface).asDouble() == 4.8);
+        assertTrue("a * 2.4==4.8", expression.evaluate(intFace).asDouble() == 4.8);
 
         expression = Expressions.parse("`a` * 2.4"); // See 185467: Expression
                                                      // language implementation
                                                      // allows associative array
                                                      // syntax...
-        assertTrue("`a` * 2.4==4.8", expression.evaluate(intface).asDouble() == 4.8);
+        assertTrue("`a` * 2.4==4.8", expression.evaluate(intFace).asDouble() == 4.8);
 
-        intface = mapper.readTree("{\"temperatureCCount\":10}");
+        intFace = mapper.readTree("{\"temperatureCCount\":10}");
         String exp = "((temperatureCCount >= 10) ? 1 : (temperatureCCount + 1))";
         expression = Expressions.parse(exp);
-        assertTrue(exp, expression.evaluate(intface).asInt() == 1);
+        assertTrue(exp, expression.evaluate(intFace).asInt() == 1);
 
     }
 
