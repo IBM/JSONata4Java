@@ -217,7 +217,7 @@ public class ToMillisFunctionTests implements Serializable {
                 "$toMillis('three hundred and sixty-fifth day of 2018', '[dwo] day of [Y]') ~> $fromMillis()", "\"2018-12-31T00:00:00.000Z\"", null
             },
             {
-                "$toMillis('irrelevent string', '[Y]-[M]-[D]')", null, null
+                "$toMillis('irrelevant string', '[Y]-[M]-[D]')", null, null
             },
             {
                 "$toMillis('2018-05-22', '[Y]-[M]-[q]')", null, String.format(Constants.ERR_MSG_UNKNOWN_COMPONENT_SPECIFIER, 'q')
