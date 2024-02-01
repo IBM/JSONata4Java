@@ -34,7 +34,7 @@ public class BooleanUtils implements Serializable {
      * See http://docs.jsonata.org/boolean-functions.html#booleanarg
      * 
      * The convertJsonNodeToBoolean method converts the node passed in to a boolean
-     * based on the casting semnatics defined by JSONata.
+     * based on the casting semantics defined by JSONata.
      * 
      * <div class="block">
      *  <p>
