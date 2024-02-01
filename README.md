@@ -83,7 +83,7 @@ Many thanks to **Martin Bluemel** for adding these new features&colon;
 
 **Improved Chaining**&colon;
 JSONata4Java basically does support function chaining now. However, it does not yet 
-support the "function name only" syntax for function chaining (the one without paratheses). 
+support the "function name only" syntax for function chaining (the one without parentheses). 
 So we recommend using a syntax like below&colon;
 
 ```
