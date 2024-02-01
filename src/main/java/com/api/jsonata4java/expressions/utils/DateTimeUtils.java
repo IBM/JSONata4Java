@@ -486,7 +486,7 @@ public class DateTimeUtils implements Serializable {
             }
         }
 
-        List<Integer> indexes = separators.stream().map(seperator -> seperator.position).collect(Collectors.toList());
+        List<Integer> indexes = separators.stream().map(separator -> separator.position).collect(Collectors.toList());
         int factor = indexes.stream()
             .reduce((a, b) -> BigInteger.valueOf(a).gcd(BigInteger.valueOf(b)).intValue())
             .get();
