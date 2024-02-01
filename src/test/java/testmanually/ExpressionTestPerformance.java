@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * 
  * @author Martin Bluemel
  */
-public class ExpressionTestPerfomance {
+public class ExpressionTestPerformance {
 
     private final ObjectMapper jsonMapper = new ObjectMapper();
 
