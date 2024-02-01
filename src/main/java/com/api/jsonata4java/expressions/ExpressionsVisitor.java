@@ -1524,7 +1524,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                             result = context;
                         } else {
                             /**
-                             * can not just replace ctx child since this can be called recursively with
+                             * cannot just replace ctx child since this can be called recursively with
                              * different stack values so need to replace child[0] in the new context we
                              * create below
                              */

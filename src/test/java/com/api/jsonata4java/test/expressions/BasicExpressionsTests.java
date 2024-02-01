@@ -1337,7 +1337,7 @@ public class BasicExpressionsTests implements Serializable {
      * This is to check that we are lazily evaluating the 'b' and 'c' expressions.
      * 
      * @throws ParseException
-     *                           if the expression can not parse correctly
+     *                           if the expression cannot parse correctly
      * @throws EvaluateException
      *                           if the expression fail its evaluation
      * @throws IOException

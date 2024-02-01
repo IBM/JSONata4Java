@@ -229,7 +229,7 @@ public class JSONataUtils implements Serializable {
      * @param fqFilename fully qualified name of the text file to be opened
      * @return open buffered reader to allow individual lines of a text file to be
      *         read
-     * @throws Exception if the file can not be found
+     * @throws Exception if the file cannot be found
      * @see #closeTextFile(BufferedReader) to close the reader returned by this
      *      function
      */
@@ -245,7 +245,7 @@ public class JSONataUtils implements Serializable {
         }
         if (inputFile.canRead() == false) {
             throw new IOException(
-                "Can not read file " + inputFile.getCanonicalPath() + File.separator + inputFile.getName());
+                "Cannot read file " + inputFile.getCanonicalPath() + File.separator + inputFile.getName());
         }
         input = new BufferedReader(new FileReader(inputFile));
         return input;
@@ -313,7 +313,7 @@ public class JSONataUtils implements Serializable {
             ObjectMapper mapper = new ObjectMapper();
             br.write(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonData));
         } catch (IOException e) {
-            throw new IOException("Can not write file \"" + jsonFileName + "\"", e);
+            throw new IOException("Cannot write file \"" + jsonFileName + "\"", e);
         } finally {
             try {
                 if (br != null) {
@@ -376,9 +376,9 @@ public class JSONataUtils implements Serializable {
 
             }
         } catch (IOException ioe) {
-            throw new IOException("Can not parse \"" + jsonFQFileName + "\"", ioe);
+            throw new IOException("Cannot parse \"" + jsonFQFileName + "\"", ioe);
         } catch (Exception e) {
-            throw new IOException("Can not load file \"" + jsonFQFileName + "\"", e);
+            throw new IOException("Cannot load file \"" + jsonFQFileName + "\"", e);
         } finally {
             closeTextFile(br);
         }

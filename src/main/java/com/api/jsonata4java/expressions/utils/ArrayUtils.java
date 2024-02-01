@@ -91,7 +91,7 @@ public class ArrayUtils implements Serializable {
      * @param left  string or number to be compared
      * @param right string or number to be compared
      * @return true is left is greater than right
-     * @throws EvaluateRuntimeException if left and right can not be converted to
+     * @throws EvaluateRuntimeException if left and right cannot be converted to
      *                                  numbers
      */
     public static boolean compare(JsonNode left, JsonNode right) throws EvaluateRuntimeException {
