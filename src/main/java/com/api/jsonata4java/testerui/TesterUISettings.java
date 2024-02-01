@@ -202,8 +202,8 @@ public class TesterUISettings {
         return backgroundInput;
     }
 
-    public void setBackgroundInput(Color backgoundInput) {
-        this.backgroundInput = backgoundInput;
+    public void setBackgroundInput(Color backgroundInput) {
+        this.backgroundInput = backgroundInput;
     }
 
     public Color getBackgroundJsonata() {
