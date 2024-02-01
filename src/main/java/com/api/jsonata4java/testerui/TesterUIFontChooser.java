@@ -59,7 +59,7 @@ public class TesterUIFontChooser {
 
     private final TesterUI ui;
     private final TesterUISettings settings;
-    private final TesterUIPerferences prefui;
+    private final TesterUIPreferences prefui;
     private Font newFont;
 
     private final JFrame frame = new JFrame("JSONata4Java Font");
@@ -84,7 +84,7 @@ public class TesterUIFontChooser {
         8, 9, 10, 12, 14, 16, 18, 24, 32, 48, 64
     };
 
-    public TesterUIFontChooser(TesterUI ui, TesterUISettings settings, TesterUIPerferences prefui) {
+    public TesterUIFontChooser(TesterUI ui, TesterUISettings settings, TesterUIPreferences prefui) {
         this.ui = ui;
         this.settings = settings;
         this.prefui = prefui;

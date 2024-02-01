@@ -370,7 +370,7 @@ public class TesterUI {
     }
 
     private void showPreferences() {
-        new TesterUIPerferences(this, this.settings).open();
+        new TesterUIPreferences(this, this.settings).open();
     }
 
     private void inputChanged() {
