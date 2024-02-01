@@ -418,10 +418,10 @@ public class JsonataUnitTests implements Serializable {
                 testdata1, "foo.bar * bar + bar", "4214"
             }, //
             {
-                testdata1, "24 * notexist", "undefined"
+                testdata1, "24 * nonexistent", "undefined"
             }, //
             {
-                testdata1, "notexist + 1", "undefined"
+                testdata1, "nonexistent + 1", "undefined"
             }, //
             {
                 null, "1/(10e300 * 10e100) ", null
@@ -1814,10 +1814,10 @@ public class JsonataUnitTests implements Serializable {
                 testdata2, "$append(1,2)", "[1, 2]"
             }, //
             {
-                testdata2, "$append(1,notexist)", "1"
+                testdata2, "$append(1,nonexistent)", "1"
             }, //
             {
-                testdata2, "$append(notexist, [2,3,4])", "[2, 3, 4]"
+                testdata2, "$append(nonexistent, [2,3,4])", "[2, 3, 4]"
             }, //
             {
                 testdata4, "$each(Address, \u03BB($v, $k) {$k & \": \" & $v})",
