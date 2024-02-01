@@ -161,7 +161,7 @@ public class SpreadFunction extends FunctionBase {
             }
         } else {
             /*
-             * The input argument is not an object nor array of objects. Throw a suitable
+             * The input argument is neither an object nor an array of objects. Throw a suitable
              * exception
              */
             // throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
