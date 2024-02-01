@@ -166,9 +166,9 @@ public class SplitFunction extends FunctionBase {
             /*
              * Split the string using a simple String::split... but do not
              * specify the limit. This is because the String::split function in
-             * Java behaves differently to the Javascript String::split
+             * Java behaves differently to the JavaScript String::split
              * function... and the JSONata $split function is defined to behave
-             * like the Javascript version.
+             * like the JavaScript version.
              * 
              * If the limit is zero, we do not add any strings in the output
              * array to the ArrayNode object.
