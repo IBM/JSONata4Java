@@ -1848,7 +1848,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
          * The goal is to create a JsonNode representing the function declaration that
          * could be stored (e.g., keyed by a variable id in the functionMap) and
          * executed later by creating a Function_execContext and visiting the
-         * visitFunciton_exec method.
+         * visitFunction_exec method.
          */
         final String fctName = ctx.FUNCTIONID().getText();
         RuleContext expr = ctx.getRuleContext();

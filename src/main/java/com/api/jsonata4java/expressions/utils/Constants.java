@@ -329,7 +329,7 @@ public class Constants implements Serializable {
     public static final String ERR_MSG_ARG1_STR_OR_EXPR = "Argument 1 of function %s must be a json string or a jsonata expression";
     public static final String ERR_MSG_ARG2_EMPTY_STR = "Second argument of function %s cannot be an empty string";
     public static final String ERR_MSG_INVALID_RADIX = "The radix of the $formatBase function must be between 2 and 36";
-    public static final String ERR_MSG_RUNTIME_ERROR = "A runtime error occurred when invoking funtion %s";
+    public static final String ERR_MSG_RUNTIME_ERROR = "A runtime error occurred when invoking function %s";
     public static final String ERR_MSG_INVALID_OPTIONS_SINGLE_CHAR = "Argument 3 of function %s is invalid. The value of the %s property must be a single character";
     public static final String ERR_MSG_INVALID_OPTIONS_STRING = "Argument 3 of function %s is invalid. The value of the %s property must be a string";
     public static final String ERR_MSG_INVALID_OPTIONS_UNKNOWN_PROPERTY = "Argument 3 of function %s is invalid. %s is not a valid property name";
