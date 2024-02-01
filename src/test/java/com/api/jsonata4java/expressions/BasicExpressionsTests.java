@@ -2060,7 +2060,7 @@ public class BasicExpressionsTests implements Serializable {
         // check works with arrays constructed from expressions
         simpleTest("[{\"a\": 1+1}, {\"a\":3}].a", "[2, 3]");
 
-        // check objects lacking referenced fields are ommitted (and don't get
+        // check objects lacking referenced fields are omitted (and don't get
         // added to result as null)
         simpleTest("[{\"a\":3}, {}].a", "3");
 
