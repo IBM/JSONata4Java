@@ -521,7 +521,7 @@ public class TesterUI {
         }
     }
 
-    public void loadJsoanata(Path path) {
+    public void loadJsonata(Path path) {
         try {
             jsonataArea.setText(readFile(path));
         } catch (NoSuchFileException e) {

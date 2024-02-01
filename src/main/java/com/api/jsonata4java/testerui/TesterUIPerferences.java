@@ -289,7 +289,7 @@ public class TesterUIPerferences {
                 pathInput.setText(example.getPathInput().toAbsolutePath().toString());
                 ui.loadInput(example.getPathInput());
                 pathJsonata.setText(example.getPathJsonata().toAbsolutePath().toString());
-                ui.loadJsoanata(example.getPathJsonata());
+                ui.loadJsonata(example.getPathJsonata());
                 settings.setExample((TesterUIJsonataExample) examples.getSelectedItem());
             }
         });
@@ -318,7 +318,7 @@ public class TesterUIPerferences {
                 final String pathBefore = pathInput.getText();
                 changeFilePath(pathJsonata, "JSONata mapping description", ".jsonata");
                 if (!pathJsonata.getText().equals(pathBefore)) {
-                    ui.loadJsoanata(new File(pathJsonata.getText()).toPath());
+                    ui.loadJsonata(new File(pathJsonata.getText()).toPath());
                     settings.setPathJsonata(new File(pathJsonata.getText()).toPath());
                 }
             }

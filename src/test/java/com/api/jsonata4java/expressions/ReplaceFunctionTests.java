@@ -284,7 +284,7 @@ public class ReplaceFunctionTests implements Serializable {
                 "$replace(' ', ' ', 10/3.0)", null, ERR_MSG_ARG3_BAD_TYPE
             }, //
 
-            // jsontata 1.8.2 complains about argument 2 because it assumes use of context
+            // jsonata 1.8.2 complains about argument 2 because it assumes use of context
             {
                 "$replace(a.b.c)", null, ERR_MSG_ARG2_BAD_TYPE
             }, // jsonata 1.8.2 ERR_MSG_ARG1_BAD_TYPE }, //
