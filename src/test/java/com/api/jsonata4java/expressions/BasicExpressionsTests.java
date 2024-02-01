@@ -2117,7 +2117,7 @@ public class BasicExpressionsTests implements Serializable {
         simpleTest("[{\"b\":1}][a or true]", "{\"b\":1}"); // jsonata 1.8.2 no longer returns null);
         simpleTest("[{\"b\":1}][a and true]", null);
 
-        // check singleton array / value equivlance used in the context of
+        // check singleton array / value equivalence used in the context of
         // predicates
         // test("[{\"a\":[1]}][a=1]", "{\"a\":[1]}"); // (even tho [1]!=1
         simpleTest("[{\"a\":[1]}][a=[1]]", "{\"a\":[1]}"); // jsonata 1.8.2 no longer returns null);
