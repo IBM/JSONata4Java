@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>2.4.8</version>
+  <version>2.4.9</version>
 </dependency>
 ```
 
@@ -53,8 +53,8 @@ Note: to build and deploy the jars to Maven Central you need to use a command li
 `mvn clean install deploy -Prelease`
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two&colon;
-* **JSONata4Java-2.4.8-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-2.4.8.jar** (only the JSONata4Java code)
+* **JSONata4Java-2.4.9-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-2.4.9.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
@@ -72,10 +72,11 @@ methods are not thread-safe.
 
 Issue 260 to add support for timeoutMS and maxDepth to the evaluate methods in Expression.
 
-### New Feature for Version 2.4.8 ###
-A new function for $fromMillisZoned has been added to allow passing a Timezone string as the 3rd parameter.
+### New Feature for Version 2.4.9 ###
+The $number function was updated to allow strings with 0x, 0o, 0b prefixes for hexadecimal, octal, and binary conversions. The value returned can handle long values.
 
 ### New Feature for Version 2.4 ###
+A new function for $fromMillisZoned has been added to allow passing a Timezone string as the 3rd parameter.
 We support now a simple version of JSONata's Order-by operator (see https://docs.jsonata.org/path-operators#---order-by).
 
 ### New Features for Version 2 ###
