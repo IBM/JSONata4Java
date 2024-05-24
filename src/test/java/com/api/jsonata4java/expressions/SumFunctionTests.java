@@ -57,10 +57,10 @@ public class SumFunctionTests implements Serializable {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
             {
-                "$sum({})", null, SumFunction.ERR_ARG1ARRTYPE
+                "$sum({})", null, SumFunction.ERR_ARG_TYPE
             }, //
             {
-                "$sum(null)", null, SumFunction.ERR_ARG1ARRTYPE
+                "$sum(null)", null, SumFunction.ERR_ARG_TYPE
             }, //
             {
                 "$sum([])", "0", null

@@ -616,6 +616,8 @@ public class FunctionUtils implements Serializable {
                     return true;
                 } else if (exprCtx instanceof IdContext) {
                     return true;
+                } else if (exprCtx instanceof Function_callContext) {
+               	 return true;
                 }
             }
         }

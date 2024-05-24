@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.node.LongNode;
 public class SumFunction extends FunctionBase {
 
     public static String ERR_BAD_CONTEXT = String.format(Constants.ERR_MSG_BAD_CONTEXT, Constants.FUNCTION_SUM);
-    public static final String ERR_ARG1ARRTYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
+    public static final String ERR_ARG_TYPE = String.format(Constants.ERR_MSG_ARG1_MUST_BE_ARRAY_OF_NUMBER,
         Constants.FUNCTION_SUM);
     public static String ERR_ARG1BADTYPE = String.format(Constants.ERR_MSG_ARG1_BAD_TYPE, Constants.FUNCTION_SUM);
     public static String ERR_ARG2BADTYPE = String.format(Constants.ERR_MSG_ARG2_BAD_TYPE, Constants.FUNCTION_SUM);
@@ -60,12 +60,15 @@ public class SumFunction extends FunctionBase {
         if (argCount == 1) {
             if (!useContext) {
                 argArray = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
-                FunctionUtils.validateArguments(ERR_ARG1ARRTYPE, expressionVisitor, ctx, 0, getSignature());
+            }
+            
+            if (argArray == null) {
+               return null;
+            } else if (useContext == false) {
+            	FunctionUtils.validateArguments(ERR_ARG_TYPE, expressionVisitor, ctx, 0, getSignature());
             }
             // if arg is an array, sum its values
-            if (argArray == null) {
-                return null;
-            } else if (argArray.isArray()) {
+            if (argArray.isArray()) {
                 ArrayNode arr = (ArrayNode) argArray;
 
                 // if ALL of the array members are integral, return as a LongNode
@@ -82,7 +85,7 @@ public class SumFunction extends FunctionBase {
                     } else if (!a.isIntegralNumber()) {
                         // also complain if any non-numeric types are included in the
                         // array
-                        throw new EvaluateRuntimeException(ERR_ARG1ARRTYPE);
+                        throw new EvaluateRuntimeException(ERR_ARG_TYPE);
                     }
                 }
 
@@ -105,7 +108,7 @@ public class SumFunction extends FunctionBase {
             } else if (argArray.isFloatingPointNumber() || argArray.isDouble()) {
                 return new DoubleNode(argArray.asDouble());
             } else {
-                throw new EvaluateRuntimeException(ERR_ARG1ARRTYPE);
+                throw new EvaluateRuntimeException(ERR_ARG_TYPE);
             }
 
         } else {

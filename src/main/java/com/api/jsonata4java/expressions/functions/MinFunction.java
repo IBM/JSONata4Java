@@ -76,6 +76,8 @@ public class MinFunction extends FunctionBase {
             }
             if (argArray == null) {
                 return null;
+            } else if (useContext == false) {
+            	FunctionUtils.validateArguments(ERR_ARG_TYPE, expressionVisitor, ctx, 0, getSignature());
             }
             if (argArray.isArray() == false) {
                 argArray = ExpressionsVisitor.ensureArray(argArray);

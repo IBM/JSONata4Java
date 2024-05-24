@@ -1783,7 +1783,7 @@ public class BasicExpressionsTests implements Serializable {
                     e.evaluate(null);
                     Assert.fail("Expected exception was not thrown for param: " + param);
                 } catch (EvaluateException ex) {
-                    Assert.assertEquals(SumFunction.ERR_ARG1ARRTYPE, ex.getMessage());
+                    Assert.assertEquals(SumFunction.ERR_ARG_TYPE, ex.getMessage());
                 }
             }
         }
