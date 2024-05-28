@@ -636,7 +636,7 @@ public class DateTimeUtils implements Serializable {
                     }
                 } else if ("YMDdFWwXxHhmsf".indexOf(def.component) != -1) {
                     String integerPattern = def.presentation1;
-                    if (def.presentation2 == null) {
+                    if (def.presentation2 != null) {
                         integerPattern += ";" + def.presentation2;
                     }
                     def.integerFormat = analyseIntegerPicture(integerPattern);
