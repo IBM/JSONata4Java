@@ -14,7 +14,7 @@ The easiest way to use this library is to include it as a dependency in your Mav
 <dependency>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>2.5.0</version>
+  <version>2.5.1</version>
 </dependency>
 ```
 
@@ -53,8 +53,8 @@ Note: to build and deploy the jars to Maven Central you need to use a command li
 `mvn clean install deploy -Prelease`
 
 Once you have run the launcher, you can find the jar files in the /target directory. There are two&colon;
-* **JSONata4Java-2.5.0-jar-with-dependencies.jar** (thinks includes dependent jar files)
-* **JSONata4Java-2.5.0.jar** (only the JSONata4Java code)
+* **JSONata4Java-2.5.1-jar-with-dependencies.jar** (thinks includes dependent jar files)
+* **JSONata4Java-2.5.1.jar** (only the JSONata4Java code)
 
 The com.api.jsonata4java.Tester program enables you to enter an expression and run it 
 against the same JSON as is used at the https://try.jsonata.org site. You can also 
@@ -66,6 +66,8 @@ against the same JSON as is used at the https://try.jsonata.org site.
 
 
 ### Fixes ###
+Issue 313 fixed a problem with duplicates in the spread function
+
 Issue 167 to add Synced suffixed evaluation methods to allow people running 
 in a multi-threaded environment to use evaluateSynced, etc. The non-Synced 
 methods are not thread-safe.
