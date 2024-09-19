@@ -383,6 +383,7 @@ public class Signature implements Serializable {
                             validatedArgs.add(arg);
                             argIndex++;
                         } else {
+                            arg = expressionVisitor.visit(args.expr(argIndex));
                             validatedArgs.add(arg);
                             argIndex++;
                         }
