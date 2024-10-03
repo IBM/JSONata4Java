@@ -73,7 +73,7 @@
 		<test.agnostic>com/api/jsonata4java/AgnosticTestSuite.class</test.agnostic>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<gpg.skip>true</gpg.skip> <!-- by default skip gpg -->
-		<antlr4.version>4.13.1</antlr4.version>
+		<antlr4.version>4.13.2</antlr4.version>
 	</properties>
 	<distributionManagement>
 		<snapshotRepository>
