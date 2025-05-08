@@ -1,319 +1,309 @@
-<!-- 
-/** 
- * (c) Copyright 2018, 2019 IBM Corporation 
- * 1 New Orchard Road, 
- * Armonk, New York, 10504-1722 
- * United States 
- * +1 914 499 1900 
- * support: Nathaniel Mills wnm3@us.ibm.com 
- * 
- * Licensed under the Apache License, Version 2.0 (the "License"); 
- * you may not use this file except in compliance with the License. 
- * You may obtain a copy of the License at 
- * 
- * http://www.apache.org/licenses/LICENSE-2.0 
- * 
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
- * See the License for the specific language governing permissions and 
- * limitations under the License. 
- * 
- */ 
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.ibm.jsonata4java</groupId>
-	<artifactId>JSONata4Java</artifactId>
-	<version>2.5.2</version>
-	<name>JSONata4Java</name>
-	<description>Port of jsonata.js to Java to enable rules for JSON content</description>
-	<url>https://github.com/IBM/JSONata4Java</url>
-	<licenses>
-		<license>
-			<name>Apache License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
-		</license>
-	</licenses>
-	<developers>
-		<developer>
-			<name>Nathaniel Mills</name>
-			<email>wnm3@us.ibm.com</email>
-			<organization>IBM Corporation</organization>
-			<organizationUrl>https://researcher.watson.ibm.com/researcher/view.php?person=us-wnm3</organizationUrl>
-		</developer>
-		<developer>
-			<name>Martin Smithson</name>
-			<email>msmiths@uk.ibm.com</email>
-			<organization>IBM Corporation</organization>
-		</developer>
-		<developer>
-			<name>Tom Klapiscak</name>
-			<email>klapitom@uk.ibm.com</email>
-			<organization>IBM Corporation</organization>
-		</developer>
-		<developer>
-			<name>Ian Craggs</name>
-			<email>icraggs@uk.ibm.com</email>
-			<organization>IBM Corporation</organization>
-		</developer>
-		<developer>
-			<name>Martin Blümel</name>
-			<email>martin.bluemel1@vodafone.com</email>
-			<organization>Vodafone Kabel Deutschland</organization>
-		</developer>
-	</developers>
-	<scm>
-		<connection>https://github.com/IBM/JSONata4Java.git</connection>
-		<developerConnection>https://github.com/IBM/JSONata4Java.git</developerConnection>
-		<url>https://github.com/IBM/JSONata4Java</url>
-	</scm>
-	<properties>
-		<test.unitTests>com/api/jsonata4java/**/*Test.class</test.unitTests>
-		<test.agnostic>com/api/jsonata4java/AgnosticTestSuite.class</test.agnostic>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<gpg.skip>true</gpg.skip> <!-- by default skip gpg -->
-		<antlr4.version>4.13.2</antlr4.version>
-	</properties>
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
-	<dependencies>
-	<dependency>
-    	<groupId>junit</groupId>
-    	<artifactId>junit</artifactId>
-    	<version>4.13.2</version>
-    	<scope>test</scope>
-	</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>6.2.6</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr4-runtime</artifactId>
-			<version>${antlr4.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-			<version>2.19.0</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core -->
-		<dependency>
-			<groupId>com.fasterxml.woodstox</groupId>
-			<artifactId>woodstox-core</artifactId>
-			<version>7.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fasterxml.jackson.dataformat</groupId>
-			<artifactId>jackson-dataformat-xml</artifactId>
-			<version>2.19.0</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-text</artifactId>
-			<version>1.13.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.13.1</version>
-		</dependency>
-	</dependencies>
-	<build>
-		<sourceDirectory>src/main/java</sourceDirectory>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-				<includes>
-					<include>**/*.properties</include>
-					<include>**/*.json</include>
-				</includes>
-			</resource>
-			<resource>
-				<directory>.</directory>
-				<includes>
-					<include>**/*.MF</include>
-				</includes>
-			</resource>
-		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.7.0</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>false</autoReleaseAfterClose>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>3.2.7</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>3.2.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar-no-fork</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.4.2</version>
-				<configuration>
-					<archive>
-						<manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.2</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<source>1.8</source>
-					<additionalOptions>
-						<additionalOption>-Xdoclint:none</additionalOption>
-					</additionalOptions>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.14.0</version>
-				<configuration>
-					<source>11</source>
-					<target>11</target>
-					<additionalClasspathElements/>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.googlecode.maven-download-plugin</groupId>
-				<artifactId>download-maven-plugin</artifactId>
-				<version>1.13.0</version>
-				<executions>
-					<execution>
-						<id>install-jsonata</id>
-						<goals>
-							<goal>wget</goal>
-						</goals>
-						<configuration>
-							<url>https://github.com/jsonata-js/jsonata/archive/v1.8.4.zip</url>
-							<unpack>true</unpack>
-							<outputDirectory>${project.build.directory}/jsonata</outputDirectory>
-							<md5>c8f057d10e659c27a5aa79f11d961947</md5>
-							<!--
-							<url>https://github.com/jsonata-js/jsonata/archive/v1.8.3.zip</url> 
-							<md5>3db67b7aec88d9b542d42e88547a1e26</md5>  
-							-->
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.5.3</version>
-				<configuration>
-					<testFailureIgnore>false</testFailureIgnore>
-					<reuseForks>true</reuseForks>
-					<argLine>-Xmx1024m</argLine>
-					<includes>
-						<include>${test.unitTests}</include>
-						<include>${test.agnostic}</include>
-					</includes>
-				</configuration>
-			</plugin>
-			<!--
-				Plugin to compile the g4 files ahead of the java files 
-				See https://github.com/antlr/antlr4/blob/master/antlr4-maven-plugin/src/site/apt/examples/simple.apt.vm 
-				Except that the grammar does not need to contain the package declaration 
-				as stated in the documentation (I do not know why) To use this plugin, type: 
-				mvn antlr4:antlr4 In any case, Maven will invoke this plugin before the Java source is compiled
-			-->
-			<plugin>
-				<groupId>org.antlr</groupId>
-				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>${antlr4.version}</version>
-				<configuration>
-					<visitor>true</visitor>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>antlr4</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<!-- plugin to create a self-contained portable package This allows us 
-				to execute our application like this: java -cp target/JSONata4Java-1.0.0-jar-with-dependencies.jar 
-				com.api.jsonata4java.Tester -->
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<excludes>
-						<exclude>src/test/resources/*</exclude>
-					</excludes>
-				</configuration>
-				<executions>
-					<execution>
-						<id>simple-command</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>biz.aQute.bnd</groupId>
-				<artifactId>bnd-maven-plugin</artifactId>
-				<version>7.1.0</version>
-				<configuration>
-					<bnd>
+<!-- /** * (c) Copyright 2018, 2019 IBM Corporation * 1 New Orchard Road, 
+  * Armonk, New York, 10504-1722 * United States * +1 914 499 1900 * support: 
+  Nathaniel Mills wnm3@us.ibm.com * * Licensed under the Apache License, Version 
+  2.0 (the "License"); * you may not use this file except in compliance with 
+  the License. * You may obtain a copy of the License at * * http://www.apache.org/licenses/LICENSE-2.0 
+  * * Unless required by applicable law or agreed to in writing, software * 
+  distributed under the License is distributed on an "AS IS" BASIS, * WITHOUT 
+  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. * See the 
+  License for the specific language governing permissions and * limitations 
+  under the License. * */ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.ibm.jsonata4java</groupId>
+  <artifactId>JSONata4Java</artifactId>
+  <version>2.5.2</version>
+  <name>JSONata4Java</name>
+  <description>Port of jsonata.js to Java to enable rules for JSON content</description>
+  <url>https://github.com/IBM/JSONata4Java</url>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Nathaniel Mills</name>
+      <email>wnm3@us.ibm.com</email>
+      <organization>IBM Corporation</organization>
+      <organizationUrl>https://researcher.watson.ibm.com/researcher/view.php?person=us-wnm3</organizationUrl>
+    </developer>
+    <developer>
+      <name>Martin Smithson</name>
+      <email>msmiths@uk.ibm.com</email>
+      <organization>IBM Corporation</organization>
+    </developer>
+    <developer>
+      <name>Tom Klapiscak</name>
+      <email>klapitom@uk.ibm.com</email>
+      <organization>IBM Corporation</organization>
+    </developer>
+    <developer>
+      <name>Ian Craggs</name>
+      <email>icraggs@uk.ibm.com</email>
+      <organization>IBM Corporation</organization>
+    </developer>
+    <developer>
+      <name>Martin Blümel</name>
+      <email>martin.bluemel1@vodafone.com</email>
+      <organization>Vodafone Kabel Deutschland</organization>
+    </developer>
+  </developers>
+  <scm>
+    <connection>https://github.com/IBM/JSONata4Java.git</connection>
+    <developerConnection>https://github.com/IBM/JSONata4Java.git</developerConnection>
+    <url>https://github.com/IBM/JSONata4Java</url>
+  </scm>
+  <properties>
+    <test.unitTests>com/api/jsonata4java/**/*Test.class</test.unitTests>
+    <test.agnostic>com/api/jsonata4java/AgnosticTestSuite.class</test.agnostic>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <gpg.skip>true</gpg.skip> <!-- by default skip gpg -->
+    <antlr4.version>4.13.2</antlr4.version>
+  </properties>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.13.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>6.2.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>${antlr4.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.19.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core -->
+    <dependency>
+      <groupId>com.fasterxml.woodstox</groupId>
+      <artifactId>woodstox-core</artifactId>
+      <version>7.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>2.19.0</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.13.1</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.13.1</version>
+    </dependency>
+    <dependency>
+        <groupId>biz.aQute.bnd</groupId>
+        <artifactId>bnd-maven-plugin</artifactId>
+        <version>7.1.0</version>
+    </dependency>    
+  </dependencies>
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*.properties</include>
+          <include>**/*.json</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>.</directory>
+        <includes>
+          <include>**/*.MF</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.7.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>false</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>3.2.7</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.2</version>
+        <configuration>
+          <archive>
+            <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.11.2</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <source>17</source>
+          <additionalOptions>
+            <additionalOption>-Xdoclint:none</additionalOption>
+          </additionalOptions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.0</version>
+        <configuration>
+          <source>17</source>
+          <target>17</target>
+          <additionalClasspathElements />
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.googlecode.maven-download-plugin</groupId>
+        <artifactId>download-maven-plugin</artifactId>
+        <version>1.13.0</version>
+        <executions>
+          <execution>
+            <id>install-jsonata</id>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://github.com/jsonata-js/jsonata/archive/v1.8.4.zip</url>
+              <unpack>true</unpack>
+              <outputDirectory>${project.build.directory}/jsonata</outputDirectory>
+              <md5>c8f057d10e659c27a5aa79f11d961947</md5>
+              <!-- <url>https://github.com/jsonata-js/jsonata/archive/v1.8.3.zip</url> 
+                <md5>3db67b7aec88d9b542d42e88547a1e26</md5> -->
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.3</version>
+        <configuration>
+          <testFailureIgnore>false</testFailureIgnore>
+          <reuseForks>true</reuseForks>
+          <argLine>-Xmx1024m</argLine>
+          <includes>
+            <include>${test.unitTests}</include>
+            <include>${test.agnostic}</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <!-- Plugin to compile the g4 files ahead of the java files See https://github.com/antlr/antlr4/blob/master/antlr4-maven-plugin/src/site/apt/examples/simple.apt.vm 
+        Except that the grammar does not need to contain the package declaration 
+        as stated in the documentation (I do not know why) To use this plugin, type: 
+        mvn antlr4:antlr4 In any case, Maven will invoke this plugin before the Java 
+        source is compiled -->
+      <plugin>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr4-maven-plugin</artifactId>
+        <version>${antlr4.version}</version>
+        <configuration>
+          <visitor>true</visitor>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>antlr4</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- plugin to create a self-contained portable package This allows 
+        us to execute our application like this: java -cp target/JSONata4Java-1.0.0-jar-with-dependencies.jar 
+        com.api.jsonata4java.Tester -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+          <excludes>
+            <exclude>src/test/resources/*</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <id>simple-command</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+          <groupId>biz.aQute.bnd</groupId>
+          <artifactId>bnd-maven-plugin</artifactId>
+          <version>7.1.0</version>
+          <configuration>
+            <bnd>
 						<![CDATA[ 
                         Export-Package: \
                         com.api.jsonata4java, \
@@ -324,61 +314,63 @@
                         com.api.jsonata4java.expressions.path.generated, \
                         com.api.jsonata4java.expressions.utils
 					]]>
-						Bundle-Developers: wnm3; email=wnm3@us.ibm.com; name="Nathaniel Mills"; organization=IBM; organizationUrl=https://www.ibm.com
-					</bnd>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>bnd-process</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>
-											com.googlecode.maven-download-plugin
-										</groupId>
-										<artifactId>
-											download-maven-plugin
-										</artifactId>
-										<versionRange>
-											[1.4.0,)
-										</versionRange>
-										<goals>
-											<goal>wget</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute/>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-	<profiles>
-		<profile>
-			<id>release</id>
-			<properties>
-				<gpg.skip>false</gpg.skip>
-			</properties>
-		</profile>
-	</profiles>
+              Bundle-Developers: wnm3; email=wnm3@us.ibm.com;
+              name="Nathaniel Mills"; organization=IBM;
+              organizationUrl=https://www.ibm.com
+            </bnd>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>bnd-process</goal>
+              </goals>
+            </execution>
+          </executions>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <!--This plugin's configuration is used to store Eclipse m2e settings 
+          only. It has no influence on the Maven build itself. -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>
+                      com.googlecode.maven-download-plugin
+                    </groupId>
+                    <artifactId>
+                      download-maven-plugin
+                    </artifactId>
+                    <versionRange>
+                      [1.4.0,)
+                    </versionRange>
+                    <goals>
+                      <goal>wget</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <properties>
+        <gpg.skip>false</gpg.skip>
+      </properties>
+    </profile>
+  </profiles>
 </project>
