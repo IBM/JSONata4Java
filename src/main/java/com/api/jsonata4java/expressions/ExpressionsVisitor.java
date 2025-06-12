@@ -2223,7 +2223,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     for (JsonNode element : context) {
                         _environment.pushContext(element);
                         final JsonNode fieldList = visit(ctx.fieldList());
-                        fieldList.fields().forEachRemaining(e -> grouping
+                        fieldList.properties().forEach(e -> grouping
                             .computeIfAbsent(e.getKey(), ignore -> factory.arrayNode()).add(e.getValue()));
                         _environment.popContext();
                     }

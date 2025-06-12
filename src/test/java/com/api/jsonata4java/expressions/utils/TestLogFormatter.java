@@ -71,7 +71,7 @@ public class TestLogFormatter extends Formatter implements Serializable {
         sb.append('[');
         sb.append(date);
         sb.append("] ");
-        sb.append(r.getThreadID());
+        sb.append(r.getLongThreadID());
         sb.append("    ");
         sb.append(className);
         sb.append(' ');

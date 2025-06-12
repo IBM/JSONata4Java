@@ -195,7 +195,7 @@ public class Utils implements Serializable {
         switch (input.getNodeType()) {
             case OBJECT: {
                 ObjectNode output = JsonNodeFactory.instance.objectNode();
-                Iterator<Entry<String, JsonNode>> it = ((ObjectNode) input).fields();
+                Iterator<Entry<String, JsonNode>> it = ((ObjectNode) input).properties().iterator();
                 while (it.hasNext()) {
                     Entry<String, JsonNode> e = it.next();
                     String field = e.getKey();

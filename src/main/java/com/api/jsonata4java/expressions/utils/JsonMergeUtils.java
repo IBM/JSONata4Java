@@ -78,7 +78,7 @@ public class JsonMergeUtils implements Serializable {
 
     private static ObjectNode merge(ObjectNode x, ObjectNode y) {
 
-        final Iterator<Map.Entry<String, JsonNode>> yit = y.fields();
+        final Iterator<Map.Entry<String, JsonNode>> yit = y.properties().iterator();
         while (yit.hasNext()) {
             final Map.Entry<String, JsonNode> ye = yit.next();
             final String f = ye.getKey();

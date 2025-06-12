@@ -408,7 +408,7 @@ public class FunctionUtils implements Serializable {
         int count = 0;
         CommonToken token = null;
         TerminalNode tn = null;
-        for (Iterator<Entry<String, JsonNode>> it = object.fields(); it.hasNext();) {
+        for (Iterator<Entry<String, JsonNode>> it = object.properties().iterator(); it.hasNext();) {
             Entry<String, JsonNode> field = it.next();
             count++;
             if (count > 1) {
