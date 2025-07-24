@@ -5,12 +5,11 @@ update testerui.sh for version (1 place)
 update testerui.cmd for version (1 place)
 From a command line in JSONata4Java run the ./makeRelease.sh
 
-Note the Closing staging repository with ID value ([OSSRH-46644] JSONata4Java)
+Note the repository with ID value (38c40bb6-e5d4-4a7c-8fbc-d1f516dcb687( namespace com.ibm.jsonata4java)
 https://issues.sonatype.org/browse/OSSRH-46644
 
-Goto https://s01.oss.sonatype.org/
+Goto https://central.sonatype.com/publishing/deployments
 Login
-Select Staging Repositories on left margin
-Find the ID value and click it
-On the top menu, click Release
+Select the deployment for jsonata4java
+Click on Publish
 
