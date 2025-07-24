@@ -81,10 +81,10 @@ public class OrderByOperator {
                         order = defaultOrder;
                         break;
                     case MappingExpressionParser.GT:
-                        order = OrderByOrder.ASC;
+                        order = OrderByOrder.DESC;
                         break;
                     case MappingExpressionParser.LT:
-                        order = OrderByOrder.DESC;
+                        order = OrderByOrder.ASC;
                         break;
                 }
             }
