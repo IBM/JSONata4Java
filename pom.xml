@@ -63,15 +63,16 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <gpg.skip>true</gpg.skip> <!-- by default skip gpg -->
     <antlr4.version>4.13.2</antlr4.version>
+    <server>central</server>
   </properties>
   <distributionManagement>
     <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+      <id>central</id>
+      <url>https://central.sonatype.com</url>
     </snapshotRepository>
     <repository>
-      <id>ossrh</id>
-      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>central</id>
+      <url>https://central.sonatype.com</url>
     </repository>
   </distributionManagement>
   <dependencies>
@@ -146,6 +147,16 @@
       </resource>
     </resources>
     <plugins>
+        <plugin>
+          <groupId>org.sonatype.central</groupId>
+          <artifactId>central-publishing-maven-plugin</artifactId>
+          <version>0.8.0</version>
+          <extensions>true</extensions>
+          <configuration>
+            <publishingServerId>central</publishingServerId>
+          </configuration>
+        </plugin>
+	  <!--  replaced by direct maven central repo above
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -157,6 +168,7 @@
           <autoReleaseAfterClose>false</autoReleaseAfterClose>
         </configuration>
       </plugin>
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
