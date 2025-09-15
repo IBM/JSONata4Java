@@ -1,0 +1,13 @@
+{
+  "company": {
+    "name": "TechCorp",
+    "departments": {
+      "IT": {
+        "employees": 50
+      },
+      "HR": {
+        "employees": 10
+      }
+    }
+  }
+}

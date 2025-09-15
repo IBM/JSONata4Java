@@ -907,6 +907,13 @@ public class FunctionUtils implements Serializable {
 
         // does the signature permit use of the context as a argument
         if (signature.indexOf("-") >= 0 && prc != null && prc instanceof PathContext) {
+      	   int child_count = prc.children != null ? prc.children.size() : 0;
+      	   if (child_count > 0) {
+      	   	Object first_child = prc.getChild(0);
+      	   	if (first_child instanceof Function_callContext) {
+      	   		return false;
+      	   	}
+      	   }
             return true;
         }
 
