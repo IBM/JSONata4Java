@@ -8,7 +8,7 @@ From a command line in JSONata4Java run the ./makeRelease.sh
 Note the repository with ID value (38c40bb6-e5d4-4a7c-8fbc-d1f516dcb687( namespace com.ibm.jsonata4java)
 https://issues.sonatype.org/browse/OSSRH-46644
 
-Goto https://central.sonatype.com/publishing/deployments
+Goto https://central.sonatype.com/publishing/deployments (you may need an incognito browser if cookies prevent loading the page)
 Login
 Select the deployment for jsonata4java
 Click on Publish
