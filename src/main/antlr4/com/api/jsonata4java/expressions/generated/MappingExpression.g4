@@ -169,7 +169,7 @@ fragment UNICODE : ([\u0080-\uFFFF] | 'u' HEX HEX HEX HEX) ;
 fragment HEX : [0-9a-fA-F] ;
 
 fragment INT :   '0' | [1-9] [0-9]* ; // no leading zeros
-fragment EXP :   [Ee] [+\-]? INT ;    // \- since - means "range" inside [...]
+fragment EXP :   [Ee] [+\-]? [0-9]+ ;    // \- since - means "range" inside [...]
 
 fragment SINGLE_QUOTE : '\'';
 fragment DOUBLE_QUOTE : '"';
