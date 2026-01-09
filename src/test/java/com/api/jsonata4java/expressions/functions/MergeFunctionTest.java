@@ -29,7 +29,7 @@ public class MergeFunctionTest {
 
     @Test
     public void nullInput() throws Exception {
-        test("$merge()", null, null, (String) null);
+        test("$merge()", null, MergeFunction.ERR_ARG1BADTYPE, (String) null);
     }
 
     @Test

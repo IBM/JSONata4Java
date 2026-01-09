@@ -63,7 +63,8 @@ public class MergeFunction extends FunctionBase {
                     throw new EvaluateRuntimeException(ERR_BAD_CONTEXT);
                 }
                 // else signal no match (result = null)
-                break;
+                throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
+                // break;
             case 1:
                 if (arg == null) {
                     return null;

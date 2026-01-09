@@ -39,6 +39,7 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
+import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ArrayContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Array_constructorContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.BooleanContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Context_refContext;
@@ -609,6 +610,9 @@ public class FunctionUtils implements Serializable {
                     if (test.isNumber()) {
                         return true;
                     }
+                } else if (exprCtx instanceof ArrayContext) {
+                   // must be array of numbers or a number
+                   return true;               	 
                 } else if (exprCtx instanceof NumberContext || exprCtx instanceof Unary_opContext) {
                     // must be array of numbers or a number
                     return true;
