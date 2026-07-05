@@ -19,6 +19,7 @@ import com.api.jsonata4java.expressions.FrameEnvironment;
 import com.api.jsonata4java.expressions.ParseException;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
+import com.api.jsonata4java.expressions.regex.RegexEngine;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -91,6 +92,25 @@ public class Expression implements Serializable {
 	}
 
 	/**
+	 * Generate a new Expression based on evaluating the supplied expression,
+	 * using a custom regex engine to compile any regex literals or dynamic
+	 * string patterns encountered (e.g. for $match/$replace/$split) instead of
+	 * the default {@link java.util.regex.Pattern}-backed one.
+	 *
+	 * @param expression
+	 *                    the logic to be parsed for later execution via the evaluate
+	 *                    methods
+	 * @param regexEngine
+	 *                    the regex engine to use
+	 * @return new Expression object
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	public static Expression jsonata(String expression, RegexEngine regexEngine) throws ParseException, IOException {
+		return new Expression(expression, regexEngine);
+	}
+
+	/**
 	 * Testing the various methods based on
 	 * https://docs.jsonata.org/embedding-extending#expressionregisterfunctionname-implementation-signature
 	 * 
@@ -143,10 +163,11 @@ public class Expression implements Serializable {
 	ExpressionsVisitor _eval = null;
 	Expressions _expr = null;
 	Map<String, ExprContext> _variableMap = new HashMap<String, ExprContext>();
+	RegexEngine _regexEngine = RegexEngine.defaultEngine();
 
 	/**
 	 * Constructor for Expression
-	 * 
+	 *
 	 * @param expression
 	 *                   the logic to be parsed for later execution via evaluate
 	 *                   methods
@@ -155,6 +176,26 @@ public class Expression implements Serializable {
 	 */
 	public Expression(String expression) throws ParseException, IOException {
 		_expr = Expressions.parse(expression);
+		_eval = _expr.getExpr();
+	}
+
+	/**
+	 * Constructor for Expression, using a custom regex engine to compile any
+	 * regex literals or dynamic string patterns encountered (e.g. for
+	 * $match/$replace/$split) instead of the default
+	 * {@link java.util.regex.Pattern}-backed one.
+	 *
+	 * @param expression
+	 *                    the logic to be parsed for later execution via evaluate
+	 *                    methods
+	 * @param regexEngine
+	 *                    the regex engine to use
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	public Expression(String expression, RegexEngine regexEngine) throws ParseException, IOException {
+		_regexEngine = regexEngine != null ? regexEngine : RegexEngine.defaultEngine();
+		_expr = Expressions.parse(expression, _regexEngine);
 		_eval = _expr.getExpr();
 	}
 
@@ -210,7 +251,7 @@ public class Expression implements Serializable {
 	 * @throws ParseException
 	 */
 	public JsonNode evaluate(JsonNode rootContext) throws ParseException {
-		ExpressionsVisitor eval = new ExpressionsVisitor(rootContext, new FrameEnvironment(null));
+		ExpressionsVisitor eval = new ExpressionsVisitor(rootContext, new FrameEnvironment(null), _regexEngine);
 		// process any stored bindings
 		for (Iterator<String> it = _variableMap.keySet().iterator(); it.hasNext();) {
 			String key = it.next();
@@ -359,7 +400,7 @@ public class Expression implements Serializable {
 	 *                           If the given device event is invalid.
 	 */
 	public JsonNode evaluate(JsonNode rootContext, long timeoutMS, int maxDepth) throws EvaluateException {
-		ExpressionsVisitor eval = new ExpressionsVisitor(rootContext, new FrameEnvironment(null));
+		ExpressionsVisitor eval = new ExpressionsVisitor(rootContext, new FrameEnvironment(null), _regexEngine);
 		// process any stored bindings
 		for (Iterator<String> it = _variableMap.keySet().iterator(); it.hasNext();) {
 			String key = it.next();

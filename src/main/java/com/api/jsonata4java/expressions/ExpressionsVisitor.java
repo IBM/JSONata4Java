@@ -70,6 +70,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Root_p
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.SeqContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
+import com.api.jsonata4java.expressions.regex.RegexEngine;
 import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
@@ -437,6 +438,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
     private List<ParseTree> steps = new ArrayList<ParseTree>();
     private ParseTreeProperty<Integer> values = new ParseTreeProperty<Integer>();
     private String lastVisited = "";
+    private RegexEngine regexEngine = RegexEngine.defaultEngine();
 
     public ExpressionsVisitor() {
         setEnvironment(null);
@@ -446,6 +448,29 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
     public ExpressionsVisitor(JsonNode rootContext, FrameEnvironment environment) throws EvaluateRuntimeException {
         setEnvironment(environment);
         setRootContext(rootContext);
+    }
+
+    public ExpressionsVisitor(JsonNode rootContext, FrameEnvironment environment, RegexEngine regexEngine)
+        throws EvaluateRuntimeException {
+        setEnvironment(environment);
+        setRootContext(rootContext);
+        if (regexEngine != null) {
+            this.regexEngine = regexEngine;
+        }
+    }
+
+    /**
+     * @return the regex engine used to compile JSONata regex literals and
+     *         dynamic string patterns (e.g. for $match/$replace/$split).
+     */
+    public RegexEngine getRegexEngine() {
+        return regexEngine;
+    }
+
+    public void setRegexEngine(RegexEngine regexEngine) {
+        if (regexEngine != null) {
+            this.regexEngine = regexEngine;
+        }
     }
 
     public FrameEnvironment setNewEnvironment() {
@@ -2732,7 +2757,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         }
         JsonNode result = null;
         if (ctx.getText() != null) {
-            final RegularExpression regex = new RegularExpression(ctx.getText());
+            final RegularExpression regex = new RegularExpression(ctx.getText(), regexEngine);
             result = new POJONode(regex);
             lastVisited = METHOD;
         }
@@ -2754,7 +2779,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         JsonNode result = null;
         if (ctx.getText() != null) {
             final RegularExpression regex = new RegularExpression(RegularExpression.Type.CASEINSENSITIVE,
-                ctx.getText());
+                ctx.getText(), regexEngine);
             result = new POJONode(regex);
             lastVisited = METHOD;
         }
@@ -2774,7 +2799,8 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         }
         JsonNode result = null;
         if (ctx.getText() != null) {
-            final RegularExpression regex = new RegularExpression(RegularExpression.Type.MULTILINE, ctx.getText());
+            final RegularExpression regex = new RegularExpression(RegularExpression.Type.MULTILINE, ctx.getText(),
+                regexEngine);
             result = new POJONode(regex);
             lastVisited = METHOD;
         }

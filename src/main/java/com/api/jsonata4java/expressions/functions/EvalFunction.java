@@ -77,7 +77,11 @@ public class EvalFunction extends FunctionBase {
                 context = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 0 : 1);
             }
             try {
-                Expression expr = Expression.jsonata(expression);
+                // Use the enclosing expression's regex engine so regex literals
+                // inside the eval'd expression are compiled consistently with
+                // the rest of the enclosing expression (e.g. RE2 instead of the
+                // default java.util.regex).
+                Expression expr = Expression.jsonata(expression, expressionVisitor.getRegexEngine());
                 result = expr.evaluate(context);
             } catch (ParseException | IOException e) {
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);

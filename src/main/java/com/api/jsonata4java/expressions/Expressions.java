@@ -41,6 +41,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionLexer;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Expr_to_eofContext;
+import com.api.jsonata4java.expressions.regex.RegexEngine;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -75,6 +76,25 @@ public class Expressions implements Serializable {
 	// Convert a mapping expression string into a pre-processed expression ready
 	// for evaluation
 	public static Expressions parse(String mappingExpression) throws ParseException, IOException {
+		return parse(mappingExpression, RegexEngine.defaultEngine());
+	}
+
+	/**
+	 * Convert a mapping expression string into a pre-processed expression ready
+	 * for evaluation, using a custom regex engine to compile any regex literals
+	 * or dynamic string patterns encountered (e.g. for $match/$replace/$split)
+	 * instead of the default {@link java.util.regex.Pattern}-backed one.
+	 *
+	 * @param mappingExpression
+	 *                          the expression to parse
+	 * @param regexEngine
+	 *                          the regex engine to use
+	 * @return the parsed expression
+	 * @throws ParseException
+	 * @throws IOException
+	 */
+	public static Expressions parse(String mappingExpression, RegexEngine regexEngine)
+		throws ParseException, IOException {
 
 		// Expressions can include references to properties within an
 		// application interface ("state"),
@@ -119,7 +139,7 @@ public class Expressions implements Serializable {
 			throw new ParseException(e.getMessage());
 		}
 
-		return new Expressions(newTree, mappingExpression);
+		return new Expressions(newTree, mappingExpression, regexEngine);
 	}
 
 	ExpressionsVisitor _eval = null;
@@ -129,7 +149,11 @@ public class Expressions implements Serializable {
 	ParseTree _tree = null;
 
 	public Expressions(ParseTree aTree, String anExpression) {
-		_eval = new ExpressionsVisitor(null, new FrameEnvironment(null));
+		this(aTree, anExpression, RegexEngine.defaultEngine());
+	}
+
+	public Expressions(ParseTree aTree, String anExpression, RegexEngine regexEngine) {
+		_eval = new ExpressionsVisitor(null, new FrameEnvironment(null), regexEngine);
 		_tree = aTree;
 		_expression = anExpression;
 	}

@@ -22,11 +22,16 @@
 
 package com.api.jsonata4java.expressions.functions;
 
+import java.util.Optional;
 import java.util.regex.Pattern;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.regex.JdkRegexPattern;
+import com.api.jsonata4java.expressions.regex.RegexFlags;
+import com.api.jsonata4java.expressions.regex.RegexMatch;
+import com.api.jsonata4java.expressions.regex.RegexPattern;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -140,9 +145,15 @@ public class ReplaceFunction extends FunctionBase {
                             final RegularExpression regex = argPattern instanceof POJONode
                                 ? (RegularExpression) ((POJONode) argPattern).getPojo()
                                 : null;
-                            final String pattern = regex != null
-                                ? regex.toString()
-                                : argPattern.textValue();
+                            final RegexPattern pattern = regex != null
+                                ? regex.getPattern()
+                                // A plain-string pattern is treated as an exact literal to
+                                // search for, not as a user-authored regex, so this
+                                // intentionally always uses the default engine's quoting
+                                // rather than routing through a pluggable RegexEngine
+                                // (whose escaping dialect may not understand
+                                // Pattern.quote()'s \Q...\E syntax).
+                                : new JdkRegexPattern(Pattern.quote(argPattern.textValue()), new RegexFlags(false, false));
                             final String replacement = argReplacement.textValue();
 
                             if (argCount == 4) {
@@ -159,26 +170,7 @@ public class ReplaceFunction extends FunctionBase {
                                 }
                             }
 
-                            // Check to see if a limit was specified
-                            if (limit == -1) {
-                                // No limits... replace all occurrences in the string
-                                if (regex != null) {
-                                    result = new TextNode(regex.getPattern().matcher(str).replaceAll(jsonata2JavaReplacement(replacement)));
-                                } else {
-                                    result = new TextNode(str.replaceAll(Pattern.quote(pattern), jsonata2JavaReplacement(replacement)));
-                                }
-                            } else {
-                                // Only perform the replace the specified number of times
-                                String retString = new String(str);
-                                for (int i = 0; i < limit; i++) {
-                                    if (regex != null) {
-                                        retString = regex.getPattern().matcher(retString).replaceFirst(jsonata2JavaReplacement(replacement));
-                                    } else {
-                                        retString = retString.replaceFirst(Pattern.quote(pattern), jsonata2JavaReplacement(replacement));
-                                    }
-                                } // FOR
-                                result = new TextNode(retString);
-                            }
+                            result = new TextNode(replaceMatches(str, pattern, replacement, limit));
                         } else {
                             throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
                         }
@@ -204,13 +196,116 @@ public class ReplaceFunction extends FunctionBase {
         return result;
     }
 
-    public static String jsonata2JavaReplacement(String in) {
-        // In JSONata and in Java the $ in the replacement test usually starts the insertion of a capturing group
-        // In order to replace a simple $ in Java you have to escape the $ with "\$"
-        // in JSONata you do this with a '$$'
-        // "\$" followed any character besides '<' and a digit into $ + this character  
-        return in.replaceAll("\\$\\$", "\\\\\\$")
-            .replaceAll("([^\\\\]|^)\\$([^0-9^<])", "$1\\\\\\$$2");
+    /**
+     * Replaces up to {@code limit} (or all, if {@code limit == -1}) non-overlapping
+     * matches of {@code regex} in {@code str} with {@code replacement}, expanding
+     * any {@code $N}/{@code $$} group references along the way. Implemented
+     * directly against {@link RegexPattern}'s match results (rather than delegating to
+     * {@link java.util.regex.Matcher#replaceAll(String)}'s own replacement-string
+     * syntax) so that it works the same way regardless of which {@link
+     * com.api.jsonata4java.expressions.regex.RegexEngine} produced {@code regex}.
+     */
+    private static String replaceMatches(String str, RegexPattern regex, String replacement, int limit) {
+        StringBuilder sb = new StringBuilder();
+        int pos = 0;
+        int count = 0;
+        while (limit == -1 || count < limit) {
+            final Optional<RegexMatch> found = regex.findFirst(str, pos);
+            if (!found.isPresent()) {
+                break;
+            }
+            final RegexMatch m = found.get();
+            sb.append(str, pos, m.getIndex());
+            sb.append(expandReplacement(replacement, m));
+            pos = m.getIndex() + m.getLength();
+            if (m.getLength() == 0) {
+                // Avoid getting stuck on a zero-length match: copy the next
+                // character through unchanged and advance by one, mirroring
+                // java.util.regex.Matcher's own empty-match handling.
+                if (pos < str.length()) {
+                    sb.append(str.charAt(pos));
+                }
+                pos++;
+            }
+            count++;
+        }
+        if (pos < str.length()) {
+            sb.append(str, pos, str.length());
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Expands {@code $N} (Nth captured group, or the whole match for N=0) and
+     * {@code $$} (a literal $) references in {@code replacement} against
+     * {@code match}. Any other {@code $} is copied through literally. A group
+     * number beyond the number of captured groups expands to the empty string;
+     * a group that did not participate in the match also expands to the empty
+     * string.
+     */
+    static String expandReplacement(String replacement, RegexMatch match) {
+        StringBuilder sb = new StringBuilder();
+        int len = replacement.length();
+        int i = 0;
+        while (i < len) {
+            char c = replacement.charAt(i);
+            if (c == '$' && i + 1 < len) {
+                char next = replacement.charAt(i + 1);
+                if (next == '$') {
+                    sb.append('$');
+                    i += 2;
+                    continue;
+                }
+                if (Character.isDigit(next)) {
+                    // Cap the digit run considered for a group number to avoid
+                    // Integer.parseInt overflowing below (e.g. "$99999999999999"):
+                    // no real regex has anywhere near this many capture groups, so
+                    // anything longer than this is certain to fail the "<=
+                    // groupCount" check regardless of exactly how many digits it has.
+                    int hardLimit = Math.min(len, i + 1 + 9);
+                    int maxEnd = i + 1;
+                    while (maxEnd < hardLimit && Character.isDigit(replacement.charAt(maxEnd))) {
+                        maxEnd++;
+                    }
+                    // Greedily consume digits for the group number, backing off
+                    // one digit at a time if the resulting number isn't a valid
+                    // group, mirroring java.util.regex.Matcher's own $N group
+                    // reference parsing (e.g. with 13 groups, "$123" means group
+                    // 12 followed by literal "3", not a non-existent group 123).
+                    int groupCount = match.getGroups().size();
+                    int end = maxEnd;
+                    int groupNum = -1;
+                    while (end > i + 1) {
+                        int candidate = Integer.parseInt(replacement.substring(i + 1, end));
+                        if (candidate <= groupCount) {
+                            groupNum = candidate;
+                            break;
+                        }
+                        end--;
+                    }
+                    if (groupNum == -1) {
+                        // Not even a single digit is a valid group number;
+                        // copy the $ through literally rather than throwing.
+                        sb.append(c);
+                        i++;
+                        continue;
+                    }
+                    if (groupNum == 0) {
+                        sb.append(match.getMatch());
+                    } else {
+                        String group = match.getGroups().get(groupNum - 1);
+                        if (group != null) {
+                            sb.append(group);
+                        }
+                    }
+                    i = end;
+                    continue;
+                }
+            }
+            sb.append(c);
+            i++;
+        }
+        return sb.toString();
     }
 
     @Override

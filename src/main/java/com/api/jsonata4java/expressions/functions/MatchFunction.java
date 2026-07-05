@@ -22,7 +22,7 @@
 
 package com.api.jsonata4java.expressions.functions;
 
-import java.util.regex.Matcher;
+import java.util.Optional;
 import java.util.regex.Pattern;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
@@ -30,6 +30,10 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
+import com.api.jsonata4java.expressions.regex.JdkRegexPattern;
+import com.api.jsonata4java.expressions.regex.RegexFlags;
+import com.api.jsonata4java.expressions.regex.RegexMatch;
+import com.api.jsonata4java.expressions.regex.RegexPattern;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -104,12 +108,17 @@ public class MatchFunction extends FunctionBase {
                 if (argPattern instanceof POJONode) {
                     regex = (RegularExpression) ((POJONode) argPattern).getPojo();
                 }
-                // final String patternText = regex != null ? regex.toString() : Pattern.quote(argPattern.textValue());
-                Pattern regexPattern;
+                final RegexPattern regexPattern;
                 if (regex != null) {
                     regexPattern = regex.getPattern();
                 } else {
-                    regexPattern = Pattern.compile(Pattern.quote(argPattern.textValue()));
+                    // A plain-string pattern is treated as an exact literal to
+                    // search for, not as a user-authored regex, so this
+                    // intentionally always uses the default engine's quoting
+                    // rather than routing through a pluggable RegexEngine
+                    // (whose escaping dialect may not understand
+                    // Pattern.quote()'s \Q...\E syntax).
+                    regexPattern = new JdkRegexPattern(Pattern.quote(argPattern.textValue()), new RegexFlags(false, false));
                 }
                 // Check to see if the separator is just a string
                 final String str = argString.textValue();
@@ -127,38 +136,27 @@ public class MatchFunction extends FunctionBase {
                     }
                 }
 
-                final Matcher matcher = regexPattern.matcher(str);
-
                 // Check to see if a limit was specified
                 result = new SelectorArrayNode(JsonNodeFactory.instance);
                 if (limit == -1) {
-                    // No limits... match all occurrences in the string
-                    while (matcher.find()) {
-                        final ObjectNode obj = JsonNodeFactory.instance.objectNode();
-                        obj.put("match", str.substring(matcher.start(), matcher.end()));
-                        obj.put("index", Long.valueOf(matcher.start()));
-                        final ArrayNode groups = JsonNodeFactory.instance.arrayNode();
-                        obj.set("groups", groups);
-                        final int groupCount = matcher.groupCount();
-                        for (int i = 1; i <= groupCount; i++) {
-                            groups.add(matcher.group(i));
-                        }
-                        result.add(obj);
+                    // No limit... match all occurrences in the string
+                    for (final RegexMatch m : regexPattern.findAll(str)) {
+                        result.add(toMatchObject(m));
                     }
                 } else if (limit > 0) {
+                    // Stream matches one at a time so we can stop as soon as the
+                    // limit is reached, instead of scanning the whole string.
                     int count = 0;
-                    while (matcher.find() && count < limit) {
-                        count++;
-                        final ObjectNode obj = JsonNodeFactory.instance.objectNode();
-                        obj.put("match", str.substring(matcher.start(), matcher.end()));
-                        obj.put("index", Long.valueOf(matcher.start()));
-                        final ArrayNode groups = JsonNodeFactory.instance.arrayNode();
-                        obj.set("groups", groups);
-                        final int groupCount = matcher.groupCount();
-                        for (int i = 1; i <= groupCount; i++) {
-                            groups.add(matcher.group(i));
+                    int pos = 0;
+                    while (count < limit) {
+                        final Optional<RegexMatch> found = regexPattern.findFirst(str, pos);
+                        if (!found.isPresent()) {
+                            break;
                         }
-                        result.add(obj);
+                        final RegexMatch m = found.get();
+                        result.add(toMatchObject(m));
+                        count++;
+                        pos = m.getIndex() + Math.max(m.getLength(), 1);
                     }
                 } else {
                     return null;
@@ -190,6 +188,18 @@ public class MatchFunction extends FunctionBase {
         }
 
         return result;
+    }
+
+    private static ObjectNode toMatchObject(RegexMatch m) {
+        final ObjectNode obj = JsonNodeFactory.instance.objectNode();
+        obj.put("match", m.getMatch());
+        obj.put("index", Long.valueOf(m.getIndex()));
+        final ArrayNode groups = JsonNodeFactory.instance.arrayNode();
+        obj.set("groups", groups);
+        for (final String group : m.getGroups()) {
+            groups.add(group);
+        }
+        return obj;
     }
 
     @Override
