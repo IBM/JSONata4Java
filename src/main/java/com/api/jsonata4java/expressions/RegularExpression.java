@@ -22,11 +22,13 @@
 
 package com.api.jsonata4java.expressions;
 
-import java.util.regex.Pattern;
+import com.api.jsonata4java.expressions.regex.RegexEngine;
+import com.api.jsonata4java.expressions.regex.RegexFlags;
+import com.api.jsonata4java.expressions.regex.RegexPattern;
 
 /**
  * A helper class to store information about a parsed regular expression.
- * 
+ *
  * @author Martin Bluemel
  */
 public class RegularExpression {
@@ -39,13 +41,21 @@ public class RegularExpression {
 
     private String regexPattern;
 
-    private Pattern pattern;
+    private RegexPattern pattern;
 
     public RegularExpression(String string) {
-        this(Type.NORMAL, string);
+        this(Type.NORMAL, string, RegexEngine.defaultEngine());
     }
 
     public RegularExpression(final Type type, final String regex) {
+        this(type, regex, RegexEngine.defaultEngine());
+    }
+
+    public RegularExpression(String string, RegexEngine engine) {
+        this(Type.NORMAL, string, engine);
+    }
+
+    public RegularExpression(final Type type, final String regex, final RegexEngine engine) {
         this.type = type;
         switch (type) {
             case CASEINSENSITIVE:
@@ -56,21 +66,23 @@ public class RegularExpression {
                 regexPattern = regex.substring(1, regex.length() - 1);
                 break;
         }
-        compile();
+        compile(engine);
     }
 
-    private void compile() {
+    private void compile(final RegexEngine engine) {
+        final RegexFlags flags;
         switch (this.type) {
             case CASEINSENSITIVE:
-                this.pattern = Pattern.compile(regexPattern, Pattern.CASE_INSENSITIVE);
+                flags = new RegexFlags(true, false);
                 break;
             case MULTILINE:
-                this.pattern = Pattern.compile(regexPattern, Pattern.MULTILINE);
+                flags = new RegexFlags(false, true);
                 break;
             default:
-                this.pattern = Pattern.compile(regexPattern);
+                flags = new RegexFlags(false, false);
                 break;
         }
+        this.pattern = engine.compile(regexPattern, flags);
     }
 
     @Override
@@ -82,7 +94,11 @@ public class RegularExpression {
         return this.type;
     }
 
-    public Pattern getPattern() {
+    /**
+     * @return the compiled regex, using whichever {@link RegexEngine} this
+     *         instance was constructed with.
+     */
+    public RegexPattern getPattern() {
         return this.pattern;
     }
 }

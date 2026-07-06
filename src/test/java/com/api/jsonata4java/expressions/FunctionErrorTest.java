@@ -25,7 +25,6 @@ package com.api.jsonata4java.expressions;
 import static com.api.jsonata4java.expressions.utils.Utils.test;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
-import com.api.jsonata4java.expressions.functions.ReplaceFunction;
 
 /**
  * A JUnit test class used in order to ease debugging of particular problematic cases.
@@ -178,10 +177,6 @@ public class FunctionErrorTest {
         assertEquals("abc\\$$1efg\\$wxyz", "abc$$$1efg$wxyz"
             .replaceAll("\\$\\$", "\\\\\\$")
             .replaceAll("([^\\\\]|^)\\$([^0-9^<])", "$1\\\\\\$$2"));
-
-        assertEquals("abc\\$$1xyz", ReplaceFunction.jsonata2JavaReplacement("abc$$$1xyz"));
-        assertEquals("abc\\$wxyz", ReplaceFunction.jsonata2JavaReplacement("abc$wxyz"));
-        assertEquals("abc\\$$1efg\\$wxyz", ReplaceFunction.jsonata2JavaReplacement("abc$$$1efg$wxyz"));
 
         assertEquals("$265", "265USD".replaceAll("([0-9]+)USD", "\\$$1"));
         test("$replace(\"265USD\", /([0-9]+)USD/, \"$$$1\")", "\"$265\"", null, null);

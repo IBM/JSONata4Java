@@ -101,6 +101,14 @@
       <version>7.0.8</version>
       <scope>test</scope>
     </dependency>
+    <!-- Pure-Java RE2 port, used only to demonstrate plugging in a linear-time
+         (ReDoS-safe) RegexEngine; see RE2RegexPattern / RE2RegexPatternTest. -->
+    <dependency>
+      <groupId>com.google.re2j</groupId>
+      <artifactId>re2j</artifactId>
+      <version>1.8</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr4-runtime</artifactId>
