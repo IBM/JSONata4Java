@@ -102,7 +102,12 @@ public class MatchFunction extends FunctionBase {
             if (argString == null || !argString.isTextual() || argString.asText().isEmpty()) {
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
             }
-            // Make sure that the pattern is a non-empty string
+            // Make sure that the pattern is a non-empty string.
+            // The emptiness check is guarded by isTextual() because a POJONode
+            // wraps a compiled RegularExpression (inherently non-empty): under
+            // Jackson 2 asText() returned the POJO's toString(), but Jackson 3's
+            // asText()/asString() throws for a POJONode. Skipping the check for
+            // non-textual nodes keeps the original behavior without that throw.
             if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode) && !(argPattern.isTextual() && argPattern.asText().isEmpty())) {
                 RegularExpression regex = null;
                 if (argPattern instanceof POJONode) {

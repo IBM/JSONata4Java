@@ -130,6 +130,12 @@ public class ReplaceFunction extends FunctionBase {
                 int limit = -1;
                 // Make sure that the separator is not null
                 if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode)) {
+                    // The empty-string rejection only applies to textual patterns.
+                    // A POJONode wraps a compiled RegularExpression (inherently
+                    // non-empty); under Jackson 2 asText() returned the POJO's
+                    // toString(), but Jackson 3's asText()/asString() throws for a
+                    // POJONode, so the isTextual() guard preserves the original
+                    // behavior without triggering that throw.
                     if (argPattern.isTextual() && argPattern.asText().isEmpty()) {
                         throw new EvaluateRuntimeException(ERR_MSG_ARG2_EMPTY_STR);
                     }

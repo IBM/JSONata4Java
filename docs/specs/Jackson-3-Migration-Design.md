@@ -144,3 +144,43 @@ becomes unreachable, or the type is no longer resolvable, replace with
   `configure(feature, boolean)` shape.
 - **`new ObjectMapper()` availability** — if the no-arg constructor is unavailable/discouraged in
   3.x, fall back to `JsonMapper.shared()` or `new JsonMapper()`.
+
+## Retained Jackson 2 behaviors (as-built)
+
+Jackson 3 tightened several coercion/parse defaults that would otherwise change observable
+behavior. Each site below was fixed to **preserve the Jackson 2 behavior** — no test assertion or
+expected value was changed. These are the compatibility decisions a future maintainer should know
+about (and can revisit if the project decides to adopt the stricter Jackson 3 semantics):
+
+- **Container coercion — `ArrayUtils.compare` (main).** Jackson 3's no-arg `asText()`/`asString()`
+  throws for container nodes (`ObjectNode`/`ArrayNode`); Jackson 2 returned `""`. Fixed by passing
+  the default: `asText("")`. `$sort` on non-scalar operands therefore coerces to `""` exactly as
+  before instead of throwing.
+- **Regex `POJONode` emptiness checks — `MatchFunction`, `ReplaceFunction` (main).** A compiled
+  `RegularExpression` is stored in a `POJONode`. Jackson 2's `asText()` returned the POJO's
+  `toString()` (non-empty); Jackson 3 throws for a `POJONode`. The empty-pattern checks are now
+  guarded by `isTextual()` so the throwing call is never reached for a `POJONode`, while the
+  boolean outcome is identical to Jackson 2.
+- **Out-of-range `asLong()` — `AgnosticTestSuite` (test harness).** Jackson 3's `DoubleNode.asLong()`
+  throws when the value is outside `long` range (e.g. `1.0E46`); Jackson 2 performed a silent
+  narrowing cast. Expected-value normalization now uses `(long) d`, replicating Jackson 2 exactly.
+- **`FAIL_ON_TRAILING_TOKENS` — `Utils` test mapper (test harness).** Jackson 3 flips this default
+  to `true`; Jackson 2 silently ignored content after the first parsed value. The shared test
+  mapper disables the feature so existing test inputs parse identically. Note: this tolerates a
+  long-standing typo in a test input (`BasicExpressionsTests`, `"[\"h11\", \"h21\"]]"` — a stray
+  trailing `]`). The typo was intentionally **not** corrected, to keep the test data byte-for-byte
+  unchanged.
+- **Unchecked exceptions — several files.** Where Jackson 3 methods no longer throw checked
+  `IOException`, `catch (IOException)` blocks over Jackson-only bodies became unreachable and were
+  changed to `catch (JacksonException)`.
+
+### Other known items (not changed by this migration)
+
+- **Pre-existing `Tester` REPL NPE.** `Tester.main` (`Tester.java:156`) calls
+  `expression.length()` without a null check; `JSONataUtils.prompt()` returns `null` at stdin EOF,
+  causing a `NullPointerException` when input ends without a `q` line. This predates the migration
+  (authored 2022) and was left as-is.
+- **Transitive `jackson-annotations` 2.x.** `tools.jackson.core:jackson-databind:3.2.0` still pulls
+  in `com.fasterxml.jackson.core:jackson-annotations` — Jackson 3 continues to publish annotations
+  under the `com.fasterxml.jackson.annotation` namespace. This is expected and acceptable; it is not
+  a leftover Jackson 2 core/databind/dataformat dependency.
