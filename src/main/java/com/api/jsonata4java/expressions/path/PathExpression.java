@@ -30,7 +30,7 @@ import com.api.jsonata4java.expressions.BufferingErrorListener;
 import com.api.jsonata4java.expressions.ParseException;
 import com.api.jsonata4java.expressions.path.generated.PathExpressionLexer;
 import com.api.jsonata4java.expressions.path.generated.PathExpressionParser;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 @SuppressWarnings("deprecation")
 public class PathExpression {

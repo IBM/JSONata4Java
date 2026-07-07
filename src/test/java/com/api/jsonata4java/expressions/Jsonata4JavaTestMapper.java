@@ -3,9 +3,9 @@ package com.api.jsonata4java.expressions;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class Jsonata4JavaTestMapper {
 
@@ -37,7 +37,7 @@ public class Jsonata4JavaTestMapper {
             } else {
                 return mapper.writeValueAsString(outputRootNode);
             }
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
     }

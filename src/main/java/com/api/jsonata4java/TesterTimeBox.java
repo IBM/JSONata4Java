@@ -29,9 +29,9 @@ import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Expression evaluation test utility
@@ -122,7 +122,7 @@ public class TesterTimeBox implements Serializable {
         JsonNode jsonObj = null;
         try {
             jsonObj = mapper.readTree(json);
-        } catch (IOException e1) {
+        } catch (JacksonException e1) {
             e1.printStackTrace();
         }
         if (args.length > 0) {
@@ -130,15 +130,13 @@ public class TesterTimeBox implements Serializable {
             System.out.println("Attempting to load JSON from file: " + args[0]);
             try {
                 jsonObj = mapper.readTree(file);
-            } catch (JsonProcessingException e) {
-                System.err.println(e.getLocalizedMessage());
-            } catch (IOException e) {
+            } catch (JacksonException e) {
                 System.err.println(e.getLocalizedMessage());
             }
         }
         try {
             System.out.println("Using json:\n" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj));
-        } catch (JsonProcessingException e1) {
+        } catch (JacksonException e1) {
             e1.printStackTrace();
         }
         int maxDepth = 100;
@@ -205,7 +203,7 @@ public class TesterTimeBox implements Serializable {
                 } else {
                     System.out.println("" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
                 }
-            } catch (EvaluateException | JsonProcessingException e) {
+            } catch (EvaluateException | JacksonException e) {
                 System.err.println(e.getLocalizedMessage());
             }
         }

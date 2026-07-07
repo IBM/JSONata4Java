@@ -9,12 +9,12 @@ import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Op_orderbyContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
-import com.fasterxml.jackson.databind.node.NumericNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
+import tools.jackson.databind.node.NumericNode;
+import tools.jackson.databind.node.BooleanNode;
 
 public class OrderByOperator {
 
@@ -26,7 +26,7 @@ public class OrderByOperator {
 
     private ArrayNode orderBy(final ArrayNode in, final List<OrderByField> sortFields) {
         final List<JsonNode> jsonNodes = new ArrayList<>();
-        final Iterator<JsonNode> iter = in.elements();
+        final Iterator<JsonNode> iter = in.values().iterator();
         while (iter.hasNext()) {
             jsonNodes.add(iter.next());
         }
@@ -38,8 +38,8 @@ public class OrderByOperator {
                     JsonNode n1 = o1.get(sortField.name);
                     JsonNode n2 = o2.get(sortField.name);
                     if (n1 != null && n2 != null) {
-                        if (n1 instanceof TextNode && n2 instanceof TextNode) {
-                            final int comp = ((TextNode) n1).asText().compareTo(((TextNode) n2).asText());
+                        if (n1 instanceof StringNode && n2 instanceof StringNode) {
+                            final int comp = ((StringNode) n1).asText().compareTo(((StringNode) n2).asText());
                             if (comp != 0) {
                                 return sortField.order == OrderByOrder.DESC ? comp * -1 : comp;
                             }

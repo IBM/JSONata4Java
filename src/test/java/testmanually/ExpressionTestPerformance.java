@@ -24,10 +24,10 @@ package testmanually;
 
 import org.junit.Test;
 import com.api.jsonata4java.expressions.Jsonata4JavaTestMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Performance test for big expressions.
@@ -95,7 +95,7 @@ public class ExpressionTestPerformance {
         System.out.println("END: mapping, took " + (System.currentTimeMillis() - startMillis) + " ms");
     }
 
-    private JsonNode generateBigJson() throws JsonProcessingException, JsonMappingException {
+    private JsonNode generateBigJson() throws JacksonException, DatabindException {
         StringBuilder sb = new StringBuilder();
         sb.append("{\"list\":[");
         for (int i = 0; i < 2500000; i++) {

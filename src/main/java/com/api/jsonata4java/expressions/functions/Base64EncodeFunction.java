@@ -29,9 +29,9 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -95,7 +95,7 @@ public class Base64EncodeFunction extends FunctionBase {
                 final String str = argString.textValue();
 
                 try {
-                    result = new TextNode(Base64.getEncoder().encodeToString(str.getBytes("utf-8")));
+                    result = new StringNode(Base64.getEncoder().encodeToString(str.getBytes("utf-8")));
                 } catch (UnsupportedEncodingException e) {
                     throw new EvaluateRuntimeException(ERR_RUNTIME_ERROR);
                 }

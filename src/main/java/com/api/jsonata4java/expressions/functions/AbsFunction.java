@@ -27,9 +27,9 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.LongNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.LongNode;
 
 /**
  * Returns the absolute value of the number parameter, i.e. if the number is

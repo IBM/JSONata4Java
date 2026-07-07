@@ -26,8 +26,8 @@ import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.DoubleNode;
 
 /**
  * http://docs.jsonata.org/numeric-functions.html

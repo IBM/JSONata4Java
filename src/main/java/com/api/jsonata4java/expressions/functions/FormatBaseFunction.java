@@ -27,9 +27,9 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -88,7 +88,10 @@ public class FormatBaseFunction extends FunctionBase {
                 if (Math.abs((double) l - d) == 0.5 && l % 2 == 1) {
                     l--;
                 }
-                final int number = (int) l.longValue();
+                // use the full long value rather than narrowing to a 32-bit int,
+                // which overflowed for large ids (e.g. $formatBase(5890840712243076)
+                // returned "1008002948" instead of the full value, per jsonata.org)
+                final long number = l.longValue();
 
                 // Check to see if we have an radix argument and read it if we do
                 int radix = 10;
@@ -115,7 +118,7 @@ public class FormatBaseFunction extends FunctionBase {
                 }
 
                 // Convert the number to a string in the specified base
-                result = new TextNode(Integer.toString(number, radix));
+                result = new StringNode(Long.toString(number, radix));
             } else {
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
             }

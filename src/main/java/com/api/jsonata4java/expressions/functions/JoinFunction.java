@@ -29,10 +29,10 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -111,22 +111,27 @@ public class JoinFunction extends FunctionBase {
 
             // Join the elements of the array argument
             StringJoiner stringJoiner = new StringJoiner(separator);
-            Iterator<JsonNode> elements = ((ArrayNode) argArray).elements();
+            Iterator<JsonNode> elements = ((ArrayNode) argArray).values().iterator();
             while (elements.hasNext()) {
                 JsonNode element = elements.next();
                 if (element.isTextual()) {
                     stringJoiner.add(element.asText());
-                } else if (element.isArray()) {
-                    for (Iterator<JsonNode> it = ((ArrayNode) element).iterator(); it.hasNext();) {
-                        stringJoiner.add(it.next().textValue());
-                    }
                 } else {
+                    // Every element must be a string. The reference
+                    // implementation (jsonata.org) raises "Argument 1 of
+                    // function join must be an array of strings" for any
+                    // non-string element, including a nested array
+                    // ($join([[1, 2]]) and $join([["a", "b"]]) both error);
+                    // it does not flatten nested arrays. Match that controlled
+                    // error rather than flattening or emitting garbage. This
+                    // also avoids Jackson 3's textValue()/stringValue()
+                    // throwing a raw JsonNodeException for a non-String node.
                     throw new EvaluateRuntimeException(ERR_MSG_ARG1_ARR_STR);
                 }
             } // WHILE
 
             // Create the result from the joined string
-            result = new TextNode(stringJoiner.toString());
+            result = new StringNode(stringJoiner.toString());
         } else {
             if (argCount != 0 && argArray == null) {
                 return null;

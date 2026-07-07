@@ -24,9 +24,9 @@ package com.api.jsonata4java.expressions.utils;
 import java.io.Serializable;
 
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.ValueNode;
+import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.LongNode;
+import tools.jackson.databind.node.ValueNode;
 
 public class NumberUtils implements Serializable {
 

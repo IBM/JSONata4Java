@@ -61,11 +61,11 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.SeqCon
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Unary_opContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 public class FunctionUtils implements Serializable {
 

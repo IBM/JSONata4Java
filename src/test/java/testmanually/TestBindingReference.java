@@ -7,10 +7,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import com.api.jsonata4java.Binding;
 import com.api.jsonata4java.Expression;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.IntNode;
+import tools.jackson.databind.node.StringNode;
 
 public class TestBindingReference implements Serializable {
 
@@ -68,7 +68,7 @@ public class TestBindingReference implements Serializable {
         bindingList.add(bindingNode);
 
         JsonNode actual = jsonataExpr.evaluate(rootContextNode, bindingList);
-        JsonNode expected = new TextNode("bar");
+        JsonNode expected = new StringNode("bar");
         Assert.assertEquals(expected, actual);
 
         json = "{\"bar\": [ 4, 5, 6]}";

@@ -30,9 +30,9 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -152,7 +152,7 @@ public class FormatNumberFunction extends FunctionBase {
                     formatter.setDecimalFormatSymbols(symbols);
                     String fixedPicture = picture.replaceAll("9", "0");
                     formatter.applyLocalizedPattern(fixedPicture);
-                    result = new TextNode(formatter.format(number));
+                    result = new StringNode(formatter.format(number));
                 } else {
                     // Non-textual picture argument
                     throw new EvaluateRuntimeException(ERR_ARG2BADTYPE);
@@ -174,7 +174,7 @@ public class FormatNumberFunction extends FunctionBase {
         DecimalFormatSymbols symbols = (DecimalFormatSymbols) Constants.DEFAULT_DECIMAL_FORMAT_SYMBOLS.clone();
 
         // Iterate over the formatting character overrides
-        Iterator<String> fieldNames = argOptions.fieldNames();
+        Iterator<String> fieldNames = argOptions.propertyNames().iterator();
         while (fieldNames.hasNext()) {
             String fieldName = fieldNames.next();
             JsonNode valueNode = argOptions.get(fieldName);

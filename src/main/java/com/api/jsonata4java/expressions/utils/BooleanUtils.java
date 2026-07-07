@@ -23,8 +23,8 @@
 package com.api.jsonata4java.expressions.utils;
 
 import java.io.Serializable;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class BooleanUtils implements Serializable {
 
@@ -86,7 +86,12 @@ public class BooleanUtils implements Serializable {
             case NULL:
                 return false;
             case BINARY:
-                return node.asBoolean();
+                // JSON (and the jsonata.org reference) has no binary type, so
+                // there is no reference semantics to match; Jackson 2 returned
+                // false here, and Jackson 3's no-arg asBoolean() throws for a
+                // BinaryNode. Return false, consistent with the POJO/MISSING/
+                // default cases below and with the prior behavior.
+                return false;
             case ARRAY: {
                 // recurse, returning true as soon as we see an element that casts
                 // to true
@@ -99,7 +104,7 @@ public class BooleanUtils implements Serializable {
                 return false;
             }
             case OBJECT:
-                return ((ObjectNode) node).elements().hasNext();
+                return ((ObjectNode) node).values().iterator().hasNext();
             case MISSING:
                 return false;
             case POJO:

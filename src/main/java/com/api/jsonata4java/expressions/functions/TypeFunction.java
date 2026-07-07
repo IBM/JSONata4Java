@@ -32,9 +32,9 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -92,18 +92,18 @@ public class TypeFunction extends FunctionBase {
             if (exprCtxList.size() > 0) {
                 ExprContext exprCtx = exprCtxList.get(0);
                 if (exprCtx instanceof Function_callContext) {
-                    result = new TextNode("function");
+                    result = new StringNode("function");
                 } else if (exprCtx instanceof Var_recallContext) {
                     if (exprCtx.getChildCount() > 0) {
                         String varID = exprCtx.getChild(0).getText();
                         // determine what this references
                         DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(varID);
                         if (declFct != null) {
-                            result = new TextNode("function");
+                            result = new StringNode("function");
                         } else {
                             FunctionBase fct = expressionVisitor.getJsonataFunction(varID);
                             if (fct != null) {
-                                result = new TextNode("function");
+                                result = new StringNode("function");
                             } else {
                                 arg = expressionVisitor.getVariable(varID);
                             }
@@ -115,42 +115,42 @@ public class TypeFunction extends FunctionBase {
                 if (arg != null) {
                     switch (arg.getNodeType()) {
                         case ARRAY: {
-                            result = new TextNode("array");
+                            result = new StringNode("array");
                             break;
                         }
                         case OBJECT: {
-                            result = new TextNode("object");
+                            result = new StringNode("object");
                             break;
                         }
                         case STRING: {
-                            result = new TextNode("string");
+                            result = new StringNode("string");
                             break;
                         }
                         case NUMBER: {
-                            result = new TextNode("number");
+                            result = new StringNode("number");
                             break;
                         }
                         case BOOLEAN: {
-                            result = new TextNode("boolean");
+                            result = new StringNode("boolean");
                             break;
                         }
                         case BINARY: {
                             break;
                         }
                         case NULL: {
-                            result = new TextNode("null");
+                            result = new StringNode("null");
                             break;
                         }
                         case POJO: {
-                            result = new TextNode("undefined");
+                            result = new StringNode("undefined");
                             break;
                         }
                         case MISSING: {
-                            result = new TextNode("undefined");
+                            result = new StringNode("undefined");
                             break;
                         }
                         default: {
-                            result = new TextNode("undefined");
+                            result = new StringNode("undefined");
                             break;
                         }
                     }

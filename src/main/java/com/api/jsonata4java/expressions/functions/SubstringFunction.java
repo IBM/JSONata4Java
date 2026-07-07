@@ -28,9 +28,9 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * Complies with javascript substr (and thus JSONata $substring). See
@@ -115,7 +115,7 @@ public class SubstringFunction extends FunctionBase {
                 length = null;
             }
 
-            result = new TextNode(JSONataUtils.substr(str, start, length));
+            result = new StringNode(JSONataUtils.substr(str, start, length));
         } else {
             throw new EvaluateRuntimeException(argCount == 0 ? ERR_ARG1BADTYPE : ERR_ARG4BADTYPE);
         }

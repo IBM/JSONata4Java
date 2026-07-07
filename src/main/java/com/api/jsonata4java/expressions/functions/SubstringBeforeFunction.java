@@ -31,9 +31,9 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -90,17 +90,17 @@ public class SubstringBeforeFunction extends FunctionBase {
                 argString = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
                 if (argString == null) {
                     if (exprCtx instanceof Function_callContext || exprCtx instanceof Function_declContext) {
-                        argString = new TextNode("");
+                        argString = new StringNode("");
                     }
                     if (exprCtx instanceof Var_recallContext) {
                         String varName = ((Var_recallContext) exprCtx).VAR_ID().getText();
                         DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(varName);
                         if (declFct != null) {
-                            argString = new TextNode("");
+                            argString = new StringNode("");
                         } else {
                             FunctionBase fct = expressionVisitor.getJsonataFunction(varName);
                             if (fct != null) {
-                                argString = new TextNode("");
+                                argString = new StringNode("");
                             } else {
                                 argString = null;
                             }
@@ -123,7 +123,7 @@ public class SubstringBeforeFunction extends FunctionBase {
             if (argChars == null) {
                 if (argString.isTextual()) {
                     // just return the string value of argString
-                    return new TextNode(argString.textValue());
+                    return new StringNode(argString.textValue());
                 } else {
                     // invalid argString
                     throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
@@ -142,10 +142,10 @@ public class SubstringBeforeFunction extends FunctionBase {
                 // Find chars in str
                 final int index = str.indexOf(chars);
                 if (index != -1) {
-                    result = new TextNode(substr(str, 0, index));
+                    result = new StringNode(substr(str, 0, index));
                 } else {
                     // argChars is not present... just return argString
-                    result = new TextNode(str);
+                    result = new StringNode(str);
                 }
             }
         } else {

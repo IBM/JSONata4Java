@@ -35,13 +35,15 @@ import org.junit.Assert;
 import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.LongNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class Utils implements Serializable {
 
@@ -70,12 +72,17 @@ public class Utils implements Serializable {
         return new String(buf);
     }
 
-    public static JsonNode getJson(String filePath) throws JsonProcessingException, IOException {
+    public static JsonNode getJson(String filePath) throws JacksonException, IOException {
         ObjectMapper m = new ObjectMapper();
         return m.readTree(new File(filePath));
     }
 
-    public static final ObjectMapper mapper = new ObjectMapper();
+    // Jackson 3 flipped FAIL_ON_TRAILING_TOKENS to true by default; Jackson 2
+    // silently ignored content after the first parsed value. Restore the
+    // Jackson 2 default so existing test inputs parse identically.
+    public static final ObjectMapper mapper = JsonMapper.builder()
+        .disable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS)
+        .build();
 
     public static void simpleTest(String expression, String expected) throws Exception {
         test(expression, expected, null, null);

@@ -31,9 +31,9 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_re
 import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -88,17 +88,17 @@ public class StringFunction extends FunctionBase {
                 arg = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, 0);
                 if (arg == null) {
                     if (exprCtx instanceof Function_callContext || exprCtx instanceof Function_declContext) {
-                        arg = new TextNode("");
+                        arg = new StringNode("");
                     }
                     if (exprCtx instanceof Var_recallContext) {
                         String varName = ((Var_recallContext) exprCtx).VAR_ID().getText();
                         DeclaredFunction declFct = expressionVisitor.getDeclaredFunction(varName);
                         if (declFct != null) {
-                            arg = new TextNode("");
+                            arg = new StringNode("");
                         } else {
                             FunctionBase fct = expressionVisitor.getJsonataFunction(varName);
                             if (fct != null) {
-                                arg = new TextNode("");
+                                arg = new StringNode("");
                             } else {
                                 arg = null;
                             }
@@ -122,7 +122,7 @@ public class StringFunction extends FunctionBase {
             if (asString == null) {
                 result = null;
             } else {
-                result = new TextNode(asString);
+                result = new StringNode(asString);
             }
         } else {
             if (argCount == 0) {

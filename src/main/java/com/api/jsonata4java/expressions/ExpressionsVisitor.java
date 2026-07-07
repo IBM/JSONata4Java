@@ -24,6 +24,7 @@ package com.api.jsonata4java.expressions;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -75,20 +76,21 @@ import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.api.jsonata4java.expressions.utils.NumberUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.NumericNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.POJONode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.BigIntegerNode;
+import tools.jackson.databind.node.BooleanNode;
+import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.JsonNodeType;
+import tools.jackson.databind.node.LongNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.NumericNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.POJONode;
+import tools.jackson.databind.node.StringNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -167,14 +169,25 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
      * @return
      */
     private static boolean areJsonNodesEqual(JsonNode left, JsonNode right) {
-        if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
+        // Only coerce to double when BOTH operands are numbers. In JSONata,
+        // equality across different types is simply false (e.g. 3.14 in
+        // ["abc"] is false, matching jsonata.org), so a number-vs-string pair
+        // must fall through to the final "return false" rather than attempt a
+        // numeric coercion. This also avoids Jackson 3's asDouble() throwing
+        // for a non-numeric StringNode (Jackson 2 returned 0.0). The "=" / "in"
+        // operators only ever reach the number branches with two numbers, so
+        // adding the isNumber() guards does not change any equal-type result.
+        if ((left.isFloatingPointNumber() || right.isFloatingPointNumber()) && left.isNumber() && right.isNumber()) {
             return (left.asDouble() == right.asDouble());
-        } else if (left.isDouble() || right.isDouble()) {
+        } else if ((left.isDouble() || right.isDouble()) && left.isNumber() && right.isNumber()) {
             return (left.asDouble() == right.asDouble());
         } else if (left.isIntegralNumber() && right.isIntegralNumber()) {
-            return left.asLong() == right.asLong();
+            // Compare exactly via BigInteger: asLong() throws under Jackson 3 for a
+            // data-sourced BigIntegerNode outside long range, and would otherwise
+            // collide distinct huge integers that share their low 64 bits.
+            return left.bigIntegerValue().equals(right.bigIntegerValue());
         } else if (left.isLong() && right.isLong()) {
-            return left.asLong() == right.asLong();
+            return left.bigIntegerValue().equals(right.bigIntegerValue());
         } else if (left.isNull()) {
             return right.isNull();
         } else if (right.isNull()) {
@@ -292,7 +305,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     } else {
                         return objectMapper.writeValueAsString(node);
                     }
-                } catch (JsonProcessingException e) {
+                } catch (JacksonException e) {
                     throw new EvaluateRuntimeException(
                         "Failed to cast value " + node + " to a string. Reason: " + e.getMessage());
                 }
@@ -378,8 +391,12 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             return false;
         } else if (n.isInt() || n.isLong()) {
             return true;
-        } else if ((n.isFloat() || n.isDouble()) && (n.asInt() == n.asDouble())) {
-            return true;
+        } else if (n.isFloat() || n.isDouble()) {
+            // Delegate to the double overload rather than comparing n.asInt() to
+            // n.asDouble(): under Jackson 3, asInt() throws for an integral-valued
+            // double outside int range (e.g. 1e19), and the old comparison also
+            // wrongly reported such values as non-whole. doubleValue() never throws.
+            return isWholeNumber(n.doubleValue());
         } else {
             return false;
         }
@@ -812,7 +829,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     traverseDescendants(member, results);
                 }
             } else if (input.isObject()) {
-                for (Iterator<String> it = ((ObjectNode) input).fieldNames(); it.hasNext();) {
+                for (Iterator<String> it = ((ObjectNode) input).propertyNames().iterator(); it.hasNext();) {
                     String key = it.next();
                     traverseDescendants(((ObjectNode) input).get(key), results);
                 }
@@ -991,7 +1008,13 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     for (JsonNode indexInContext : indexesInContext) {
                         // if it's an integral number, just add it as is
                         if (indexInContext.isIntegralNumber() || indexInContext.isLong()) {
-                            indexesToReturn.add(indexInContext.asInt());
+                            // An index outside int range cannot address a Java array,
+                            // so it is out of bounds and selects nothing (matching
+                            // jsonata.org, e.g. ["a","b"][3000000000] -> undefined).
+                            // Guarding also avoids Jackson 3's asInt() throwing.
+                            if (indexInContext.canConvertToInt()) {
+                                indexesToReturn.add(indexInContext.asInt());
+                            }
                         } else if (indexInContext.isFloatingPointNumber() || indexInContext.isDouble()) {
                             // If the number is not an integer it is rounded down to an
                             // integer according to JSONATA spec
@@ -1323,21 +1346,25 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     "The expressions either side of operator \"<\" must evaluate to numeric or string values");
             } else if (left.isBoolean() || right.isBoolean()) {
                 result = null;
-            } else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
+            } else if ((left.isFloatingPointNumber() || right.isFloatingPointNumber()) && left.isNumber() && right.isNumber()) {
                 result = (left.asDouble() < right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
-            } else if (left.isDouble() || right.isDouble()) {
+            } else if ((left.isDouble() || right.isDouble()) && left.isNumber() && right.isNumber()) {
                 result = (left.asDouble() < right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else if (left.isIntegralNumber() && right.isIntegralNumber()) {
-                result = (left.asLong() < right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+                result = (left.bigIntegerValue().compareTo(right.bigIntegerValue()) < 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else if (left.isLong() && right.isLong()) {
-                result = (left.asLong() < right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+                result = (left.bigIntegerValue().compareTo(right.bigIntegerValue()) < 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else {
                 if (!lIsComparable || !rIsComparable) {
-                    // signal expression
-                    result = null;
+                    // A non-scalar operand (e.g. an array or object) cannot be
+                    // ordered. The reference implementation (jsonata.org) raises
+                    // "...must evaluate to numeric or string values" here rather
+                    // than returning an empty result (e.g. [1,2] < 4.1).
+                    throw new EvaluateRuntimeException(
+                        "The expressions either side of operator \"<\" must evaluate to numeric or string values");
                 } else if (left.getNodeType() != right.getNodeType()) {
                     throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
-                        + " either side of operator \">\" must be of the same data type");
+                        + " either side of operator \"<\" must be of the same data type");
                 } else {
                     result = (left.asText().compareTo(right.asText()) < 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
                 }
@@ -1350,18 +1377,22 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     "The expressions either side of operator \">\" must evaluate to numeric or string values");
             } else if (left.isBoolean() || right.isBoolean()) {
                 result = null;
-            } else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
+            } else if ((left.isFloatingPointNumber() || right.isFloatingPointNumber()) && left.isNumber() && right.isNumber()) {
                 result = (left.asDouble() > right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
-            } else if (left.isDouble() || right.isDouble()) {
+            } else if ((left.isDouble() || right.isDouble()) && left.isNumber() && right.isNumber()) {
                 result = (left.asDouble() > right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else if (left.isIntegralNumber() && right.isIntegralNumber()) {
-                result = (left.asLong() > right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+                result = (left.bigIntegerValue().compareTo(right.bigIntegerValue()) > 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else if (left.isLong() && right.isLong()) {
-                result = (left.asLong() > right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+                result = (left.bigIntegerValue().compareTo(right.bigIntegerValue()) > 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else {
                 if (!lIsComparable || !rIsComparable) {
-                    // signal expression
-                    return null;
+                    // A non-scalar operand (e.g. an array or object) cannot be
+                    // ordered. The reference implementation (jsonata.org) raises
+                    // "...must evaluate to numeric or string values" here rather
+                    // than returning an empty result (e.g. [1,2] > 4.1).
+                    throw new EvaluateRuntimeException(
+                        "The expressions either side of operator \">\" must evaluate to numeric or string values");
                 }
                 if (left.getNodeType() != right.getNodeType()) {
                     throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
@@ -1377,18 +1408,22 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     "The expressions either side of operator \"<=\" must evaluate to numeric or string values");
             } else if (left.isBoolean() || right.isBoolean()) {
                 result = null;
-            } else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
+            } else if ((left.isFloatingPointNumber() || right.isFloatingPointNumber()) && left.isNumber() && right.isNumber()) {
                 result = (left.asDouble() <= right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
-            } else if (left.isDouble() || right.isDouble()) {
+            } else if ((left.isDouble() || right.isDouble()) && left.isNumber() && right.isNumber()) {
                 result = (left.asDouble() <= right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else if (left.isIntegralNumber() && right.isIntegralNumber()) {
-                result = (left.asLong() <= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+                result = (left.bigIntegerValue().compareTo(right.bigIntegerValue()) <= 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else if (left.isLong() && right.isLong()) {
-                result = (left.asLong() <= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+                result = (left.bigIntegerValue().compareTo(right.bigIntegerValue()) <= 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else {
                 if (!lIsComparable || !rIsComparable) {
-                    // signal expression
-                    result = null;
+                    // A non-scalar operand (e.g. an array or object) cannot be
+                    // ordered. The reference implementation (jsonata.org) raises
+                    // "...must evaluate to numeric or string values" here rather
+                    // than returning an empty result (e.g. [1,2] <= 4.1).
+                    throw new EvaluateRuntimeException(
+                        "The expressions either side of operator \"<=\" must evaluate to numeric or string values");
                 } else if (left.getNodeType() != right.getNodeType()) {
                     throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
                         + " either side of operator \"<=\" must be of the same data type");
@@ -1404,18 +1439,22 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     "The expressions either side of operator \">=\" must evaluate to numeric or string values");
             } else if (left.isBoolean() || right.isBoolean()) {
                 result = null;
-            } else if (left.isFloatingPointNumber() || right.isFloatingPointNumber()) {
+            } else if ((left.isFloatingPointNumber() || right.isFloatingPointNumber()) && left.isNumber() && right.isNumber()) {
                 result = (left.asDouble() >= right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
-            } else if (left.isDouble() || right.isDouble()) {
+            } else if ((left.isDouble() || right.isDouble()) && left.isNumber() && right.isNumber()) {
                 result = (left.asDouble() >= right.asDouble()) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else if (left.isIntegralNumber() && right.isIntegralNumber()) {
-                result = (left.asLong() >= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+                result = (left.bigIntegerValue().compareTo(right.bigIntegerValue()) >= 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else if (left.isLong() && right.isLong()) {
-                result = (left.asLong() >= right.asLong()) ? BooleanNode.TRUE : BooleanNode.FALSE;
+                result = (left.bigIntegerValue().compareTo(right.bigIntegerValue()) >= 0) ? BooleanNode.TRUE : BooleanNode.FALSE;
             } else {
                 if (!lIsComparable || !rIsComparable) {
-                    // signal expression
-                    result = null;
+                    // A non-scalar operand (e.g. an array or object) cannot be
+                    // ordered. The reference implementation (jsonata.org) raises
+                    // "...must evaluate to numeric or string values" here rather
+                    // than returning an empty result (e.g. [1,2] >= 4.1).
+                    throw new EvaluateRuntimeException(
+                        "The expressions either side of operator \">=\" must evaluate to numeric or string values");
                 } else if (left.getNodeType() != right.getNodeType()) {
                     throw new EvaluateRuntimeException("The values " + left.toString() + " and " + right.toString()
                         + " either side of operator \">=\" must be of the same data type");
@@ -1468,7 +1507,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             }
         }
 
-        result = new TextNode(leftStr + rightStr);
+        result = new StringNode(leftStr + rightStr);
 
         lastVisited = METHOD;
         if (LOG.isLoggable(Level.FINEST)) {
@@ -1500,7 +1539,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             } else {
                 result = null;
             }
-        } else if (cond instanceof BooleanNode || cond instanceof NumericNode || cond instanceof TextNode) {
+        } else if (cond instanceof BooleanNode || cond instanceof NumericNode || cond instanceof StringNode) {
             ExprContext ctx1 = ctx.expr(1);
             ExprContext ctx2 = ctx.expr(2);
             if (ctx1 != null && ctx2 != null) {
@@ -1731,7 +1770,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                 result = null;
             } else {
                 if (elt.isObject()) {
-                    for (Iterator<String> it = ((ObjectNode) elt).fieldNames(); it.hasNext();) {
+                    for (Iterator<String> it = ((ObjectNode) elt).propertyNames().iterator(); it.hasNext();) {
                         JsonNode value = ((ObjectNode) elt).get(it.next());
                         if (value.isArray()) {
                             value = flatten(value, null);
@@ -2050,7 +2089,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             left = unwrapArray(left);
 
             result = BooleanNode.FALSE;
-            Iterator<JsonNode> elements = right.elements();
+            Iterator<JsonNode> elements = right.values().iterator();
             while (elements.hasNext()) {
                 JsonNode curElement = elements.next();
                 if (areJsonNodesEqual(left, curElement)) {
@@ -2403,7 +2442,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     visit(valueNode);
                     fctName = ((Function_declContext) valueNode).FUNCTIONID().getText();
                     if (getDeclaredFunction(fctName) != null) {
-                        value = new TextNode("");
+                        value = new StringNode("");
                     }
                 } else if (valueNode instanceof Var_recallContext) {
                     value = visit(valueNode);
@@ -2411,11 +2450,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                         String varName = ((Var_recallContext) valueNode).VAR_ID().getText();
                         DeclaredFunction declFct = getDeclaredFunction(varName);
                         if (declFct != null) {
-                            value = new TextNode("");
+                            value = new StringNode("");
                         } else {
                             FunctionBase fct = getJsonataFunction(varName);
                             if (fct != null) {
-                                value = new TextNode("");
+                                value = new StringNode("");
                             } else {
                                 value = null;
                             }
@@ -2705,16 +2744,22 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
 
         result = factory.arrayNode();
         if (start != null && end != null) {
-            int iStart = start.asInt();
-            int iEnd = end.asInt();
-            int count = iEnd - iStart + 1;
-            if (iEnd > iStart && count > 10000000) {
-                // note: below should read 1e7 not 1e6...
-                throw new EvaluateRuntimeException(ERR_TOO_BIG + count + ".");
-            }
-            for (int i = start.asInt(); i <= end.asInt(); i++) {
-                ((ArrayNode) result).add(new LongNode(i)); // use longs to align with the output of
-                // visitNumber
+            // Work in BigInteger so that bounds and the sequence size cannot
+            // overflow int/long: asInt()/asLong() throw under Jackson 3 for bounds
+            // outside their range (e.g. [1..1e19]), and the old int count could
+            // silently overflow. bigIntegerValue() never throws for integral values.
+            BigInteger biStart = start.bigIntegerValue();
+            BigInteger biEnd = end.bigIntegerValue();
+            if (biEnd.compareTo(biStart) >= 0) {
+                BigInteger count = biEnd.subtract(biStart).add(BigInteger.ONE);
+                if (count.compareTo(BigInteger.valueOf(10000000L)) > 0) {
+                    // note: below should read 1e7 not 1e6...
+                    throw new EvaluateRuntimeException(ERR_TOO_BIG + count + ".");
+                }
+                for (long i = biStart.longValue(); i <= biEnd.longValue(); i++) {
+                    ((ArrayNode) result).add(new LongNode(i)); // use longs to align with the output of
+                    // visitNumber
+                }
             }
         }
         lastVisited = METHOD;
@@ -2739,7 +2784,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         // strip quotes and unescape any special chars
         val = sanitise(val);
 
-        result = TextNode.valueOf(val);
+        result = StringNode.valueOf(val);
         lastVisited = METHOD;
         if (LOG.isLoggable(Level.FINEST)) {
             LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));
@@ -2916,7 +2961,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             } else if (operand.isDouble()) {
                 result = new DoubleNode(-operand.asDouble());
             } else if (operand.isIntegralNumber()) {
-                if (operand.asLong() == Long.MAX_VALUE) {
+                if (!operand.canConvertToLong()) {
+                    // A data-sourced BigIntegerNode outside long range: negate
+                    // exactly rather than letting asLong() throw under Jackson 3.
+                    result = new BigIntegerNode(operand.bigIntegerValue().negate());
+                } else if (operand.asLong() == Long.MAX_VALUE) {
                     result = new LongNode(-operand.asLong() - 1L);
                 } else {
                     result = new LongNode(-operand.asLong());

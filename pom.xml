@@ -27,7 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ibm.jsonata4java</groupId>
   <artifactId>JSONata4Java</artifactId>
-  <version>2.6.4</version>
+  <version>3.0.0</version>
   <name>JSONata4Java</name>
   <description>Port of jsonata.js to Java to enable rules for JSON content</description>
   <url>https://github.com/IBM/JSONata4Java</url>
@@ -121,21 +121,18 @@
         <version>3.2.0</version>
         <scope>compile</scope>
     </dependency>
+    <!-- Source: https://mvnrepository.com/artifact/tools.jackson.dataformat/jackson-dataformat-xml -->
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.22.0</version>
+        <groupId>tools.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-xml</artifactId>
+        <version>3.2.0</version>
+        <scope>compile</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.fasterxml.woodstox/woodstox-core -->
     <dependency>
       <groupId>com.fasterxml.woodstox</groupId>
       <artifactId>woodstox-core</artifactId>
       <version>7.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-xml</artifactId>
-      <version>2.22.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
     <dependency>
@@ -239,7 +236,6 @@
         <configuration>
           <source>17</source>
           <target>17</target>
-          <additionalClasspathElements />
         </configuration>
       </plugin>
       <plugin>
@@ -306,9 +302,6 @@
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
-          <excludes>
-            <exclude>src/test/resources/*</exclude>
-          </excludes>
         </configuration>
         <executions>
           <execution>
@@ -334,6 +327,7 @@
                         com.api.jsonata4java.expressions.generated, \
                         com.api.jsonata4java.expressions.path, \
                         com.api.jsonata4java.expressions.path.generated, \
+                        com.api.jsonata4java.expressions.regex, \
                         com.api.jsonata4java.expressions.utils
 					]]>
               Bundle-Developers: wnm3; email=wnm3@us.ibm.com;

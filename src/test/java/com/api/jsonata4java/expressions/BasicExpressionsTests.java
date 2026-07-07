@@ -43,19 +43,20 @@ import com.api.jsonata4java.expressions.functions.LookupFunction;
 import com.api.jsonata4java.expressions.functions.ShuffleFunction;
 import com.api.jsonata4java.expressions.functions.SubstringFunction;
 import com.api.jsonata4java.expressions.functions.SumFunction;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.FloatNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.BooleanNode;
+import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.FloatNode;
+import tools.jackson.databind.node.IntNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.JsonNodeType;
+import tools.jackson.databind.node.LongNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * A collection of poorly-structured test cases. Don't add new tests to this
@@ -217,7 +218,7 @@ public class BasicExpressionsTests implements Serializable {
             jsonObj2 = mapper.readTree(json2);
             jsonObj3 = mapper.readTree(json3);
             jsonObj4 = mapper.readTree(json4);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             e.printStackTrace();
         }
     }
@@ -1316,7 +1317,7 @@ public class BasicExpressionsTests implements Serializable {
         event.set("t", new FloatNode(-42));
 
         ObjectNode state = mapper.createObjectNode();
-        state.set("temperatureStatus", new TextNode("hot"));
+        state.set("temperatureStatus", new StringNode("hot"));
 
         JsonNode result = expression.evaluate(event);
 
@@ -1338,7 +1339,7 @@ public class BasicExpressionsTests implements Serializable {
     @Test
     public void testNullEquality() throws Exception {
         ObjectNode event = mapper.createObjectNode();
-        event.put("asdsad", NullNode.getInstance());
+        event.set("asdsad", NullNode.getInstance());
         {
             Expressions expression = Expressions.parse("asdsad=\"null\"");
             Assert.assertEquals(BooleanNode.FALSE, expression.evaluate(event));
@@ -1369,10 +1370,10 @@ public class BasicExpressionsTests implements Serializable {
 
     // @Test
     // public void test(){
-    // Assert.assertTrue( new TextNode("true").asBoolean() );
-    // Assert.assertFalse( new TextNode("false").asBoolean() );
-    // Assert.assertFalse( new TextNode("T").asBoolean() );
-    // Assert.assertFalse( new TextNode("H").asBoolean() );
+    // Assert.assertTrue( new StringNode("true").asBoolean() );
+    // Assert.assertFalse( new StringNode("false").asBoolean() );
+    // Assert.assertFalse( new StringNode("T").asBoolean() );
+    // Assert.assertFalse( new StringNode("H").asBoolean() );
     //
     // Assert.assertTrue( new IntNode(1).asBoolean() );
     // Assert.assertFalse( new IntNode(0).asBoolean() );
@@ -1388,7 +1389,7 @@ public class BasicExpressionsTests implements Serializable {
         };
 
         ObjectNode event = mapper.createObjectNode();
-        event.put("isnull", NullNode.getInstance());
+        event.set("isnull", NullNode.getInstance());
 
         for (String op : ops) {
             try {
@@ -1426,7 +1427,7 @@ public class BasicExpressionsTests implements Serializable {
         // set to *java* null (not NullNode singleton)
         try {
             ObjectNode event = mapper.createObjectNode();
-            event.put("notset", (ObjectNode) null);
+            event.set("notset", (ObjectNode) null);
             Expressions.parse("notset").evaluate(event);
         } catch (EvaluateException ex) {
             Assert.assertEquals("The property 'notset' does not exist", ex.getMessage());
@@ -1456,10 +1457,10 @@ public class BasicExpressionsTests implements Serializable {
             // http://try.jsonata.org/
             for (JsonNode valueType : new JsonNode[] {
                 NullNode.getInstance(), new IntNode(22), BooleanNode.TRUE,
-                new LongNode(22L), new TextNode("true"), new IntNode(0), BooleanNode.FALSE, new LongNode(0),
-                new TextNode("false"), new TextNode("22")
+                new LongNode(22L), new StringNode("true"), new IntNode(0), BooleanNode.FALSE, new LongNode(0),
+                new StringNode("false"), new StringNode("22")
             }) {
-                event.put("foo", valueType);
+                event.set("foo", valueType);
                 Assert.assertEquals(BooleanNode.TRUE, Expressions.parse("$exists(foo)").evaluate(event));
             }
         }
@@ -2278,6 +2279,136 @@ public class BasicExpressionsTests implements Serializable {
         simpleTest("[{\"a\":[{\"b\":0}]}, {\"a\":[{\"b\":1}]}][a.b=1]", "{\"a\":[{\"b\":1}]}");
         simpleTest("[{\"a\":[{\"b\":0}]}, {\"a\":[{\"b\":1}]}, {\"a\":[{\"b\":2}]}][a.b>=1]",
             "[{\"a\":[{\"b\":1}]},{\"a\":[{\"b\":2}]}]");
+    }
+
+    /**
+     * Ordering operators compare numbers to numbers and strings to strings.
+     * When the two operands have different types (e.g. number vs string) the
+     * reference implementation (jsonata.org) raises "...must be of the same
+     * data type" rather than coercing. Regression guard for issue #432: the
+     * Jackson 3 migration must not let a float operand silently coerce a
+     * string on the other side, and the reported operator must be the one
+     * actually used (the "&LT;" branch previously mis-reported "&GT;").
+     */
+    @Test
+    public void testOrderingAcrossTypes() throws Exception {
+        // valid same-type comparisons still evaluate normally
+        simpleTest("3 < 4.1", "true");
+        simpleTest("3.0 < 4.1", "true");
+        simpleTest("3.14 < 4.15", "true");
+        simpleTest("5.5 < 6", "true");
+        simpleTest("5.5 > 6", "false");
+        simpleTest("5.5 <= 6", "true");
+        simpleTest("5.5 >= 6", "false");
+        simpleTest("\"a\" < \"b\"", "true");
+
+        // number-vs-string is a type mismatch for every ordering operator, and
+        // the message names the operator that was used
+        simpleTestExpectException("3.14 < \"abc\"",
+            "The values 3.14 and \"abc\" either side of operator \"<\" must be of the same data type");
+        simpleTestExpectException("5 < \"3\"",
+            "The values 5 and \"3\" either side of operator \"<\" must be of the same data type");
+        simpleTestExpectException("3.14 > \"abc\"",
+            "The values 3.14 and \"abc\" either side of operator \">\" must be of the same data type");
+        simpleTestExpectException("3.14 <= \"abc\"",
+            "The values 3.14 and \"abc\" either side of operator \"<=\" must be of the same data type");
+        simpleTestExpectException("3.14 >= \"abc\"",
+            "The values 3.14 and \"abc\" either side of operator \">=\" must be of the same data type");
+
+        // A string that happens to parse as a number must NOT be silently
+        // coerced when the other operand is a float. This is the exact
+        // coercion the fix guards against, and it must hold identically for
+        // all four ordering operators, with the string on either side.
+        simpleTestExpectException("\"3\" < 4.1",
+            "The values \"3\" and 4.1 either side of operator \"<\" must be of the same data type");
+        simpleTestExpectException("4.1 < \"3\"",
+            "The values 4.1 and \"3\" either side of operator \"<\" must be of the same data type");
+        simpleTestExpectException("\"3\" > 4.1",
+            "The values \"3\" and 4.1 either side of operator \">\" must be of the same data type");
+        simpleTestExpectException("4.1 > \"3\"",
+            "The values 4.1 and \"3\" either side of operator \">\" must be of the same data type");
+        simpleTestExpectException("\"3\" <= 4.1",
+            "The values \"3\" and 4.1 either side of operator \"<=\" must be of the same data type");
+        simpleTestExpectException("4.1 <= \"3\"",
+            "The values 4.1 and \"3\" either side of operator \"<=\" must be of the same data type");
+        simpleTestExpectException("\"3\" >= 4.1",
+            "The values \"3\" and 4.1 either side of operator \">=\" must be of the same data type");
+        simpleTestExpectException("4.1 >= \"3\"",
+            "The values 4.1 and \"3\" either side of operator \">=\" must be of the same data type");
+    }
+
+    /**
+     * Equality and the "in" operator compare across types by returning
+     * false/true rather than throwing, and never coerce a string to a number.
+     * Regression guard for issue #432.
+     */
+    @Test
+    public void testEqualityAndMembershipAcrossTypes() throws Exception {
+        simpleTest("2 = \"2\"", "false");
+        simpleTest("2 != \"2\"", "true");
+        simpleTest("2 in [1,2,3]", "true");
+        // the string "2" is not a member of an array of numbers
+        simpleTest("\"2\" in [1,2,3]", "false");
+    }
+
+    /**
+     * $join requires a flat array of strings. Any non-string element - a
+     * number, or even a nested array - is an error; the reference
+     * implementation (jsonata.org) does not flatten nested arrays. Regression
+     * guard for issue #434.
+     */
+    @Test
+    public void testJoinRequiresArrayOfStrings() throws Exception {
+        // valid flat array of strings still joins
+        simpleTest("$join([\"a\", \"b\"])", "\"ab\"");
+        simpleTest("$join([\"a\", \"b\", \"c\"])", "\"abc\"");
+
+        final String err = "Argument 1 of function $join must be an array of strings";
+        simpleTestExpectException("$join([1, 2])", err);
+        simpleTestExpectException("$join([[1, 2]])", err);
+        simpleTestExpectException("$join([[\"a\", \"b\"]])", err);
+    }
+
+    /**
+     * Issue #433: out-of-range numeric values must not leak a raw Jackson 3
+     * JsonNodeException from asInt()/asLong(). Bounds, array indexes and numeric
+     * functions now use the widest-safe representation (BigInteger/double) or a
+     * controlled JSONata error, matching jsonata.org 2.2.1 where known.
+     */
+    @Test
+    public void testOutOfRangeNumericCoercion() throws Exception {
+        // Range bounds beyond int/long no longer crash; they raise the controlled
+        // "sequence too big" error (matching jsonata.org's range-size limit).
+        simpleTestExpectException("[1..1e19]",
+            "The size of the sequence allocated by the range operator (..) must not exceed 1e6.  Attempted to allocate 10000000000000000000.");
+        simpleTestExpectException("[1..3000000000]",
+            "The size of the sequence allocated by the range operator (..) must not exceed 1e6.  Attempted to allocate 3000000000.");
+        // an ordinary small range is unaffected
+        simpleTest("[1..5]", "[1,2,3,4,5]");
+
+        // An array index outside int range is out of bounds -> selects nothing
+        // (undefined), matching jsonata.org, rather than throwing.
+        test("[\"a\", \"b\"][3000000000]", (String) null, null, null);
+
+        // $formatBase uses the full (long) value instead of a 32-bit narrowed int
+        // ($formatBase(5890840712243076) previously overflowed to "1008002948").
+        simpleTest("$formatBase(5890840712243076)", "\"5890840712243076\"");
+        simpleTest("$formatBase(255, 16)", "\"ff\"");
+
+        // $fromMillis with millis beyond long range raises a controlled error
+        // rather than a raw JsonNodeException (reference: Invalid Date).
+        simpleTestExpectException("$fromMillis(1e30)", "Number out of range: \"1.0E30\"");
+
+        // Data-sourced BigInteger operands (which numeric literals never produce,
+        // since large literals become doubles) are handled without crashing.
+        final String bigs = "[99999999999999999999999999, 99999999999999999999999998]";
+        // distinct large integers compare exactly via BigInteger
+        test("$[0] = $[1]", "false", null, bigs);
+        test("$[0] > $[1]", "true", null, bigs);
+        test("$[1] < $[0]", "true", null, bigs);
+        test("$[0] >= $[0]", "true", null, bigs);
+        // unary minus negates a big integer exactly
+        test("-$", "-99999999999999999999999999", null, "99999999999999999999999999");
     }
 
 }

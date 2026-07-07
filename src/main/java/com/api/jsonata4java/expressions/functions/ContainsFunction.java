@@ -28,11 +28,11 @@ import com.api.jsonata4java.expressions.RegularExpression;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.POJONode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.BooleanNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.POJONode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:

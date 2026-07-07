@@ -20,9 +20,9 @@ import com.api.jsonata4java.expressions.ParseException;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprContext;
 import com.api.jsonata4java.expressions.regex.RegexEngine;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.JsonNodeFactory;
 
 /**
  * Class to provide embedding and extending JSONata features
@@ -42,7 +42,7 @@ public class Expression implements Serializable {
 	public static List<Binding> createBindings(JsonNode bindingObj) throws ParseException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		List<Binding> bindings = new ArrayList<Binding>();
-		for (Iterator<String> it = bindingObj.fieldNames(); it.hasNext();) {
+		for (Iterator<String> it = bindingObj.propertyNames().iterator(); it.hasNext();) {
 			String key = it.next();
 			JsonNode testObj = bindingObj.get(key);
 			String expression = "";

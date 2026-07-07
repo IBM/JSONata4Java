@@ -29,9 +29,9 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -90,7 +90,7 @@ public class URLDecodeComponentFunction extends FunctionBase {
                     }
                 }
                 try {
-                    result = new TextNode(JSONataUtils.decodeURIComponent(str));
+                    result = new StringNode(JSONataUtils.decodeURIComponent(str));
                 } catch (UnsupportedEncodingException e) {
                     throw new EvaluateRuntimeException("Malformed URL passed to " + Constants.FUNCTION_URL_DECODE_COMPONENT + ": \"" + str + "\"");
                 } catch (IllegalArgumentException iae) {

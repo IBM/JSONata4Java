@@ -36,11 +36,11 @@ import com.api.jsonata4java.expressions.regex.RegexMatch;
 import com.api.jsonata4java.expressions.regex.RegexPattern;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.POJONode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.POJONode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -102,8 +102,13 @@ public class MatchFunction extends FunctionBase {
             if (argString == null || !argString.isTextual() || argString.asText().isEmpty()) {
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
             }
-            // Make sure that the pattern is a non-empty string
-            if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode) && !(argPattern.asText().isEmpty())) {
+            // Make sure that the pattern is a non-empty string.
+            // The emptiness check is guarded by isTextual() because a POJONode
+            // wraps a compiled RegularExpression (inherently non-empty): under
+            // Jackson 2 asText() returned the POJO's toString(), but Jackson 3's
+            // asText()/asString() throws for a POJONode. Skipping the check for
+            // non-textual nodes keeps the original behavior without that throw.
+            if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode) && !(argPattern.isTextual() && argPattern.asText().isEmpty())) {
                 RegularExpression regex = null;
                 if (argPattern instanceof POJONode) {
                     regex = (RegularExpression) ((POJONode) argPattern).getPojo();
