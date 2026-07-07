@@ -34,10 +34,10 @@ import com.api.jsonata4java.expressions.regex.RegexMatch;
 import com.api.jsonata4java.expressions.regex.RegexPattern;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.POJONode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.POJONode;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -130,7 +130,7 @@ public class ReplaceFunction extends FunctionBase {
                 int limit = -1;
                 // Make sure that the separator is not null
                 if (argPattern != null && (argPattern.isTextual() || argPattern instanceof POJONode)) {
-                    if (argPattern.asText().isEmpty()) {
+                    if (argPattern.isTextual() && argPattern.asText().isEmpty()) {
                         throw new EvaluateRuntimeException(ERR_MSG_ARG2_EMPTY_STR);
                     }
                     if (argCount >= 3) {
@@ -170,7 +170,7 @@ public class ReplaceFunction extends FunctionBase {
                                 }
                             }
 
-                            result = new TextNode(replaceMatches(str, pattern, replacement, limit));
+                            result = new StringNode(replaceMatches(str, pattern, replacement, limit));
                         } else {
                             throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
                         }

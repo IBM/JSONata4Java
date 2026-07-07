@@ -28,9 +28,9 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.DateTimeUtils;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -96,7 +96,7 @@ public class FromMillisZonedFunction extends FunctionBase {
                 if (timezone != null && timezone.isNull() == false) {
                     timezoneStr = timezone.asText();
                 }
-                result = new TextNode(DateTimeUtils.formatDateTimeFromZoneId(millis, pictureStr, timezoneStr));
+                result = new StringNode(DateTimeUtils.formatDateTimeFromZoneId(millis, pictureStr, timezoneStr));
             } else {
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
             }

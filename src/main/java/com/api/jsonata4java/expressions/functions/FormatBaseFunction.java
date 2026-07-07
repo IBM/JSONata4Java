@@ -27,9 +27,9 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -115,7 +115,7 @@ public class FormatBaseFunction extends FunctionBase {
                 }
 
                 // Convert the number to a string in the specified base
-                result = new TextNode(Integer.toString(number, radix));
+                result = new StringNode(Integer.toString(number, radix));
             } else {
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
             }

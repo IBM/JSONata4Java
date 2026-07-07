@@ -23,8 +23,8 @@
 package com.api.jsonata4java.expressions.utils;
 
 import java.io.Serializable;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ObjectNode;
 
 public class BooleanUtils implements Serializable {
 
@@ -99,7 +99,7 @@ public class BooleanUtils implements Serializable {
                 return false;
             }
             case OBJECT:
-                return ((ObjectNode) node).elements().hasNext();
+                return ((ObjectNode) node).values().iterator().hasNext();
             case MISSING:
                 return false;
             case POJO:

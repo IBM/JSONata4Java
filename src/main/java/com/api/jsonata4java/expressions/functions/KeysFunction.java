@@ -29,10 +29,10 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor.SelectorArrayNode;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * From http://docs.jsonata.org/object-functions.html
@@ -82,7 +82,7 @@ public class KeysFunction extends FunctionBase {
             String key = "";
             if (argObject.isObject()) {
                 ObjectNode obj = (ObjectNode) argObject;
-                for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
+                for (Iterator<String> it = obj.propertyNames().iterator(); it.hasNext();) {
                     key = it.next();
                     if (result.get(key) == null) {
                         result.put(key, true);
@@ -106,7 +106,7 @@ public class KeysFunction extends FunctionBase {
             return null;
         }
         SelectorArrayNode output = new SelectorArrayNode(JsonNodeFactory.instance);
-        for (Iterator<String> it = result.fieldNames(); it.hasNext();) {
+        for (Iterator<String> it = result.propertyNames().iterator(); it.hasNext();) {
             output.add(it.next());
         }
         return ExpressionsVisitor.unwrapArray(output);
@@ -130,7 +130,7 @@ public class KeysFunction extends FunctionBase {
         //		JsonNode value = null;
         String key = null;
         ObjectNode obj = (ObjectNode) argObject;
-        for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
+        for (Iterator<String> it = obj.propertyNames().iterator(); it.hasNext();) {
             key = it.next();
             if (result.get(key) == null) {
                 result.put(key, true);

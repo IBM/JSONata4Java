@@ -31,7 +31,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 import com.api.jsonata4java.expressions.utils.Utils;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Allow "any kind of letter from any language" instead of [a-zA-Z] in jsonata expressions

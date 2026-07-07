@@ -28,8 +28,8 @@ import java.util.logging.Logger;
 import com.api.jsonata4java.expressions.functions.DeclaredFunction;
 import com.api.jsonata4java.expressions.functions.FunctionBase;
 import com.api.jsonata4java.expressions.utils.Constants;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
 
 /**
  * {@link ExpressionsVisitor} to manage the current block's environment.

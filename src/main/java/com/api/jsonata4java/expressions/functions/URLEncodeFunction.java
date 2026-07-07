@@ -31,9 +31,9 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -90,10 +90,10 @@ public class URLEncodeFunction extends FunctionBase {
                         int offset = str.indexOf(query);
                         if (offset > 0) {
                             strResult = str.substring(0, offset);
-                            result = new TextNode(strResult + encodeURI(query));
+                            result = new StringNode(strResult + encodeURI(query));
                         }
                     } else {
-                        result = new TextNode(str);
+                        result = new StringNode(str);
                     }
                 } catch (MalformedURLException e) {
                     throw new EvaluateRuntimeException("Malformed URL passed to " + Constants.FUNCTION_URL_ENCODE + ": \"" + str + "\"");

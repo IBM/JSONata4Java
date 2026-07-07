@@ -33,8 +33,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Runs the test cases defined in src/test/resources/JsonMergeUtilsTest.json
@@ -81,7 +81,7 @@ public class JsonMergeUtilsTest implements Serializable {
 
     }
 
-    //	public static JsonNode merge(String x, String y) throws JsonProcessingException, IOException {
+    //	public static JsonNode merge(String x, String y) throws JacksonException, IOException {
     //		return merge(, OM.readTree(y));
     //	}
     //	

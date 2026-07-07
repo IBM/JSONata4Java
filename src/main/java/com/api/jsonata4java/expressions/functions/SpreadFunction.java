@@ -31,11 +31,11 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_declContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/object-functions.html
@@ -81,7 +81,7 @@ public class SpreadFunction extends FunctionBase {
             if (argObject == null) {
                 ExprContext exprCtx = ctx.exprValues().exprList().expr(0);
                 if (exprCtx instanceof Function_declContext) {
-                    argObject = new TextNode("");
+                    argObject = new StringNode("");
                 }
             }
             result = spread((ArrayNode) result, argObject, argIsArray);
@@ -117,7 +117,7 @@ public class SpreadFunction extends FunctionBase {
     }
 
     public ArrayNode addObject(ArrayNode result, ObjectNode obj) {
-        for (Iterator<String> it = obj.fieldNames(); it.hasNext();) {
+        for (Iterator<String> it = obj.propertyNames().iterator(); it.hasNext();) {
             String key = it.next();
             ObjectNode cell = JsonNodeFactory.instance.objectNode();
             cell.set(key, obj.get(key));

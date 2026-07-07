@@ -1,6 +1,6 @@
 package com.api.jsonata4java.expressions.functions;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Optimized version of {@link FunctionBase} where parameters don't have to be converted

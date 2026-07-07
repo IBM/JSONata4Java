@@ -28,10 +28,10 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Fct_chainContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Returns the merger of the objects in an array of objects. It is an error if
@@ -94,7 +94,7 @@ public class MergeFunction extends FunctionBase {
             final JsonNode obj = array.get(i);
             if (obj.isObject()) {
                 ObjectNode cell = (ObjectNode) obj;
-                for (Iterator<String> it = cell.fieldNames(); it.hasNext();) {
+                for (Iterator<String> it = cell.propertyNames().iterator(); it.hasNext();) {
                     final String key = it.next();
                     arrayResult.set(key, cell.get(key));
                 }

@@ -92,15 +92,39 @@ find src/main/java src/test/java -name '*.java' -print0 | xargs -0 perl -pi -e '
 '
 ```
 
+- [ ] **Step 1b: Apply Jackson 3 API class/method renames (verified against the 3.2.0 jar)**
+
+Jackson 3 renamed several `JsonNode` types and methods, not just packages. These were confirmed by inspecting `jackson-databind-3.2.0.jar` / `jackson-core-3.2.0.jar`:
+
+- `TextNode` → `StringNode` (the class `tools.jackson.databind.node.TextNode` does not exist; `StringNode` replaces it). Affects imports, `new TextNode(...)`, `TextNode.valueOf(...)`, and `(TextNode)` casts. ~106 refs.
+- `tools.jackson.core.JsonProcessingException` → `tools.jackson.core.JacksonException` (JsonProcessingException is gone from core; `JacksonException` is the unchecked base). Affects imports and `catch` clauses. ~28 refs.
+- `.fieldNames()` (returned `Iterator<String>` in 2.x) → `.propertyNames()` (returns `Collection<String>` in 3.x). To preserve `Iterator`-based loops, replace `X.fieldNames()` with `X.propertyNames().iterator()`. ~21 calls.
+- `.elements()` (returned `Iterator<JsonNode>` in 2.x) → `.values()` (returns `Collection<JsonNode>` in 3.x). Replace `X.elements()` with `X.values().iterator()`. ~5 calls.
+- `.fields()` → `.properties()` if present. (This codebase has **0** `.fields()` calls — nothing to do, but do not introduce any.)
+- NOTE: `textValue()` and `asText()` **still exist** on `JsonNode` in 3.x — do NOT rewrite those.
+
+Apply the safe global renames with word-boundary care, then let the compiler catch the rest:
+
+```bash
+find src/main/java src/test/java -name '*.java' -print0 | xargs -0 perl -pi -e '
+  s/\bTextNode\b/StringNode/g;
+  s/\bJsonProcessingException\b/JacksonException/g;
+  s/\.fieldNames\(\)/.propertyNames().iterator()/g;
+  s/\.elements\(\)/.values().iterator()/g;
+'
+```
+
+Note: `TextNode` → `StringNode` also renames the import line `import tools.jackson.databind.node.TextNode;` to `import tools.jackson.databind.node.StringNode;`, which is correct. Watch for identifiers that merely contain "TextNode" as a substring — the `\b` boundaries prevent partial-word hits, but verify at compile time.
+
 - [ ] **Step 2: Confirm no `com.fasterxml.jackson` core/databind/xml references remain**
 
 Run: `grep -rn "com.fasterxml.jackson.core\|com.fasterxml.jackson.databind\|com.fasterxml.jackson.dataformat" src/ || echo CLEAN`
 Expected: `CLEAN` (annotations, if any ever appear, are intentionally left; none exist today).
 
-- [ ] **Step 3: Compile to surface the hotspots**
+- [ ] **Step 3: Compile to surface the remaining hotspots**
 
-Run: `mvn -q -DskipTests clean compile 2>&1 | tee /tmp/j3-compile.log | tail -40`
-Expected: FAILS — errors concentrated in `Tester.java` (`getFactory().configure`, `JsonWriteFeature.mappedFeature()`) and `TesterUI.java` (`xmlMapper.enable`/`.configure`, `ToXmlGenerator.Feature`). Note each reported file:line.
+Run: `mvn -q -DskipTests clean compile 2>&1 | tee /tmp/j3-compile.log | grep -E "ERROR|\.java:" | head -50`
+Expected: FAILS — after Step 1b the remaining errors are concentrated in `Tester.java` (`getFactory().configure`, `JsonWriteFeature.mappedFeature()`) and `TesterUI.java` (`xmlMapper.enable`/`.configure`, `ToXmlGenerator.Feature`), plus any stragglers from the method renames. Note each reported file:line and fix iteratively.
 
 - [ ] **Step 4: Fix `Tester.java` mapper construction**
 

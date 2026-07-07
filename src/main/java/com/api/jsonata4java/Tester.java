@@ -29,11 +29,11 @@ import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.json.JsonWriteFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.json.JsonWriteFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * Expression evaluation test utility
@@ -120,12 +120,13 @@ public class Tester implements Serializable {
      * @param args a fully qualified path and filename for test JSON could be provided
      */
     public static void main(String[] args) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
+        JsonMapper mapper = JsonMapper.builder()
+            .enable(JsonWriteFeature.ESCAPE_NON_ASCII)
+            .build();
         JsonNode jsonObj = null;
         try {
             jsonObj = mapper.readTree(json);
-        } catch (IOException e1) {
+        } catch (JacksonException e1) {
             e1.printStackTrace();
         }
         if (args.length > 0) {
@@ -135,13 +136,11 @@ public class Tester implements Serializable {
                     System.out.println("Attempting to load JSON from file: " + args[0]);
                     try {
                         jsonObj = mapper.readTree(file);
-                    } catch (JsonProcessingException e) {
-                        System.err.println(e.getLocalizedMessage());
-                    } catch (IOException e) {
+                    } catch (JacksonException e) {
                         System.err.println(e.getLocalizedMessage());
                     }
                 } else {
-                    jsonObj = new TextNode(args[0]);
+                    jsonObj = new StringNode(args[0]);
                 }
             } else {
                 jsonObj = null;
@@ -149,7 +148,7 @@ public class Tester implements Serializable {
         }
         try {
             System.out.println("Using json:\n" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObj));
-        } catch (JsonProcessingException e1) {
+        } catch (JacksonException e1) {
             e1.printStackTrace();
         }
         while (true) {
@@ -187,7 +186,7 @@ public class Tester implements Serializable {
                 } else {
                     System.out.println("" + mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
                 }
-            } catch (EvaluateException | JsonProcessingException e) {
+            } catch (EvaluateException | JacksonException e) {
                 System.err.println(e.getLocalizedMessage());
             }
         }

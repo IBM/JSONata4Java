@@ -85,15 +85,16 @@ import com.api.jsonata4java.expressions.path.PathExpressionTests;
 import com.api.jsonata4java.expressions.utils.JsonMergeUtils;
 import com.api.jsonata4java.expressions.utils.JsonMergeUtilsTest;
 import com.api.jsonata4java.expressions.utils.Utils;
-import com.fasterxml.jackson.core.json.JsonWriteFeature;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.core.json.JsonWriteFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.BooleanNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.LongNode;
+import tools.jackson.databind.node.ObjectNode;
 
 @RunWith(AgnosticTestSuite.class)
 // @ExtendWith(AgnosticTestSuiteExtension.class)
@@ -117,14 +118,14 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
         "function-signatures", // #77
     });
 
-    private static final ObjectMapper _objectMapper = new ObjectMapper();
+    private static final ObjectMapper _objectMapper = JsonMapper.builder()
+        // address characters > 127 to be escaped
+        .enable(JsonWriteFeature.ESCAPE_NON_ASCII)
+        // ensure we don't have scientific notation for numbers
+        .enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS)
+        .build();
     private static final Map<String, List<String>> SKIP_CASES = new HashMap<>();
     static {
-        // address characters > 127 to be escaped
-        _objectMapper.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
-        // ensure we don't have scientific notation for numbers
-        _objectMapper.enable(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS);
-
         // due to unparsable use of 'in' in the tests
         SKIP_CASES("inclusion-operator", "case004", "case005");
         // issue #43 object construction
@@ -278,8 +279,9 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
     }
 
     private void init() throws Exception {
-        final ObjectMapper om = new ObjectMapper();
-        om.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
+        final ObjectMapper om = JsonMapper.builder()
+            .enable(JsonWriteFeature.ESCAPE_NON_ASCII)
+            .build();
 
         // load and parse all the dataset json files into memory
         System.out.println("Loading datasets");
@@ -600,7 +602,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
                     // introduce bindings if available
                     String key = "";
                     ObjectNode bindings = testCase.getBindings();
-                    for (Iterator<String> it = bindings.fieldNames(); it.hasNext();) {
+                    for (Iterator<String> it = bindings.propertyNames().iterator(); it.hasNext();) {
                         key = it.next();
                         JsonNode value = bindings.get(key);
                         e.getEnvironment().setVariable("$" + key, value);
@@ -782,11 +784,14 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
                 if (this.expectedResult != null && this.expectedResult.isDouble()) {
                     double d = this.expectedResult.asDouble();
                     if (isWholeNumber(d)) {
-                        this.expectedResult = new LongNode(this.expectedResult.asLong());
+                        // Jackson 3's DoubleNode.asLong() throws on out-of-long-range
+                        // values; Jackson 2 performed a silent narrowing cast. Replicate
+                        // the Jackson 2 behavior so expected-value normalization is unchanged.
+                        this.expectedResult = new LongNode((long) d);
                     } else {
                         // below produced to high precision and is slower
                         // BigDecimal bd = new BigDecimal(d);
-                        // this.expectedResult = new TextNode(bd.toPlainString());
+                        // this.expectedResult = new StringNode(bd.toPlainString());
                     }
                 }
             } else {
@@ -816,7 +821,7 @@ public class AgnosticTestSuite extends ParentRunner<TestGroup> {
                     ObjectNode bindings = (ObjectNode) bindTest;
                     // are there keys to be bound as variables to their content?
                     String varID = "";
-                    for (Iterator<String> it = bindings.fieldNames(); it.hasNext();) {
+                    for (Iterator<String> it = bindings.propertyNames().iterator(); it.hasNext();) {
                         varID = it.next();
                         this.bindings.set(varID, bindings.get(varID));
                     }

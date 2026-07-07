@@ -55,13 +55,13 @@ import com.api.jsonata4java.expressions.EvaluateException;
 import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.Expressions;
 import com.api.jsonata4java.expressions.ParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
+import tools.jackson.databind.SerializationFeature;
+import tools.jackson.dataformat.xml.XmlMapper;
+import tools.jackson.dataformat.xml.XmlWriteFeature;
 
 /**
  * A Swing UI app to test JSONata4Java interactively similar to the original
@@ -73,7 +73,11 @@ public class TesterUI {
 
     private Expressions expressions;
     private final ObjectMapper jsonMapper = new ObjectMapper();
-    private final XmlMapper xmlMapper = new XmlMapper();
+    private final XmlMapper xmlMapper = XmlMapper.builder()
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .enable(XmlWriteFeature.WRITE_XML_DECLARATION)
+        .enable(XmlWriteFeature.WRITE_XML_1_1)
+        .build();
     private TesterUISettings settings = new TesterUISettings();
 
     private final JMenuBar menuBar = new JMenuBar();
@@ -104,8 +108,6 @@ public class TesterUI {
     private final KeyStroke redoKey = KeyStroke.getKeyStroke("control Y");
 
     protected TesterUI() throws IOException {
-
-        xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         settings.load();
 
@@ -313,7 +315,7 @@ public class TesterUI {
                     // nothing to do
                     break;
             }
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             e.printStackTrace();
         }
     }
@@ -361,7 +363,7 @@ public class TesterUI {
                         .writeValueAsString(jsonMapper.readTree(inputArea.getText())));
                     break;
             }
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             System.err.println("Input error: " + e.getMessage());
             this.outputArea.setText("Input error: " + e.getMessage());
             this.inputArea.setBackground(settings.getBackgroundError());
@@ -423,7 +425,7 @@ public class TesterUI {
                         inNode = jsonMapper.readTree(inputArea.getText());
                         break;
                 }
-            } catch (JsonProcessingException | RuntimeException e) {
+            } catch (RuntimeException e) {
                 System.err.println("Input error: " + e.getMessage());
                 this.outputArea.setText("Input error: " + e.getMessage());
                 this.inputArea.setBackground(settings.getBackgroundError());
@@ -456,7 +458,7 @@ public class TesterUI {
             this.outputArea.setText(e.getMessage());
             this.jsonataArea.setBackground(settings.getBackgroundError());
             this.outputArea.setBackground(settings.getBackgroundError());
-        } catch (JsonProcessingException | RuntimeException e) {
+        } catch (RuntimeException e) {
             System.err.println("JSONata mapping error: " + e.getMessage());
             this.outputArea.setText("JSONata mapping error: " + e.getMessage());
             this.jsonataArea.setBackground(settings.getBackgroundError());
@@ -485,9 +487,6 @@ public class TesterUI {
 
     protected String jsonToXml(final String json) throws IOException {
         JsonNode node = jsonMapper.readValue(json, JsonNode.class);
-        xmlMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true);
-        xmlMapper.configure(ToXmlGenerator.Feature.WRITE_XML_1_1, true);
         ObjectWriter ow = xmlMapper.writer().withRootName("root");
         StringWriter w = new StringWriter();
         ow.writeValue(w, node);

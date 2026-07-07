@@ -29,9 +29,9 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -118,9 +118,9 @@ public class PadFunction extends FunctionBase {
                 // Generate the result.. padding to the left or right depending
                 // on the width argument
                 if (width < 0) {
-                    result = new TextNode(leftPad(str, -width, padStr));
+                    result = new StringNode(leftPad(str, -width, padStr));
                 } else {
-                    result = new TextNode(rightPad(str, width, padStr));
+                    result = new StringNode(rightPad(str, width, padStr));
                 }
             } else {
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);

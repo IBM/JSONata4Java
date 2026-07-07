@@ -6,9 +6,10 @@ import java.io.StringWriter;
 import java.nio.file.Paths;
 import org.junit.Before;
 import org.junit.Test;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.json.JsonFactory;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
 
 public class TesterUITest {
 
@@ -40,7 +41,7 @@ public class TesterUITest {
             while (parser.nextToken() != null) {
                 gen.copyCurrentEvent(parser);
             }
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
         return sw.getBuffer().toString();

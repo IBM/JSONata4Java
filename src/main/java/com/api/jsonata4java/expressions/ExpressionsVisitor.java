@@ -75,20 +75,20 @@ import com.api.jsonata4java.expressions.utils.BooleanUtils;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
 import com.api.jsonata4java.expressions.utils.NumberUtils;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.NumericNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.POJONode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.BooleanNode;
+import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.JsonNodeType;
+import tools.jackson.databind.node.LongNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.NumericNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.POJONode;
+import tools.jackson.databind.node.StringNode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -292,7 +292,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     } else {
                         return objectMapper.writeValueAsString(node);
                     }
-                } catch (JsonProcessingException e) {
+                } catch (JacksonException e) {
                     throw new EvaluateRuntimeException(
                         "Failed to cast value " + node + " to a string. Reason: " + e.getMessage());
                 }
@@ -812,7 +812,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     traverseDescendants(member, results);
                 }
             } else if (input.isObject()) {
-                for (Iterator<String> it = ((ObjectNode) input).fieldNames(); it.hasNext();) {
+                for (Iterator<String> it = ((ObjectNode) input).propertyNames().iterator(); it.hasNext();) {
                     String key = it.next();
                     traverseDescendants(((ObjectNode) input).get(key), results);
                 }
@@ -1468,7 +1468,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             }
         }
 
-        result = new TextNode(leftStr + rightStr);
+        result = new StringNode(leftStr + rightStr);
 
         lastVisited = METHOD;
         if (LOG.isLoggable(Level.FINEST)) {
@@ -1500,7 +1500,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             } else {
                 result = null;
             }
-        } else if (cond instanceof BooleanNode || cond instanceof NumericNode || cond instanceof TextNode) {
+        } else if (cond instanceof BooleanNode || cond instanceof NumericNode || cond instanceof StringNode) {
             ExprContext ctx1 = ctx.expr(1);
             ExprContext ctx2 = ctx.expr(2);
             if (ctx1 != null && ctx2 != null) {
@@ -1731,7 +1731,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                 result = null;
             } else {
                 if (elt.isObject()) {
-                    for (Iterator<String> it = ((ObjectNode) elt).fieldNames(); it.hasNext();) {
+                    for (Iterator<String> it = ((ObjectNode) elt).propertyNames().iterator(); it.hasNext();) {
                         JsonNode value = ((ObjectNode) elt).get(it.next());
                         if (value.isArray()) {
                             value = flatten(value, null);
@@ -2050,7 +2050,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
             left = unwrapArray(left);
 
             result = BooleanNode.FALSE;
-            Iterator<JsonNode> elements = right.elements();
+            Iterator<JsonNode> elements = right.values().iterator();
             while (elements.hasNext()) {
                 JsonNode curElement = elements.next();
                 if (areJsonNodesEqual(left, curElement)) {
@@ -2403,7 +2403,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                     visit(valueNode);
                     fctName = ((Function_declContext) valueNode).FUNCTIONID().getText();
                     if (getDeclaredFunction(fctName) != null) {
-                        value = new TextNode("");
+                        value = new StringNode("");
                     }
                 } else if (valueNode instanceof Var_recallContext) {
                     value = visit(valueNode);
@@ -2411,11 +2411,11 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
                         String varName = ((Var_recallContext) valueNode).VAR_ID().getText();
                         DeclaredFunction declFct = getDeclaredFunction(varName);
                         if (declFct != null) {
-                            value = new TextNode("");
+                            value = new StringNode("");
                         } else {
                             FunctionBase fct = getJsonataFunction(varName);
                             if (fct != null) {
-                                value = new TextNode("");
+                                value = new StringNode("");
                             } else {
                                 value = null;
                             }
@@ -2739,7 +2739,7 @@ public class ExpressionsVisitor extends MappingExpressionBaseVisitor<JsonNode> i
         // strip quotes and unescape any special chars
         val = sanitise(val);
 
-        result = TextNode.valueOf(val);
+        result = StringNode.valueOf(val);
         lastVisited = METHOD;
         if (LOG.isLoggable(Level.FINEST)) {
             LOG.exiting(CLASS, METHOD, (result == null ? "null" : result.toString()));

@@ -48,19 +48,20 @@ import com.api.jsonata4java.expressions.functions.MergeFunction;
 import com.api.jsonata4java.expressions.functions.ShuffleFunction;
 import com.api.jsonata4java.expressions.functions.SubstringFunction;
 import com.api.jsonata4java.expressions.functions.SumFunction;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.DoubleNode;
-import com.fasterxml.jackson.databind.node.FloatNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
-import com.fasterxml.jackson.databind.node.LongNode;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.BooleanNode;
+import tools.jackson.databind.node.DoubleNode;
+import tools.jackson.databind.node.FloatNode;
+import tools.jackson.databind.node.IntNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.JsonNodeType;
+import tools.jackson.databind.node.LongNode;
+import tools.jackson.databind.node.NullNode;
+import tools.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * A collection of poorly-structured test cases. Don't add new tests to this
@@ -214,7 +215,7 @@ public class BasicExpressionsTests implements Serializable {
             jsonObj = mapper.readTree(json);
             jsonObj2 = mapper.readTree(json2);
             jsonObj3 = mapper.readTree(json3);
-        } catch (IOException e) {
+        } catch (JacksonException e) {
             e.printStackTrace();
         }
     }
@@ -1351,7 +1352,7 @@ public class BasicExpressionsTests implements Serializable {
         event.set("t", new FloatNode(-42));
 
         ObjectNode state = mapper.createObjectNode();
-        state.set("temperatureStatus", new TextNode("hot"));
+        state.set("temperatureStatus", new StringNode("hot"));
 
         JsonNode result = expression.evaluate(event);
 
@@ -1373,7 +1374,7 @@ public class BasicExpressionsTests implements Serializable {
     @Test
     public void testNullEquality() throws Exception {
         ObjectNode event = mapper.createObjectNode();
-        event.put("asdsad", NullNode.getInstance());
+        event.set("asdsad", NullNode.getInstance());
         {
             Expressions expression = Expressions.parse("asdsad=\"null\"");
             Assert.assertEquals(BooleanNode.FALSE, expression.evaluate(event));
@@ -1404,10 +1405,10 @@ public class BasicExpressionsTests implements Serializable {
 
     // @Test
     // public void test(){
-    // Assert.assertTrue( new TextNode("true").asBoolean() );
-    // Assert.assertFalse( new TextNode("false").asBoolean() );
-    // Assert.assertFalse( new TextNode("T").asBoolean() );
-    // Assert.assertFalse( new TextNode("H").asBoolean() );
+    // Assert.assertTrue( new StringNode("true").asBoolean() );
+    // Assert.assertFalse( new StringNode("false").asBoolean() );
+    // Assert.assertFalse( new StringNode("T").asBoolean() );
+    // Assert.assertFalse( new StringNode("H").asBoolean() );
     //
     // Assert.assertTrue( new IntNode(1).asBoolean() );
     // Assert.assertFalse( new IntNode(0).asBoolean() );
@@ -1423,7 +1424,7 @@ public class BasicExpressionsTests implements Serializable {
         };
 
         ObjectNode event = mapper.createObjectNode();
-        event.put("isnull", NullNode.getInstance());
+        event.set("isnull", NullNode.getInstance());
 
         for (String op : ops) {
             try {
@@ -1461,7 +1462,7 @@ public class BasicExpressionsTests implements Serializable {
         // set to *java* null (not NullNode singleton)
         try {
             ObjectNode event = mapper.createObjectNode();
-            event.put("notset", (ObjectNode) null);
+            event.set("notset", (ObjectNode) null);
             Expressions.parse("notset").evaluate(event);
         } catch (EvaluateException ex) {
             Assert.assertEquals("The property 'notset' does not exist", ex.getMessage());
@@ -1491,10 +1492,10 @@ public class BasicExpressionsTests implements Serializable {
             // http://try.jsonata.org/
             for (JsonNode valueType : new JsonNode[] {
                 NullNode.getInstance(), new IntNode(22), BooleanNode.TRUE,
-                new LongNode(22L), new TextNode("true"), new IntNode(0), BooleanNode.FALSE, new LongNode(0),
-                new TextNode("false"), new TextNode("22")
+                new LongNode(22L), new StringNode("true"), new IntNode(0), BooleanNode.FALSE, new LongNode(0),
+                new StringNode("false"), new StringNode("22")
             }) {
-                event.put("foo", valueType);
+                event.set("foo", valueType);
                 Assert.assertEquals(BooleanNode.TRUE, Expressions.parse("$exists(foo)").evaluate(event));
             }
         }

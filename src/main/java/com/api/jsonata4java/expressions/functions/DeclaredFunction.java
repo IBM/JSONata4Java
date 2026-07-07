@@ -38,7 +38,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.VarListContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.api.jsonata4java.expressions.utils.Constants;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.databind.JsonNode;
 
 public class DeclaredFunction implements Serializable {
 

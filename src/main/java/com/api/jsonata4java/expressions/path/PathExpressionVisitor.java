@@ -28,10 +28,10 @@ import com.api.jsonata4java.expressions.EvaluateRuntimeException;
 import com.api.jsonata4java.expressions.path.generated.PathExpressionParser.Array_indexContext;
 import com.api.jsonata4java.expressions.path.generated.PathExpressionParser.PathContext;
 import com.api.jsonata4java.expressions.path.generated.PathExpressionParserBaseVisitor;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.ArrayNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 @SuppressWarnings("unused")
 public abstract class PathExpressionVisitor extends PathExpressionParserBaseVisitor<JsonNode> {
@@ -109,7 +109,7 @@ public abstract class PathExpressionVisitor extends PathExpressionParserBaseVisi
                     // property in the schema
                     // if this happens, use the
                     nextNode = new ObjectNode(JsonNodeFactory.instance);
-                    currentObject.put(fieldName, nextNode);
+                    currentObject.set(fieldName, nextNode);
                 }
 
                 updateCurrentNodePointer(nextNode);
@@ -124,7 +124,7 @@ public abstract class PathExpressionVisitor extends PathExpressionParserBaseVisi
                 // property in the schema
                 // if this happens, add in an empty placeholder
                 nextNode = new ArrayNode(JsonNodeFactory.instance);
-                currentObject.put(fieldName, nextNode);
+                currentObject.set(fieldName, nextNode);
 
                 // NOTE: an out-of-bounds exception is inevitable (since there is no index that
                 // can be in-bounds for an empty array)

@@ -28,9 +28,9 @@ import com.api.jsonata4java.expressions.ExpressionsVisitor;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Function_callContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.StringNode;
 
 /**
  * From http://docs.jsonata.org/string-functions.html:
@@ -80,7 +80,7 @@ public class UppercaseFunction extends FunctionBase {
             }
             if (argString.isTextual()) {
                 final String str = argString.textValue();
-                result = new TextNode(str.toUpperCase());
+                result = new StringNode(str.toUpperCase());
             } else {
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
             }
@@ -91,7 +91,7 @@ public class UppercaseFunction extends FunctionBase {
             ParseTree value = ctx.exprValues().exprList();
             result = expressionVisitor.visit(value);
             if (result != null && result.isTextual()) {
-                result = new TextNode(result.textValue().toUpperCase());
+                result = new StringNode(result.textValue().toUpperCase());
             }
         } else {
             throw new EvaluateRuntimeException(argCount == 0 ? ERR_BAD_CONTEXT : ERR_ARG2BADTYPE);

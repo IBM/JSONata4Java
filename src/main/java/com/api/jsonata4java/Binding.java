@@ -22,8 +22,8 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.ExprLi
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NullContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.NumberContext;
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.StringContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Class mapping a variable name to a variable or function declaration

@@ -36,9 +36,9 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.VarLis
 import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Var_recallContext;
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeFactory;
+import tools.jackson.databind.node.ObjectNode;
 
 /**
  * Returns an array containing the values return by the function when applied to
@@ -112,7 +112,7 @@ public class EachFunction extends FunctionBase {
                             // only send variables function can consume
                             varCount = fctVarCount;
                         }
-                        for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
+                        for (Iterator<String> it = object.propertyNames().iterator(); it.hasNext();) {
                             String key = it.next();
                             JsonNode field = object.get(key);
                             ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
@@ -144,7 +144,7 @@ public class EachFunction extends FunctionBase {
                     } else {
                         FunctionBase function = expressionVisitor.getJsonataFunction(varid.getText());
                         if (function != null) {
-                            for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
+                            for (Iterator<String> it = object.propertyNames().iterator(); it.hasNext();) {
                                 String key = it.next();
                                 JsonNode field = object.get(key);
                                 Function_callContext callCtx = new Function_callContext(ctx);
@@ -173,7 +173,7 @@ public class EachFunction extends FunctionBase {
                             // only send variables function can consume
                             varCount = fctVarCount;
                         }
-                        for (Iterator<String> it = object.fieldNames(); it.hasNext();) {
+                        for (Iterator<String> it = object.propertyNames().iterator(); it.hasNext();) {
                             String key = it.next();
                             JsonNode field = object.get(key);
                             ExprValuesContext evc = new ExprValuesContext(ctx, ctx.invokingState);
