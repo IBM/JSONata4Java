@@ -125,6 +125,27 @@ becomes unreachable, or the type is no longer resolvable, replace with
 - **JPMS.** No `module-info.java` exists; no module changes required.
 - No other plugin configuration references Jackson.
 
+### Maven build-warning cleanup (unrelated to Jackson, done on this branch)
+
+While migrating, three pre-existing Maven warnings surfaced on every build and were fixed in
+`pom.xml`:
+
+- **bnd private-reference warnings (×2).** The exported `com.api.jsonata4java` and
+  `com.api.jsonata4java.expressions` packages expose types from
+  `com.api.jsonata4java.expressions.regex` (`RegexEngine`, `RegexPattern`, …) in their public API,
+  but that sub-package was not in the `Export-Package` list, so bnd flagged it as a leaked private
+  reference. Added `com.api.jsonata4java.expressions.regex` to `Export-Package`.
+- **`additionalClasspathElements` unknown (×2).** Removed the empty
+  `<additionalClasspathElements/>` from `maven-compiler-plugin` — not a valid parameter for that
+  plugin (it did nothing).
+- **`excludes` unknown on assembly plugin.** Removed `<excludes>` from the `maven-assembly-plugin`
+  `single` goal — not a valid parameter there (exclusions belong in an assembly descriptor); it was
+  silently ignored and does not affect the produced `jar-with-dependencies`.
+
+A fourth warning — `gpg.passphrase` deprecated — originates from the developer's
+`~/.m2/settings.xml` (an `activeByDefault` profile setting the deprecated property), **not** from
+`pom.xml`, and is resolved locally by removing that property and relying on `gpg-agent`.
+
 ## Out of scope
 
 - Any behavioral changes beyond what the package/API migration requires.
