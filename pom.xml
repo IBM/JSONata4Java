@@ -236,7 +236,6 @@
         <configuration>
           <source>17</source>
           <target>17</target>
-          <additionalClasspathElements />
         </configuration>
       </plugin>
       <plugin>
@@ -303,9 +302,6 @@
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
-          <excludes>
-            <exclude>src/test/resources/*</exclude>
-          </excludes>
         </configuration>
         <executions>
           <execution>
@@ -331,6 +327,7 @@
                         com.api.jsonata4java.expressions.generated, \
                         com.api.jsonata4java.expressions.path, \
                         com.api.jsonata4java.expressions.path.generated, \
+                        com.api.jsonata4java.expressions.regex, \
                         com.api.jsonata4java.expressions.utils
 					]]>
               Bundle-Developers: wnm3; email=wnm3@us.ibm.com;
