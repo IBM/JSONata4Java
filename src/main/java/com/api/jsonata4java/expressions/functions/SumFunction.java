@@ -86,6 +86,11 @@ public class SumFunction extends FunctionBase {
                         // also complain if any non-numeric types are included in the
                         // array
                         throw new EvaluateRuntimeException(ERR_ARG_TYPE);
+                    } else if (!a.canConvertToLong()) {
+                        // an integral element too large for a long (data-sourced
+                        // BigIntegerNode): sum as doubles, matching jsonata.org, and
+                        // avoiding asLong() throwing under Jackson 3
+                        shouldReturnAsLong = false;
                     }
                 }
 
@@ -104,7 +109,12 @@ public class SumFunction extends FunctionBase {
                 }
 
             } else if (argArray.isIntegralNumber()) {
-                return new LongNode(argArray.asLong());
+                if (argArray.canConvertToLong()) {
+                    return new LongNode(argArray.asLong());
+                }
+                // too large for a long (data-sourced BigIntegerNode): return as a
+                // double, matching jsonata.org, rather than throwing under Jackson 3
+                return new DoubleNode(argArray.asDouble());
             } else if (argArray.isFloatingPointNumber() || argArray.isDouble()) {
                 return new DoubleNode(argArray.asDouble());
             } else {

@@ -2281,4 +2281,134 @@ public class BasicExpressionsTests implements Serializable {
             "[{\"a\":[{\"b\":1}]},{\"a\":[{\"b\":2}]}]");
     }
 
+    /**
+     * Ordering operators compare numbers to numbers and strings to strings.
+     * When the two operands have different types (e.g. number vs string) the
+     * reference implementation (jsonata.org) raises "...must be of the same
+     * data type" rather than coercing. Regression guard for issue #432: the
+     * Jackson 3 migration must not let a float operand silently coerce a
+     * string on the other side, and the reported operator must be the one
+     * actually used (the "&LT;" branch previously mis-reported "&GT;").
+     */
+    @Test
+    public void testOrderingAcrossTypes() throws Exception {
+        // valid same-type comparisons still evaluate normally
+        simpleTest("3 < 4.1", "true");
+        simpleTest("3.0 < 4.1", "true");
+        simpleTest("3.14 < 4.15", "true");
+        simpleTest("5.5 < 6", "true");
+        simpleTest("5.5 > 6", "false");
+        simpleTest("5.5 <= 6", "true");
+        simpleTest("5.5 >= 6", "false");
+        simpleTest("\"a\" < \"b\"", "true");
+
+        // number-vs-string is a type mismatch for every ordering operator, and
+        // the message names the operator that was used
+        simpleTestExpectException("3.14 < \"abc\"",
+            "The values 3.14 and \"abc\" either side of operator \"<\" must be of the same data type");
+        simpleTestExpectException("5 < \"3\"",
+            "The values 5 and \"3\" either side of operator \"<\" must be of the same data type");
+        simpleTestExpectException("3.14 > \"abc\"",
+            "The values 3.14 and \"abc\" either side of operator \">\" must be of the same data type");
+        simpleTestExpectException("3.14 <= \"abc\"",
+            "The values 3.14 and \"abc\" either side of operator \"<=\" must be of the same data type");
+        simpleTestExpectException("3.14 >= \"abc\"",
+            "The values 3.14 and \"abc\" either side of operator \">=\" must be of the same data type");
+
+        // A string that happens to parse as a number must NOT be silently
+        // coerced when the other operand is a float. This is the exact
+        // coercion the fix guards against, and it must hold identically for
+        // all four ordering operators, with the string on either side.
+        simpleTestExpectException("\"3\" < 4.1",
+            "The values \"3\" and 4.1 either side of operator \"<\" must be of the same data type");
+        simpleTestExpectException("4.1 < \"3\"",
+            "The values 4.1 and \"3\" either side of operator \"<\" must be of the same data type");
+        simpleTestExpectException("\"3\" > 4.1",
+            "The values \"3\" and 4.1 either side of operator \">\" must be of the same data type");
+        simpleTestExpectException("4.1 > \"3\"",
+            "The values 4.1 and \"3\" either side of operator \">\" must be of the same data type");
+        simpleTestExpectException("\"3\" <= 4.1",
+            "The values \"3\" and 4.1 either side of operator \"<=\" must be of the same data type");
+        simpleTestExpectException("4.1 <= \"3\"",
+            "The values 4.1 and \"3\" either side of operator \"<=\" must be of the same data type");
+        simpleTestExpectException("\"3\" >= 4.1",
+            "The values \"3\" and 4.1 either side of operator \">=\" must be of the same data type");
+        simpleTestExpectException("4.1 >= \"3\"",
+            "The values 4.1 and \"3\" either side of operator \">=\" must be of the same data type");
+    }
+
+    /**
+     * Equality and the "in" operator compare across types by returning
+     * false/true rather than throwing, and never coerce a string to a number.
+     * Regression guard for issue #432.
+     */
+    @Test
+    public void testEqualityAndMembershipAcrossTypes() throws Exception {
+        simpleTest("2 = \"2\"", "false");
+        simpleTest("2 != \"2\"", "true");
+        simpleTest("2 in [1,2,3]", "true");
+        // the string "2" is not a member of an array of numbers
+        simpleTest("\"2\" in [1,2,3]", "false");
+    }
+
+    /**
+     * $join requires a flat array of strings. Any non-string element - a
+     * number, or even a nested array - is an error; the reference
+     * implementation (jsonata.org) does not flatten nested arrays. Regression
+     * guard for issue #434.
+     */
+    @Test
+    public void testJoinRequiresArrayOfStrings() throws Exception {
+        // valid flat array of strings still joins
+        simpleTest("$join([\"a\", \"b\"])", "\"ab\"");
+        simpleTest("$join([\"a\", \"b\", \"c\"])", "\"abc\"");
+
+        final String err = "Argument 1 of function $join must be an array of strings";
+        simpleTestExpectException("$join([1, 2])", err);
+        simpleTestExpectException("$join([[1, 2]])", err);
+        simpleTestExpectException("$join([[\"a\", \"b\"]])", err);
+    }
+
+    /**
+     * Issue #433: out-of-range numeric values must not leak a raw Jackson 3
+     * JsonNodeException from asInt()/asLong(). Bounds, array indexes and numeric
+     * functions now use the widest-safe representation (BigInteger/double) or a
+     * controlled JSONata error, matching jsonata.org 2.2.1 where known.
+     */
+    @Test
+    public void testOutOfRangeNumericCoercion() throws Exception {
+        // Range bounds beyond int/long no longer crash; they raise the controlled
+        // "sequence too big" error (matching jsonata.org's range-size limit).
+        simpleTestExpectException("[1..1e19]",
+            "The size of the sequence allocated by the range operator (..) must not exceed 1e6.  Attempted to allocate 10000000000000000000.");
+        simpleTestExpectException("[1..3000000000]",
+            "The size of the sequence allocated by the range operator (..) must not exceed 1e6.  Attempted to allocate 3000000000.");
+        // an ordinary small range is unaffected
+        simpleTest("[1..5]", "[1,2,3,4,5]");
+
+        // An array index outside int range is out of bounds -> selects nothing
+        // (undefined), matching jsonata.org, rather than throwing.
+        test("[\"a\", \"b\"][3000000000]", (String) null, null, null);
+
+        // $formatBase uses the full (long) value instead of a 32-bit narrowed int
+        // ($formatBase(5890840712243076) previously overflowed to "1008002948").
+        simpleTest("$formatBase(5890840712243076)", "\"5890840712243076\"");
+        simpleTest("$formatBase(255, 16)", "\"ff\"");
+
+        // $fromMillis with millis beyond long range raises a controlled error
+        // rather than a raw JsonNodeException (reference: Invalid Date).
+        simpleTestExpectException("$fromMillis(1e30)", "Number out of range: \"1.0E30\"");
+
+        // Data-sourced BigInteger operands (which numeric literals never produce,
+        // since large literals become doubles) are handled without crashing.
+        final String bigs = "[99999999999999999999999999, 99999999999999999999999998]";
+        // distinct large integers compare exactly via BigInteger
+        test("$[0] = $[1]", "false", null, bigs);
+        test("$[0] > $[1]", "true", null, bigs);
+        test("$[1] < $[0]", "true", null, bigs);
+        test("$[0] >= $[0]", "true", null, bigs);
+        // unary minus negates a big integer exactly
+        test("-$", "-99999999999999999999999999", null, "99999999999999999999999999");
+    }
+
 }

@@ -116,11 +116,16 @@ public class JoinFunction extends FunctionBase {
                 JsonNode element = elements.next();
                 if (element.isTextual()) {
                     stringJoiner.add(element.asText());
-                } else if (element.isArray()) {
-                    for (Iterator<JsonNode> it = ((ArrayNode) element).iterator(); it.hasNext();) {
-                        stringJoiner.add(it.next().textValue());
-                    }
                 } else {
+                    // Every element must be a string. The reference
+                    // implementation (jsonata.org) raises "Argument 1 of
+                    // function join must be an array of strings" for any
+                    // non-string element, including a nested array
+                    // ($join([[1, 2]]) and $join([["a", "b"]]) both error);
+                    // it does not flatten nested arrays. Match that controlled
+                    // error rather than flattening or emitting garbage. This
+                    // also avoids Jackson 3's textValue()/stringValue()
+                    // throwing a raw JsonNodeException for a non-String node.
                     throw new EvaluateRuntimeException(ERR_MSG_ARG1_ARR_STR);
                 }
             } // WHILE

@@ -28,6 +28,7 @@ import com.api.jsonata4java.expressions.generated.MappingExpressionParser.Functi
 import com.api.jsonata4java.expressions.utils.Constants;
 import com.api.jsonata4java.expressions.utils.DateTimeUtils;
 import com.api.jsonata4java.expressions.utils.FunctionUtils;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.node.JsonNodeFactory;
 import tools.jackson.databind.node.StringNode;
@@ -87,7 +88,17 @@ public class FromMillisZonedFunction extends FunctionBase {
                 return null;
             }
             if (argNumber.isNumber()) {
-                final Long millis = argNumber.asLong();
+                long millis;
+                try {
+                    // asLong() truncates in-range fractional millis (e.g. 3.333 -> 3)
+                    // but under Jackson 3 throws when the magnitude exceeds long range.
+                    // Convert that to a controlled JSONata error rather than leaking a
+                    // raw Jackson exception (reference: new Date(1e30) -> Invalid Date).
+                    millis = argNumber.asLong();
+                } catch (JacksonException ex) {
+                    throw new EvaluateRuntimeException(
+                        String.format(Constants.ERR_MSG_NUMBER_OUT_OF_RANGE, argNumber.asText()));
+                }
                 String pictureStr = null;
                 if (picture != null && picture.isNull() == false) {
                     pictureStr = picture.asText();
