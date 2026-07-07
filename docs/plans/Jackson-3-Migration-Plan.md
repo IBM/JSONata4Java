@@ -178,14 +178,18 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 ### Task 3: Remove Jackson 2.x dependencies and bump version to 3.0.0
 
-With all code on Jackson 3 and tests green, drop the now-unused 2.x deps and cut the major version.
+With all code on Jackson 3 and tests green, drop the now-unused 2.x deps and cut the major version. Per `ReleaseProcedure.txt`, the version string lives in six places across five files — all must move from `2.6.4` to `3.0.0`.
 
 **Files:**
-- Modify: `pom.xml` — remove two dependency blocks, change `<version>`.
+- Modify: `pom.xml` — remove two dependency blocks, change `<version>` (1 place, line ~29).
+- Modify: `README.md` — version string in 3 places (lines 17, 54, 55).
+- Modify: `tester.sh` — jar name (line 2).
+- Modify: `testerui.sh` — jar name (line 2).
+- Modify: `testerui.cmd` — jar name (line 1).
 
 **Interfaces:**
 - Consumes: green build from Task 2.
-- Produces: a classpath with no `com.fasterxml.jackson.core`/`databind`/`dataformat.xml` 2.x jars; project version `3.0.0`.
+- Produces: a classpath with no `com.fasterxml.jackson.core`/`databind`/`dataformat.xml` 2.x jars; project version `3.0.0` consistent across pom, README, and launch scripts.
 
 - [ ] **Step 1: Remove the Jackson 2.x dependency blocks**
 
@@ -206,26 +210,44 @@ In `pom.xml`, delete these two blocks:
 ```
 Leave `com.fasterxml.woodstox:woodstox-core` in place — Jackson 3 XML still uses it.
 
-- [ ] **Step 2: Bump the project version**
+- [ ] **Step 2: Bump the project version in `pom.xml`**
 
-Change the top-level project version:
+Change the top-level project version (the `<version>` directly under `<artifactId>JSONata4Java</artifactId>`, around line 29 — not a dependency or plugin version):
 Old: `  <version>2.6.4</version>`
 New: `  <version>3.0.0</version>`
 
-- [ ] **Step 3: Verify no Jackson 2.x remains on the dependency tree**
+- [ ] **Step 3: Bump the version string in `README.md`, `tester.sh`, `testerui.sh`, `testerui.cmd`**
+
+Per `ReleaseProcedure.txt`, update the version in the README (3 places) and the three launch scripts (1 each). Run from the repo root:
+
+```bash
+perl -pi -e 's/\Q2.6.4\E/3.0.0/g' README.md tester.sh testerui.sh testerui.cmd
+```
+
+Verify:
+```bash
+grep -rn "2\.6\.4" README.md tester.sh testerui.sh testerui.cmd || echo CLEAN
+```
+Expected: `CLEAN`. And confirm the new strings landed:
+```bash
+grep -n "3\.0\.0" README.md tester.sh testerui.sh testerui.cmd
+```
+Expected: `README.md` lines 17/54/55, `tester.sh` line 2, `testerui.sh` line 2, `testerui.cmd` line 1.
+
+- [ ] **Step 4: Verify no Jackson 2.x remains on the dependency tree**
 
 Run: `mvn -q dependency:tree | grep "com.fasterxml.jackson" || echo NONE`
 Expected: only `com.fasterxml.woodstox:woodstox-core` may appear; no `com.fasterxml.jackson.core`, `...databind`, or `...dataformat.jackson-*` 2.x entries. (Note: `jackson-annotations` under `com.fasterxml.jackson` may appear transitively via Jackson 3 — that is expected and correct.)
 
-- [ ] **Step 4: Full clean build + tests**
+- [ ] **Step 5: Full clean build + tests**
 
 Run: `mvn -q clean test 2>&1 | tail -30`
 Expected: BUILD SUCCESS with only Jackson 3 (plus jackson-annotations 2.x, woodstox) on the classpath.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 6: Commit**
 
 ```bash
-git add pom.xml
+git add pom.xml README.md tester.sh testerui.sh testerui.cmd
 git commit -m "Drop Jackson 2.x deps, bump to 3.0.0 (#430)
 
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"

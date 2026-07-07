@@ -48,6 +48,10 @@ The overwhelming majority only use JSON node types whose class names are unchang
 | Change | `<version>` `2.6.4` → `3.0.0` |
 
 Notes:
+- **Version string lives in more than `pom.xml`.** Per `ReleaseProcedure.txt`, the release
+  version appears in six places across five files, all of which move `2.6.4` → `3.0.0`:
+  `pom.xml` (1), `README.md` (3 — lines 17, 54, 55), `tester.sh` (1), `testerui.sh` (1),
+  `testerui.cmd` (1). The script/README occurrences are the `JSONata4Java-<version>...jar` names.
 - `jackson-core` is pulled in transitively by `jackson-databind`; no direct entry needed.
 - **`jackson-annotations` was NOT renamed** — it stays under `com.fasterxml.jackson.annotation`.
   The codebase has no annotation imports, so this is a non-issue here, but do not blindly
