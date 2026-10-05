@@ -202,6 +202,15 @@ public class MatchFunctionTests implements Serializable {
                 "$match('', /(x*)/)", "{\"match\":\"\",\"index\":0,\"groups\":[\"\"]}", null
             }, //
             {
+                "$match('abc', /z/)", null, null
+            }, //
+            {
+                "$match('abc', /z/, 1)", null, null
+            }, //
+            {
+                "$match('', /b/)", null, null
+            }, //
+            {
                 "$match('foo bar', 'a')", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null
             }, //
             {
@@ -245,7 +254,7 @@ public class MatchFunctionTests implements Serializable {
                 null
             },
             {
-                "$match('ababbabbcc','a(b+)')", "[]", null
+                "$match('ababbabbcc','a(b+)')", null, null
             },
             {
                 "$match('aba(b+)babbcc','a(b+)')", "{\"match\":\"a(b+)\",\"index\":2,\"groups\":[]}", null

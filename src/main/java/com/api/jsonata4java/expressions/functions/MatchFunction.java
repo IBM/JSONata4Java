@@ -176,6 +176,10 @@ public class MatchFunction extends FunctionBase {
                 } else {
                     return null;
                 }
+                // As in jsonata-js, no match returns undefined
+                if (result.size() == 0) {
+                    return null;
+                }
             } else {
                 // check for a function call context as 2nd parameter
                 ExprContext exprCtx = ctx.exprValues().exprList().expr(useContext ? 0 : 1);
