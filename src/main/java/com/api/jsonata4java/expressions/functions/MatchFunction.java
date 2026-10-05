@@ -98,8 +98,18 @@ public class MatchFunction extends FunctionBase {
             final JsonNode argPattern = FunctionUtils.getValuesListExpression(expressionVisitor, ctx,
                 useContext ? 0 : 1);
             int limit = -1;
+            // As in jsonata-js, an undefined str with a regex pattern returns undefined
+            if (argString == null && argPattern instanceof POJONode) {
+                if (argCount == 3) {
+                    final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 1 : 2);
+                    if (argLimit != null && !argLimit.isNumber()) {
+                        throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
+                    }
+                }
+                return null;
+            }
             // Make sure that we have the right number of arguments
-            if (argString == null || !argString.isTextual() || argString.asText().isEmpty()) {
+            if (argString == null || !argString.isTextual()) {
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
             }
             // Make sure that the pattern is a non-empty string.
@@ -164,6 +174,10 @@ public class MatchFunction extends FunctionBase {
                         pos = m.getIndex() + Math.max(m.getLength(), 1);
                     }
                 } else {
+                    return null;
+                }
+                // As in jsonata-js, no match returns undefined
+                if (result.size() == 0) {
                     return null;
                 }
             } else {
