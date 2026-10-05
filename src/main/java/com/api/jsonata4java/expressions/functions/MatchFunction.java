@@ -100,6 +100,12 @@ public class MatchFunction extends FunctionBase {
             int limit = -1;
             // As in jsonata-js, an undefined str with a regex pattern returns undefined
             if (argString == null && argPattern instanceof POJONode) {
+                if (argCount == 3) {
+                    final JsonNode argLimit = FunctionUtils.getValuesListExpression(expressionVisitor, ctx, useContext ? 1 : 2);
+                    if (argLimit != null && !argLimit.isNumber()) {
+                        throw new EvaluateRuntimeException(ERR_ARG3BADTYPE);
+                    }
+                }
                 return null;
             }
             // Make sure that we have the right number of arguments

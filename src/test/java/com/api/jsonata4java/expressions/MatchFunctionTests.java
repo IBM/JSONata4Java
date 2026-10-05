@@ -183,6 +183,15 @@ public class MatchFunctionTests implements Serializable {
                 "$match(a.b.c, /b/, 1)", null, null
             }, //
             {
+                "$match(a.b.c, /b/, -1)", null, null
+            }, //
+            {
+                "$match(a.b.c, /b/, 'x')", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
+                "$match(a.b.c, /b/, null)", null, ERR_MSG_ARG3_BAD_TYPE
+            }, //
+            {
                 "$match($substringAfter(a.b.c, 'x'), /(b)/).groups[0]", null, null
             }, //
 
