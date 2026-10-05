@@ -196,6 +196,12 @@ public class MatchFunctionTests implements Serializable {
             }, //
 
             {
+                "$match('', /^$/)", "{\"match\":\"\",\"index\":0,\"groups\":[]}", null
+            }, //
+            {
+                "$match('', /(x*)/)", "{\"match\":\"\",\"index\":0,\"groups\":[\"\"]}", null
+            }, //
+            {
                 "$match('foo bar', 'a')", "{\"match\":\"a\",\"index\":5,\"groups\":[]}", null
             }, //
             {

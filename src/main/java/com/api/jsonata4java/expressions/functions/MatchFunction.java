@@ -109,7 +109,7 @@ public class MatchFunction extends FunctionBase {
                 return null;
             }
             // Make sure that we have the right number of arguments
-            if (argString == null || !argString.isTextual() || argString.asText().isEmpty()) {
+            if (argString == null || !argString.isTextual()) {
                 throw new EvaluateRuntimeException(ERR_ARG1BADTYPE);
             }
             // Make sure that the pattern is a non-empty string.
