@@ -586,13 +586,19 @@ public class JSONataUtils implements Serializable {
     }
 
     /**
-     * 
-     * @param str
-     * @param start  Location at which to begin extracting characters. If a negative
-     *               number is given, it is treated as strLength - start where
-     *               strLength is the length of the string. For example,
-     *               str.substr(-3) is treated as str.substr(str.length - 3)
-     * @param length The number of characters to extract. If this argument is null,
+     * Returns a substring of {@code str} starting at code-point index {@code start}
+     * and spanning at most {@code length} code points.
+     *
+     * <p>Both {@code start} and {@code length} are counted in Unicode code points,
+     * not Java UTF-16 char units. This matches the JSONata specification, which
+     * treats every Unicode character (including supplementary characters such as
+     * emoji) as a single unit.
+     *
+     * @param str    The source string.
+     * @param start  Location at which to begin extracting characters (code-point index).
+     *               If a negative number is given, it is treated as strLength + start
+     *               where strLength is the code-point length of the string.
+     * @param length The number of code points to extract. If this argument is null,
      *               all the characters from start to the end of the string are
      *               extracted.
      * @return A new string containing the extracted section of the given string. If
@@ -600,50 +606,41 @@ public class JSONataUtils implements Serializable {
      */
     static public String substr(String str, Integer start, Integer length) {
 
-        // below has to convert start and length for emojis and unicode
-        int origLen = str.length();
+        String strData = Objects.requireNonNull(str);
+        int strCodePointCount = strData.codePointCount(0, strData.length());
 
-        String strData = Objects.requireNonNull(str).intern();
-        int strLen = strData.codePointCount(0, strData.length());
-        if (start >= strLen) {
+        // If start is positive and is greater than or equal to the code-point
+        // length of the string, return an empty string.
+        if (start >= strCodePointCount) {
             return "";
         }
-        // If start is negative, substr() uses it as a character index from the
-        // end of the string; the index of the last character is -1.
-        start = strData.offsetByCodePoints(0, start >= 0 ? start : ((strLen + start) < 0 ? 0 : strLen + start));
-        if (start < 0) {
-            start = 0;
-        } // If start is negative and abs(start) is larger than the length of the
-        // string, substr() uses 0 as the start index.
-        // If length is omitted, substr() extracts characters to the end of the
-        // string.
+
+        // If start is negative, treat it as an index from the end of the string.
+        // If the resulting index is still negative, clamp to 0.
+        int cpStart = start >= 0 ? start : Math.max(0, strCodePointCount + start);
+
+        // Convert the code-point start index to a UTF-16 offset.
+        int utf16Start = strData.offsetByCodePoints(0, cpStart);
+
+        // How many code points remain after the start position.
+        int remaining = strCodePointCount - cpStart;
+
         if (length == null) {
-            length = strData.length();
-        } else if (length < 0) {
-            // If length is 0 or negative, substr() returns an empty string.
+            // If length is omitted, extract to the end of the string.
+            length = remaining;
+        } else if (length <= 0) {
+            // If length is 0 or negative, return an empty string.
             return "";
-        } else if (length > strData.length()) {
-            length = strData.length();
+        } else if (length > remaining) {
+            // Clamp length to the remaining code points.
+            length = remaining;
         }
 
-        length = strData.offsetByCodePoints(0, length);
+        // Convert the code-point length to a UTF-16 end offset, measured from
+        // the already-computed UTF-16 start offset.
+        int utf16End = strData.offsetByCodePoints(utf16Start, length);
 
-        if (start >= 0) {
-            // If start is positive and is greater than or equal to the length of
-            // the string, substr() returns an empty string.
-            if (start >= origLen) {
-                return "";
-            }
-        }
-
-        // collect length characters (unless it reaches the end of the string
-        // first, in which case it will return fewer)
-        int end = start + length;
-        if (end > origLen) {
-            end = origLen;
-        }
-
-        return strData.substring(start, end);
+        return strData.substring(utf16Start, utf16End);
     }
 
 }
