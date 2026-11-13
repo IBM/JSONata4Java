@@ -1393,9 +1393,11 @@ public class DateTimeUtils implements Serializable {
 
     private static int lettersToDecimal(String letters, char aChar) {
         int decimal = 0;
+        int place = 1;
         char[] chars = letters.toCharArray();
         for (int i = 0; i < chars.length; i++) {
-            decimal += (chars[chars.length - i - 1] - aChar + 1) * Math.pow(26, i);
+            decimal += (chars[chars.length - i - 1] - aChar + 1) * place;
+            place *= 26;
         }
         return decimal;
     }
