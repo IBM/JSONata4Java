@@ -162,6 +162,20 @@ public class SubstringBeforeFunctionTests implements Serializable {
             }, //
             {
                 "$substringBefore(' hello world again', ' ')", "\"\"", null
+            },
+
+            // non-BMP (supplementary) character tests — issue #461
+            {
+                "$substringBefore('x-😀', '-')", "\"x\"", null
+            }, //
+            {
+                "$substringBefore('😀-x', '-')", "\"😀\"", null
+            }, //
+            {
+                "$substringBefore('😀😀-x', '-')", "\"😀😀\"", null
+            }, //
+            {
+                "$substringBefore('abc', '-')", "\"abc\"", null
             }
         });
     }

@@ -165,6 +165,20 @@ public class SubstringAfterFunctionTests implements Serializable {
             }, //
             {
                 "$substringAfter('hello ', ' ')", "\"\"", null
+            },
+
+            // non-BMP (supplementary) character tests — issue #461
+            {
+                "$substringAfter('😀-x', '-')", "\"x\"", null
+            }, //
+            {
+                "$substringAfter('a😀-x', '-')", "\"x\"", null
+            }, //
+            {
+                "$substringAfter('😀😀-x', '-')", "\"x\"", null
+            }, //
+            {
+                "$substringAfter('abc', '-')", "\"abc\"", null
             }
         });
     }

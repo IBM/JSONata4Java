@@ -223,6 +223,50 @@ public class SubstringFunctionTests implements Serializable {
             },
             {
                 "$substring(\"hello\", 1, noexisty)", "\"ello\"", null
+            },
+
+            // non-BMP (supplementary) character tests — issue #461
+            {
+                "$substring(\"😀bc\", 1)", "\"bc\"", null
+            }, //
+            {
+                "$substring(\"𝒳bc\", 1)", "\"bc\"", null
+            }, //
+            {
+                "$substring(\"😀bc\", 0, 10)", "\"😀bc\"", null
+            }, //
+            {
+                "$substring(\"ab😀c\", 1, 2)", "\"b😀\"", null
+            }, //
+            {
+                "$substring(\"ab😀\", 0, 3)", "\"ab😀\"", null
+            }, //
+            {
+                "$substring(\"😀😀😀\", 1, 1)", "\"😀\"", null
+            }, //
+            {
+                "$substring(\"a😀c\", -2)", "\"😀c\"", null
+            }, //
+            {
+                "$substring(\"😀bc\", 0, 0)", "\"\"", null
+            }, //
+            {
+                "$substring(\"😀\", 5)", "\"\"", null
+            }, //
+            {
+                "$substring(\"😀bc\", 0)", "\"😀bc\"", null
+            }, //
+            {
+                "$substring(\"😀bc\", 0, 1)", "\"😀\"", null
+            }, //
+            {
+                "$substring(\"😀bc\", 0, -1)", "\"\"", null
+            }, //
+            {
+                "$substring('', 0)", "\"\"", null
+            }, //
+            {
+                "$substring('😀', 1)", "\"\"", null
             }
         }); //
     }
